@@ -74,6 +74,47 @@ Run `git add` + `git commit` to record the restoration.
 
 
 ============================================
+  git shortlog
+============================================
+
+git shortlog
+    Group commits by author, newest first.
+    Reads from stdin or takes a range/refs.
+
+-s / --summary
+    Just the commit count per author, no subjects.
+
+-n / --numbered
+    Sort by commit count instead of name.
+
+-sn
+    The classic combo: leaderboard of commits per author.
+        git shortlog -sn
+        git shortlog -sn --all
+        git shortlog -sn v1.0..HEAD     [since a tag]
+
+-e / --email
+    Show each author's email alongside the name.
+
+--no-merges
+    Drop merge commits from the counts.
+
+--group=<field>
+    Group by author (default), committer, or trailer:<key>.
+        git shortlog -sn --group=trailer:co-authored-by
+
+-c / --committer
+    Group by committer instead of author.
+
+-w[<width>[,<indent1>[,<indent2>]]]
+    Wrap the subject lines (like fmt).
+
+Note: by default shortlog uses a pager and walks HEAD.
+Pipe commits in to summarize an arbitrary set:
+    git log --author=me --oneline | git shortlog
+
+
+============================================
   git diff / git show
 ============================================
 
