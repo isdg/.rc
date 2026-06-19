@@ -8,6 +8,27 @@ endif
 set background=light
 let g:colors_name = "vs_light"
 
+" Terminal/ANSI palette = Ghostty 'Catppuccin Latte' (matches toggle_theme.sh).
+" baleia.nvim reads these g:terminal_color_* at setup() so captured-pane ANSI
+" colors render identically to the live terminal instead of baleia's generic
+" defaults. Also fixes :terminal colors. Keep in sync with the Ghostty theme.
+let g:terminal_color_0  = '#5c5f77'
+let g:terminal_color_1  = '#d20f39'
+let g:terminal_color_2  = '#40a02b'
+let g:terminal_color_3  = '#df8e1d'
+let g:terminal_color_4  = '#1e66f5'
+let g:terminal_color_5  = '#ea76cb'
+let g:terminal_color_6  = '#179299'
+let g:terminal_color_7  = '#acb0be'
+let g:terminal_color_8  = '#6c6f85'
+let g:terminal_color_9  = '#de293e'
+let g:terminal_color_10 = '#49af3d'
+let g:terminal_color_11 = '#eea02d'
+let g:terminal_color_12 = '#456eff'
+let g:terminal_color_13 = '#fe85d8'
+let g:terminal_color_14 = '#2d9fa8'
+let g:terminal_color_15 = '#bcc0cc'
+
 " =====================
 " Basic UI colors
 " =====================
