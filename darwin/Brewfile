@@ -43,6 +43,7 @@ brew "llvm"
 brew "llvm@17"
 brew "zig"
 brew "zls"   # Zig language server
+brew "rust"  # cargo — builds the plc binary
 
 # Graphics / media libs
 brew "cairo"

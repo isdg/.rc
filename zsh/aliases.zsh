@@ -14,7 +14,7 @@ alias v='vim'
 alias v.='vim .'
 alias c='claude'
 
-# Palace notes — functions live in the palace wrapper repo so they ship with
-# palace itself. Only loaded if the file is present (palace is cloned).
+# Palace notes — thin `plc` wrappers now ship with the dotfiles. PALACE_DIR
+# points at the vault (decrypted into ~/palace/palace/notes).
 export PALACE_DIR="$HOME/palace/palace"
-[ -r "${PALACE_DIR%/*}/.zsh/palace.zsh" ] && source "${PALACE_DIR%/*}/.zsh/palace.zsh"
+source "$HOME/.dotfiles/zsh/palace.zsh"

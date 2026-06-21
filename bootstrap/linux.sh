@@ -25,6 +25,7 @@ source "$SCRIPT_DIR/components/hyper.sh"
 source "$SCRIPT_DIR/components/fonts.sh"
 source "$SCRIPT_DIR/components/tig.sh"
 source "$SCRIPT_DIR/components/vim.sh"
+source "$SCRIPT_DIR/components/plc.sh"
 source "$SCRIPT_DIR/components/fzf.sh"
 source "$SCRIPT_DIR/components/shell.sh"
 
@@ -48,6 +49,7 @@ if [[ "${1:-}" == "--ensure" ]]; then
     ensure_fonts_linux         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_tig                 || FAILURES=$((FAILURES + 1)); echo ""
     ensure_vim_plugins         || FAILURES=$((FAILURES + 1)); echo ""
+    ensure_plc                 || FAILURES=$((FAILURES + 1)); echo ""
     ensure_fzf_linux           || FAILURES=$((FAILURES + 1)); echo ""
     ensure_default_shell_linux || FAILURES=$((FAILURES + 1)); echo ""
 
@@ -87,6 +89,8 @@ echo ""
 link_tig
 echo ""
 install_vim_plugins
+echo ""
+install_plc
 echo ""
 install_fzf_linux
 echo ""
