@@ -12,6 +12,7 @@
 #   weekly                 open/create this ISO week's note
 #   shot                   timestamped daily snapshot note
 #   tg [-l | -n]           manage murmur notes (-l = fzf-pick)
+#   isg [-l | NAME]        enumerated isg notes (isg0, isg1, … ; -l = fzf-pick)
 #   dn [-n | -l FILE | -L] manage do-notes (week-based, last-pointer)
 #   pst [calendar args]    pass-through to _calendar.sh for stats
 #
@@ -53,6 +54,22 @@ tg() {
       local name
       read "name?murmur note name: "
       _plc_edit plc murmur -n "$name"
+   fi
+}
+
+# isg [-l | -c [N] | NAME]   enumerated isg notes (isg0, isg1, …)
+#   (none)  : create the next enumerated note and open it
+#   -l      : fzf-pick an existing note (by recency) and open it
+#   -c [N]  : continue note N (or the latest) → isg<N>a, isg<N>b, …
+#   NAME    : open an existing note by basename
+isg() {
+   if [ "$1" = -l ]; then
+      local pick
+      pick=$(plc isg -l | fzf --prompt='isg > ' --no-sort) || return
+      [ -n "$pick" ] || return
+      _plc_edit plc isg "$pick"
+   else
+      _plc_edit plc isg "$@"
    fi
 }
 
