@@ -13,33 +13,32 @@
 	diffFilter = delta --color-only
 [delta]
 	navigate = true
-	line-numbers = true
 	light = true
-	syntax-theme = ansi
+	; Look like a plain `git diff`: keep delta only for paging/navigation.
+	; - line-numbers off -> no gutter (default git has none)
+	; - +/- styles are foreground-only and OMIT the `syntax` keyword, so whole
+	;   changed lines are just red/green with no background highlight and no
+	;   syntax coloring (the `syntax` keyword is what enables both in delta).
+	; - emph styles match the line styles -> no brighter within-line emphasis.
+	; - zero-style normal -> context lines in the terminal's default color.
+	; Re-enable rich delta by setting these back to `syntax` and line-numbers.
+	line-numbers = false
+	minus-style = red
+	minus-emph-style = red
+	plus-style = green
+	plus-emph-style = green
+	zero-style = normal
 	; Page with quit-if-one-screen: short diffs auto-quit and stay in the
 	; terminal (feels like stdout), long diffs open in less (wrapped +
-	; navigable), -X keeps content in scrollback on quit. Paging is also what
-	; enables delta's clean line-wrapping of long lines.
+	; navigable), -X keeps content in scrollback on quit.
 	paging = auto
-	; less -R keeps delta's ANSI colors; -F quits if the diff fits one screen
-	; (so short diffs feel like stdout); -X leaves the content in scrollback
-	; on quit. delta's `pager` is a program name, not a never/always switch --
-	; that switch is `paging` above.
 	pager = less -RFX
-	; jj-like minimalism: drop the box/rule "boarding lines" but keep the
-	; +/- background highlight (minus-/plus-style left at defaults).
+	; jj-like minimalism: drop the box/rule "boarding lines".
 	hunk-header-style = omit
 	file-decoration-style = none
 	file-style = blue
 	; drop the "Δ" modified-file symbol -- show just the path
 	file-modified-label = ""
-	; line-number gutter without the dotted/solid vertical bars -- just the
-	; numbers and a ":" separator, like jj.
-	line-numbers-left-format = "{nm:>4} "
-	line-numbers-right-format = "{np:>4} : "
-	line-numbers-left-style = blue
-	line-numbers-right-style = blue
-	line-numbers-zero-style = "#cccccc"
 [merge]
 	conflictStyle = diff3
 [diff]
