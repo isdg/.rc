@@ -57,15 +57,16 @@ tg() {
    fi
 }
 
-# isg [-l | -c [N] | NAME]   enumerated isg notes (isg0, isg1, …)
-#   (none)  : create the next enumerated note and open it
-#   -l      : fzf-pick an existing note (by recency) and open it
-#   -c [N]  : continue note N (or the latest) → isg<N>a, isg<N>b, …
-#   NAME    : open an existing note by basename
+# isg [-l|--last | -c|--create | --continue [N] | --list | NAME]
+#   (none) / -l / --last : open the last (most recent) note
+#   -c / --create        : create the next enumerated note and open it
+#   --continue [N]       : continue note N (or the latest) → isg<N>a, isg<N>b, …
+#   --list               : fzf-pick an existing note (by recency) and open it
+#   NAME                 : open an existing note by basename
 isg() {
-   if [ "$1" = -l ]; then
+   if [ "$1" = --list ]; then
       local pick
-      pick=$(plc isg -l | fzf --prompt='isg > ' --no-sort) || return
+      pick=$(plc isg --list | fzf --prompt='isg > ' --no-sort) || return
       [ -n "$pick" ] || return
       _plc_edit plc isg "$pick"
    else
