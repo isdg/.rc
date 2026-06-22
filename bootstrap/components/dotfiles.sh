@@ -42,6 +42,10 @@ ensure_dotfiles() {
         _check_link "bat config"  "$HOME/.config/bat"      "$dotfiles_dir/bat"      || failed=1
     fi
 
+    if [ -d "$dotfiles_dir/hammerspoon" ] && [ "$(uname)" = "Darwin" ]; then
+        _check_link "hammerspoon" "$HOME/.hammerspoon"     "$dotfiles_dir/hammerspoon" || failed=1
+    fi
+
     local nom_src="$dotfiles_dir/nom/config.yml"
     if [ -f "$nom_src" ]; then
         local nom_dst
@@ -166,6 +170,19 @@ link_dotfiles() {
         if command -v bat >/dev/null 2>&1; then
             bat cache --build >/dev/null 2>&1 && echo "[OK] Rebuilt bat theme cache"
         fi
+    fi
+
+    # Link Hammerspoon config (macOS only; carries the translation popup).
+    local hs_src="$dotfiles_dir/hammerspoon"
+    local hs_dst="$HOME/.hammerspoon"
+    if [ -d "$hs_src" ] && [ "$(uname)" = "Darwin" ] \
+       && [ "$(realpath "$hs_src" 2>/dev/null)" != "$(realpath "$hs_dst" 2>/dev/null)" ]; then
+        if [ -d "$hs_dst" ] && [ ! -L "$hs_dst" ]; then
+            echo "[BACKUP] Backing up existing .hammerspoon to .hammerspoon.backup"
+            mv "$hs_dst" "$HOME/.hammerspoon.backup"
+        fi
+        ln -sf "$hs_src" "$hs_dst"
+        echo "[OK] Linked Hammerspoon config"
     fi
 
     # Link nom config (RSS reader). macOS uses Library/Application Support,
