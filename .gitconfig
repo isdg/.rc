@@ -14,20 +14,27 @@
 [delta]
 	navigate = true
 	light = true
-	; Look like a plain `git diff`: keep delta only for paging/navigation.
-	; - line-numbers off -> no gutter (default git has none)
+	; Plain `git diff` content (no background highlight, no syntax coloring),
+	; but keep delta's line-number gutter and paging/navigation.
 	; - +/- styles are foreground-only and OMIT the `syntax` keyword, so whole
 	;   changed lines are just red/green with no background highlight and no
 	;   syntax coloring (the `syntax` keyword is what enables both in delta).
 	; - emph styles match the line styles -> no brighter within-line emphasis.
 	; - zero-style normal -> context lines in the terminal's default color.
-	; Re-enable rich delta by setting these back to `syntax` and line-numbers.
-	line-numbers = false
+	; Re-enable rich delta by setting these styles back to `syntax`.
 	minus-style = red
 	minus-emph-style = red
 	plus-style = green
 	plus-emph-style = green
 	zero-style = normal
+	; line-number gutter without the dotted/solid vertical bars -- just the
+	; numbers and a ":" separator, like jj.
+	line-numbers = true
+	line-numbers-left-format = "{nm:>4} "
+	line-numbers-right-format = "{np:>4} : "
+	line-numbers-left-style = blue
+	line-numbers-right-style = blue
+	line-numbers-zero-style = "#cccccc"
 	; Page with quit-if-one-screen: short diffs auto-quit and stay in the
 	; terminal (feels like stdout), long diffs open in less (wrapped +
 	; navigable), -X keeps content in scrollback on quit.
