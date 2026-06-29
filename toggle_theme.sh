@@ -9,7 +9,6 @@ NOM="$HOME/Library/Application Support/nom/config.yml"
 # Resolve symlinks
 REAL_HYPER="$(readlink "$HYPER" || echo "$HYPER")"
 REAL_GHOSTTY="$(readlink "$GHOSTTY" || echo "$GHOSTTY")"
-REAL_TMUX="$(readlink "$TMUX_CONF" || echo "$TMUX_CONF")"
 REAL_NOM="$(readlink "$NOM" || echo "$NOM")"
 # config is itself in a symlinked dir; resolve fully
 [ -L "$REAL_GHOSTTY" ] || REAL_GHOSTTY="$(cd "$(dirname "$GHOSTTY")" && pwd -P)/$(basename "$GHOSTTY")"
@@ -51,39 +50,12 @@ else
     STATUS+="Ghostty: config not found\n"
 fi
 
-# --- Tmux: toggle theme ---
-if [ -f "$REAL_TMUX" ]; then
-    if grep -q "^# theme=light" "$REAL_TMUX"; then
-        # Light -> Dark
-        sed -i '' 's/^# theme=light/# theme=dark/' "$REAL_TMUX"
-        sed -i '' 's/status-style "bg=default,fg=#555555"/status-style "bg=default,fg=#999999"/' "$REAL_TMUX"
-        sed -i '' 's/window-status-style "bg=default,fg=#777777"/window-status-style "bg=default,fg=#888888"/' "$REAL_TMUX"
-        sed -i '' 's/window-status-current-style "bg=default,fg=#000000,bold"/window-status-current-style "bg=default,fg=#cccccc,bold"/' "$REAL_TMUX"
-        sed -i '' 's/status-left-style "bg=default,fg=#555555"/status-left-style "bg=default,fg=#999999"/' "$REAL_TMUX"
-        sed -i '' 's/status-right-style "bg=default,fg=#555555"/status-right-style "bg=default,fg=#999999"/' "$REAL_TMUX"
-        sed -i '' 's/message-style "bg=default,fg=#333333"/message-style "bg=default,fg=#bbbbbb"/' "$REAL_TMUX"
-        sed -i '' 's/pane-border-style "fg=#cccccc"/pane-border-style "fg=#444444"/' "$REAL_TMUX"
-        sed -i '' 's/pane-active-border-style "fg=#888888"/pane-active-border-style "fg=#666666"/' "$REAL_TMUX"
-        STATUS+="Tmux: dark\n"
-    elif grep -q "^# theme=dark" "$REAL_TMUX"; then
-        # Dark -> Light
-        sed -i '' 's/^# theme=dark/# theme=light/' "$REAL_TMUX"
-        sed -i '' 's/status-style "bg=default,fg=#999999"/status-style "bg=default,fg=#555555"/' "$REAL_TMUX"
-        sed -i '' 's/window-status-style "bg=default,fg=#888888"/window-status-style "bg=default,fg=#777777"/' "$REAL_TMUX"
-        sed -i '' 's/window-status-current-style "bg=default,fg=#cccccc,bold"/window-status-current-style "bg=default,fg=#000000,bold"/' "$REAL_TMUX"
-        sed -i '' 's/status-left-style "bg=default,fg=#999999"/status-left-style "bg=default,fg=#555555"/' "$REAL_TMUX"
-        sed -i '' 's/status-right-style "bg=default,fg=#999999"/status-right-style "bg=default,fg=#555555"/' "$REAL_TMUX"
-        sed -i '' 's/message-style "bg=default,fg=#bbbbbb"/message-style "bg=default,fg=#333333"/' "$REAL_TMUX"
-        sed -i '' 's/pane-border-style "fg=#444444"/pane-border-style "fg=#cccccc"/' "$REAL_TMUX"
-        sed -i '' 's/pane-active-border-style "fg=#666666"/pane-active-border-style "fg=#888888"/' "$REAL_TMUX"
-        STATUS+="Tmux: light\n"
-    else
-        STATUS+="Tmux: theme marker not found\n"
-    fi
-    # Reload tmux config if tmux is running
-    tmux source-file "$TMUX_CONF" 2>/dev/null && STATUS+="Tmux: config reloaded\n"
+# --- Tmux: re-source so the if-shell re-reads the mode file and repaints ---
+# The styles live in tmux/theme-{dark,light}.conf; nothing is sed'd here.
+if tmux source-file "$TMUX_CONF" 2>/dev/null; then
+    STATUS+="Tmux: $MODE (reloaded)\n"
 else
-    STATUS+="Tmux: config not found\n"
+    STATUS+="Tmux: $MODE (on next start)\n"
 fi
 
 # --- nom (RSS reader): toggle glamour theme (article rendering) ---
