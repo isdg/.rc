@@ -401,7 +401,6 @@ return {
       cmd = { "Hr", "HrToggle", "HrOpen", "HrClose", "HrStart", "HrRefresh", "HrSync" },
    },
 
-<<<<<<< Updated upstream
    -- flash: label-based visual jump (the avy/EasyMotion equivalent). Trigger,
    -- type 1-2 chars of any on-screen target, then a label appears -- type it to
    -- jump. O(1) regardless of distance, complementing <leader>C (BLines) which
@@ -423,8 +422,6 @@ return {
       },
    },
 
-||||||| Stash base
-=======
    -- harpoon: pin the handful of files in the current task to ordered slots and
    -- jump to them with one keystroke (stable slot, cursor position preserved).
    -- Per-project list, persisted across sessions. All under the <leader>h prefix
@@ -449,7 +446,6 @@ return {
       end,
    },
 
->>>>>>> Stashed changes
    -- TODO: nvim-dap (Debug Adapter Protocol) - enable after learning raw GDB
    -- Plugins: mfussenegger/nvim-dap, rcarriga/nvim-dap-ui, theHamsta/nvim-dap-virtual-text
    -- Install codelldb via Mason: :MasonInstall codelldb
