@@ -321,8 +321,16 @@ return {
                markdown = { "prettier" },
                python = { "ruff_format", "ruff_organize_imports" },
             },
-            format_on_save = { timeout_ms = 500, lsp_fallback = true },
+            -- format_on_save must be a function (not a table) for the
+            -- conform_on_save_disabled buffer flag to be honored; conform only
+            -- reads opts set by this callback, never a bare table.
+            format_on_save = function(bufnr)
+               if vim.b[bufnr].conform_on_save_disabled then return end
+               return { timeout_ms = 500, lsp_fallback = true }
+            end,
          })
+         -- Disable format-on-save for TS/TSX/JS/JSX (no formatter configured for
+         -- them; we don't want tsserver reformatting on every save).
          vim.api.nvim_create_autocmd("FileType", {
             pattern = { "typescript", "typescriptreact", "javascript", "javascriptreact" },
             callback = function() vim.b.conform_on_save_disabled = true end,
