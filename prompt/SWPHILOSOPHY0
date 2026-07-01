@@ -1,21 +1,25 @@
-# Go SDK Design
+# Software philosophy
 
-This document discusses the design of a Go SDK for the [model context protocol](https://modelcontextprotocol.io/specification/2025-03-26). The [github.com/modelcontextprotocol/go-sdk/mcp](https://pkg.go.dev/github.com/modelcontextprotocol/go-sdk/mcp@master) package contains a prototype that we built to explore the MCP design space. Many of the ideas there are present in this document. However, we have diverged from and expanded on the APIs of that prototype, and this document should be considered canonical.
+These principles come first when designing and building anything. Delivery
+concerns (small, focused PRs) never trim them: a feature designed under these
+principles gets *divided* into several PRs for delivery, not simplified to fit.
 
-## Similarities and differences with mark3labs/mcp-go (and others)
+Three properties apply to every change (features, fixes, refactors):
 
-The most popular unofficial MCP SDK for Go is [mark3labs/mcp-go](https://pkg.go.dev/github.com/mark3labs/mcp-go). As of this writing, it is imported by over 400 packages that span over 200 modules.
+- **Complete** — implement every relevant case and conform to the full
+  semantics of what you're touching. No quiet edge-case breakage; a fix that
+  only covers the reported input isn't done.
+- **Idiomatic** — model the work with the language and its standard library,
+  and repeat the idioms of the surrounding code and similar domains rather than
+  inventing new ones.
+- **Robust** — the code must be well tested and reliable, and must keep the
+  things that depend on it easy to test.
 
-We admire mcp-go, and where possible tried to align with its design. However, the APIs here diverge in a number of ways in order to keep the official SDK minimal, allow for future spec evolution, and support additional features. We have noted significant differences from mcp-go in the sections below. Although the API here is not compatible with mcp-go, translating between them should be straightforward in most cases. (Later, we will provide a detailed translation guide.)
+Two more apply when designing an API, interface, or abstraction:
 
-Thank you to everyone who contributes to mcp-go and other Go SDKs. We hope that we can collaborate to leverage all that we've learned about MCP and Go in an official SDK.
-
-# Requirements
-
-These may be obvious, but it's worthwhile to define goals for an official MCP SDK. An official SDK should aim to be:
-
-- **complete**: it should be possible to implement every feature of the MCP spec, and these features should conform to all of the semantics described by the spec.
-- **idiomatic**: as much as possible, MCP features should be modeled using features of the Go language and its standard library. Additionally, the SDK should repeat idioms from similar domains.
-- **robust**: the SDK itself should be well tested and reliable, and should enable easy testability for its users.
-- **future-proof**: the SDK should allow for future evolution of the MCP spec, in such a way that we can (as much as possible) avoid incompatible changes to the SDK API.
-- **extensible**: to best serve the previous four concerns, the SDK should be minimal. However, it should admit extensibility using (for example) simple interfaces, middleware, or hooks.
+- **Future-proof** — allow the spec/domain to evolve without forcing an
+  incompatible change to the public surface later.
+- **Extensible** — stay minimal; admit extension through simple interfaces,
+  middleware, or hooks instead of baking in every use case. Minimalism serves
+  the other four: prefer the smallest surface that stays complete, and expose
+  seams rather than features.
