@@ -206,3 +206,33 @@ git -h after a subcommand (short usage).
 The two you'll probably actually reach for daily:
     -C                    (run elsewhere)
     --no-optional-locks   (for prompts/statuslines)
+
+
+============================================
+  git log --oneline + regex
+============================================
+
+--oneline prints one commit per line: <short-hash> <subject>.
+Filter it by regex with grep-style flags.
+
+-- Search commit MESSAGES (--grep is a regex) --------
+git log --oneline --grep='fix'                  [subject/body matches "fix"]
+git log --oneline --grep='^fix(\(.*\))?:'       [conventional-commit fix: / fix(scope):]
+git log --oneline -E --grep='bug|hotfix'        [-E extended regex: alternation]
+git log --oneline -i --grep='wip'               [-i case-insensitive]
+git log --oneline -P --grep='JIRA-\d+'          [-P Perl/PCRE: \d, \b, lookahead]
+git log --oneline --all-match --grep=api --grep=auth   [must match BOTH]
+
+-- Search CODE CONTENT of the diff -----------
+git log --oneline -G'def my_func'               [any diff line matches regex]
+git log --oneline -S'API_KEY'                   [count of "API_KEY" changed (pickaxe)]
+git log --oneline -S'API_KEY|SECRET' --pickaxe-regex   [treat -S as regex]
+
+-- Combine with author / path ----------------
+git log --oneline --author='Isai'               [--author is also a regex]
+git log --oneline -- 'src/*.ts'                 [limit to a path/glob]
+git log --oneline --grep='fix' -- src/api/      [message + path]
+
+-- vs piping to shell grep -------------------
+git log --oneline | grep -E 'fix|feat'          [filters the PRINTED subject only]
+    Prefer --grep: searches full message (not truncated), faster on big repos.
