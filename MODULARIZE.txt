@@ -1,0 +1,82 @@
+============================================================
+  MODULARIZE.txt — custom extensions inventory + how to modularize
+============================================================
+A survey of what lives in this repo: (A) custom tools you've built
+that are easy to forget, and (B) where the modularization seams are.
+
+
+------------------------------------------------------------
+A. CUSTOM EXTENSIONS YOU'VE BUILT
+------------------------------------------------------------
+Real tools hiding in here, not just config:
+
+1. PALACE NOTES SYSTEM  — a personal knowledge vault, spread over 4 places:
+   - `plc` binary        installed by bootstrap/components/plc.sh; creates /
+                         resolves note files, prints their path
+   - zsh/palace.zsh      commands: daily/weekly/shot/tg/isg/dn/pst
+                         (+ aliases dl -> daily, wk -> weekly)
+   - vim/palace-link.vim <leader>nl inserts [[wiki-links]] WITH automatic
+                         backlinks into the target file
+   - nvim <leader>nt/nT  ISO datestamp insertion
+   The most significant thing in the repo; invisible unless you know the cmds.
+
+2. HAMMERSPOON TRANSLATE POPUP  (hammerspoon/translate.lua)
+   Spotlight-style translate/dictionary chooser. Auto-detects Cyrillic<->English
+   direction, copies highlighted entry to clipboard. Backend-swappable (fetch()).
+
+3. BREADCRUMB  (nvim/lua/keymaps.lua:75, <leader>i)
+   LSP-first, Treesitter-fallback symbol path ("function > class > method")
+   across C/C++/Rust/Python/JS/TS/Go/Lua. Most people install a plugin for this.
+
+4. GIT RANGE PICKER  (nvim/lua/git_range.lua)
+   Two-tier DiffviewOpen picker: vim.ui.select for common ranges, Telescope
+   for ref/commit picking.
+
+5. THEME SYSTEM  (toggle_theme.sh + ~/.config/isg/theme)
+   One toggle drives per-app theme-{dark,light} configs for tmux, ghostty, and
+   nvim colorschemes in lockstep. Cross-cutting and clean.
+
+6. RUSSIAN-LAYOUT LEADER DUPLICATION  (nvim/lua/russian.lua + lmap())
+   Every <leader> map works in both keyboard layouts.
+
+7. mascots.sh  — shade-block ASCII mascot/splash renderer for toggle_theme.sh,
+   with physics-law captions (phase equation, pp-chain). Pure craft.
+
+8. TMUX CAPTURE / PICKER TOOLS  (tmux/.tmux.conf, tmux/fzf-content.sh)
+   - prefix N  scrollback -> nvim with ANSI rendered (baleia)
+   - prefix P  scrollback -> less
+   - prefix W  fuzzy window picker (name/pane-title/path + live preview)
+   - prefix a  fuzzy search over on-screen CONTENT of every window
+
+
+------------------------------------------------------------
+B. MODULARIZATION
+------------------------------------------------------------
+Already well-modularized (done right):
+   - bootstrap/components/*.sh   one script per concern, orchestrated by
+                                 darwin.sh / linux.sh. Textbook.
+   - theme system                per-app files behind one toggle.
+   - *_FUNCS registry convention e.g. BANNER_LOG_FUNCS in zsh/startup.zsh —
+                                 "add a function, append it to the array".
+
+Opportunities:
+
+   AREA            NOW                        MODULARIZE TO
+   ----            ---                        -------------
+   nvim plugins    one 467-line plugins.lua   lazy `import`: split into
+                                              lua/plugins/*.lua (lsp/git/nav/…),
+                                              setup({ { import = "plugins" } })
+   nvim keymaps    one 333-line keymaps.lua   split by domain, or move plugin
+                                              keys into each plugin spec (flash/
+                                              harpoon already do this)
+   inline funcs    breadcrumb (~80 lines)     extract to lua/breadcrumb.lua,
+                   inside keymaps.lua          like git_range.lua already is
+   tmux shells     prefix N/P/W big inline    extract to tmux/*.sh, like
+                   strings in .tmux.conf       fzf-content.sh already is
+   palace          spread zsh/vim/nvim/bin    document as one named module
+                                              (palace/README) for discoverability
+
+HIGHEST-VALUE MOVE:
+   The lazy `import` split for nvim plugins. Biggest file, most-edited, and lazy
+   makes it a mechanical, zero-behavior-change refactor (each spec -> its own
+   file; init.lua imports the directory).
