@@ -411,6 +411,10 @@ nnoremap <silent> <leader>r :HrToggle<CR>
 let s:script_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 execute 'source ' . s:script_dir . '/palace-link.vim'
 
+" fzf.vim window/preview layout (nearly full-screen, vertical preview) —
+" sibling file, shared with nvim/init.lua
+execute 'source ' . s:script_dir . '/fzf-layout.vim'
+
 " ============================================================
 "                      FUZZY FIND
 " ============================================================

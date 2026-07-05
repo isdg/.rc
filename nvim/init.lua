@@ -15,12 +15,15 @@
 require("options")
 require("russian")
 
--- Palace wiki-link picker (<leader>nl) — sibling file in ../vim, resolved via
--- this file's real path (so the dotfiles dir doesn't have to be ~/.dotfiles).
+-- Sibling files in ../vim, resolved via this file's real path (so the
+-- dotfiles dir doesn't have to be ~/.dotfiles):
+--   palace-link.vim — wiki-link picker (<leader>nl)
+--   fzf-layout.vim  — fzf.vim window/preview layout (shared with vim/.vimrc)
 do
    local this_file = vim.fn.resolve(debug.getinfo(1, "S").source:sub(2))
    local dotfiles_dir = vim.fn.fnamemodify(this_file, ":p:h:h")
    vim.cmd("source " .. dotfiles_dir .. "/vim/palace-link.vim")
+   vim.cmd("source " .. dotfiles_dir .. "/vim/fzf-layout.vim")
 end
 
 -- Bootstrap lazy.nvim
