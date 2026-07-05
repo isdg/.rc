@@ -34,7 +34,7 @@ if not vim.loop.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
-require("lazy").setup(require("plugins"))
+require("lazy").setup({ { import = "plugins" } })
 require("keymaps")
 
 -- Theme mode (dark|light) from the single source of truth (~/.config/isg/theme,
