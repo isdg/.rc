@@ -59,24 +59,18 @@ Already well-modularized (done right):
    - *_FUNCS registry convention e.g. BANNER_LOG_FUNCS in zsh/startup.zsh —
                                  "add a function, append it to the array".
 
-Opportunities:
+Done:
 
-   AREA            NOW                        MODULARIZE TO
-   ----            ---                        -------------
-   nvim plugins    one 467-line plugins.lua   lazy `import`: split into
-                                              lua/plugins/*.lua (lsp/git/nav/…),
+   AREA            WAS                        NOW
+   ----            ---                        ---
+   nvim plugins    one 467-line plugins.lua   lazy `import`: nvim/lua/plugins/
+                                              {lsp,git,nav,edit,misc}.lua,
                                               setup({ { import = "plugins" } })
-   nvim keymaps    one 333-line keymaps.lua   split by domain, or move plugin
-                                              keys into each plugin spec (flash/
-                                              harpoon already do this)
-   inline funcs    breadcrumb (~80 lines)     extract to lua/breadcrumb.lua,
-                   inside keymaps.lua          like git_range.lua already is
-   tmux shells     prefix N/P/W big inline    extract to tmux/*.sh, like
-                   strings in .tmux.conf       fzf-content.sh already is
-   palace          spread zsh/vim/nvim/bin    document as one named module
-                                              (palace/README) for discoverability
-
-HIGHEST-VALUE MOVE:
-   The lazy `import` split for nvim plugins. Biggest file, most-edited, and lazy
-   makes it a mechanical, zero-behavior-change refactor (each spec -> its own
-   file; init.lua imports the directory).
+   nvim keymaps    one 333-line keymaps.lua   nvim/lua/keymaps/ split by domain
+                                              ({editor,find,tree,edit,git,lsp,
+                                              notes}.lua + leader/util helpers)
+   inline funcs    breadcrumb (~80 lines)     nvim/lua/breadcrumb.lua, like
+                   inside keymaps.lua          git_range.lua
+   tmux shells     prefix W big inline        tmux/window-picker.sh, like
+                   string in .tmux.conf        fzf-content.sh / pane-capture.sh
+   palace          spread zsh/vim/nvim/bin    documented in PALACE.md
