@@ -27,7 +27,7 @@ return {
    -- the :Hr* commands, fired by <leader>r (see lua/keymaps.lua).
    {
       "isdg/hr.vim",
-      cmd = { "Hr", "HrToggle", "HrOpen", "HrClose", "HrStart", "HrRefresh", "HrSync" },
+      cmd = { "Hr", "HrToggle", "HrOpen", "HrClose", "HrStart", "HrRefresh", "HrSync", "HrLocate" },
    },
 
    -- TODO: nvim-dap (Debug Adapter Protocol) - enable after learning raw GDB

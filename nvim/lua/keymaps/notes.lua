@@ -19,3 +19,7 @@ end, { desc = "Insert date stamp (isg, local tz)" })
 -- portable Vimscript replacement for the old require("hr") Lua module.
 lmap("n", "nr", "<Cmd>HrToggle<CR>",
    { desc = "Toggle hr reading list", silent = true })
+-- Locate the current article's row in the hr panel (opens/refreshes it and
+-- reveals read articles under an unread-only view). :HrLocate from the plugin.
+lmap("n", "nf", "<Cmd>HrLocate<CR>",
+   { desc = "Locate current article in hr feed", silent = true })
