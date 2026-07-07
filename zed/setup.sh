@@ -1,9 +1,9 @@
 #!/bin/bash
 
 # Zed editor configuration setup script
-# Creates symlinks from ~/.config/zed/ to ~/.dotfiles/zed/
+# Creates symlinks from ~/.config/zed/ to this repo's zed/ (any dir name)
 
-DOTFILES_ZED="$HOME/.dotfiles/zed"
+DOTFILES_ZED="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CONFIG_ZED="$HOME/.config/zed"
 
 echo "Setting up Zed configuration..."

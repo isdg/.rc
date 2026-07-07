@@ -6,6 +6,12 @@
 zmodload zsh/datetime
 typeset -gF _BANNER_T0=$EPOCHREALTIME
 
+# Repo root, resolved from THIS file's real path so the config works under any
+# directory name (~/.dotfiles, ~/.rc, …) — not just a hardcoded one. %x = the
+# file being sourced; :A resolves the ~/.zshrc symlink to the repo; :h:h climbs
+# zsh/ up to the repo root. Exported so children (tmux, scripts) can use it too.
+export ISG_DOTFILES="${${(%):-%x}:A:h:h}"
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 
@@ -122,7 +128,7 @@ if [[ -n $ZSH_LITE ]]; then
         echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${state}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
     }
 
-    source "$HOME/.dotfiles/zsh/isg.zsh-theme"
+    source "$ISG_DOTFILES/zsh/isg.zsh-theme"
 else
     plugins=(git)
     source $ZSH/oh-my-zsh.sh
@@ -180,9 +186,9 @@ export PATH="$HOME/.cargo/bin:$PATH"   # cargo-installed binaries (plc)
 export EDITOR='nvim'
 export VISUAL='nvim'
 
-source "$HOME/.dotfiles/zsh/aliases.zsh"
-source "$HOME/.dotfiles/zsh/fzf.zsh"
-source "$HOME/.dotfiles/zsh/vimode.zsh"
+source "$ISG_DOTFILES/zsh/aliases.zsh"
+source "$ISG_DOTFILES/zsh/fzf.zsh"
+source "$ISG_DOTFILES/zsh/vimode.zsh"
 
 
 
@@ -199,7 +205,7 @@ fi
 unset _brew_prefix
 
 # ── startup banner (engine lives in the isg theme) ──
-source "$HOME/.dotfiles/zsh/startup.zsh"
+source "$ISG_DOTFILES/zsh/startup.zsh"
 
 banner_info "%Bisg%b · zsh"
 banner_info "%D{%a %d %b %Y · %H:%M}"

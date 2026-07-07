@@ -18,4 +18,4 @@ alias tm='tmux'
 # Palace notes — thin `plc` wrappers now ship with the dotfiles. PALACE_DIR
 # points at the vault (decrypted into ~/palace/palace/notes).
 export PALACE_DIR="$HOME/palace/palace"
-source "$HOME/.dotfiles/zsh/palace.zsh"
+source "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/palace.zsh"
