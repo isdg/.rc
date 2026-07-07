@@ -1,7 +1,13 @@
 -- ============================================================
 --                  LSP keymaps (on attach)
 -- ============================================================
-local map = require("keymaps.leader").map
+local leader = require("keymaps.leader")
+local map, lmap = leader.map, leader.lmap
+
+-- Global toggle: show/hide diagnostics (virtual text, signs, underlines).
+lmap("n", "N", function()
+   vim.diagnostic.enable(not vim.diagnostic.is_enabled())
+end, { desc = "Toggle diagnostics" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
    callback = function(ev)

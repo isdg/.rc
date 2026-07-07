@@ -6,7 +6,18 @@ local map, lmap = leader.map, leader.lmap
 
 -- ─── File management ────────────────────────────────────────────
 lmap("n", "s", "<cmd>w<CR>", { desc = "Save file" })
-lmap("n", "M", "<cmd>set number!<CR>", { desc = "Toggle line numbers" })
+-- Toggle the whole number column on/off (both number + relativenumber).
+lmap("n", "M", function()
+   local show = not (vim.wo.number or vim.wo.relativenumber)
+   vim.wo.number = show
+   vim.wo.relativenumber = false
+end, { desc = "Toggle line-number column" })
+-- Toggle relative numbers, keeping `number` on so the current line stays
+-- absolute (hybrid) instead of showing 0.
+lmap("n", "m", function()
+   vim.wo.number = true
+   vim.wo.relativenumber = not vim.wo.relativenumber
+end, { desc = "Toggle relative numbers (hybrid)" })
 lmap("n", "w", "<cmd>q<CR>", { desc = "Quit file" })
 lmap("n", "W", "<cmd>q!<CR>", { desc = "Quit without saving" })
 lmap("n", "Q", "<cmd>qa!<CR>", { desc = "Quit all without saving" })

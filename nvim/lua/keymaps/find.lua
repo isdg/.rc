@@ -31,7 +31,6 @@ lmap("n", "c", function()
    require("telescope.builtin").lsp_document_symbols()
 end, { desc = "Document symbols (focused)" })
 lmap("n", "i", function() require("breadcrumb").show() end, { desc = "Show breadcrumb" })
-lmap("n", "m", "<cmd>Telescope diagnostics<CR>", { desc = "Diagnostics" })
 lmap("n", "B", "<cmd>History<CR>", { desc = "Recent files (fzf)" })
 
 -- -- Search across open buffers (equivalent to :Lines)
