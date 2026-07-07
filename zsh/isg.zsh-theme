@@ -171,6 +171,7 @@ if [[ "$ISG_FZF_THEME" != 'false' ]]; then
   if (( $+commands[fzf] )); then
     # This theme is the same for both light and dark themes:
     export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
+      --preview-window=down:55%
       --color=bg:-1,fg:-1,bg+:#dce7f2,fg+:bright-black
       --color=hl:bright-blue,hl+:blue
       --color=header:green,info:green,pointer:blue
