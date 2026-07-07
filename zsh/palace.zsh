@@ -47,7 +47,12 @@ dn() {
 tg() {
    if [ "$1" = -l ]; then
       local pick
-      pick=$(plc murmur -l | fzf --prompt='murmur > ' --no-sort) || return
+      # Preview the note below the list. `plc murmur -n {}` resolves an existing
+      # name to its path (no creation, since every listed name already exists) --
+      # the same resolver _plc_edit uses to open.
+      pick=$(plc murmur -l | fzf --prompt='murmur > ' --no-sort \
+         --preview 'f=$(plc murmur -n {} 2>/dev/null); bat --color=always --style=plain "$f" 2>/dev/null || cat "$f" 2>/dev/null' \
+         --preview-window 'down:70%') || return
       [ -n "$pick" ] || return
       _plc_edit plc murmur -n "$pick"
    else
@@ -66,7 +71,11 @@ tg() {
 isg() {
    if [ "$1" = --list ]; then
       local pick
-      pick=$(plc isg --list | fzf --prompt='isg > ' --no-sort) || return
+      # Preview below the list; `plc isg {}` resolves an existing basename to its
+      # path (listed names already exist, so no note is created).
+      pick=$(plc isg --list | fzf --prompt='isg > ' --no-sort \
+         --preview 'f=$(plc isg {} 2>/dev/null); bat --color=always --style=plain "$f" 2>/dev/null || cat "$f" 2>/dev/null' \
+         --preview-window 'down:70%') || return
       [ -n "$pick" ] || return
       _plc_edit plc isg "$pick"
    else
