@@ -407,12 +407,9 @@ autocmd FileType nerdtree setlocal number
 " (Russian layout works via the к->r remap above.)
 nnoremap <silent> <leader>r :HrToggle<CR>
 
-" Palace wiki-link picker (<leader>nl) — sibling file, resolved through symlinks
-let s:script_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
-execute 'source ' . s:script_dir . '/palace-link.vim'
-
 " fzf.vim window/preview layout (nearly full-screen, vertical preview) —
-" sibling file, shared with nvim/init.lua
+" sibling file, shared with nvim/init.lua, resolved through symlinks
+let s:script_dir = fnamemodify(resolve(expand('<sfile>:p')), ':h')
 execute 'source ' . s:script_dir . '/fzf-layout.vim'
 
 " ============================================================

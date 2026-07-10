@@ -7,14 +7,14 @@ local map, lmap = leader.map, leader.lmap
 -- ─── File management ────────────────────────────────────────────
 lmap("n", "s", "<cmd>w<CR>", { desc = "Save file" })
 -- Toggle the whole number column on/off (both number + relativenumber).
-lmap("n", "M", function()
+lmap("n", "N", function()
    local show = not (vim.wo.number or vim.wo.relativenumber)
    vim.wo.number = show
    vim.wo.relativenumber = false
 end, { desc = "Toggle line-number column" })
 -- Toggle relative numbers, keeping `number` on so the current line stays
 -- absolute (hybrid) instead of showing 0.
-lmap("n", "m", function()
+lmap("n", "n", function()
    vim.wo.number = true
    vim.wo.relativenumber = not vim.wo.relativenumber
 end, { desc = "Toggle relative numbers (hybrid)" })

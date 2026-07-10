@@ -5,9 +5,12 @@ local leader = require("keymaps.leader")
 local map, lmap = leader.map, leader.lmap
 
 -- Global toggle: show/hide diagnostics (virtual text, signs, underlines).
-lmap("n", "N", function()
+lmap("n", "D", function()
    vim.diagnostic.enable(not vim.diagnostic.is_enabled())
 end, { desc = "Toggle diagnostics" })
+
+-- Searchable list of all diagnostics (pairs with ]d/[d jump, ge float).
+lmap("n", "d", "<cmd>Telescope diagnostics<CR>", { desc = "List diagnostics" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
    callback = function(ev)

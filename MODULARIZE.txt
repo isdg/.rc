@@ -10,14 +10,12 @@ A. CUSTOM EXTENSIONS YOU'VE BUILT
 ------------------------------------------------------------
 Real tools hiding in here, not just config:
 
-1. PALACE NOTES SYSTEM  — a personal knowledge vault, spread over 4 places:
+1. PALACE NOTES SYSTEM  — a personal knowledge vault:
    - `plc` binary        installed by bootstrap/components/plc.sh; creates /
                          resolves note files, prints their path
    - zsh/palace.zsh      commands: daily/weekly/shot/tg/isg/dn/pst
                          (+ aliases dl -> daily, wk -> weekly)
-   - vim/palace-link.vim <leader>nl inserts [[wiki-links]] WITH automatic
-                         backlinks into the target file
-   - nvim <leader>nt/nT  ISO datestamp insertion
+   - nvim <leader>Pt/PT  ISO datestamp insertion
    The most significant thing in the repo; invisible unless you know the cmds.
 
 2. HAMMERSPOON TRANSLATE POPUP  (hammerspoon/translate.lua)
