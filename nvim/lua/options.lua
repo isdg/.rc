@@ -17,6 +17,12 @@ vim.g.git_messenger_always_into_popup = true
 vim.opt.termguicolors = true
 vim.opt.background = "light"
 
+-- Window/terminal title = current file name. tmux captures this as #{pane_title}
+-- so it can name the window "nvim:<file>" instead of the cwd (see .tmux.conf
+-- automatic-rename-format). %t = filename tail (empty for a [No Name] buffer).
+vim.opt.title = true
+vim.opt.titlestring = "%t"
+
 -- Wrap
 vim.opt.textwidth = 80
 vim.opt.wrap = true
