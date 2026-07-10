@@ -3,9 +3,9 @@
 
 # --- font ---
 font-family = JetBrains Mono
-font-style = ExtraLight
+font-style = Light
 font-style-bold = false
-font-size = 11.7
+font-size = 12
 adjust-cell-height = 22%
 adjust-cell-width = -5%
 font-feature = -liga
@@ -26,8 +26,8 @@ selection-foreground = ffffff
 # --- window / layout ---
 # Hyper had `padding: '8px 15%'` — Ghostty only takes pixels.
 # Tune `window-padding-x` to taste; ~240 feels centered on a 13–16" mac.
-window-padding-x = 250
-window-padding-y = 12
+window-padding-x = 550
+window-padding-y = 55
 window-padding-balance = true
 window-save-state = always
 # tabs integrated into the titlebar — most compact tab-friendly option
