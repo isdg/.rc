@@ -15,9 +15,10 @@ alias v.='vim .'
 alias c='claude'
 alias tm='tmux'
 
-# gh: disable the pager so output prints straight to stdout (no less).
-# GH_PAGER=cat overrides gh's default pager without touching ~/.config/gh.
-export GH_PAGER=cat
+# gh: page only when output exceeds one screen. less -F quits immediately if it
+# fits (so short output prints straight to stdout), -X leaves it on screen
+# instead of clearing. Overrides gh's default pager without touching ~/.config/gh.
+export GH_PAGER='less -FX'
 
 # Palace notes — thin `plc` wrappers now ship with the dotfiles. PALACE_DIR
 # points at the vault (decrypted into ~/palace/palace/notes).
