@@ -149,7 +149,7 @@ module.exports = {
    // `~/.hyper_plugins/local/` and include it here
    // to load it and avoid it being `npm install`ed
    plugins: ['hyper-tab-icons'],
-   localPlugins: ["light"],
+   // localPlugins: ["light"],
    keymaps: {
       // Example
       // 'window:devtools': 'cmd+alt+o',
