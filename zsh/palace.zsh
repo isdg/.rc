@@ -11,6 +11,7 @@
 #   daily [DD MM YY|YYYY]  open/create a daily note (today by default)
 #   weekly                 open/create this ISO week's note
 #   shot                   timestamped daily snapshot note
+#   start                  open/create TOP.md, the vault landing page
 #   tg [-l | -n]           manage murmur notes (-l = fzf-pick)
 #   isg [-l | NAME]        enumerated isg notes (isg0, isg1, … ; -l = fzf-pick)
 #   dn [-n | -l FILE | -L] manage do-notes (week-based, last-pointer)
@@ -30,6 +31,7 @@ _plc_edit() {
 daily()  { _plc_edit plc daily "$@"; }
 weekly() { _plc_edit plc weekly; }
 shot()   { _plc_edit plc shot; }
+start()  { _plc_edit plc start; }
 
 # dn [-n|-l FILE|-L]   manage do-notes
 #   -L / -l FILE : informational (list / re-point) — no editor
