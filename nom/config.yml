@@ -77,7 +77,7 @@ filtering:
   defaultIncludeFeedName: true
 
 theme:
-  glamour: dark             # article rendering: light, dark, auto, dracula, pink, notty, ascii
+  glamour: light             # article rendering: light, dark, auto, dracula, pink, notty, ascii
   titleColor: "24"           # accent (deep blue) — bar/header bg
   titleColorFg: "231"        # title text (near-white) on the accent bar
   filterColor: "24"          # filter prompt accent
