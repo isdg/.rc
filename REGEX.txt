@@ -1,9 +1,9 @@
 ⏺ Regex Symbols & Patterns
 
-  Character Classes
+ wawd Character Classes
 
   ┌────────┬───────────────────────────────────────┬───────────────────────────┐
-  │ Symbol │                Meaning                │          Example          │
+  │ awdwd │                Meaning                │          Example          │
   ├────────┼───────────────────────────────────────┼───────────────────────────┤
   │ .      │ Any single character (except newline) │ a.c matches abc, a1c, a-c │
   ├────────┼───────────────────────────────────────┼───────────────────────────┤
