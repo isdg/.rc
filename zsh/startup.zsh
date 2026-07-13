@@ -9,7 +9,7 @@
 BANNER_LOG_FUNCS=(
     log_shell
     log_host
-    # log_tmux
+    log_ssh
 )
 
 # zsh version + startup time, e.g. "zsh 5.9 · 361 ms".
