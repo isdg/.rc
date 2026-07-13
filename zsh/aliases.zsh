@@ -24,3 +24,8 @@ export GH_PAGER='less -FX'
 # points at the vault (decrypted into ~/palace/palace/notes).
 export PALACE_DIR="$HOME/palace/palace"
 source "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/palace.zsh"
+
+# Machine-local, gitignored aliases/functions (work-specific helpers, private
+# repo names, employer paths). Never published; source it only if it exists.
+[ -f "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/aliases.ignored.zsh" ] \
+   && source "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/aliases.ignored.zsh"

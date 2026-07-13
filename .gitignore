@@ -6,3 +6,7 @@ vscode/tasks.json
 # Active ghostty theme include — a symlink to theme-{dark,light}.conf, flipped
 # by toggle_theme.sh. Per-machine state, not tracked.
 ghostty/theme-active.conf
+
+# Machine-local zsh aliases/functions (work-specific, private repo names, etc.)
+# sourced by aliases.zsh if present. Never published.
+zsh/aliases.ignored.zsh
