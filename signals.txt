@@ -1,5 +1,4 @@
  1  HUP     Hangup — terminal closed / reload config convention
- 2  INT     Interrupt — Ctrl-C
  3  QUIT    Quit — Ctrl-\, dumps core
  4  ILL     Illegal instruction
  5  TRAP    Trace/breakpoint trap (debuggers)
