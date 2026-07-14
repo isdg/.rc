@@ -13,8 +13,6 @@ translate.bind({ "cmd", "ctrl" }, "t")
 
 -- Keyboard scrolling: ⌘⇧J enters scroll mode; then jk (up/down), du (half-page),
 -- hl (left/right), hold to scroll smoothly, ⇧ for fast, esc/q/i to exit. Any app.
-local scroll = require("scroll")
-scroll.bind({ "cmd", "shift" }, "j")
 
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher

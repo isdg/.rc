@@ -10,17 +10,20 @@
 --
 -- Mechanism: while active, one eventtap tracks which direction keys are down
 -- (by physical keycode, so Shift doesn't change matching) and a single ~60fps
--- ticker posts the scroll, scaling by the LIVE Shift state. A colored border is
--- drawn around the screen under the pointer as the mode indicator (like
+-- ticker posts the scroll. Holding Shift posts MORE events per frame (not bigger
+-- ones) — terminals scroll by whole lines and ignore pixel magnitude, so extra
+-- events are the only way to speed them up; pixel apps get faster too. A colored
+-- border around the screen under the pointer is the mode indicator (like
 -- Homerow), click/scroll-through so it never eats events.
 
 local M = {}
 
 -- Tunables -----------------------------------------------------------------
-local STEP = 7           -- px/frame for j/k/h/l — a very mild, readable pace
-local FASTMUL = 4        -- hold SHIFT for this much faster
-local PAGE = 26          -- px/frame for d/u (brisk page-ish)
-local INTERVAL = 1 / 60  -- ~60 fps => STEP*60 px/s (default ~420 px/s)
+local STEP = 12          -- px/frame for j/k/h/l (base pace)
+local FASTMUL = 6        -- hold SHIFT: post this many events/frame (fast; also
+                         -- speeds up terminals, which scroll by line not pixel)
+local PAGE = 30          -- px/frame for d/u (brisk dash)
+local INTERVAL = 1 / 60  -- ~60 fps
 local BORDER = 5         -- indicator border thickness (px)
 local COLOR = { red = 0.55, green = 0.45, blue = 1.0, alpha = 0.95 } -- accent
 -- --------------------------------------------------------------------------
@@ -46,17 +49,17 @@ local function scroll(dx, dy)
    hs.eventtap.event.newScrollEvent({ dx, dy }, {}, "pixel"):post()
 end
 
--- One frame: sum every held direction, scaled by live Shift, and post it.
+-- One frame: for each held direction post its scroll. Under Shift, post it
+-- `FASTMUL` times (more discrete events) so line-based terminals speed up too.
 local function tick()
-   local mult = hs.eventtap.checkKeyboardModifiers().shift and FASTMUL or 1
-   local dx, dy = 0, 0
+   local reps = hs.eventtap.checkKeyboardModifiers().shift and FASTMUL or 1
    for name in pairs(held) do
       local d = DIRS[name]
-      local base = (d[3] and PAGE or STEP) * mult
-      dx = dx + d[1] * base
-      dy = dy + d[2] * base
+      local base = d[3] and PAGE or STEP
+      for _ = 1, reps do
+         scroll(d[1] * base, d[2] * base)
+      end
    end
-   if dx ~= 0 or dy ~= 0 then scroll(dx, dy) end
 end
 
 -- Border indicator on the screen under the pointer; no mouse callbacks, so it's
