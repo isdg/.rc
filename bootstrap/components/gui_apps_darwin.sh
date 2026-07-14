@@ -9,7 +9,7 @@ _app_installed() {
 ensure_gui_apps_darwin() {
     echo "[STEP] Verifying GUI apps..."
     local failed=0
-    local apps=("Visual Studio Code" "Hyper" "Ghostty" "Homerow")
+    local apps=("Visual Studio Code" "Ghostty" "Homerow")
     for app in "${apps[@]}"; do
         if _app_installed "$app"; then
             echo "[OK] $app"
@@ -28,12 +28,6 @@ install_gui_apps_darwin() {
         echo "[SKIP] VSCode already installed"
     else
         brew install --cask visual-studio-code || echo "[WARN] VSCode installation failed"
-    fi
-
-    if _app_installed "Hyper"; then
-        echo "[SKIP] Hyper already installed"
-    else
-        brew install --cask hyper || echo "[WARN] Hyper installation failed"
     fi
 
     if _app_installed "Ghostty"; then

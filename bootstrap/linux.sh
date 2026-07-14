@@ -21,7 +21,6 @@ source "$SCRIPT_DIR/components/zsh_syntax_linux.sh"
 source "$SCRIPT_DIR/components/directories.sh"
 source "$SCRIPT_DIR/components/dotfiles.sh"
 source "$SCRIPT_DIR/components/vscode.sh"
-source "$SCRIPT_DIR/components/hyper.sh"
 source "$SCRIPT_DIR/components/fonts.sh"
 source "$SCRIPT_DIR/components/tig.sh"
 source "$SCRIPT_DIR/components/vim.sh"
@@ -47,7 +46,6 @@ if [[ "${1:-}" == "--ensure" ]]; then
     ensure_directories         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_dotfiles            || FAILURES=$((FAILURES + 1)); echo ""
     ensure_vscode_linux        || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_hyper               || FAILURES=$((FAILURES + 1)); echo ""
     ensure_fonts_linux         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_tig                 || FAILURES=$((FAILURES + 1)); echo ""
     ensure_vim_plugins         || FAILURES=$((FAILURES + 1)); echo ""
@@ -85,8 +83,6 @@ echo ""
 link_dotfiles
 echo ""
 link_vscode_linux
-echo ""
-link_hyper
 echo ""
 install_fonts_linux
 echo ""
