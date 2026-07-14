@@ -30,8 +30,8 @@ _plc_edit() {
 
 daily()  { _plc_edit plc daily "$@"; }
 weekly() { _plc_edit plc weekly; }
-shot()   { _plc_edit plc shot; }
-start()  { _plc_edit plc start; }
+shot()   { _plc_edit plc shot "$@"; }
+top()    { _plc_edit plc top; }
 
 # dn [-n|-l FILE|-L]   manage do-notes
 #   -L / -l FILE : informational (list / re-point) — no editor
