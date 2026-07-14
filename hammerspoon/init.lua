@@ -11,6 +11,11 @@ local translate = require("translate")
 -- Hotkey: ⌘⌃T opens the popup. Change the mods/key here.
 translate.bind({ "cmd", "ctrl" }, "t")
 
+-- Keyboard scrolling: ⌘⇧J enters scroll mode; then jk (up/down), du (half-page),
+-- hl (left/right), hold to scroll smoothly, ⇧ for fast, esc/q/i to exit. Any app.
+local scroll = require("scroll")
+scroll.bind({ "cmd", "shift" }, "j")
+
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher
    .new(hs.configdir, function(files)
@@ -23,4 +28,4 @@ hs.pathwatcher
    end)
    :start()
 
-hs.alert.show("Hammerspoon: config loaded (⌘⌃T = translate)")
+hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌘⇧J scroll)")
