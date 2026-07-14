@@ -189,6 +189,7 @@ export VISUAL='nvim'
 source "$ISG_DOTFILES/zsh/aliases.zsh"
 source "$ISG_DOTFILES/zsh/fzf.zsh"
 source "$ISG_DOTFILES/zsh/vimode.zsh"
+source "$ISG_DOTFILES/zsh/omni.zsh"
 
 
 
