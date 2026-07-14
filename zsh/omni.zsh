@@ -10,8 +10,10 @@
 #
 # Written per pane ($TMUX_PANE, e.g. %3 -> file "3"), NUL-delimited so values
 # with spaces/newlines round-trip, and overwritten every prompt so a reused
-# pane id self-corrects. May contain secrets (exported API keys, etc.), so the
-# directory is 700. Keep the path in sync with pane-capture.sh in ~/omni.
+# pane id self-corrects. Removed on shell exit (zshexit) so live files track
+# live panes and nothing accumulates. May contain secrets (exported API keys,
+# etc.), so the directory is 700. Keep the path in sync with pane-capture.sh
+# in ~/omni.
 [[ -n $TMUX ]] || return 0
 
 : ${OMNI_ENV_DIR:=${XDG_CACHE_HOME:-$HOME/.cache}/omni/env}
@@ -33,5 +35,12 @@ _omni_record_env() {
     return 0
 }
 
+_omni_cleanup_env() {
+    [[ -n $TMUX_PANE ]] || return 0
+    rm -f "$OMNI_ENV_DIR/${TMUX_PANE#%}" "$OMNI_ENV_DIR/${TMUX_PANE#%}.tmp" 2>/dev/null
+    return 0
+}
+
 autoload -Uz add-zsh-hook
 add-zsh-hook precmd _omni_record_env
+add-zsh-hook zshexit _omni_cleanup_env
