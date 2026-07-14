@@ -31,7 +31,8 @@ _plc_edit() {
 daily()  { _plc_edit plc daily "$@"; }
 weekly() { _plc_edit plc weekly; }
 shot()   { _plc_edit plc shot "$@"; }
-top()    { _plc_edit plc top; }
+# `ptop`, not `top`, so the palace landing page doesn't shadow the system `top`.
+ptop()   { _plc_edit plc top; }
 
 # dn [-n|-l FILE|-L]   manage do-notes
 #   -L / -l FILE : informational (list / re-point) — no editor
