@@ -26,7 +26,7 @@ selection-foreground = ffffff
 # --- window / layout ---
 # Hyper had `padding: '8px 15%'` — Ghostty only takes pixels.
 # Tune `window-padding-x` to taste; ~240 feels centered on a 13–16" mac.
-window-padding-x = 550
+window-padding-x = 450
 window-padding-y = 12
 window-padding-balance = true
 window-save-state = always
