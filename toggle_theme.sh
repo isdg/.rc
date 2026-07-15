@@ -1,12 +1,10 @@
 #!/bin/bash
-# Toggle themes for Vim, Zsh, and Hyper (macOS)
+# Toggle light/dark for Vim/Neovim, Zsh, Ghostty, and tmux (macOS)
 
-HYPER="$HOME/.hyper.js"
 GHOSTTY="$HOME/.config/ghostty/config"
 TMUX_CONF="$HOME/.tmux.conf"
 
 # Resolve symlinks
-REAL_HYPER="$(readlink "$HYPER" || echo "$HYPER")"
 REAL_GHOSTTY="$(readlink "$GHOSTTY" || echo "$GHOSTTY")"
 # config is itself in a symlinked dir; resolve fully
 [ -L "$REAL_GHOSTTY" ] || REAL_GHOSTTY="$(cd "$(dirname "$GHOSTTY")" && pwd -P)/$(basename "$GHOSTTY")"
@@ -25,17 +23,6 @@ echo "$MODE" > "$THEME_FILE"
 STATUS+="mode: $cur -> $MODE\n"
 STATUS+="Vim/Neovim: vs_$MODE (on next start)\n"
 STATUS+="Zsh/bat: $MODE (new shells; 'exec zsh' to refresh open ones)\n"
-
-# --- Hyper: toggle comment on localPlugins ---
-if grep -q '^[[:space:]]*localPlugins:[[:space:]]*\["light"\],' "$REAL_HYPER"; then
-    sed -i '' 's/^[[:space:]]*localPlugins:[[:space:]]*\["light"\],/   \/\/ localPlugins: ["light"],/' "$REAL_HYPER"
-    STATUS+="Hyper: dark\n"
-elif grep -q '^[[:space:]]*\/\/ localPlugins:[[:space:]]*\["light"\],' "$REAL_HYPER"; then
-    sed -i '' 's/^[[:space:]]*\/\/ localPlugins:[[:space:]]*\["light"\],/   localPlugins: ["light"],/' "$REAL_HYPER"
-    STATUS+="Hyper: light\n"
-else
-    STATUS+="Hyper: localPlugins not found\n"
-fi
 
 # --- Ghostty: select theme via the theme-active.conf include symlink ---
 # One symlink swap replaces five seds on the tracked config; theme-active.conf
