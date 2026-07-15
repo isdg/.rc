@@ -170,6 +170,26 @@ link_dotfiles() {
         echo "[OK] Seeded ghostty/theme-active.conf -> theme-$(cat "$theme_file").conf"
     fi
 
+    # Link k9s skins + seed the active-skin symlink (default: current mode).
+    # k9s never writes into skins/, so symlinking just that subdir keeps its
+    # runtime state (logs, clusters/) out of the repo. toggle_theme.sh flips
+    # skin-active.yaml afterwards; config.yaml points ui.skin at it.
+    if [ -d "$dotfiles_dir/k9s/skins" ]; then
+        local k9s_dst
+        if [ "$(uname)" = "Darwin" ]; then
+            k9s_dst="$HOME/Library/Application Support/k9s"
+        else
+            k9s_dst="${XDG_CONFIG_HOME:-$HOME/.config}/k9s"
+        fi
+        mkdir -p "$k9s_dst"
+        ln -sf "vs_$(cat "$theme_file").yaml" "$dotfiles_dir/k9s/skins/skin-active.yaml"
+        if [ -e "$k9s_dst/skins" ] && [ ! -L "$k9s_dst/skins" ]; then
+            mv "$k9s_dst/skins" "$k9s_dst/skins.backup"
+        fi
+        ln -sfn "$dotfiles_dir/k9s/skins" "$k9s_dst/skins"
+        echo "[OK] Linked k9s skins (set ui.skin: skin-active in $k9s_dst/config.yaml)"
+    fi
+
     # Link bat config dir (carries custom vs_dark/vs_light preview themes).
     # Rebuild bat's theme cache so BAT_THEME=vs_dark/vs_light resolves.
     local bat_src="$dotfiles_dir/bat"
