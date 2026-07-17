@@ -1,0 +1,45 @@
+# k9s plugins — log helpers that lean on the surrounding tmux session.
+# Symlinked into the k9s config dir by bootstrap (skins pattern). k9s expands
+# $NAMESPACE/$NAME/$CONTEXT from the highlighted row; scopes restrict the key to
+# a view. Rebind shortCut if k9s warns about a conflict on startup.
+plugins:
+  # Ctrl-N: snapshot the selected pod's logs into nvim (foreground; k9s pauses,
+  # resumes on :q). A frozen buffer you can search and :w elsewhere.
+  logs-snapshot-nvim:
+    shortCut: Ctrl-N
+    description: Logs → nvim
+    scopes: [pods]
+    command: bash
+    background: false
+    confirm: false
+    args:
+      - -c
+      - >-
+        kubectl logs "$NAME" -n "$NAMESPACE" --context "$CONTEXT"
+        --all-containers --prefix --tail=-1 > "/tmp/k9s-$NAMESPACE-$NAME.log" 2>&1;
+        nvim "/tmp/k9s-$NAMESPACE-$NAME.log"
+
+  # Ctrl-T: live-stream the selected pod's logs into a new tmux window next to
+  # k9s (background; k9s keeps running). Window named log:<pod>.
+  logs-stream-tmux:
+    shortCut: Ctrl-T
+    description: Logs → tmux
+    scopes: [pods]
+    command: tmux
+    background: true
+    confirm: false
+    args:
+      - new-window
+      - -n
+      - "log:$NAME"
+      - kubectl
+      - logs
+      - "-f"
+      - "$NAME"
+      - "-n"
+      - "$NAMESPACE"
+      - "--context"
+      - "$CONTEXT"
+      - "--all-containers"
+      - "--prefix"
+      - "--tail=100"
