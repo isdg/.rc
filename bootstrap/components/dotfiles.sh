@@ -188,6 +188,16 @@ link_dotfiles() {
         fi
         ln -sfn "$dotfiles_dir/k9s/skins" "$k9s_dst/skins"
         echo "[OK] Linked k9s skins (set ui.skin: skin-active in $k9s_dst/config.yaml)"
+
+        # Log-helper plugins (snapshot→nvim, stream→tmux). Single file, k9s
+        # only reads it, so a per-file symlink is safe.
+        if [ -f "$dotfiles_dir/k9s/plugins.yaml" ]; then
+            if [ -e "$k9s_dst/plugins.yaml" ] && [ ! -L "$k9s_dst/plugins.yaml" ]; then
+                mv "$k9s_dst/plugins.yaml" "$k9s_dst/plugins.yaml.backup"
+            fi
+            ln -sf "$dotfiles_dir/k9s/plugins.yaml" "$k9s_dst/plugins.yaml"
+            echo "[OK] Linked k9s plugins.yaml"
+        fi
     fi
 
     # Link bat config dir (carries custom vs_dark/vs_light preview themes).
