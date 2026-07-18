@@ -7,6 +7,10 @@ vscode/tasks.json
 # by toggle_theme.sh. Per-machine state, not tracked.
 ghostty/theme-active.conf
 
+# Active k9s skin — a symlink to skins/vs_{dark,light}.yaml, flipped by
+# toggle_theme.sh (k9s config.yaml points ui.skin at it). Per-machine state.
+k9s/skins/skin-active.yaml
+
 # Machine-local zsh aliases/functions (work-specific, private repo names, etc.)
 # sourced by aliases.zsh if present. Never published.
 zsh/aliases.ignored.zsh

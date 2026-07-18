@@ -1,0 +1,87 @@
+# k9s dark skin — VS Code "Visual Studio Dark".
+# Palette matches nvim colors/vs_dark.vim (bg #2f2f2f / fg #D4D4D4, blue #569CD6,
+# string #CE9178, enum/teal #4EC9B0, error #F44747). Accent status colors borrow
+# the Ghostty 'Catppuccin Mocha' ANSI ramp used elsewhere. Keep in sync with
+# vs_light.yaml. Selected by skins/skin-active.yaml, flipped by toggle_theme.sh.
+k9s:
+  body:
+    fgColor: "#d4d4d4"
+    bgColor: "#2f2f2f"
+    logoColor: "#569cd6"
+  prompt:
+    fgColor: "#d4d4d4"
+    bgColor: "#2f2f2f"
+    suggestColor: "#569cd6"
+  info:
+    fgColor: "#888888"
+    sectionColor: "#d4d4d4"
+  dialog:
+    fgColor: "#d4d4d4"
+    bgColor: "#252526"
+    buttonFgColor: "#ffffff"
+    buttonBgColor: "#0078d4"
+    buttonFocusFgColor: "#ffffff"
+    buttonFocusBgColor: "#007acc"
+    labelFgColor: "#569cd6"
+    fieldFgColor: "#d4d4d4"
+  frame:
+    border:
+      fgColor: "#454545"
+      focusColor: "#569cd6"
+    menu:
+      fgColor: "#d4d4d4"
+      keyColor: "#569cd6"
+      numKeyColor: "#569cd6"
+    crumbs:
+      fgColor: "#2f2f2f"
+      bgColor: "#569cd6"
+      activeColor: "#87cfff"
+    status:
+      newColor: "#569cd6"
+      modifyColor: "#b5cea8"
+      addColor: "#a6e3a1"
+      errorColor: "#f44747"
+      highlightColor: "#f9e2af"
+      killColor: "#f38ba8"
+      completedColor: "#888888"
+    title:
+      fgColor: "#d4d4d4"
+      bgColor: "#2f2f2f"
+      highlightColor: "#87cfff"
+      counterColor: "#569cd6"
+      filterColor: "#4ec9b0"
+  views:
+    charts:
+      bgColor: "#2f2f2f"
+      defaultDialColors:
+        - "#569cd6"
+        - "#f44747"
+      defaultChartColors:
+        - "#569cd6"
+        - "#f44747"
+    table:
+      fgColor: "#d4d4d4"
+      bgColor: "#2f2f2f"
+      cursorFgColor: "#ffffff"
+      cursorBgColor: "#264f78"
+      markColor: "#f9e2af"
+      header:
+        fgColor: "#569cd6"
+        bgColor: "#2f2f2f"
+        sorterColor: "#4ec9b0"
+    xray:
+      fgColor: "#d4d4d4"
+      bgColor: "#2f2f2f"
+      cursorColor: "#264f78"
+      graphicColor: "#569cd6"
+      showIcons: false
+    yaml:
+      keyColor: "#569cd6"
+      colonColor: "#888888"
+      valueColor: "#ce9178"
+    logs:
+      fgColor: "#d4d4d4"
+      bgColor: "#2f2f2f"
+      indicator:
+        fgColor: "#ffffff"
+        bgColor: "#0078d4"

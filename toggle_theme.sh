@@ -35,6 +35,16 @@ else
     STATUS+="Ghostty: config not found\n"
 fi
 
+# --- k9s: swap the skin-active.yaml symlink (config.yaml points ui.skin at it) ---
+# Same idiom as Ghostty: one symlink swap, no tracked file rewritten. k9s picks
+# it up on next launch (or live if k9s.ui.reactive is true).
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+K9S_SKINS="$SCRIPT_DIR/k9s/skins"
+if [ -d "$K9S_SKINS" ]; then
+    ln -sf "vs_$MODE.yaml" "$K9S_SKINS/skin-active.yaml"
+    STATUS+="k9s: $MODE (on next launch)\n"
+fi
+
 # --- Tmux: re-source so the if-shell re-reads the mode file and repaints ---
 # The styles live in tmux/theme-{dark,light}.conf; nothing is sed'd here.
 if tmux source-file "$TMUX_CONF" 2>/dev/null; then

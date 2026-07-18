@@ -1,6 +1,13 @@
 # --- vi mode on the command line ---
 bindkey -v
-export KEYTIMEOUT=1     # 100ms ESC delay (default 400ms feels laggy)
+# KEYTIMEOUT is in 1/100s. =10 → 100ms: snappy ESC (default 40=400ms feels
+# laggy) while still giving multi-byte escape sequences time to assemble. At
+# =1 (10ms) the trailing bytes of the bracketed-paste markers \e[200~/\e[201~
+# and arrow keys race the timeout across Ghostty→tmux→zsh; a lost race makes
+# ZLE read the lone ESC as "enter vicmd", so part of a paste is interpreted as
+# vi normal-mode commands and a character gets eaten (intermittent dropped
+# letter on paste).
+export KEYTIMEOUT=10
 
 # In normal mode: v or n opens $EDITOR on the current command line
 autoload -Uz edit-command-line

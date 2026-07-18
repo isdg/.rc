@@ -1,0 +1,87 @@
+# k9s light skin — VS Code "Visual Studio Light".
+# Palette matches nvim colors/vs_light.vim (bg #F2F2F2 / fg #000000, blue #0000FF,
+# link/type #0451a5, string #a31515, enum/teal #267F99, tag/special #800000,
+# error #FF0000, warn #BF8803). Keep in sync with vs_dark.yaml. Selected by
+# skins/skin-active.yaml, flipped by toggle_theme.sh.
+k9s:
+  body:
+    fgColor: "#000000"
+    bgColor: "#f2f2f2"
+    logoColor: "#0000ff"
+  prompt:
+    fgColor: "#000000"
+    bgColor: "#f2f2f2"
+    suggestColor: "#0451a5"
+  info:
+    fgColor: "#999999"
+    sectionColor: "#000000"
+  dialog:
+    fgColor: "#000000"
+    bgColor: "#f3f3f3"
+    buttonFgColor: "#ffffff"
+    buttonBgColor: "#007acc"
+    buttonFocusFgColor: "#ffffff"
+    buttonFocusBgColor: "#0451a5"
+    labelFgColor: "#0000ff"
+    fieldFgColor: "#000000"
+  frame:
+    border:
+      fgColor: "#d4d4d4"
+      focusColor: "#0000ff"
+    menu:
+      fgColor: "#000000"
+      keyColor: "#0000ff"
+      numKeyColor: "#0000ff"
+    crumbs:
+      fgColor: "#ffffff"
+      bgColor: "#0451a5"
+      activeColor: "#007acc"
+    status:
+      newColor: "#0000ff"
+      modifyColor: "#098658"
+      addColor: "#40a02b"
+      errorColor: "#ff0000"
+      highlightColor: "#bf8803"
+      killColor: "#d20f39"
+      completedColor: "#999999"
+    title:
+      fgColor: "#000000"
+      bgColor: "#f2f2f2"
+      highlightColor: "#800000"
+      counterColor: "#0000ff"
+      filterColor: "#267f99"
+  views:
+    charts:
+      bgColor: "#f2f2f2"
+      defaultDialColors:
+        - "#0000ff"
+        - "#ff0000"
+      defaultChartColors:
+        - "#0000ff"
+        - "#ff0000"
+    table:
+      fgColor: "#000000"
+      bgColor: "#f2f2f2"
+      cursorFgColor: "#ffffff"
+      cursorBgColor: "#007acc"
+      markColor: "#bf8803"
+      header:
+        fgColor: "#0000ff"
+        bgColor: "#f2f2f2"
+        sorterColor: "#267f99"
+    xray:
+      fgColor: "#000000"
+      bgColor: "#f2f2f2"
+      cursorColor: "#add6ff"
+      graphicColor: "#0451a5"
+      showIcons: false
+    yaml:
+      keyColor: "#0000ff"
+      colonColor: "#999999"
+      valueColor: "#a31515"
+    logs:
+      fgColor: "#000000"
+      bgColor: "#f2f2f2"
+      indicator:
+        fgColor: "#ffffff"
+        bgColor: "#007acc"
