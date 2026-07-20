@@ -20,9 +20,10 @@ alias tm='tmux'
 # instead of clearing. Overrides gh's default pager without touching ~/.config/gh.
 export GH_PAGER='less -FX'
 
-# Palace notes — thin `plc` wrappers now ship with the dotfiles. PALACE_DIR
-# points at the vault (decrypted into ~/palace/palace/notes).
-export PALACE_DIR="$HOME/palace/palace"
+# Palace notes — thin `plc` wrappers now ship with the dotfiles. The vault path
+# is persisted in ~/.plcrc; ask `plc config` for it instead of hardcoding here
+# (fall back to the default while bootstrapping, before `plc` is installed).
+export PALACE_DIR="$(plc config 2>/dev/null || echo "$HOME/palace/palace")"
 source "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/palace.zsh"
 
 # Machine-local, gitignored aliases/functions (work-specific helpers, private
