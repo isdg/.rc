@@ -23,7 +23,7 @@ rediscovered from scratch later — see `MODULARIZE.txt`.
    | `tg [-l \| -n]` | manage murmur notes (`-l` = fzf-pick) |
    | `isg [-l \| NAME]` | enumerated isg notes (isg0, isg1, …; `-l` = fzf-pick) |
    | `dn [-n \| -l FILE \| -L]` | manage do-notes (week-based, last-pointer) |
-   | `pst [args]` | pass-through to `_calendar.sh` for stats |
+   | `pst [args]` | daily-note activity calendar + stats (`plc stat`) |
    | `dl`, `wk` | short aliases for `daily`, `weekly` |
 
 3. **`vim/palace-link.vim`** — `<leader>nl` in normal mode: fzf-picks any

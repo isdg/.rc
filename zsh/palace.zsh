@@ -15,7 +15,7 @@
 #   tg [-l | -n]           manage murmur notes (-l = fzf-pick)
 #   isg [-l | NAME]        enumerated isg notes (isg0, isg1, … ; -l = fzf-pick)
 #   dn [-n | -l FILE | -L] manage do-notes (week-based, last-pointer)
-#   pst [calendar args]    pass-through to _calendar.sh for stats
+#   pst [stat args]        daily-note activity calendar + stats (plc stat)
 #
 # Short aliases:  dl → daily, wk → weekly
 
@@ -86,15 +86,18 @@ isg() {
    fi
 }
 
-# pst [calendar args]   carryover wrapper around _calendar.sh until `plc cal`.
-#   Lives in the palace repo alongside the notes; PALACE_DIR's parent.
+# pst [stat args]   render daily-note activity as a calendar heatmap + stats.
+#   Thin wrapper over `plc stat` (read-only: prints, no editor). plc's global
+#   `-t` is --tag, so map a bare `-t` back to --type for muscle memory:
+#     pst              current month     pst -t year        year (git heatmap)
+#     pst -m 12 -y 25  Dec 2025          pst -t year -p     year line chart
 pst() {
-   local repo="${PALACE_DIR%/*}"
-   if [ ! -x "$repo/_calendar.sh" ]; then
-      echo "pst: _calendar.sh missing at $repo" >&2
-      return 1
-   fi
-   ( cd "$repo" && ./_calendar.sh "$@" )
+   local args=() a
+   for a in "$@"; do
+      [[ "$a" == "-t" ]] && a=--type
+      args+=("$a")
+   done
+   plc stat "${args[@]}"
 }
 
 # Short aliases (functions so they resolve in non-interactive shells too)
