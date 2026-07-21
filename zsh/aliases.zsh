@@ -14,6 +14,7 @@ alias v='vim'
 alias v.='vim .'
 alias c='claude'
 alias tm='tmux'
+alias os='orchbus'   # cockpit for triaging Claude Code sessions
 
 # gh: page only when output exceeds one screen. less -F quits immediately if it
 # fits (so short output prints straight to stdout), -X leaves it on screen
