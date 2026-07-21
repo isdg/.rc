@@ -26,6 +26,7 @@
   "syntaxHighlightingDisabled": false,
   "alwaysThinkingEnabled": true,
   "autoUpdatesChannel": "stable",
+  "tui": "fullscreen",
   "voice": {
     "enabled": true,
     "mode": "hold"
