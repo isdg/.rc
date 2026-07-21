@@ -13,7 +13,10 @@ expectations depend on the PR *type*:
 - **Pure rename/move** — large diff but trivial; call it out in the description.
 
 When implementing multi-part work, land it as a sequence of small PRs
-(e.g. foundation → UI → cleanup) and let me merge each before continuing.
+(e.g. foundation → UI → cleanup) and let me merge each before continuing. That
+consecutive ordering is for **dependent** PRs (each builds on the last);
+**independent** PRs are the exception — open them in parallel, with no need to
+wait for a merge between them.
 
 If a feature (or any change) can't fit in one reasonably-sized PR, **propose a
 split up front** — break it into a sequence of PRs and include **tests at each
