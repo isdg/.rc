@@ -8,6 +8,7 @@ brew "fzf"
 brew "git"
 brew "gh"
 brew "ripgrep"
+brew "sd"    # find & replace CLI (sed alternative)
 brew "tig"   # tui git
 brew "tmux"
 brew "tokei"

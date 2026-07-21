@@ -4,7 +4,7 @@
 ensure_packages_linux() {
     echo "[STEP] Verifying packages..."
     local failed=0
-    local cmds=(zsh git gh curl wget tmux vim nvim fzf rg tree prettier nom zoxide)
+    local cmds=(zsh git gh curl wget tmux vim nvim fzf rg tree prettier nom zoxide sd)
     for cmd in "${cmds[@]}"; do
         if command -v "$cmd" > /dev/null 2>&1; then
             echo "[OK] $cmd"
@@ -120,6 +120,24 @@ install_packages_linux() {
         command -v zoxide > /dev/null 2>&1 || \
             curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh \
             || echo "[WARN] zoxide install failed (see https://github.com/ajeetdsouza/zoxide)"
+    fi
+
+    # sd (find & replace CLI, sed alternative) — newer tool, not in every distro,
+    # so keep it out of the bundled line above (a missing package would abort the
+    # whole install). Try the package manager, then fall back to cargo if present.
+    if command -v sd > /dev/null 2>&1; then
+        echo "[SKIP] sd already installed"
+    else
+        case "$pkg_manager" in
+            apt)    sudo apt-get install -y sd || true ;;
+            dnf)    sudo dnf install -y sd || true ;;
+            yum)    sudo yum install -y sd || true ;;
+            pacman) sudo pacman -S --noconfirm sd || true ;;
+            zypper) sudo zypper install -y sd || true ;;
+        esac
+        command -v sd > /dev/null 2>&1 \
+            || { command -v cargo > /dev/null 2>&1 && cargo install sd; } \
+            || echo "[WARN] sd install failed (install via 'cargo install sd' or see https://github.com/chmln/sd)"
     fi
 
     echo "[OK] Packages installed"
