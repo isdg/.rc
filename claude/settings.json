@@ -35,5 +35,18 @@
   "editorMode": "vim",
   "verbose": true,
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\": \\(now|floor):0;\\(.tool_input.command | gsub(\"\\n\"; \"\\\\\\n\"))\"' >> ~/.claude/agents.zsh_history 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  }
 }
