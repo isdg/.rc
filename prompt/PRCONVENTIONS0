@@ -22,6 +22,18 @@ before the next one lands.
 *Added* lines are the real review cost, so bound them; but a feature shouldn't
 also carry heavy deletions.
 
+## Branch naming
+
+Name every branch `<type>/<scope>/<slug>` — e.g. `fix/scribe/pagination`,
+`chore/general/tests`.
+
+- **type** — the change kind: `feat`, `fix`, `refactor`, `chore`, `cleanup`,
+  `docs`.
+- **scope** — the affected area/component (e.g. `scribe`); use `general` when
+  no single scope fits.
+- **slug** — a short kebab-case description of the change (e.g. `pagination`,
+  `tests`).
+
 ## Size scale
 
 Use *added + changed* lines as the size signal; **deletions count much less**
