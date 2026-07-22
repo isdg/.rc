@@ -1,12 +1,11 @@
 {
   "name": "isg-skills",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Personal agent skills, maintained locally in .dotfiles.",
   "author": {
     "name": "Isai Gordeev"
   },
   "skills": [
-    "./skills/pr-conventions",
-    "./skills/software-philosophy"
+    "./skills/pr-conventions"
   ]
 }
