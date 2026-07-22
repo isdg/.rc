@@ -1,0 +1,79 @@
+SEARCH → EDIT — pipe ripgrep/fd matches into your editor (nvim-centric)
+
+Why `rg pattern | nvim` fails:
+  A pipe feeds nvim's STDIN, which nvim loads as ONE anonymous scratch buffer
+  (the raw text), not as files to open. Editors open PATHS passed as ARGUMENTS.
+  So the job is always: turn matches into args — and, when piping, keep a tty
+  for nvim so it stays interactive.
+
+ripgrep output modes (pick the shape you need):
+  rg pattern               Matches grouped under file headers (human view)
+  rg -l pattern            files-with-matches only, one path per line   <- for opening files
+  rg -l0 pattern           Same, NUL-separated (safe for spaces/newlines in names)
+  rg -n pattern            Prefix each match with its line number
+  rg --vimgrep pattern     file:line:col:text, one match per line (quickfix/editor format)
+  rg --files               Every file rg would search (no pattern) — for filename search
+  rg --files -g '*.rs'     Filter that list by glob
+  rg -o pattern            Print only the matched text, not the whole line
+  rg -uu / --no-ignore     Stop honouring .gitignore (search everything, incl. hidden with --hidden)
+
+Open the matching file(s):
+  nvim $(rg -l pattern)              Args via command substitution — cleanest, keeps the tty
+  nvim -- $(rg -l pattern)           `--` guards paths that could look like flags
+  rg -l pattern | xargs -o nvim      Pipe form. BSD/macOS `xargs -o` reopens /dev/tty so nvim
+                                     stays interactive (plain xargs leaves a dead stdin)
+  rg -l0 pattern | xargs -0 -o nvim  NUL-safe pipe form (spaces in names)
+  GNU xargs (no -o):
+    rg -l pattern | xargs -r sh -c 'nvim "$@" </dev/tty' _   Reattach the tty manually
+
+Jump straight to the match (line number):
+  nvim "+$l" file                    +N drops the cursor on line N   ( +/pat searches instead )
+  rg --vimgrep pat | head -1 | { IFS=: read -r f l _; nvim "+$l" "$f"; }   First hit, at its line
+
+Quickfix — every match, navigable (the power move):
+  nvim -q <(rg --vimgrep pattern)    Load all matches into quickfix via process substitution
+  :copen  :cclose                    Open / close the quickfix window
+  :cn  :cp                           Next / previous match
+  :cfdo <cmd> | update               Run <cmd> once per quickfix FILE, then save
+  :cdo  <cmd> | update               Run <cmd> on every quickfix ENTRY (line), then save
+  :cdo s/old/new/ | update           Project-wide search & replace across all matches
+
+rg as vim's :grep (search without leaving the editor) — in init.lua/.vimrc:
+  set grepprg=rg\ --vimgrep\ --smart-case
+  set grepformat=%f:%l:%c:%m
+  :grep pattern                      Populates quickfix directly; then :copen
+  (Telescope live_grep is the fuzzy, incremental variant of the same idea.)
+
+Interactive — rg → fzf → open at line (fits fzf / your `np`):
+  rg --line-number --no-heading --color=always pattern \
+    | fzf --ansi --delimiter : \
+          --preview 'bat --color=always {1} --highlight-line {2}' \
+    | { IFS=: read -r f l _; nvim "+$l" "$f"; }
+  Pick a match, preview with bat, land on the exact line.
+
+Find by FILENAME (not contents):
+  nvim $(fd name)                    fd matches names/paths (fast, respects .gitignore)
+  nvim $(rg --files | rg name)       Same idea using rg's file list
+  fd -t f name | fzf | xargs -o nvim Interactive filename pick
+
+Other editors (same "path:line" idea):
+  code -g file:line:col              VS Code: open at a position
+  code $(rg -l pattern)              VS Code: open matching files
+  vim "+$l" file                     Plain vim — identical to nvim for +N
+  emacsclient +$l:1 file             Emacs at line:col
+
+Gotchas:
+  - A pipe owns nvim's stdin: the program left of `|` is nvim's stdin, so nvim can't read the
+    keyboard. Use command substitution `$( )`, or `xargs -o` (BSD) / `</dev/tty` (GNU).
+  - `$(rg -l …)` word-splits on IFS — fine for ordinary paths, breaks on spaces; use the NUL
+    forms (`-l0 … | xargs -0`) when names may contain spaces.
+  - --vimgrep can emit thousands of lines: that's the point for quickfix, but pipe it to a
+    pager (or `| head`) before eyeballing.
+  - rg hides .gitignore'd and hidden files by default; add -uu (or --no-ignore --hidden).
+
+Quick patterns:
+  nvim $(rg -l TODO)                          Open every file containing TODO
+  nvim -q <(rg --vimgrep -tpy import)         Quickfix of Python imports (-t = type filter)
+  nvim -q <(rg --vimgrep 'fn ' src)           Quickfix of fn lines under src/
+  rg -l0 old | xargs -0 -o nvim               Edit all files mentioning `old` (space-safe)
+  # then in nvim:  :cfdo %s/old/new/g | update    (bulk rename across those files)
