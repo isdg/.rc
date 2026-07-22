@@ -1,0 +1,9 @@
+{
+  "name": "isg-skills",
+  "version": "0.1.0",
+  "description": "Personal agent skills, maintained locally in .dotfiles.",
+  "author": {
+    "name": "Isai Gordeev"
+  },
+  "skills": []
+}

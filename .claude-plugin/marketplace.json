@@ -1,0 +1,14 @@
+{
+  "name": "isg",
+  "owner": {
+    "name": "Isai Gordeev"
+  },
+  "description": "Personal Claude Code skills, maintained locally in .dotfiles.",
+  "plugins": [
+    {
+      "name": "isg-skills",
+      "source": "./claude/skills-plugin",
+      "description": "Personal agent skills."
+    }
+  ]
+}
