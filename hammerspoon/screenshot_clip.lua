@@ -61,15 +61,21 @@ local function handle(files)
          -- only act on just-created files (avoid re-copying on dir rescans)
          if attr and (os.time() - attr.modification) <= 5 then
             seen[path] = true
-            -- the file may still be flushing when the watcher fires; give it a
-            -- moment, then copy the image onto the pasteboard.
-            hs.timer.doAfter(0.3, function()
+            -- copy immediately; the watcher can fire mid-write, so if the image
+            -- isn't readable yet, retry every 50ms (up to ~1s) instead of
+            -- eating a fixed delay every time.
+            local tries = 0
+            local function tryCopy()
                local img = hs.image.imageFromPath(path)
                if img then
                   hs.pasteboard.writeObjects(img)
                   toast("📋 copied")
+               elseif tries < 20 then
+                  tries = tries + 1
+                  hs.timer.doAfter(0.05, tryCopy)
                end
-            end)
+            end
+            tryCopy()
          end
       end
    end
