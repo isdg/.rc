@@ -5,6 +5,19 @@
   "permissions": {
     "defaultMode": "default"
   },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\": \\(now|floor):0;\\(.tool_input.command | gsub(\"\\n\"; \"\\\\\\n\"))\"' >> ~/.claude/agents.zsh_history 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
+  },
   "statusLine": {
     "type": "command",
     "command": "input=$(cat); cwd=$(echo \"$input\" | jq -r '.workspace.current_dir'); cd \"$cwd\" 2>/dev/null || true; venv=''; if [[ ! -z \"$VIRTUAL_ENV\" ]] && [[ ! -z \"$_OLD_VIRTUAL_PATH\" ]]; then venv=\"($(basename \"$VIRTUAL_ENV\")) \"; fi; dir=\"${cwd/#$HOME/\\~}\"; if [[ ${#cwd} -gt 65 ]]; then first=$(echo \"$cwd\" | cut -d'/' -f1-2); last=$(echo \"$cwd\" | awk -F'/' '{print $(NF-1)\"/\"$NF}'); dir=\"${first} ... ${last}\"; fi; git_status=''; if git rev-parse --git-dir > /dev/null 2>&1; then branch=$(git symbolic-ref --short HEAD 2>/dev/null || git rev-parse --short HEAD 2>/dev/null); if git --no-optional-locks diff --quiet 2>/dev/null && git --no-optional-locks diff --cached --quiet 2>/dev/null; then git_status=\"$(printf '\\033[32m')${branch} ✔$(printf '\\033[0m')\"; else git_status=\"$(printf '\\033[32m')${branch}$(printf '\\033[0m') $(printf '\\033[31m')✗$(printf '\\033[0m')\"; fi; fi; printf \"${venv}$(printf '\\033[1;37m')${dir}$(printf '\\033[0m') ${git_status}\\n» \""
@@ -13,13 +26,20 @@
     "pyright-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
-    "mattpocock-skills@mattpocock": true
+    "mattpocock-skills@mattpocock": true,
+    "isg-skills@isg": true
   },
   "extraKnownMarketplaces": {
     "mattpocock": {
       "source": {
         "source": "github",
         "repo": "mattpocock/skills"
+      }
+    },
+    "isg": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/isg/.dotfiles"
       }
     }
   },
@@ -35,18 +55,5 @@
   "editorMode": "vim",
   "verbose": true,
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true,
-  "hooks": {
-    "PreToolUse": [
-      {
-        "matcher": "Bash",
-        "hooks": [
-          {
-            "type": "command",
-            "command": "jq -r '\": \\(now|floor):0;\\(.tool_input.command | gsub(\"\\n\"; \"\\\\\\n\"))\"' >> ~/.claude/agents.zsh_history 2>/dev/null || true"
-          }
-        ]
-      }
-    ]
-  }
+  "voiceEnabled": true
 }
