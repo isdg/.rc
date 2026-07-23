@@ -11,6 +11,9 @@ local translate = require("translate")
 -- Hotkey: ⌘⌃T opens the popup. Change the mods/key here.
 translate.bind({ "cmd", "ctrl" }, "t")
 
+-- Auto-copy new screenshots (⌘⇧4 etc.) to the clipboard, keeping the file.
+require("screenshot_clip").start()
+
 -- Keyboard scrolling: ⌘⇧J enters scroll mode; then jk (up/down), du (half-page),
 -- hl (left/right), hold to scroll smoothly, ⇧ for fast, esc/q/i to exit. Any app.
 
@@ -26,4 +29,4 @@ hs.pathwatcher
    end)
    :start()
 
-hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌘⇧J scroll)")
+hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌘⇧J scroll · 📋 screenshots)")
