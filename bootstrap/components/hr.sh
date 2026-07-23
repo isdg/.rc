@@ -32,7 +32,8 @@ install_hr() {
             return 0
         }
     else
-        echo "[SKIP] hr source already present at $HR_SRC"
+        echo "[INFO] hr source already present at $HR_SRC — pulling latest..."
+        git -C "$HR_SRC" pull --ff-only || echo "[WARN] git pull hr failed — building existing checkout as-is."
     fi
 
     echo "[INFO] go install (in $HR_SRC)..."
