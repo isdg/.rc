@@ -40,6 +40,14 @@ gjobs() {
 # instead of clearing. Overrides gh's default pager without touching ~/.config/gh.
 export GH_PAGER='less -FX'
 
+# gh/glamour markdown theme. Inside tmux the OSC 11 background-colour query is
+# answered by tmux itself (with its dark default) rather than reaching the outer
+# terminal, so glamour's `auto` style renders dark in a light terminal even with
+# allow-passthrough on. Pin the style to our light/dark marker instead — its
+# values (`light`/`dark`) are glamour's own style names. Re-source (or open a new
+# shell) after toggle_theme.sh flips the marker to follow it.
+export GLAMOUR_STYLE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev/null || echo light)"
+
 # Palace notes — thin `plc` wrappers now ship with the dotfiles. The vault path
 # is persisted in ~/.plcrc; ask `plc config` for it instead of hardcoding here
 # (fall back to the default while bootstrapping, before `plc` is installed).
