@@ -23,6 +23,34 @@ local function screenshotDir()
    return out
 end
 
+-- Small top-right toast (hs.alert only centers, so use a tiny canvas instead).
+local function toast(text)
+   local scr = hs.screen.mainScreen():frame()
+   local w, h, margin = 108, 26, 12
+   local c = hs.canvas.new({
+      x = scr.x + scr.w - w - margin,
+      y = scr.y + margin,
+      w = w,
+      h = h,
+   })
+   c:appendElements({
+      type = "rectangle",
+      action = "fill",
+      roundedRectRadii = { xRadius = 6, yRadius = 6 },
+      fillColor = { alpha = 0.8, red = 0, green = 0, blue = 0 },
+   }, {
+      type = "text",
+      text = text,
+      textSize = 12,
+      textColor = { white = 1 },
+      textAlignment = "center",
+      frame = { x = 0, y = 5, w = w, h = h },
+   })
+   c:level(hs.canvas.windowLevels.overlay)
+   c:show()
+   hs.timer.doAfter(1.2, function() c:delete() end)
+end
+
 local seen = {}
 
 local function handle(files)
@@ -39,7 +67,7 @@ local function handle(files)
                local img = hs.image.imageFromPath(path)
                if img then
                   hs.pasteboard.writeObjects(img)
-                  hs.alert.show("📋 screenshot copied")
+                  toast("📋 copied")
                end
             end)
          end
