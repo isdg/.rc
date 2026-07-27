@@ -4,6 +4,7 @@
 #   fa  — :RG     live ripgrep (re-runs on each keystroke)
 #   fC  — :BLines analog; default opens editor, -p prints
 #   hrb — hr reading list: fuzzy-pick an unread article, open it in nvim
+#   hrv — hr reading list: open the nvim sidebar, scoped by `hr list` flags
 
 if command -v bat >/dev/null 2>&1; then
    _fzf_preview='bat --color=always --style=numbers --highlight-line {2} {1}'
@@ -126,4 +127,28 @@ hrb() {
             --preview-window 'down:70%') || return
    file=${out%%$'\t'*}
    [[ -n $file ]] && "${EDITOR:-nvim}" "$file"
+}
+
+hrv() {
+   # Open the hr reading-list sidebar in nvim, scoped by any `hr list` flags:
+   #   hrv                            whole vault
+   #   hrv --group books              one shelf (subtree: humans covers
+   #                                  humans/archive)
+   #   hrv --feed matklad,danluu      one or more authors
+   #   hrv --group sites --unread     flags compose
+   # hr owns the flag vocabulary — hr.vim forwards them to `hr list` — so
+   # anything `hr list` accepts works here with no change to this function.
+   # Values must not contain spaces: they cross into nvim as :HrStart args,
+   # which split on whitespace. For those, set g:hr_filter in nvim instead.
+   #
+   # Unlike hrb (fuzzy-pick one article), this opens the panel so you can
+   # browse and act on the list with its buffer keys.
+   command -v hr >/dev/null 2>&1 || { print -u2 "hrv: hr not found"; return 1 }
+   # Validate against the CLI first (~0.1s on a 10k-article vault): a typo'd
+   # flag becomes an error here rather than a silently empty sidebar inside
+   # nvim, where it reads as a broken vault.
+   if (( $# )); then
+      hr list --json "$@" >/dev/null || return 1
+   fi
+   "${EDITOR:-nvim}" -c "HrStart $*"
 }
