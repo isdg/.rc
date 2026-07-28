@@ -21,8 +21,8 @@ cur="$(cat "$THEME_FILE" 2>/dev/null || echo light)"
 mkdir -p "$(dirname "$THEME_FILE")"
 echo "$MODE" > "$THEME_FILE"
 STATUS+="mode: $cur -> $MODE\n"
-STATUS+="Vim/Neovim: vs_$MODE (on next start)\n"
-STATUS+="Zsh/bat: $MODE (new shells; 'exec zsh' to refresh open ones)\n"
+STATUS+="Vim/Neovim: vs_$MODE (on new session)\n"
+STATUS+="Zsh/bat: $MODE (on new zsh)\n"
 
 # --- Ghostty: select theme via the theme-active.conf include symlink ---
 # One symlink swap replaces five seds on the tracked config; theme-active.conf
@@ -30,7 +30,7 @@ STATUS+="Zsh/bat: $MODE (new shells; 'exec zsh' to refresh open ones)\n"
 if [ -f "$REAL_GHOSTTY" ]; then
     GHOSTTY_DIR="$(dirname "$REAL_GHOSTTY")"
     ln -sf "theme-$MODE.conf" "$GHOSTTY_DIR/theme-active.conf"
-    STATUS+="Ghostty: $MODE (reload open windows with cmd+shift+,)\n"
+    STATUS+="Ghostty: $MODE (on new reload)\n"
 else
     STATUS+="Ghostty: config not found\n"
 fi
@@ -42,7 +42,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 K9S_SKINS="$SCRIPT_DIR/k9s/skins"
 if [ -d "$K9S_SKINS" ]; then
     ln -sf "vs_$MODE.yaml" "$K9S_SKINS/skin-active.yaml"
-    STATUS+="k9s: $MODE (on next launch)\n"
+    STATUS+="k9s: $MODE (on new session)\n"
 fi
 
 # --- Tmux: re-source so the if-shell re-reads the mode file and repaints ---
@@ -50,7 +50,7 @@ fi
 if tmux source-file "$TMUX_CONF" 2>/dev/null; then
     STATUS+="Tmux: $MODE (reloaded)\n"
 else
-    STATUS+="Tmux: $MODE (on next start)\n"
+    STATUS+="Tmux: $MODE (on new session)\n"
 fi
 
 # --- Splash: mascot + status, banner-style (mascots.sh) ---
