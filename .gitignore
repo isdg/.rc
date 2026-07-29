@@ -2,6 +2,7 @@
 vscode/tasks.json
 **launch.json
 *.swp
+.claude/worktrees
 
 # Active ghostty theme include — a symlink to theme-{dark,light}.conf, flipped
 # by toggle_theme.sh. Per-machine state, not tracked.

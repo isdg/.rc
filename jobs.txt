@@ -1,0 +1,62 @@
+Job control — suspend, background, foreground. The daily-driver face of
+TSTP/CONT/TTIN/TTOU from signals.txt. Jobs belong to ONE shell instance;
+`jobs` never sees another shell's jobs, and they die with that shell (see disown).
+
+The core loop:
+  Ctrl-Z        Suspend the foreground program (sends SIGTSTP) — back at the shell
+  bg            Resume the most-recent stopped job, running in the BACKGROUND
+  fg            Bring a job back to the FOREGROUND (reattach terminal)
+  jobs          List this shell's jobs and their state
+  jobs -l       Same, with PIDs
+
+The pro reflex: in vim/less/top, hit Ctrl-Z, run a shell command, type `fg`,
+land back exactly where you left off. Faster than a new pane, preserves state.
+
+Job specs (how to address a specific job):
+  %1            Job number 1 (the [1] that `jobs` prints)
+  %+  or  %%    The current job — also what a bare `fg`/`bg` targets
+  %-            The previous job
+  %vim          Job whose command STARTS WITH "vim"
+  %?config      Job whose command CONTAINS "config"
+  %1            On its own line = `fg %1` (bare jobspec implies fg)
+  fg %vim       Foreground by name — no need to look up numbers
+  kill %2       Signal by jobspec, not PID:  kill -9 %2 , kill -HUP %vim
+  wait %1       Block until job 1 exits (bare `wait` = all bg jobs; scripts)
+
+Reading `jobs` output:
+  [1]-  Stopped   vim notes.md      '-' = previous job
+  [2]+  Stopped   less big.log      '+' = current job (fg/bg default)
+  [3]   Running   npm run dev &
+
+Detachment ladder — surviving shell exit (SIGHUP):
+  cmd &              Background from the start — still OWNED, dies on shell exit
+  Ctrl-Z ; bg        Suspend a running task, then push it to background
+  disown %1          Drop job from shell's table → survives shell exit
+  disown -h %1       Keep in table but shield from SIGHUP
+  nohup cmd &        Pre-immune to SIGHUP; stdout/stderr → ./nohup.out
+  setsid cmd         New session, fully detached from controlling tty (Linux)
+
+Notes / gotchas:
+- Ctrl-Z sends SIGTSTP — same signal as tmux's `suspend-client` (prefix C-z),
+  just scoped to one program instead of the whole tmux client.
+- `bg` on an interactive program (vim, less, top, a REPL) is a NO-OP: the moment
+  it reads the tty it gets SIGTTIN, or on write (with `stty tostop`) SIGTTOU, and
+  the default action of both is STOP — so it re-suspends instantly. Only `fg`
+  works for interactive jobs; reserve `bg` for non-interactive work (builds,
+  rsync, a dev server logging to a file).
+- Only the FOREGROUND process group owns the terminal. TTIN/TTOU are the kernel
+  refereeing terminal contention so two programs can't fight over the keyboard.
+- Ctrl-Z on a pipeline suspends the WHOLE pipeline as one job.
+- "There are stopped jobs" on exit: the shell warns ONCE. `jobs` to see them,
+  `fg` to finish, or `exit` again to abandon (they get SIGHUP). Don't blind-exit
+  twice — you'll SIGHUP an unsaved editor.
+- fg/bg toggle ONE terminal by time-slicing. When you want several things truly
+  running side-by-side, visible, surviving disconnect → graduate to tmux (see
+  TMUX.txt) or, for agents, Claude Code background jobs.
+
+Quick patterns:
+  Ctrl-Z ; bg ; disown        Suspend → background → orphan, in one breath
+  fg %?dev                    Reattach the job whose cmdline contains "dev"
+  (cmd &) ; disown            Subshell-launch that won't clutter job table
+  jobs -p | xargs kill        TERM every job of this shell
+  kill -CONT %1               Manually resume a stopped job (what `bg`/`fg` do)

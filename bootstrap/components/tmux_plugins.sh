@@ -51,7 +51,8 @@ install_tmux_plugins() {
                 continue
             }
         else
-            echo "[SKIP] $name source already present at $src"
+            echo "[INFO] $name source already present at $src — pulling latest..."
+            git -C "$src" pull --ff-only || echo "[WARN] git pull $name failed — building existing checkout as-is."
         fi
 
         echo "[INFO] cargo install --path $src..."

@@ -3,7 +3,20 @@
     "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
   },
   "permissions": {
-    "defaultMode": "auto"
+    "defaultMode": "default"
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "jq -r '\": \\(now|floor):0;\\(.tool_input.command | gsub(\"\\n\"; \"\\\\\\n\"))\"' >> ~/.claude/agents.zsh_history 2>/dev/null || true"
+          }
+        ]
+      }
+    ]
   },
   "statusLine": {
     "type": "command",
@@ -13,7 +26,8 @@
     "pyright-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
-    "mattpocock-skills@mattpocock": true
+    "mattpocock-skills@mattpocock": true,
+    "isg-skills@isg": true
   },
   "extraKnownMarketplaces": {
     "mattpocock": {
@@ -21,11 +35,18 @@
         "source": "github",
         "repo": "mattpocock/skills"
       }
+    },
+    "isg": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/isg/.dotfiles"
+      }
     }
   },
   "syntaxHighlightingDisabled": false,
   "alwaysThinkingEnabled": true,
   "autoUpdatesChannel": "stable",
+  "tui": "fullscreen",
   "voice": {
     "enabled": true,
     "mode": "hold"

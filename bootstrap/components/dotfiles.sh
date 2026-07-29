@@ -97,6 +97,15 @@ link_dotfiles() {
     ln -sf "$dotfiles_dir/tmux/.tmux.conf" "$HOME/.tmux.conf"
     echo "[OK] Linked .tmux.conf"
 
+    # Apply to any already-running tmux server. Unlike ghostty/k9s, tmux's
+    # config reads the theme mode file directly at parse time (see the
+    # run-shell block in tmux/.tmux.conf), so there's no "active" symlink to
+    # seed here — just re-source so an existing session reflects it now
+    # instead of only on the next `tmux new`.
+    if command -v tmux >/dev/null 2>&1 && tmux info >/dev/null 2>&1; then
+        tmux source-file "$HOME/.tmux.conf" && echo "[OK] Reloaded tmux config for running server"
+    fi
+
     # Install TPM (Tmux Plugin Manager)
     if [ ! -d "$HOME/.tmux/plugins/tpm" ]; then
         echo "[STEP] Installing TPM..."

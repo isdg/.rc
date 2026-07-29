@@ -32,7 +32,8 @@ install_plc() {
             return 0
         }
     else
-        echo "[SKIP] plc source already present at $PLC_SRC"
+        echo "[INFO] plc source already present at $PLC_SRC — pulling latest..."
+        git -C "$PLC_SRC" pull --ff-only || echo "[WARN] git pull plc failed — building existing checkout as-is."
     fi
 
     echo "[INFO] cargo install --path $PLC_SRC/plc..."

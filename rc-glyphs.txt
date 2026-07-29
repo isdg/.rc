@@ -1,0 +1,180 @@
+Glyphs you meet reading/writing a shell rc (.zshrc/.bashrc) — each with a
+one-line meaning and a real terminal demo ($ = what you type, lines below = output).
+Companion to signals.txt / jobs.txt. Demos verified in zsh; all portable to bash
+unless noted.
+
+================================================================================
+ASSIGNMENT & VARIABLES
+================================================================================
+
+=    Assign. NO SPACES around it (spaces make it a command + args).
+  $ NAME=isg; echo "hi $NAME"
+  hi isg
+
+$    Expand a variable's value.
+  $ echo "$NAME"
+  isg
+
+export   Mark a var so child processes inherit it (that's the whole point in rc).
+  $ export EDITOR=nvim        # now every program you launch sees $EDITOR
+
+${...}   Braced expansion — needed to disambiguate and to do surgery on the value.
+${VAR:-x}  Use x if VAR unset/empty (doesn't assign). The rc default-value idiom.
+  $ echo "${UNSET:-fallback}"
+  fallback
+
+${#VAR}   Length of the value.
+  $ W=hello; echo "${#W}"
+  5
+
+${VAR%pat}   Strip shortest SUFFIX match (%% = longest). Poor-man's basename.
+  $ F=archive.tar.gz; echo "${F%.gz}"
+  archive.tar
+
+${VAR//a/b}   Replace ALL a with b (single / = first only).
+  $ P=a-b-c; echo "${P//-/_}"
+  a_b_c
+
+================================================================================
+QUOTING (decides what expands)
+================================================================================
+
+"..."   Double quotes: $var and $(...) EXPAND, spaces preserved.
+'...'   Single quotes: totally literal, nothing expands.
+$'...'  ANSI-C quotes: \t \n \e become real control chars.
+  $ X=world; echo "dq=$X"; echo 'sq=$X'; printf '%s\n' $'ansi\ttab'
+  dq=world
+  sq=$X
+  ansi	tab
+
+\    Escape the next char, OR (at end of line) continue onto the next line.
+  $ echo alpha \
+      beta \
+      gamma
+  alpha beta gamma
+
+================================================================================
+LISTS / CONTROL OPERATORS
+================================================================================
+
+&&   Run next ONLY if previous succeeded (exit 0).
+||   Run next ONLY if previous failed.
+  $ true && echo ok; false || echo recovered
+  ok
+  recovered
+
+;    Sequence unconditionally.
+  $ echo one; echo two
+  one
+  two
+
+|    Pipe stdout of left into stdin of right.
+  $ printf 'b\na\nc\n' | sort
+  a
+  b
+  c
+
+&    Run in the BACKGROUND; shell returns immediately. $! = its PID.
+     `wait` blocks until background jobs finish. (See jobs.txt for the full story.)
+  $ { sleep 0.2; echo "[bg done]"; } &   # returns prompt at once
+  $ wait
+  [bg done]
+
+================================================================================
+SUBSTITUTION & ARITHMETIC
+================================================================================
+
+$(...)   Command substitution — insert a command's OUTPUT inline.
+  $ echo "this dir has $(ls -1 | wc -l | tr -d ' ') entries"
+  this dir has 4 entries
+
+$((...)) Integer arithmetic.
+  $ echo $(( (2+3) * 4 ))
+  20
+
+$?   Exit status of the last command (0 = success).
+  $ false; echo "exit=$?"
+  exit=1
+
+================================================================================
+REDIRECTION
+================================================================================
+
+>    Overwrite stdout to a file.   >>   Append.
+  $ echo one > demo.txt; echo two >> demo.txt; cat demo.txt
+  one
+  two
+
+2>&1  Send stderr wherever stdout currently points. ORDER MATTERS: put it AFTER
+      the `> file`, or errors won't be captured.
+  $ ls nope.xyz > out.log 2>&1; cat out.log
+  ls: nope.xyz: No such file or directory
+
+<<EOF ... EOF   Here-doc: feed a block as stdin ($ expands unless you quote 'EOF').
+  $ cat <<EOF
+  line with $HOME expanded
+  EOF
+  line with /Users/isg expanded
+
+  $ cat <<'EOF'
+  literal $HOME not expanded
+  EOF
+  literal $HOME not expanded
+
+<<<  Here-string: feed one literal string as stdin.
+  $ tr a-z A-Z <<< "shout"
+  SHOUT
+
+================================================================================
+GROUPING & FUNCTIONS
+================================================================================
+
+name() { ...; }   Define a function. The () is empty; the body lives in { }.
+  $ greet() { echo "hello, $1"; }; greet isg
+  hello, isg
+
+(...)   SUBSHELL — runs in a child process; cd and var changes DON'T leak out.
+        (Contrast { ...; } which groups in the CURRENT shell.)
+  $ (cd /; echo "inside: $PWD"); echo "outside: $PWD"
+  inside: /
+  outside: /Users/isg/.dotfiles
+
+alias  Text shortcut expanded before execution (rc staple).
+  $ alias ll='ls -1'; alias ll
+  ll='ls -1'
+
+================================================================================
+PATHS & GLOBS
+================================================================================
+
+~    Home directory (~user = that user's home; ~- = $OLDPWD).
+  $ echo ~
+  /Users/isg
+
+:    PATH separator (and, alone, the "do nothing / always true" null command).
+     rc idiom to prepend a dir:  export PATH="$HOME/bin:$PATH"
+
+*    Match any chars in a filename.   ?  = one char.   [abc] = a char class.
+{a,b,c}   Brace expansion — pure TEXT, made before touching the filesystem.
+  $ echo file.{txt,md,log}
+  file.txt file.md file.log
+
+{1..5}   Numeric range ({a..z}, {1..9..2} step also work).
+  $ echo {1..5}
+  1 2 3 4 5
+
+================================================================================
+COMMENTS & HISTORY
+================================================================================
+
+#     Everything after it on the line is a comment (line 1 only: #! shebang).
+!!    Repeat last command.  !$ = its last arg.  ^old^new = rerun with a swap.
+      (Interactive only — not used inside rc files.)
+
+Notes / gotchas:
+- `=` with spaces breaks: `X = 1` runs command X. Always `X=1`.
+- Braces `{a,b}` expand as TEXT even if files don't exist; globs `*` expand
+  against REAL files and vanish/error if none match. Different timing.
+- `2>&1` must come AFTER `> file` — it copies the CURRENT stdout target.
+- Single quotes protect from EVERYTHING (even \); double quotes still expand $.
+- `(...)` isolates cd/exports; `{ ...; }` does not — pick deliberately in rc.
