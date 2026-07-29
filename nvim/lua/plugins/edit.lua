@@ -22,7 +22,7 @@ return {
 
    -- Zen mode
    {
-      "isaigordeev/zen-mode.nvim",
+      "isdg/zen-mode.nvim",
       config = function()
          require("zen-mode").setup({
             window = {

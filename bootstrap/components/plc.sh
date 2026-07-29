@@ -4,7 +4,7 @@
 # Clones the plc repo if needed and installs the binary via cargo into
 # ~/.cargo/bin. The zsh palace wrappers (zsh/palace.zsh) call this binary.
 
-PLC_REPO="https://github.com/isaigordeev/plc.git"
+PLC_REPO="https://github.com/isdg/plc.git"
 PLC_SRC="$HOME/plc"
 
 ensure_plc() {
