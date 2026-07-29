@@ -10,7 +10,7 @@ see `MODULARIZE.txt`.
 ## Pieces
 
 1. **`plc` binary** — installed by `bootstrap/components/plc.sh` (clones
-   `github.com/isaigordeev/plc`, `cargo install`s it). Creates/resolves note
+   `github.com/isdg/plc`, `cargo install`s it). Creates/resolves note
    files and prints their path; it never opens an editor itself.
 
 2. **`zsh/palace.zsh`** — thin wrappers around `plc` that open the path it
