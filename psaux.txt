@@ -1,0 +1,146 @@
+ps aux — one-shot snapshot of every process. `top` is a live sampler; `ps` is a
+still frame you can grep, sort, and pipe. Notes are macOS/BSD ps.
+
+The flags are BSD-style, no dashes, and each does one thing:
+  a   processes of ALL users (not just yours)
+  u   "user-oriented" output format — the column set below
+  x   include processes with no controlling terminal (daemons, agents)
+Hence `ps aux` = everything, everyone, in the user format. `ps ax` gives the
+same processes with a terse format; `ps ux` is just your own processes.
+
+-------------------------------------------------------------------------------
+COLUMNS
+-------------------------------------------------------------------------------
+  USER     PID  %CPU %MEM       VSZ    RSS   TT  STAT STARTED      TIME COMMAND
+  isg     6771  15.1  1.4 445908720 364368 s048  S+    3:30PM   0:07.87 next-server
+
+  USER     Owner's username (resolved from UID). `root` here means the process
+           runs privileged — not that root started your session.
+
+  PID      Process ID. The handle for kill/renice/sample/lsof.
+
+  %CPU     CPU utilization as a DECAYING AVERAGE over up to the last minute of
+           real time — NOT instantaneous. A process that just spiked reads low;
+           one that just went idle still reads high. Because the averaging
+           window differs per process (young processes have a short base), the
+           column can sum to well over 100%. Multithreaded processes also
+           exceed 100 (per-core, ceiling ncpu*100).
+           => For "what is eating my CPU right now", use top, not ps.
+
+  %MEM     RSS as a percentage of physical RAM. Double-counts shared pages
+           across processes, so the column sums to more than 100%.
+
+  VSZ      Virtual size in KB: total address space MAPPED, including file
+           mappings, guard pages, and reservations never touched. On 64-bit
+           macOS this is routinely 400+ GB and carries essentially NO
+           information. Ignore it. (445908720 KB ≈ 425 GB above.)
+
+  RSS      Resident set size in KB — physical pages currently held. Closer to
+           reality than VSZ, but it counts shared pages (frameworks, the dyld
+           cache) in full for every process, and EXCLUDES compressed and
+           swapped-out pages. A process can show small RSS while holding
+           gigabytes in the compressor.
+           => For a real memory number use top's MEM (footprint) or
+              `footprint <pid>`.
+
+  TT       Controlling terminal, abbreviated (the part after /dev/tty):
+             s048   /dev/ttys048 — an interactive shell/pane
+             ??     no controlling terminal (daemon, launchd job, LaunchAgent)
+             con    the console
+           A trailing `-` means the terminal was revoked and is unreachable.
+
+  STAT     Process state: one run-state character, then optional modifiers.
+           Run state (first char):
+             R   runnable — on CPU or waiting for it
+             S   sleeping < ~20s (waiting on an event: IO, lock, select)
+             I   idle — sleeping > ~20s (most of the system)
+             T   stopped (SIGSTOP/SIGTSTP — see jobs.txt)
+             U   uninterruptible wait — stuck in the kernel, usually disk/NFS.
+                 Cannot be killed, counts toward load average.
+             Z   zombie — exited, parent hasn't reaped it
+           Modifiers (any order after the first char):
+             +   in the FOREGROUND process group of its terminal
+             s   session leader (a shell, a daemon's root process)
+             <   raised scheduling priority (negative nice)
+             N   reduced scheduling priority (positive nice)
+             L   has pages locked in core (raw I/O)
+             W   swapped out
+             X   being traced/debugged
+             E   trying to exit
+             V   suspended in vfork(2)
+             >   exceeding its soft memory limit
+             A   random page-replacement hint (vadvise)
+             S   FIFO page-replacement hint (as a MODIFIER, not the run state)
+           Reading the common ones:
+             S+    your foreground command
+             Ss    a session leader, sleeping (your shell, launchd children)
+             RNs   runnable, niced down, session leader (background worker)
+             ?E    exiting, no terminal
+             Z     needs its parent fixed, not a kill -9
+
+  STARTED  Start time, format depends on age: `3:30PM` (<24h),
+           `Thu06PM` (<7 days), `01Apr76` (older — and yes, a bogus clock or a
+           pre-epoch boot renders as a 1976 date). Use `lstart` for the exact
+           timestamp, `etime` for elapsed wall-clock age.
+
+  TIME     Accumulated CPU time (user+system) since start — mm:ss.hh. This is
+           work done, NOT age. 128:44 with 12% %CPU = a long-running busy
+           daemon; high TIME with 0% %CPU = it was busy earlier.
+
+  COMMAND  Full command line with arguments (from the process's own argv, so a
+           process can lie about it). Truncated to terminal width unless you
+           pipe or widen — use `ps auxww` to stop the truncation.
+
+-------------------------------------------------------------------------------
+INVOCATIONS WORTH KNOWING
+-------------------------------------------------------------------------------
+  ps aux                          Everything, user format
+  ps auxww                        Same, full untruncated command lines
+  ps aux | sort -k3 -nr | head    Top CPU (decaying average — see gotchas)
+  ps aux | sort -k4 -nr | head    Top memory (%MEM)
+  ps -p 1234 -o args=             Exact command line of one PID, nothing else
+  ps -o pid,ppid,user,%cpu,rss,etime,stat,comm -p 1234
+                                  Pick your own columns (-o = keyword list)
+  ps -eo pid,ppid,etime,comm      SysV-style: every process, chosen fields
+  ps -f -p 1234                   Include full command (SysV -f)
+  ps -A -o pid,ppid,comm          All processes, parent-child pairs
+  ps -U isg                       By real user;  -u isg = by effective user
+  ps -t s048                      Everything on one terminal
+  ps -M -p 1234                   Per-THREAD breakdown of a process (macOS)
+  ps -o pid,wq -p 1234            Workqueue thread count (ps has NO thread-count
+                                  keyword — use `ps -M` or top's #TH)
+  ps -o pid,nice,pri -p 1234      Scheduling priority
+  ps -o pid,lstart,etime -p 1234  Exact start time + elapsed age
+  ps -axo pid,ppid,stat,comm | awk '$3 ~ /^Z/'    Find zombies
+  ps -axo stat,comm | awk '$1 ~ /^U/'             Find uninterruptible waits
+
+  Useful keywords beyond the aux set: ppid, pgid, sess, etime, lstart, nice,
+  pri, wchan, uid, gid, flags, tty, wq, args, comm, state.
+  `ps L` lists every keyword ps knows.
+
+-------------------------------------------------------------------------------
+GOTCHAS
+-------------------------------------------------------------------------------
+- BSD flags take NO dash (`ps aux`); keyword/SysV flags DO (`ps -eo`). Mixing
+  styles in one invocation is where "illegal option" comes from. `ps -aux` is
+  accepted on macOS but means something subtly different on Linux — write `aux`.
+- %CPU is a decaying average, so `ps aux | sort -k3` ranks "recently busy", not
+  "busy now". Use top for instantaneous load.
+- VSZ is noise on 64-bit; RSS undercounts (no compressed/swapped pages) and
+  overcounts (shared pages billed to everyone). Neither is the footprint.
+- The columns are SPACE-separated but COMMAND contains spaces — so `awk '{print
+  $11}'` truncates it. Use `ps -o` with a chosen field order, or cut at the
+  known column.
+- `ps aux | grep foo` always matches its own grep. Use `pgrep -fl foo`, or the
+  `grep '[f]oo'` trick.
+- Header suppression: append `=` to a keyword (`-o pid=`) for bare values,
+  ideal for scripting.
+- COMMAND is argv, which processes can rewrite (renamed workers, hidden args).
+  For ground truth use `lsof -p <pid>` or `ps -o comm=` (the executable name).
+- Snapshot semantics: a process can exit between ps reading it and you acting on
+  the PID. PIDs get reused — never cache them.
+
+SEE ALSO
+  top.txt (live view + the precise macOS profilers), signals.txt (kill/pgrep,
+  signal numbers), jobs.txt (STAT `T`, `+`, job control)
+  ps(1), pgrep(1), lsof(1), footprint(1)
