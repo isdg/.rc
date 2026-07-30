@@ -15,6 +15,7 @@ alias v.='vim .'
 alias c='claude'
 alias tm='tmux'
 alias os='orchbus'   # cockpit for triaging Claude Code sessions
+alias tt='bash "${ISG_DOTFILES:-$HOME/.dotfiles}/toggle_theme.sh"'   # toggle light/dark
 
 # gjobs — cross-terminal "jobs". The `jobs` builtin only sees the current
 # shell's job table, so this shows every terminal-attached process grouped by
