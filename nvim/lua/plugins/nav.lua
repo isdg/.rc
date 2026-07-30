@@ -116,6 +116,23 @@ return {
             },
          })
          telescope.load_extension("fzf")
+
+         -- Make the results counter visible. Telescope already draws one by
+         -- default (config.values.get_status_text -> "12 / 340" right-aligned
+         -- on the prompt line, "*"-prefixed while the search is still running),
+         -- but TelescopePromptCounter links to NonText, which the vs_* themes
+         -- set to guifg=#2f2f2f guibg=#2f2f2f -- redrawn on every keystroke and
+         -- perfectly invisible. Borrow Comment's colour instead of hardcoding a
+         -- hex so it stays right in both vs_dark and vs_light, and re-apply on
+         -- ColorScheme so it survives the theme toggle. Same shape as the
+         -- FlashBackdrop fix below; italic is dropped for the same reason
+         -- (Comment is gui=italic in these themes).
+         local function fix_counter()
+            local c = vim.api.nvim_get_hl(0, { name = "Comment" })
+            vim.api.nvim_set_hl(0, "TelescopePromptCounter", { fg = c.fg, italic = false })
+         end
+         fix_counter()
+         vim.api.nvim_create_autocmd("ColorScheme", { callback = fix_counter })
       end,
    },
 
