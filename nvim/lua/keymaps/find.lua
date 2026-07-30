@@ -2,11 +2,13 @@
 --                  FUZZY FIND (Telescope)
 -- ============================================================
 local leader = require("keymaps.leader")
-local map, lmap = leader.map, leader.lmap
+local lmap = leader.lmap
 
 lmap("n", "p", "<cmd>Files<CR>", { desc = "Find files" })
 lmap("n", "b", "<cmd>Buffers<CR>", { desc = "Find buffers" })
-lmap("n", "C", "<cmd>BLines<CR>", { desc = "Search in buffer" })
+-- FzfBLinesPreview (vim/fzf-layout.vim) rather than plain :BLines — fzf.vim
+-- ships :BLines without a preview pane.
+lmap("n", "C", "<cmd>call FzfBLinesPreview()<CR>", { desc = "Search in buffer" })
 lmap("n", "a", "<cmd>RG<CR>", { desc = "Live ripgrep" })
 lmap("n", "A", "<cmd>Rg<CR>", { desc = "Ripgrep (fzf filter)" })
 lmap("n", "e", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", { desc = "Workspace symbols" })
@@ -38,4 +40,6 @@ lmap("n", "B", "<cmd>History<CR>", { desc = "Recent files (fzf)" })
 --    require("telescope.builtin").live_grep({ grep_open_files = true })
 -- end, { desc = "Search open buffers" })
 
-map("n", "<C-p>", "<cmd>Files<CR>", { desc = "Find files" })
+-- <C-p> deliberately unmapped: file finding lives on <leader>p only, and
+-- leaving <C-p> alone restores its builtin meaning (previous line / insert-mode
+-- keyword completion).
