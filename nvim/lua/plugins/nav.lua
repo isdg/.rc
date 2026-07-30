@@ -80,6 +80,29 @@ return {
                   "--line-number", "--column", "--smart-case", "--hidden",
                   "--glob", "!.git/",
                },
+               -- Frame telescope like the fzf.vim commands, so the pickers that
+               -- ARE telescope (lsp_*_symbols, diagnostics, git_range.lua) look
+               -- the same as <leader>p/a/A/C. Mirrors vim/fzf-layout.vim:
+               -- 0.95 x 0.95 window, preview stacked below the list at 60%.
+               -- Telescope's own previewer does the work — real buffers with
+               -- treesitter highlighting, and the match line centred and
+               -- highlighted for free (bat via a termopen previewer would match
+               -- fzf byte-for-byte but costs a subprocess per entry and has no
+               -- clean equivalent of fzf's `+{2}-/2` centring).
+               layout_strategy = "vertical",
+               layout_config = {
+                  vertical = {
+                     -- Plain "vertical" puts the preview ABOVE the results;
+                     -- fzf's 'down,60%' is below it. mirror flips them.
+                     mirror = true,
+                     preview_height = 0.6,
+                     width = 0.95,
+                     height = 0.95,
+                     -- Default cutoff (40 lines) silently drops the preview in
+                     -- a short window; fzf always shows it.
+                     preview_cutoff = 0,
+                  },
+               },
             },
             pickers = {
                find_files = {
