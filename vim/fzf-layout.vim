@@ -37,12 +37,19 @@ function! FzfBLinesPreview() abort
     " Field 1 of a BLines entry is the line number, space-padded by fzf.vim's
     " ' %4d ' format — strip to digits before handing it to bat.
     " --decorations=always: bat hides the number gutter when stdout is a pipe.
-    " --line-range: stands in for fzf's '+{1}-/2' centring, which can't parse
-    " the padded field.
+    "
+    " Centre the matched line in the pane rather than just showing it somewhere:
+    " render exactly the window's worth of lines around it, using the
+    " $FZF_PREVIEW_LINES fzf exports for every preview process. fzf's own
+    " '+{1}-/2' scroll offset would be the obvious way, but it needs a field
+    " that is "a numeric integer" and ours arrives padded, so do the arithmetic
+    " here where it's certain. Clamps to the top of the file for early lines.
     let l:preview = 'n=$(printf "%s" {1} | tr -dc "[:digit:]"); '
+                \ . 'h=${FZF_PREVIEW_LINES:-40}; '
+                \ . 's=$(( n - (h - 1) / 2 )); [ "$s" -lt 1 ] && s=1; '
                 \ . 'bat --color=always --style=numbers --decorations=always '
                 \ . '--highlight-line "$n" '
-                \ . '--line-range "$(( n > 20 ? n - 20 : 1 )):" '
+                \ . '--line-range "$s:$(( s + h - 1 ))" '
                 \ . shellescape(l:file)
 
     " Reuse the window/toggle-key from g:fzf_vim.preview_window above so this
