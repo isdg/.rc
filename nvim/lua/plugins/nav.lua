@@ -80,6 +80,29 @@ return {
                   "--line-number", "--column", "--smart-case", "--hidden",
                   "--glob", "!.git/",
                },
+               -- Frame telescope like the fzf.vim commands, so the pickers that
+               -- ARE telescope (lsp_*_symbols, diagnostics, git_range.lua) look
+               -- the same as <leader>p/a/A/C. Mirrors vim/fzf-layout.vim:
+               -- 0.95 x 0.95 window, preview stacked below the list at 60%.
+               -- Telescope's own previewer does the work — real buffers with
+               -- treesitter highlighting, and the match line centred and
+               -- highlighted for free (bat via a termopen previewer would match
+               -- fzf byte-for-byte but costs a subprocess per entry and has no
+               -- clean equivalent of fzf's `+{2}-/2` centring).
+               layout_strategy = "vertical",
+               layout_config = {
+                  vertical = {
+                     -- Plain "vertical" puts the preview ABOVE the results;
+                     -- fzf's 'down,60%' is below it. mirror flips them.
+                     mirror = true,
+                     preview_height = 0.6,
+                     width = 0.95,
+                     height = 0.95,
+                     -- Default cutoff (40 lines) silently drops the preview in
+                     -- a short window; fzf always shows it.
+                     preview_cutoff = 0,
+                  },
+               },
             },
             pickers = {
                find_files = {
@@ -93,6 +116,23 @@ return {
             },
          })
          telescope.load_extension("fzf")
+
+         -- Make the results counter visible. Telescope already draws one by
+         -- default (config.values.get_status_text -> "12 / 340" right-aligned
+         -- on the prompt line, "*"-prefixed while the search is still running),
+         -- but TelescopePromptCounter links to NonText, which the vs_* themes
+         -- set to guifg=#2f2f2f guibg=#2f2f2f -- redrawn on every keystroke and
+         -- perfectly invisible. Borrow Comment's colour instead of hardcoding a
+         -- hex so it stays right in both vs_dark and vs_light, and re-apply on
+         -- ColorScheme so it survives the theme toggle. Same shape as the
+         -- FlashBackdrop fix below; italic is dropped for the same reason
+         -- (Comment is gui=italic in these themes).
+         local function fix_counter()
+            local c = vim.api.nvim_get_hl(0, { name = "Comment" })
+            vim.api.nvim_set_hl(0, "TelescopePromptCounter", { fg = c.fg, italic = false })
+         end
+         fix_counter()
+         vim.api.nvim_create_autocmd("ColorScheme", { callback = fix_counter })
       end,
    },
 

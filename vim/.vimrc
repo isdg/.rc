@@ -64,7 +64,7 @@
 "   za/zA/zo/zc      Folding commands
 
 " FUZZY FIND
-"   <C-p>            Search files
+"   <leader>p        Search files
 "   <C-b>            Search buffers
 "   :History         Open file history
 "   :BLines          Search inside current buffer
@@ -163,7 +163,7 @@
 "   ; / ,             Repeat last f/F/t/T forward / backward
 
 " FUZZY & SYMBOL SEARCH (via plugins)
-"   <C-p>             Fuzzy find files (:Files)
+"   <leader>p         Fuzzy find files (:Files)
 "   <C-b>             Fuzzy find buffers (:Buffers)
 "   <C-e>             Fuzzy search inside current buffer
 "   :Rg <text>        Ripgrep search across project (requires ripgrep)
@@ -428,8 +428,9 @@ nnoremap <leader>B :History<CR>
 " LSP document symbols (current file outline)
 nnoremap <leader>c :CocList outline<CR>
 
-" Fuzzy search lines in current buffer
-nnoremap <leader>C :BLines<CR>
+" Fuzzy search lines in current buffer (with a bat preview — fzf.vim's own
+" :BLines has none; see vim/fzf-layout.vim)
+nnoremap <leader>C :call FzfBLinesPreview()<CR>
 
 " Search symbols accross open buffers
 nnoremap <leader>e :Lines<CR>
