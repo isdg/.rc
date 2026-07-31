@@ -1,0 +1,195 @@
+top(1) on macOS — live process/system sampler. Apple's top is NOT GNU/Linux top:
+different columns, different keys, different flags. Notes below are Darwin.
+For one-shot text output use `ps aux` (see psaux.txt); for real numbers use the
+instrumentation at the bottom of this file.
+
+-------------------------------------------------------------------------------
+HEADER BLOCK — global state
+-------------------------------------------------------------------------------
+  Processes: 537 total, 5 running, 532 sleeping, 3780 threads
+      Process count by state, then system-wide thread count. Thousands of
+      threads is normal on macOS (XPC + workqueues), not a leak signal.
+
+  Load Avg: 25.63, 16.45, 8.92
+      Average number of jobs in the run queue over 1 / 5 / 15 min. Rising
+      left-to-right = load climbing. Compare against core count
+      (`sysctl -n hw.ncpu`): load 25 on 10 cores = deep oversubscription.
+      Load counts runnable AND uninterruptible-wait tasks, so heavy disk or
+      swap I/O inflates it without burning CPU.
+
+  CPU usage: 10.38% user, 4.72% sys, 84.89% idle
+      user = your code, sys = kernel on your behalf, idle = spare capacity.
+      Percentages are of TOTAL capacity across all cores (they sum to 100).
+      High sys with low user → syscall/IO/page-fault churn, not compute.
+
+  SharedLibs: 450M resident, 102M data, 78M linkedit.
+      Framework (dyld shared cache) code/data/link-editor residency. Global,
+      shared by every process — do not attribute it to any one process.
+
+  MemRegions: 0 total, 0B resident, 0B private, 2412M shared.
+      VM region counts. Zeroes/N/A mean memory-object-map traversal is OFF
+      (the default, -R). Press `r` or start with `-r` to populate it — it is
+      expensive.
+
+  PhysMem: 15G used (2445M wired, 3289M compressor), 8403M unused.
+      used      physical RAM in use
+      wired     kernel-locked, never pageable — the true floor
+      compressor size of the compressed-memory pool (RAM holding squeezed pages)
+      unused    genuinely free
+      A large compressor value means macOS is compressing to avoid swapping —
+      the last stop before disk. Cross-check with `memory_pressure`.
+
+  VM: 238T vsize, 6144M framework vsize, 106646317(8778) swapins, 132158337(8701) swapouts
+      vsize is address space, not RAM — 238T is meaningless, ignore it.
+      The swap counters are CUMULATIVE SINCE BOOT; the number in parentheses is
+      the delta over the last sample. Parenthesised values are what matters:
+      nonzero every second = actively thrashing.
+
+  Networks / Disks
+      packets/bytes and reads/writes, also cumulative since boot. Only useful
+      as a delta — watch the numbers move, or use nettop / iostat instead.
+
+  15:31:13
+      Wall clock. In accumulative mode (-c a) this is elapsed time since top
+      started.
+
+-------------------------------------------------------------------------------
+PROCESS COLUMNS (default stats)
+-------------------------------------------------------------------------------
+  PID       Process ID. A trailing + = 64-bit native, - = 32-bit,
+            * = non-native (Rosetta).
+  COMMAND   Process name, TRUNCATED to the column width ("com.apple.Vi",
+            "Google Chrom"). Never grep it for identity — prefer
+            `ps -p <pid> -o args=`.
+  %CPU      CPU usage since the previous sample. Per-process ceiling is
+            ncpu*100, so 400% = four cores saturated by one process.
+  TIME      Accumulated CPU time (mm:ss.hh) since the process started —
+            not wall-clock age. 24:41:13 on kernel_task = uptime's worth of work.
+  #TH       Threads, total/running. 619/10 = 619 threads, 10 on-CPU.
+  #WQ       Workqueue threads, total/running (libdispatch/GCD pool).
+  #PORT     Mach ports held. Steady growth on an idle process = port leak.
+  MEM       Physical memory footprint — what Activity Monitor calls "Memory".
+            Excludes the shared cache, includes compressed pages. This is the
+            number to judge a process by, not VSZ from ps.
+  PURG      Purgeable memory: reclaimable on demand (caches). Counts toward
+            MEM but the kernel can drop it for free.
+  CMPRS     Compressed footprint. `10G-` next to 8175M MEM means far more was
+            squeezed than is resident — that process is the swap pressure.
+  PGRP      Process group ID (signal/job-control target — see jobs.txt).
+  PPID      Parent PID. Walk it to find who spawned what.
+
+  Trailing +/- on any value = it GREW / SHRANK since the previous sample.
+  `422M+` is memory climbing, `141M-` is memory being reclaimed. This delta
+  marker is the single most useful thing in the display and is undocumented in
+  the man page.
+
+  Other stats worth adding via -stats: state (running/stuck/sleeping/zombie),
+  faults, pageins, csw (context switches), instrs, cycles, boosts, jetpri,
+  user, vsize.
+
+-------------------------------------------------------------------------------
+INTERACTIVE KEYS
+-------------------------------------------------------------------------------
+  o<key>     Sort descending by key: `ocpu`, `omem`, `otime`, `oth`
+             Prefix + for ascending: `o+mem`
+  O<key>     Secondary sort key
+  s<secs>    Set update interval (`s5`)
+  U<user>    Filter to one user; empty input = all users
+  c<mode>    Event counting mode: a=accumulative d=delta e=absolute n=default
+  r          Toggle memory-object-map reporting (fills MemRegions; costly)
+  S<sig><pid>  Send a signal — `SKILL 1234`, `SHUP 1234` (default TERM)
+  ?          Help.   ^L  redraw.   q  quit
+
+-------------------------------------------------------------------------------
+INVOCATIONS WORTH ALIASING
+-------------------------------------------------------------------------------
+  top -o cpu -n 20              Top 20 CPU hogs
+  top -o mem -n 20              Top 20 by memory footprint
+  top -u                        Alias for: -o cpu -O time
+  top -l 1 -n 10 -o cpu         One-shot, scriptable (see gotcha below)
+  top -l 0 -s 2 -o cpu          Log forever, 2s interval, to stdout/a file
+  top -pid 1234 -pid 5678       Watch specific processes only
+  top -user isg                 One user only
+  top -stats pid,command,cpu,mem,cmprs,th,pstate
+                                Exactly the columns you want, nothing else
+  top -c d                      Delta mode — counters relative to last sample
+  top -c a                      Accumulative — totals since top launched
+  top -i 1                      Update framework stats every sample (accurate,
+                                expensive; default is every 10)
+  top -F                        Skip framework stats entirely (cheapest)
+  top -S                        Show global swap + purgeable stats
+
+-------------------------------------------------------------------------------
+GOTCHAS
+-------------------------------------------------------------------------------
+- `top -l 1` reports a GARBAGE %CPU for every process: %CPU is computed from
+  the delta between two samples and there is no previous sample. Always use
+  `top -l 2` and parse the SECOND block.
+- top itself costs real CPU (memory stats are expensive) — it appears in its own
+  output at several percent. Use -F / -i to cut its overhead when measuring
+  something tight.
+- %CPU per process can exceed 100 (per-core), while the header CPU line cannot
+  (whole-machine).
+- kernel_task at high %CPU is usually thermal management, compression, or I/O
+  work done on behalf of other processes — chase the real cause, not the PID.
+- MEM here (footprint) ≠ RSS in ps ≠ VSZ in ps. Only footprint is comparable to
+  Activity Monitor.
+- Sorting keys are typed WITHOUT a prefix (`ocpu`, not `o cpu`), and are Darwin
+  names — `mem`, `th`, `prt`, `pstate` — not Linux ones.
+- No per-CPU-core breakdown, no tree view, no color, no mouse. If you want those,
+  install htop or btop; they are not shipped with macOS.
+
+-------------------------------------------------------------------------------
+WHEN top ISN'T PRECISE ENOUGH
+-------------------------------------------------------------------------------
+top is a 1-second-resolution sampler with no attribution: it tells you WHICH
+process, never WHY. All of these ship with macOS.
+
+  powermetrics    THE macOS answer for CPU/energy. Per-core residency, P/E-core
+                  split, frequency, GPU, interrupts, and a per-process energy
+                  impact ranking. Needs sudo:
+                    sudo powermetrics -i 1000 --samplers cpu_power,tasks \
+                         --show-process-energy --show-process-gpu
+  sample          Why a process is busy: attaches for N seconds and prints an
+                  aggregated call-graph. Fastest path from "claude is at 90%"
+                  to a function name:      sample 87652 5 -f /tmp/s.txt
+  spindump        System-wide stack sampling — the tool for hangs, beachballs,
+                  and stuck-in-uninterruptible-wait:   sudo spindump 87652 10
+  vm_stat 1       Real paging numbers: pageins/pageouts, swapins/swapouts,
+                  compressions/decompressions, per second.
+  memory_pressure Whole-system memory status: total pageins/pageouts and
+                  "System-wide memory free percentage" — the honest answer to
+                  "am I actually short on RAM", vs. "used looks big".
+  footprint <pid> Authoritative per-process memory breakdown (dirty / clean /
+                  reclaimable per VM category), matching Activity Monitor.
+                  Works unprivileged on your own processes; sudo for others.
+  vmmap <pid>     Every VM region of a process — where the memory actually went.
+  leaks / heap    Leak detection and heap census for a live process.
+  fs_usage        Live file/VFS syscall trace (needs sudo).  I/O culprits.
+  dtruss          DTrace-based syscall tracer (SIP restricts it on stock kernels).
+  nettop          Per-process live network throughput.
+  iostat 1        Per-disk throughput/IOPS, tps, and CPU breakdown.
+  latency         Scheduling/interrupt latency histograms (sudo).
+  sudo taskinfo <pid>
+                  Deep Mach task dump: ports, threads, priorities, limits.
+                  Refuses to run as non-root.
+  xctrace         Instruments from the CLI — the heavyweight profiler.
+                  Time Profiler, Allocations, File Activity, all recordable
+                  headlessly:
+                    xctrace record --template 'Time Profiler' --attach 87652 \
+                                   --output run.trace
+                  Requires FULL Xcode. With only the Command Line Tools
+                  installed, /usr/bin/xctrace is a shim that errors out
+                  ("requires Xcode, but active developer directory ... is a
+                  command line tools instance").
+
+  Practical ladder:  top / ps  → which process
+                     powermetrics → is it CPU, GPU, wakeups, or thermal
+                     sample / spindump → which code path
+                     footprint / vmmap / leaks → which allocation
+                     fs_usage / nettop / iostat → which I/O
+                     xctrace → full timeline when you need to keep the trace
+
+SEE ALSO
+  psaux.txt, signals.txt, jobs.txt
+  ps(1), vm_stat(1), vmmap(1), taskinfo(1), powermetrics(1), sample(1)

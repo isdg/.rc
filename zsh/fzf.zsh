@@ -20,7 +20,7 @@ fp() {
       | fzf --multi --ansi \
             --query "${1:-}" \
             --preview "$_fzf_file_preview" \
-            --preview-window 'right:60%')}") || return
+            --preview-window 'down:55%')}") || return
    [[ -n $files[1] ]] && "${EDITOR:-nvim}" "${files[@]}"
 }
 
@@ -30,7 +30,7 @@ fA() {
       | fzf --ansi --delimiter=: \
             --query "${1:-}" \
             --preview "$_fzf_preview" \
-            --preview-window 'right:60%:+{2}-/2') || return
+            --preview-window 'down:55%:+{2}-/2') || return
    local file line
    IFS=: read -r file line _ <<< "$out"
    [[ -n $file ]] && "${EDITOR:-nvim}" "+${line}" "$file"
@@ -44,7 +44,7 @@ fa() {
           --query "${1:-}" \
           --bind "change:reload:sleep 0.1; $rg_cmd -- {q} || true" \
           --preview "$_fzf_preview" \
-          --preview-window 'right:60%:+{2}-/2') || return
+          --preview-window 'down:55%:+{2}-/2') || return
    local file line
    IFS=: read -r file line _ <<< "$out"
    [[ -n $file ]] && "${EDITOR:-nvim}" "+${line}" "$file"
