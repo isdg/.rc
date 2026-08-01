@@ -50,7 +50,13 @@ return {
          })
 
          vim.lsp.config("clangd", {
-            cmd = { "clangd", "--clang-tidy", "--header-filter=.*" },
+            -- NB: do not add "--header-filter=.*" here. It is a clang-tidy
+            -- flag, not a clangd one: clangd does not recognise it, prints its
+            -- usage text to stdout and exits 0 without ever serving LSP. The
+            -- failure is silent (empty stderr, clean exit code), so no client
+            -- attaches in any C/C++ project. Configure header diagnostics in a
+            -- per-project .clangd file instead.
+            cmd = { "clangd", "--clang-tidy", "--background-index" },
             filetypes = { "c", "cpp", "objc", "objcpp", "cuda" },
             root_markers = { "compile_commands.json", "compile_flags.txt", ".clangd", ".git" },
          })
@@ -106,7 +112,17 @@ return {
             root_markers = { "build.zig", "build.zig.zon", ".git" },
          })
 
-         vim.lsp.enable({ "clangd", "ty", "rust_analyzer", "gopls", "ts_ls", "zls" })
+         -- Only enable servers whose binary is actually present: one missing
+         -- executable makes vim.lsp.enable() abort the whole pass, which
+         -- silently prevents *every* server from attaching.
+         for _, name in ipairs({ "clangd", "ty", "rust_analyzer", "gopls", "ts_ls", "zls" }) do
+            local cfg = vim.lsp.config[name]
+            local bin = cfg and cfg.cmd and cfg.cmd[1]
+            -- bin == nil => cmd comes from lspconfig defaults; leave it alone.
+            if bin == nil or vim.fn.executable(bin) == 1 then
+               vim.lsp.enable(name)
+            end
+         end
 
          -- Disable diagnostic signs (matches coc-settings.json)
          vim.diagnostic.config({ signs = false })
