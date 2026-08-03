@@ -1,7 +1,7 @@
 # palace — personal knowledge vault
 
 A note-taking system spread across four places in this repo, tied together
-by one vault directory (`$PALACE_DIR`, `~/palace/palace`) and one binary
+by one vault directory (`$PALACE_DIR`, `~/backup/palace`) and one binary
 (`plc`). The vault path is persisted in `~/.plcrc` (`PALACE_DIR = …`); `plc`
 reads it, and `zsh/aliases.zsh` exports it via `plc config`. Documented here as
 a single named module so the pieces don't get rediscovered from scratch later —
