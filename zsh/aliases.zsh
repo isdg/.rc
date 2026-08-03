@@ -52,10 +52,6 @@ export GLAMOUR_STYLE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev
 # Palace notes — thin `plc` wrappers now ship with the dotfiles. The vault path
 # is persisted in ~/.plcrc; ask `plc config` for it instead of hardcoding here
 # (fall back to the default while bootstrapping, before `plc` is installed).
-# Unset first: `plc config` prefers $PALACE_DIR over ~/.plcrc, so a value
-# inherited from a parent process (tmux server, restored terminal) would be
-# echoed back and re-exported, pinning new shells to a stale vault path.
-unset PALACE_DIR
 export PALACE_DIR="$(plc config 2>/dev/null || echo "$HOME/backup/palace")"
 source "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/palace.zsh"
 
