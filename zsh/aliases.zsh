@@ -50,9 +50,15 @@ export GH_PAGER='less -FX'
 export GLAMOUR_STYLE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev/null || echo light)"
 
 # Palace notes — thin `plc` wrappers now ship with the dotfiles. The vault path
-# is persisted in ~/.plcrc; ask `plc config` for it instead of hardcoding here
-# (fall back to the default while bootstrapping, before `plc` is installed).
-export PALACE_DIR="$(plc config 2>/dev/null || echo "$HOME/backup/palace")"
+# is persisted in ~/.plcrc; ask `plc config` for it instead of hardcoding here,
+# so there is exactly one source of truth.
+#
+# `env -u PALACE_DIR` matters: `plc config` echoes back $PALACE_DIR when it is
+# already set and only falls back to ~/.plcrc when it is not. Without it this
+# line re-affirms whatever it inherited instead of re-deriving, so one stale
+# value (a tmux global env snapshot, a long-lived parent process) launders
+# itself through every new shell indefinitely.
+export PALACE_DIR="$(env -u PALACE_DIR plc config 2>/dev/null)"
 source "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/palace.zsh"
 
 # Machine-local, gitignored aliases/functions (work-specific helpers, private
