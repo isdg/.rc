@@ -24,7 +24,10 @@ map("n", "<leader>gv", function()
    local blame = vim.fn.system("git blame -l -L " .. vim.fn.line(".") .. "," .. vim.fn.line(".") .. " -- " .. vim.fn.expand("%"))
    local hash = blame:match("^(%x+)")
    if hash and not hash:match("^0+$") then
-      vim.cmd("Git show " .. hash)
+      -- Gedit, not `Git show`: the latter dumps output into a temp buffer in a
+      -- split, while this opens the commit object full-window (<C-o> to go
+      -- back) with filenames you can <CR> into.
+      vim.cmd("Gedit " .. hash)
    else
       print("No commit for this line")
    end
