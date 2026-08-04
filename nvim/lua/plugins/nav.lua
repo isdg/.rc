@@ -81,7 +81,7 @@ return {
                   "--glob", "!.git/",
                },
                -- Frame telescope like the fzf.vim commands, so the pickers that
-               -- ARE telescope (lsp_*_symbols, diagnostics, git_range.lua) look
+               -- ARE telescope (lsp_*_symbols, diagnostics) look
                -- the same as <leader>p/a/A/C. Mirrors vim/fzf-layout.vim:
                -- 0.95 x 0.95 window, preview stacked below the list at 60%.
                -- Telescope's own previewer does the work — real buffers with

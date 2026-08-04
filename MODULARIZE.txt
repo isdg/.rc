@@ -26,21 +26,17 @@ Real tools hiding in here, not just config:
    LSP-first, Treesitter-fallback symbol path ("function > class > method")
    across C/C++/Rust/Python/JS/TS/Go/Lua. Most people install a plugin for this.
 
-4. GIT RANGE PICKER  (nvim/lua/git_range.lua)
-   Two-tier DiffviewOpen picker: vim.ui.select for common ranges, Telescope
-   for ref/commit picking.
-
-5. THEME SYSTEM  (toggle_theme.sh + ~/.config/isg/theme)
+4. THEME SYSTEM  (toggle_theme.sh + ~/.config/isg/theme)
    One toggle drives per-app theme-{dark,light} configs for tmux, ghostty, and
    nvim colorschemes in lockstep. Cross-cutting and clean.
 
-6. RUSSIAN-LAYOUT LEADER DUPLICATION  (nvim/lua/russian.lua + lmap())
+5. RUSSIAN-LAYOUT LEADER DUPLICATION  (nvim/lua/russian.lua + lmap())
    Every <leader> map works in both keyboard layouts.
 
-7. mascots.sh  — shade-block ASCII mascot/splash renderer for toggle_theme.sh,
+6. mascots.sh  — shade-block ASCII mascot/splash renderer for toggle_theme.sh,
    with physics-law captions (phase equation, pp-chain). Pure craft.
 
-8. TMUX CAPTURE / PICKER TOOLS  (tmux/.tmux.conf, tmux/fzf-content.sh)
+7. TMUX CAPTURE / PICKER TOOLS  (tmux/.tmux.conf, tmux/fzf-content.sh)
    - prefix N  scrollback -> nvim with ANSI rendered (baleia)
    - prefix P  scrollback -> less
    - prefix W  fuzzy window picker (name/pane-title/path + live preview)
@@ -67,8 +63,8 @@ Done:
    nvim keymaps    one 333-line keymaps.lua   nvim/lua/keymaps/ split by domain
                                               ({editor,find,tree,edit,git,lsp,
                                               notes}.lua + leader/util helpers)
-   inline funcs    breadcrumb (~80 lines)     nvim/lua/breadcrumb.lua, like
-                   inside keymaps.lua          git_range.lua
+   inline funcs    breadcrumb (~80 lines)     nvim/lua/breadcrumb.lua, its own
+                   inside keymaps.lua          module
    tmux shells     prefix W big inline        tmux/window-picker.sh, like
                    string in .tmux.conf        fzf-content.sh / pane-capture.sh
    palace          spread zsh/vim/nvim/bin    documented in PALACE.md
