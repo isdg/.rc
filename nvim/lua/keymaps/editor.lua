@@ -37,8 +37,14 @@ map("n", "<leader>=", "<C-w>=", { desc = "Equalize splits" })
 
 
 -- ─── History & clipboard ────────────────────────────────────────
-lmap("n", ";", "q:", { desc = "Command history" })
-lmap("n", "/", "q/", { desc = "Search history" })
+-- Fuzzy history (fzf.vim), replacing the q: / q/ cmdline windows — those are
+-- still there by typing q: / q/ directly when an editable buffer is wanted.
+lmap("n", ";", "<cmd>History:<CR>", { desc = "Command history (fzf)" })
+lmap("n", "/", "<cmd>History/<CR>", { desc = "Search history (fzf)" })
+-- Jumplist as a list instead of stepping through it with <C-i>/<C-o>
+lmap("n", "J", "<cmd>Jumps<CR>", { desc = "Jump list (fzf)" })
+-- Every ex command, including plugin ones; <CR> runs it
+lmap("n", ":", "<cmd>Commands<CR>", { desc = "Ex commands (fzf)" })
 
 -- Clear search highlights
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlights" })
