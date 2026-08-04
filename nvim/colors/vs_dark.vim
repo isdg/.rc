@@ -1,11 +1,17 @@
 " Dark (Visual Studio) color scheme for Neovim
 " Ported from vim/.vim/colors/vs_dark.vim
 
+" 'background' first, then `hi clear`: hi clear recomputes Neovim's built-in
+" defaults for the *current* background. Without it the light-background
+" variants survive the theme flip — Added #005523, Removed #590008, ErrorMsg
+" #590008, WarningMsg #6b5300, Question/MoreMsg #007373 — all near-black on
+" this #2F2F2F background, which is why git diffs and gitsigns were unreadable.
+set background=dark
+hi clear
 if exists('syntax_on')
   syntax reset
 endif
 let g:colors_name = 'vs_dark'
-set background=dark
 set termguicolors
 
 " Terminal/ANSI palette = Ghostty 'Catppuccin Mocha' (matches toggle_theme.sh).
@@ -88,11 +94,30 @@ hi Underlined   gui=underline
 hi Error        guifg=#F44747 guibg=#1E1E1E gui=bold
 hi Todo         guifg=#B5CEA8 guibg=NONE gui=bold
 
-" Diff
+" Diff — window-diff backgrounds (:diffthis, vimdiff)
 hi DiffAdd      guifg=NONE    guibg=#0D4429
 hi DiffChange   guifg=NONE    guibg=#0D4429
 hi DiffDelete   guifg=NONE    guibg=#3C1418
 hi DiffText     guifg=NONE    guibg=#1A7F37 gui=NONE
+
+" Diff-as-text — reading a patch in a buffer (ft=diff/git, fugitive, :Git show).
+" Set explicitly rather than inherited: gitsigns links its signs to
+" Added/Removed/Changed, so these three drive the gutter too.
+hi Added        guifg=#3FB950 guibg=NONE
+hi Removed      guifg=#F85149 guibg=NONE
+hi Changed      guifg=#D29922 guibg=NONE
+hi diffAdded    guifg=#3FB950 guibg=NONE
+hi diffRemoved  guifg=#F85149 guibg=NONE
+hi diffChanged  guifg=#D29922 guibg=NONE
+hi diffFile     guifg=#569CD6 guibg=NONE
+hi diffIndexLine guifg=#808080 guibg=NONE
+hi diffLine     guifg=#9CDCFE guibg=NONE
+" A deleted `--` comment (Lua, SQL) becomes `--- …`, which the diff syntax
+" matches as the old-file header. Colour headers like the changes they sit on
+" so those lines stop reading as blue metadata; `diff --git`/`index` still
+" mark file boundaries.
+hi diffOldFile  guifg=#F85149 guibg=NONE
+hi diffNewFile  guifg=#3FB950 guibg=NONE
 
 " Match parentheses
 hi MatchParen   guibg=#264F78

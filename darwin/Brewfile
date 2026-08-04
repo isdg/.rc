@@ -6,6 +6,7 @@ brew "curl"
 brew "fd"
 brew "fzf"
 brew "git"
+brew "git-delta"   # .gitconfig sets `pager = delta`
 brew "gh"
 brew "ripgrep"
 brew "sd"    # find & replace CLI (sed alternative)

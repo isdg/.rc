@@ -1,11 +1,15 @@
 " Light (Visual Studio) color scheme for Neovim
 " Ported from vim/.vim/colors/vs_light.vim
 
+" 'background' first, then `hi clear` — see the same note in vs_dark.vim. Light
+" happens to be the background Neovim's defaults were already computed for, but
+" relying on that breaks as soon as the theme is flipped the other way.
+set background=light
+hi clear
 if exists("syntax_on")
   syntax reset
 endif
 
-set background=light
 let g:colors_name = "vs_light"
 
 " Terminal/ANSI palette = Ghostty 'Catppuccin Latte' (matches toggle_theme.sh).
@@ -98,10 +102,27 @@ hi Todo         guifg=#a31515 guibg=NONE gui=bold
 " =====================
 " Diff / Git
 " =====================
+" Window-diff backgrounds (:diffthis, vimdiff)
 hi DiffAdd      guifg=NONE    guibg=#E6FFEC
 hi DiffChange   guifg=NONE    guibg=#E6FFEC
 hi DiffDelete   guifg=NONE    guibg=#FFEBE9
 hi DiffText     guifg=NONE    guibg=#ABF2BC gui=NONE
+
+" Diff-as-text — reading a patch in a buffer (ft=diff/git, fugitive, :Git show).
+" Explicit here too so a dark->light flip can't leave dark-background variants
+" behind; gitsigns links its signs to Added/Removed/Changed.
+hi Added        guifg=#1A7F37 guibg=NONE
+hi Removed      guifg=#CF222E guibg=NONE
+hi Changed      guifg=#9A6700 guibg=NONE
+hi diffAdded    guifg=#1A7F37 guibg=NONE
+hi diffRemoved  guifg=#CF222E guibg=NONE
+hi diffChanged  guifg=#9A6700 guibg=NONE
+hi diffFile     guifg=#0550AE guibg=NONE
+hi diffIndexLine guifg=#57606A guibg=NONE
+hi diffLine     guifg=#0969DA guibg=NONE
+" `--- …` is usually a deleted `--` comment, not a file header — see vs_dark.vim
+hi diffOldFile  guifg=#CF222E guibg=NONE
+hi diffNewFile  guifg=#1A7F37 guibg=NONE
 
 " =====================
 " CursorLine and Search
