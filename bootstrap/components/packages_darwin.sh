@@ -1,9 +1,22 @@
 #!/usr/bin/env bash
 # Component: Package installation (Darwin)
+#
+# Which Brewfile is used depends on the profile darwin.sh selected:
+#   full     (default)   darwin/Brewfile          — everything
+#   minimal  (--minimal) darwin/Brewfile.minimal  — tmux + nvim + zsh core only
+
+_brewfile_path() {
+    if [ "${BOOTSTRAP_MINIMAL:-0}" = "1" ]; then
+        echo "$DOTFILES_DIR/darwin/Brewfile.minimal"
+    else
+        echo "$DOTFILES_DIR/darwin/Brewfile"
+    fi
+}
 
 ensure_packages_darwin() {
-    echo "[STEP] Verifying packages..."
-    local brewfile="$DOTFILES_DIR/darwin/Brewfile"
+    local brewfile
+    brewfile="$(_brewfile_path)"
+    echo "[STEP] Verifying packages ($(basename "$brewfile"))..."
     if [ ! -f "$brewfile" ]; then
         echo "[FAIL] Brewfile not found at $brewfile"
         return 1
@@ -18,12 +31,13 @@ ensure_packages_darwin() {
 }
 
 install_packages_darwin() {
-    echo "[STEP] Installing required packages..."
+    local brewfile
+    brewfile="$(_brewfile_path)"
+    echo "[STEP] Installing required packages ($(basename "$brewfile"))..."
 
     # Update Homebrew (ignore errors from broken casks)
     brew update || echo "[WARN] brew update had warnings, continuing..."
 
-    local brewfile="$DOTFILES_DIR/darwin/Brewfile"
     if [ ! -f "$brewfile" ]; then
         echo "[ERROR] Brewfile not found at $brewfile"
         return 1
