@@ -83,8 +83,14 @@ git_prompt_info() {
 
 source "$ISG_DOTFILES/zsh/isg.zsh-theme"
 
-# the oh-my-zsh aliases this config actually used, per shell history
-alias ls='ls -G'
+# oh-my-zsh's ls/grep colour aliases. -G is BSD/macOS; GNU ls wants --color,
+# where -G means "hide group" instead — pick by OSTYPE rather than probing, so
+# this costs no subprocess (oh-my-zsh ran `ls --color=tty` to decide).
+if [[ $OSTYPE == darwin* || $OSTYPE == *bsd* ]]; then
+    alias ls='ls -G'
+else
+    alias ls='ls --color=tty'
+fi
 alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv}'
 alias history='fc -l 1'
 
@@ -134,7 +140,8 @@ export PATH="$HOME/.cargo/bin:$PATH"   # cargo-installed binaries (plc)
 export EDITOR='nvim'
 export VISUAL='nvim'
 
-source "$ISG_DOTFILES/zsh/git.zsh"      # before aliases.zsh, so personal ones win
+source "$ISG_DOTFILES/zsh/git.zsh"      # both before aliases.zsh, so personal
+source "$ISG_DOTFILES/zsh/dirs.zsh"     # aliases keep precedence
 source "$ISG_DOTFILES/zsh/aliases.zsh"
 source "$ISG_DOTFILES/zsh/fzf.zsh"
 source "$ISG_DOTFILES/zsh/vimode.zsh"
