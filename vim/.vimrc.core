@@ -55,11 +55,20 @@ nnoremap <leader>w :q<CR>
 nnoremap <leader>W :q!<CR>
 nnoremap <leader>Q :qa<CR>
 
-" Splits
-nnoremap <leader>h <C-w>h
-nnoremap <leader>j <C-w>j
-nnoremap <leader>k <C-w>k
-nnoremap <leader>l <C-w>l
+" Splits — Ctrl, not <leader>, matching ~/.vimrc and nvim's keymaps/editor.lua.
+" One keystroke shorter for a constant motion, and Ctrl+letter is keyed off the
+" physical key, so it needs no Russian-layout twin the way <leader>hjkl did.
+" <C-l> gives up vim's redraw-screen default; :redraw! covers it.
+" Portability note for foreign terminals: <C-h> and <BS> are the same byte
+" unless the terminal sends 0x7f for Backspace (Ghostty does, so they stay
+" distinct there). Where they collide, Backspace in normal mode jumps a split
+" instead of moving left. Insert mode is untouched either way.
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Resize
 nnoremap <leader>+ :resize +5<CR>
 nnoremap <leader>- :resize -5<CR>
 nnoremap <leader>< :vertical resize -5<CR>
