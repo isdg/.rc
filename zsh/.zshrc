@@ -19,12 +19,12 @@ ISG_THEME_MODE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev/null 
 ISG_DEFAULT_USER=true # show user name
 
 # ── init ──
-# Plain zsh — oh-my-zsh was dropped (Aug 2026). Measured: it cost 158 ms of a
-# 471 ms startup and 17 MB, while contributing 4 aliases this config had ever
-# used (ls, grep, history, ..) and 0 of the 197 git aliases from the one plugin
-# it loaded. Everything below is what it did do for us, reproduced by hand —
-# options, completion styles, key bindings, URL quoting — at no measurable cost,
-# because none of its 158 ms was spent on these.
+# Plain zsh — oh-my-zsh was dropped (Aug 2026). Measured: it cost ~141 ms of a
+# ~480 ms warm startup and 17 MB, and nearly all of that went to compaudit, a
+# second compdump and 21 lib files — not to the parts worth having. Those are
+# reproduced by hand below (options, completion styles, key bindings, URL
+# quoting) at no measurable cost. Its git aliases were in use and are vendored
+# in zsh/git.zsh.
 setopt prompt_subst interactive_comments extended_glob auto_cd
 
 # options oh-my-zsh's libs set that are worth keeping
@@ -134,6 +134,7 @@ export PATH="$HOME/.cargo/bin:$PATH"   # cargo-installed binaries (plc)
 export EDITOR='nvim'
 export VISUAL='nvim'
 
+source "$ISG_DOTFILES/zsh/git.zsh"      # before aliases.zsh, so personal ones win
 source "$ISG_DOTFILES/zsh/aliases.zsh"
 source "$ISG_DOTFILES/zsh/fzf.zsh"
 source "$ISG_DOTFILES/zsh/vimode.zsh"
