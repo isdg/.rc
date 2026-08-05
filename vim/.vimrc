@@ -8,7 +8,7 @@
 " - Easy commenting with NERDCommenter
 " - Custom CLion-like light color scheme
 " - Russian keyboard layout remapped for Vim commands
-" - Tab and split management
+" - Split management
 " - Session saving and restoring
 
 " ============================================================
@@ -41,16 +41,6 @@
 "   <leader>=           Equalize all split sizes
 "   <C-w>H/J/K/L     Move split to left/bottom/top/right
 
-" TABS
-"   <leader>t        New tab
-"   <leader>u        Previous tab
-"   <leader>i        Next tab
-"   <leader>1..9     Jump to tab N
-"   gt / gT          Next / previous tab
-"   :tabm 0..9       Move current tab to position
-"   :tabclose        Close current tab
-"   :tabonly         Keep only current tab
-
 " SESSIONS
 "   <leader><Tab>    Save session
 "   <leader><S-Tab>  Load session
@@ -58,7 +48,7 @@
 "   :source ~/.vim/session.vim  Restore manually
 
 " NERDTREE
-"   <C-n>            Toggle NERDTree
+"   <leader>t        Toggle NERDTree
 "   <C-f>            Find current file in NERDTree
 "   I                Show/hide hidden files
 "   m                File management menu
@@ -129,8 +119,7 @@
 "   `.                Jump to last change in file
 "   '' / ``           Jump to previous cursor position (line / exact)
 
-" TABS & SPLITS (related)
-"   gt / gT           Next / previous tab
+" SPLITS (related)
 "   <C-h/j/k/l>       Move between splits
 "   <leader>H/J/K/L   Move split window to left/bottom/top/right
 "   <leader>+/-/< />  Resize splits (height/width)
@@ -435,13 +424,17 @@ endfor
 " ============================================================
 "                       NERD TREE
 " ============================================================
-nnoremap <C-n> :NERDTreeToggle<CR> " Toggle NERDTree
-nnoremap <C-f> :NERDTreeFind<CR>   " Find current file
+" Tree on <leader>t, freed by dropping the (unused, long commented-out) tab
+" mappings. Same key in nvim, see nvim/lua/keymaps/tree.lua.
+" Comments go above the mapping, never after it: :map has no trailing-comment
+" syntax, so `" Toggle NERDTree` used to be part of the mapped keys.
+nnoremap <leader>t :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
 let NERDTreeShowHidden=1
 let g:NERDTreeWinSize=40
 " Close the tree once a file is opened — the explorer is for picking a file, not
 " for living next to the buffer. Matches nvim-tree's actions.open_file.quit_on_open
-" (nvim/lua/plugins/nav.lua). Reopen with <C-n>.
+" (nvim/lua/plugins/nav.lua). Reopen with <leader>t.
 let NERDTreeQuitOnOpen=1
 autocmd FileType nerdtree setlocal number
 
@@ -529,33 +522,6 @@ vmap <C-_> <Plug>NERDCommenterToggle
 " motions, if that turns out to matter.
 nmap gcc <Plug>NERDCommenterToggle
 xmap gc  <Plug>NERDCommenterToggle
-
-
-" ============================================================
-"                          TABS
-" ============================================================
-"
-" New tab
-"nnoremap <leader>t :tabnew<CR>    
-"
-" Previous tab
-"nnoremap <leader>u :tabprevious<CR>   
-"
-" Next tab
-"nnoremap <leader>i :tabnext<CR>       
-"
-"
-" Jump to tab 1–9
-"
-"nnoremap <leader>1 1gt
-"nnoremap <leader>2 2gt
-"nnoremap <leader>3 3gt
-"nnoremap <leader>4 4gt
-"nnoremap <leader>5 5gt
-"nnoremap <leader>6 6gt
-"nnoremap <leader>7 7gt
-"nnoremap <leader>8 8gt
-"nnoremap <leader>9 9gt
 
 
 " ============================================================
