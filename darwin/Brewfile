@@ -63,14 +63,4 @@ brew "mysql"
 
 # GUI apps
 cask "docker-desktop"
-cask "visual-studio-code"
 
-# VS Code extensions
-vscode "charliermarsh.ruff"
-vscode "ms-python.debugpy"
-vscode "ms-python.python"
-vscode "ms-python.vscode-pylance"
-vscode "ms-python.vscode-python-envs"
-vscode "ms-vscode.cpptools"
-vscode "vscjava.vscode-java-pack"
-vscode "vscodevim.vim"
