@@ -57,10 +57,14 @@ brew "harfbuzz"
 brew "libidn"
 
 # Infra / DB
+# docker: the CLI only. Docker Desktop used to supply both the client and the
+# daemon (/usr/local/bin/docker was a symlink into Docker.app), and its cask is
+# gone from here — it is a 2.3 GB app plus a VM disk that grows without bound,
+# and this setup only ever drives it from the terminal. A daemon still has to
+# come from somewhere: `brew install colima` for a local Lima VM, or point the
+# client at a remote host with `docker context create`.
+brew "docker"
 brew "dive"
 brew "minikube"
 brew "mysql"
-
-# GUI apps
-cask "docker-desktop"
 
