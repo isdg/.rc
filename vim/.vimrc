@@ -175,6 +175,8 @@
 
 " FUZZY & SYMBOL SEARCH (via plugins)
 "   <leader>p         Fuzzy find files (:Files)
+"   <leader>e / E     LSP symbols: this file / workspace
+"   <leader>c / C     Lines: this buffer / all open buffers
 "   <C-b>             Fuzzy find buffers (:Buffers)
 "   <C-e>             Fuzzy search inside current buffer
 "   :Rg <text>        Ripgrep search across project (requires ripgrep)
@@ -339,6 +341,13 @@ Plug 'isdg/hr.vim'                               " hr reading-list sidebar
 
 let g:rainbow_active = 1
 
+" No NERDCommenter default mappings. It otherwise creates a dozen <leader>c*
+" maps (cc, ci, cu, cs, c$, …), none of which are used — commenting is on gcc /
+" gc / <C-_> — and each one makes <leader>c ambiguous, so that key would sit
+" waiting out 'timeoutlen' before firing. Must be set before plug#end(), which
+" is when the plugin file is sourced and reads this.
+let g:NERDCreateDefaultMappings = 0
+
 "
 call plug#end()
 
@@ -441,15 +450,17 @@ nnoremap <leader>b :Buffers<CR>
 " Recent files (fzf v:oldfiles)
 nnoremap <leader>B :History<CR>
 
-" LSP document symbols (current file outline)
-nnoremap <leader>c :CocList outline<CR>
+" Lowercase = this buffer, uppercase = wider scope, for both pairs (same as
+" nvim, see nvim/lua/keymaps/find.lua):
+"   e / E   symbols in this file / across the workspace   (coc)
+"   c / C   lines in this buffer / across open buffers    (fzf)
+nnoremap <leader>e :CocList outline<CR>
+nnoremap <leader>E :CocList symbols<CR>
 
-" Fuzzy search lines in current buffer (with a bat preview — fzf.vim's own
-" :BLines has none; see vim/fzf-layout.vim)
-nnoremap <leader>C :call FzfBLinesPreview()<CR>
-
-" Search symbols accross open buffers
-nnoremap <leader>e :Lines<CR>
+" c gets a bat preview via FzfBLinesPreview — fzf.vim's own :BLines has none;
+" see vim/fzf-layout.vim. C is fzf.vim's :Lines, every open buffer.
+nnoremap <leader>c :call FzfBLinesPreview()<CR>
+nnoremap <leader>C :Lines<CR>
 
 " Search symbols accross project
 nnoremap <leader>a :RG<CR>
