@@ -12,6 +12,10 @@ ghostty/theme-active.conf
 # toggle_theme.sh (k9s config.yaml points ui.skin at it). Per-machine state.
 k9s/skins/skin-active.yaml
 
+# Active tig theme — a symlink to theme-{dark,light}.tigrc, flipped by
+# toggle_theme.sh (.tigrc sources it with -q). Per-machine state.
+tig/theme-active.tigrc
+
 # Machine-local zsh aliases/functions (work-specific, private repo names, etc.)
 # sourced by aliases.zsh if present. Never published.
 zsh/aliases.ignored.zsh
