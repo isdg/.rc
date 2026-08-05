@@ -74,6 +74,7 @@
 "   <leader>gm       All repo commits
 "   <leader>gf       Commits for the current buffer
 "   <leader>gl       Commits for the current line (or selection, in visual)
+"   <leader>gd       Changed files (git status)
 
 " COMMENTING
 "   <C-shift-_>            Toggle comment (normal/visual mode)
@@ -461,6 +462,9 @@ nnoremap <leader>gm :Commits<CR>
 nnoremap <leader>gf :BCommits<CR>
 nnoremap <leader>gl :.BCommits<CR>
 xnoremap <leader>gl :BCommits<CR>
+" Changed files (git status), the two-column prefix tells staged vs working
+" tree. Distinct from plain `gd` above, which is coc's go-to-definition.
+nnoremap <leader>gd :GFiles?<CR>
 
 " ============================================================
 "                      COMMENTING
