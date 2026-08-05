@@ -108,4 +108,4 @@ NOTES
     right of current; & kills window and moves focus left).
   - toggle_theme.sh switches macOS light/dark mode and adjacent terminal
     themes in one shot.
-  - MANIFEST.txt lists the git worktrees used alongside main.
+  - manifest.txt lists the git worktrees used alongside main.
