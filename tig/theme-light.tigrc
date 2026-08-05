@@ -1,0 +1,8 @@
+# tig light colors — sourced by .tigrc through the theme-active.tigrc symlink,
+# which toggle_theme.sh flips. Only what cannot be shared with the dark theme
+# belongs here; everything mode-agnostic stays in .tigrc.
+
+# The cursor line, exactly what .tigrc carried before the split: under the light
+# theme (Ghostty + Catppuccin Latte) ANSI blue is a strong #1e66f5, so white
+# bold text on it reads at 4.91:1 and needs no help.
+color cursor white blue bold

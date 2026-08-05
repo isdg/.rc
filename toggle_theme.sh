@@ -45,6 +45,15 @@ if [ -d "$K9S_SKINS" ]; then
     STATUS+="k9s: $MODE (on new session)\n"
 fi
 
+# --- tig: swap the theme-active.tigrc symlink (.tigrc sources it with -q) ---
+# Same idiom again. Only the cursor line differs per mode — ANSI blue is pale
+# under the dark palette, so white-on-blue is unreadable there.
+TIG_DIR="$SCRIPT_DIR/tig"
+if [ -d "$TIG_DIR" ]; then
+    ln -sf "theme-$MODE.tigrc" "$TIG_DIR/theme-active.tigrc"
+    STATUS+="tig: $MODE (on new tig)\n"
+fi
+
 # --- Tmux: re-source so the if-shell re-reads the mode file and repaints ---
 # The styles live in tmux/theme-{dark,light}.conf; nothing is sed'd here.
 if tmux source-file "$TMUX_CONF" 2>/dev/null; then
