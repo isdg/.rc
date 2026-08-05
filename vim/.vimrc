@@ -35,7 +35,7 @@
 "   <leader>e        Vertical split
 "   <leader>r        Horizontal split
 "   <leader>f        Keep only current split
-"   <leader>h/j/k/l  Move between splits
+"   <C-h/j/k/l>      Move between splits
 "   <leader>+/-         Resize split vertically
 "   <leader>< / >       Resize split horizontally
 "   <leader>=           Equalize all split sizes
@@ -131,7 +131,7 @@
 
 " TABS & SPLITS (related)
 "   gt / gT           Next / previous tab
-"   <leader>h/j/k/l   Move between splits
+"   <C-h/j/k/l>       Move between splits
 "   <leader>H/J/K/L   Move split window to left/bottom/top/right
 "   <leader>+/-/< />  Resize splits (height/width)
 "   <leader>=         Equalize all split sizes
@@ -572,10 +572,17 @@ nnoremap <leader>Q :qa<CR>   " Quit all
 " nnoremap <leader>f :only<CR>          " Keep only current split
 
 " Move between splits
-nnoremap <leader>h <C-w>h
-nnoremap <leader>j <C-w>j
-nnoremap <leader>k <C-w>k
-nnoremap <leader>l <C-w>l
+" Ctrl rather than <leader> (same as nvim, keymaps/editor.lua): one keystroke
+" shorter for a constant motion, and Ctrl+letter is keyed off the physical key,
+" so it needs no Russian-layout twin the way <leader>hjkl did.
+" <C-l> gives up vim's redraw-screen default; :redraw! covers it.
+" <C-h> is distinct from <BS> here (Ghostty sends 0x7f for Backspace) — checked
+" with separate mappings: 0x08 fires <C-h>, 0x7f fires <BS>.
+" Insert mode is untouched: <C-j>/<C-k> there stay coc's popup navigation.
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
 
 " Resize splits
 nnoremap <leader>+ :resize +5<CR>     " Increase height
