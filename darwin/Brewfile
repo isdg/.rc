@@ -57,13 +57,18 @@ brew "harfbuzz"
 brew "libidn"
 
 # Infra / DB
-# docker: the CLI only. Docker Desktop used to supply both the client and the
-# daemon (/usr/local/bin/docker was a symlink into Docker.app), and its cask is
-# gone from here — it is a 2.3 GB app plus a VM disk that grows without bound,
-# and this setup only ever drives it from the terminal. A daemon still has to
-# come from somewhere: `brew install colima` for a local Lima VM, or point the
-# client at a remote host with `docker context create`.
+# Containers without Docker Desktop. Desktop used to supply both halves — the
+# client (/usr/local/bin/docker was a symlink into Docker.app) and the daemon —
+# so both are named explicitly here:
+#   docker  the CLI on its own
+#   colima  the daemon, a Lima VM. `colima start` boots it and installs a
+#           "colima" docker context; `colima stop` gives the RAM back, which the
+#           always-on Desktop VM never did.
+# docker-compose is the plugin, not the old standalone binary; it lands in
+# ~/.docker/cli-plugins so `docker compose` works.
 brew "docker"
+brew "docker-compose"
+brew "colima"
 brew "dive"
 brew "minikube"
 brew "mysql"
