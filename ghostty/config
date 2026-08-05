@@ -3,7 +3,7 @@
 
 # --- font ---
 font-family = JetBrains Mono
-font-style = ExtraLight
+font-style = Light
 font-style-bold = false
 font-size = 13
 adjust-cell-height = 25%
