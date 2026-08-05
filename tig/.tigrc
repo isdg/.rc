@@ -32,13 +32,15 @@ set refresh-mode = auto
 
 # -- Colors -------------------------------------------------------------------
 
-# Highlight the currently selected line. Fallback only — the real value is
-# mode-specific and comes from the source line at the end of this section, since
-# ANSI blue is pale under the dark palette. This keeps a sane cursor on a clone
-# that has never toggled.
+# Both blue areas below are fallbacks only — the real values are mode-specific
+# and come from the source line at the end of this section, since ANSI blue is
+# pale under the dark palette. They keep sane colors on a clone that has never
+# toggled.
+
+# Highlight the currently selected line
 color cursor white blue bold
 
-# Title bar of an inactive (blurred) view
+# Title bar of an inactive (blurred) view — black reads on either palette
 color title-blur white black
 
 # Title bar of the active (focused) view
