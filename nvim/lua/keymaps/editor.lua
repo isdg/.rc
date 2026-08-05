@@ -24,10 +24,16 @@ lmap("n", "Q", "<cmd>qa!<CR>", { desc = "Quit all without saving" })
 
 
 -- ─── Split management ───────────────────────────────────────────
-lmap("n", "h", "<C-w>h", { desc = "Move to left split" })
-lmap("n", "j", "<C-w>j", { desc = "Move to below split" })
-lmap("n", "k", "<C-w>k", { desc = "Move to above split" })
-lmap("n", "l", "<C-w>l", { desc = "Move to right split" })
+-- Ctrl rather than <leader>: one keystroke shorter for a motion used constantly,
+-- and Ctrl+letter is keyed off the physical key, so unlike the <leader>hjkl these
+-- replaced it needs no Russian-layout twin (see keymaps/leader.lua's lmap).
+-- <C-l> gives up Neovim's CTRL-L-default (nohlsearch + diffupdate + redraw):
+-- <Esc> already clears highlights below, and :redraw! / :diffupdate cover the
+-- rest. <C-h> is distinct from <BS> here — verified in both editors.
+map("n", "<C-h>", "<C-w>h", { desc = "Move to left split" })
+map("n", "<C-j>", "<C-w>j", { desc = "Move to below split" })
+map("n", "<C-k>", "<C-w>k", { desc = "Move to above split" })
+map("n", "<C-l>", "<C-w>l", { desc = "Move to right split" })
 
 map("n", "<leader>+", "<cmd>resize +5<CR>", { desc = "Increase height" })
 map("n", "<leader>-", "<cmd>resize -5<CR>", { desc = "Decrease height" })

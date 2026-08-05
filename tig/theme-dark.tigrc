@@ -1,0 +1,20 @@
+# tig dark colors — sourced by .tigrc through the theme-active.tigrc symlink,
+# which toggle_theme.sh flips. Only what cannot be shared with the light theme
+# belongs here; everything mode-agnostic stays in .tigrc.
+
+# The cursor line. `blue` is the terminal's ANSI blue, and under the dark theme
+# (Ghostty + Catppuccin Mocha) that is a pale #89b4fa: white text on it lands
+# at 2.11:1 contrast, the brightest and least readable thing on screen. Borrow
+# the editor's own selection colour the way the fzf dark theme does — `hi
+# Search` in nvim/colors/vs_dark.vim is #264F78 — via color24 (#005f87), the
+# nearest 256-colour index, as tigrc takes colour names and palette indexes but
+# no hex. Ghostty themes remap only palette 0-15, so 24 keeps its xterm value.
+# `default` fg is the terminal foreground, #D4D4D4: 4.74:1 on the bar, and the
+# same fg/bg pairing fzf uses for fg+/bg+.
+color cursor default color24 bold
+
+# The focused view's title bar, the same ANSI blue and the worse offender of the
+# two: `white` is #a6adc8 under Mocha, which on #89b4fa is 1.06:1 — text and bar
+# within a hair of the same lightness. Same treatment as the cursor above, and
+# deliberately the same colour: one selection blue for the whole UI.
+color title-focus default color24 bold

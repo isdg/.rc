@@ -33,25 +33,27 @@ log_host() {
     banner_log "${HOST%%.*} · ${where}"
 }
 
-# tmux, one minimal line — inside: current session first, then the counts,
-# e.g. "tmux · dots · 3 sessions · 1 client · 2 detached"; outside: counts
-# only, silent when the server is idle or absent.
-# list-sessions prints one #{session_attached} per session — 0 when detached.
+# tmux, one laconic line — the whole server picture as slug:sessions, starred
+# where a session has a client, e.g. "tmux · a:1 default:9* misc:4".
+# Every socket in $TMUX_TMPDIR/tmux-$UID is one server; a stale one answers
+# nothing and is skipped, so only live servers are listed, socket order.
+# list-sessions prints a client count per session — 0 means detached.
+# Silent when tmux is absent or no server is alive.
 log_tmux() {
     (( $+commands[tmux] )) || return 0
-    local -a sessions detached clients seg
-    sessions=( ${(f)"$(command tmux list-sessions \
-        -F '#{session_attached}' 2>/dev/null)"} )
-    detached=( ${(M)sessions:#0} )
-    clients=( ${(f)"$(command tmux list-clients -F x 2>/dev/null)"} )
-    [[ -n $TMUX ]] && seg+=("$(command tmux display-message -p '#S' 2>/dev/null)")
-    local ss="sessions"; (( ${#sessions} == 1 )) && ss="session"
-    (( ${#sessions} )) && seg+=("${#sessions} $ss")
-    local cs="clients"; (( ${#clients} == 1 )) && cs="client"
-    (( ${#clients} ))  && seg+=("${#clients} $cs")
-    (( ${#detached} )) && seg+=("${#detached} detached")
-    (( ${#seg} )) || return 0
-    banner_log "tmux · ${(j: · :)seg}"
+    local sock mark
+    local -a clients live servers
+    for sock in ${TMUX_TMPDIR:-/tmp}/tmux-${UID}/*(=N); do
+        clients=( ${(f)"$(command tmux -S $sock list-sessions \
+            -F '#{session_attached}' 2>/dev/null)"} )
+        (( ${#clients} )) || continue
+        live=( ${clients:#0} )       # drop the detached; keep in an array —
+        mark=""                      # ${#${clients:#0}} measures, not counts
+        (( ${#live} )) && mark="*"
+        servers+=( "${sock:t}:${#clients}${mark}" )
+    done
+    (( ${#servers} )) || return 0
+    banner_log "tmux · ${(j: :)servers}"
 }
 
 # ssh-agent: reuse a reachable agent, add the key only if missing —

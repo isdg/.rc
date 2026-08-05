@@ -4,7 +4,7 @@
 ensure_directories() {
     echo "[STEP] Verifying required directories..."
     local failed=0
-    local dirs=("$HOME/.vim/colors" "$HOME/.config" "$HOME/.oh-my-zsh/custom/themes")
+    local dirs=("$HOME/.vim/colors" "$HOME/.config")
     for dir in "${dirs[@]}"; do
         if [ -d "$dir" ]; then
             echo "[OK] $dir"
@@ -21,7 +21,6 @@ create_directories() {
 
     mkdir -p "$HOME/.vim/colors"
     mkdir -p "$HOME/.config"
-    mkdir -p "$HOME/.oh-my-zsh/custom/themes"
 
     echo "[OK] Directories created"
 }

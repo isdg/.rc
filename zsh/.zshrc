@@ -1,5 +1,5 @@
-# escape hatch — `ZSH_BARE=1 zsh` skips this entire config: no oh-my-zsh,
-# theme, banner, plugins or highlighting; a bare shell for testing
+# escape hatch — `ZSH_BARE=1 zsh` skips this entire config: no theme, banner,
+# plugins or highlighting; a bare shell for testing
 [[ -n $ZSH_BARE ]] && return
 
 # startup timing — read by log_shell (startup.zsh) at render
@@ -12,129 +12,83 @@ typeset -gF _BANNER_T0=$EPOCHREALTIME
 # zsh/ up to the repo root. Exported so children (tmux, scripts) can use it too.
 export ISG_DOTFILES="${${(%):-%x}:A:h:h}"
 
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/.oh-my-zsh"
-
-# Set name of the theme to load --- if set to "random", it will
-# load a random theme each time oh-my-zsh is loaded, in which case,
-# to know which specific one was loaded, run: echo $RANDOM_THEME
-# See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-#
-#
-ZSH_THEME="isg"
 # Theme mode (dark|light) read from the single source of truth written by
 # toggle_theme.sh. New shells always reflect the current theme and no tracked
 # file is rewritten on toggle. Falls back to light if the file is missing.
 ISG_THEME_MODE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev/null || echo light)"
 ISG_DEFAULT_USER=true # show user name
-#
-#
-# Set list of themes to pick from when loading at random
-# Setting this variable when ZSH_THEME=random will cause zsh to load
-# a theme from this variable instead of looking in $ZSH/themes/
-# If set to an empty array, this variable will have no effect.
-# ZSH_THEME_RANDOM_CANDIDATES=( "robbyrussell" "agnoster" )
 
-# Uncomment the following line to use case-sensitive completion.
-# CASE_SENSITIVE="true"
+# ── init ──
+# Plain zsh — oh-my-zsh was dropped (Aug 2026). Measured: it cost 158 ms of a
+# 471 ms startup and 17 MB, while contributing 4 aliases this config had ever
+# used (ls, grep, history, ..) and 0 of the 197 git aliases from the one plugin
+# it loaded. Everything below is what it did do for us, reproduced by hand —
+# options, completion styles, key bindings, URL quoting — at no measurable cost,
+# because none of its 158 ms was spent on these.
+setopt prompt_subst interactive_comments extended_glob auto_cd
 
-# Uncomment the following line to use hyphen-insensitive completion.
-# Case-sensitive completion must be off. _ and - will be interchangeable.
-# HYPHEN_INSENSITIVE="true"
+# options oh-my-zsh's libs set that are worth keeping
+setopt auto_pushd pushd_ignore_dups pushd_minus  # cd builds a stack: cd -2, dirs -v
+setopt always_to_end complete_in_word            # completion cursor behaviour
+setopt hist_verify                               # !! expands for review, not instantly
+setopt no_flow_control                           # frees Ctrl-S / Ctrl-Q
+setopt long_list_jobs
 
-# Uncomment one of the following lines to change the auto-update behavior
-# zstyle ':omz:update' mode disabled  # disable automatic updates
-# zstyle ':omz:update' mode auto      # update automatically without asking
-# zstyle ':omz:update' mode reminder  # just remind me to update when it's time
+autoload -Uz colors add-zsh-hook && colors
 
-# Uncomment the following line to change how often to auto-update (in days).
-# zstyle ':omz:update' frequency 13
+# history (oh-my-zsh defaults)
+HISTFILE="$HOME/.zsh_history"
+HISTSIZE=50000
+SAVEHIST=10000
+setopt extended_history hist_expire_dups_first hist_ignore_dups \
+       hist_ignore_space inc_append_history share_history
 
-# Uncomment the following line if pasting URLs and other text is messed up.
-# DISABLE_MAGIC_FUNCTIONS="true"
-
-# Uncomment the following line to disable colors in ls.
-# DISABLE_LS_COLORS="true"
-
-# Uncomment the following line to disable auto-setting terminal title.
-# DISABLE_AUTO_TITLE="true"
-
-# Uncomment the following line to enable command auto-correction.
-# ENABLE_CORRECTION="true"
-
-# Uncomment the following line to display red dots whilst waiting for completion.
-# You can also set it to another string to have that shown instead of the default red dots.
-# e.g. COMPLETION_WAITING_DOTS="%F{yellow}waiting...%f"
-# Caution: this setting can cause issues with multiline prompts in zsh < 5.7.1 (see #5765)
-# COMPLETION_WAITING_DOTS="true"
-
-# Uncomment the following line if you want to disable marking untracked files
-# under VCS as dirty. This makes repository status check for large repositories
-# much, much faster.
-# DISABLE_UNTRACKED_FILES_DIRTY="true"
-
-# Uncomment the following line if you want to change the command execution time
-# stamp shown in the history command output.
-# You can set one of the optional three formats:
-# "mm/dd/yyyy"|"dd.mm.yyyy"|"yyyy-mm-dd"
-# or set a custom format using the strftime function format specifications,
-# see 'man strftime' for details.
-# HIST_STAMPS="mm/dd/yyyy"
-
-# Would you like to use another custom folder than $ZSH/custom?
-# ZSH_CUSTOM=/path/to/new-custom-folder
-
-# Which plugins would you like to load?
-# Standard plugins can be found in $ZSH/plugins/
-# Custom plugins may be added to $ZSH_CUSTOM/plugins/
-# Example format: plugins=(rails git textmate ruby lighthouse)
-# Add wisely, as too many plugins slow down shell startup.
-# ── init: lite (ZSH_LITE=1) or oh-my-zsh ──
-# The lite path replaces oh-my-zsh with the few things this config
-# actually uses from it: colors, completion, history, prompt_subst,
-# git_prompt_info and the theme. Compare: `ZSH_LITE=1 zsh` vs `zsh`.
-if [[ -n $ZSH_LITE ]]; then
-    setopt prompt_subst interactive_comments extended_glob auto_cd
-    autoload -Uz colors add-zsh-hook && colors
-
-    # history (oh-my-zsh defaults)
-    HISTFILE="$HOME/.zsh_history"
-    HISTSIZE=50000
-    SAVEHIST=10000
-    setopt extended_history hist_expire_dups_first hist_ignore_dups \
-           hist_ignore_space inc_append_history share_history
-
-    # completion — full fpath scan at most once a day, cached -C otherwise
-    autoload -Uz compinit
-    if [[ -n $HOME/.zcompdump-lite(#qN.mh-24) ]]; then
-        compinit -C -d "$HOME/.zcompdump-lite"
-    else
-        compinit -d "$HOME/.zcompdump-lite"
-    fi
-    zstyle ':completion:*' menu select
-    zstyle ':completion:*' matcher-list 'm:{a-zA-Z-_}={A-Za-z_-}'
-
-    # minimal git_prompt_info — the one oh-my-zsh function the theme uses
-    git_prompt_info() {
-        local ref
-        ref=$(command git symbolic-ref --short HEAD 2>/dev/null) ||
-        ref=$(command git rev-parse --short HEAD 2>/dev/null) || return 0
-        local state=$ZSH_THEME_GIT_PROMPT_CLEAN
-        [[ -n $(command git status --porcelain 2>/dev/null | head -1) ]] &&
-            state=$ZSH_THEME_GIT_PROMPT_DIRTY
-        echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${state}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
-    }
-
-    source "$ISG_DOTFILES/zsh/isg.zsh-theme"
+# completion — full fpath scan at most once a day, cached -C otherwise
+autoload -Uz compinit
+if [[ -n $HOME/.zcompdump-lite(#qN.mh-24) ]]; then
+    compinit -C -d "$HOME/.zcompdump-lite"
 else
-    plugins=(git)
-    source $ZSH/oh-my-zsh.sh
+    compinit -d "$HOME/.zcompdump-lite"
 fi
+autoload -Uz bashcompinit && bashcompinit   # tools that ship only bash completions
 
-# keep the whole history — both init paths above default SAVEHIST to 10k,
+zstyle ':completion:*' menu select
+# oh-my-zsh's matcher-list: exact, then case-insensitive, then partial-word —
+# strictly richer than the single case-fold rule this config had before.
+zstyle ':completion:*' matcher-list 'm:{[:lower:][:upper:]}={[:upper:][:lower:]}' 'r:|=*' 'l:|=* r:|=*'
+zstyle ':completion:*' use-cache yes
+zstyle ':completion:*' cache-path "$HOME/.zcompcache"
+zstyle ':completion:*' special-dirs true
+zstyle ':completion:*:cd:*' tag-order local-directories directory-stack path-directories
+zstyle ':completion:*:*:*:*:processes' command "ps -u $USER -o pid,user,comm -w -w"
+zstyle ':completion:*:*:kill:*:processes' list-colors '=(#b) #([0-9]#) ([0-9a-z-]#)*=01;34=0=01'
+
+# Quote ? & * in URLs as they are typed, so they don't glob-explode. This is the
+# self-insert half of oh-my-zsh's magic functions; the bracketed-paste half is
+# deliberately left out — it is slow with zsh-syntax-highlighting on large
+# pastes, and paste timing here is already delicate (see KEYTIMEOUT in vimode.zsh).
+autoload -Uz url-quote-magic
+zle -N self-insert url-quote-magic
+
+# minimal git_prompt_info — the one oh-my-zsh function the theme uses
+git_prompt_info() {
+    local ref
+    ref=$(command git symbolic-ref --short HEAD 2>/dev/null) ||
+    ref=$(command git rev-parse --short HEAD 2>/dev/null) || return 0
+    local state=$ZSH_THEME_GIT_PROMPT_CLEAN
+    [[ -n $(command git status --porcelain 2>/dev/null | head -1) ]] &&
+        state=$ZSH_THEME_GIT_PROMPT_DIRTY
+    echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${state}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
+}
+
+source "$ISG_DOTFILES/zsh/isg.zsh-theme"
+
+# the oh-my-zsh aliases this config actually used, per shell history
+alias ls='ls -G'
+alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv}'
+alias history='fc -l 1'
+
+# keep the whole history — the init block above defaults SAVEHIST to 10k,
 # which trims the file (recovered Jun 2026 after a wipe; see .zsh_history.bak-*)
 SAVEHIST=50000
 
@@ -155,14 +109,8 @@ SAVEHIST=50000
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
 
-# Set personal aliases, overriding those provided by oh-my-zsh libs,
-# plugins, and themes. Aliases can be placed here, though oh-my-zsh
-# users are encouraged to define aliases within the ZSH_CUSTOM folder.
+# Personal aliases live in zsh/aliases.zsh (sourced below).
 # For a full list of active aliases, run `alias`.
-#
-# Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
 #
 # alias python=/Library/Frameworks/Python.framework/Versions/3.10/bin/python3
 #alias python=/usr/local/bin/python3
@@ -191,19 +139,36 @@ source "$ISG_DOTFILES/zsh/fzf.zsh"
 source "$ISG_DOTFILES/zsh/vimode.zsh"
 source "$ISG_DOTFILES/zsh/omni.zsh"
 
+# Up/Down search history by the prefix already typed — the one oh-my-zsh binding
+# that is genuinely missed. Must come after vimode.zsh: its `bindkey -v`
+# re-aliases the main keymap and discards anything bound before it, so bind these
+# in viins and vicmd explicitly.
+autoload -Uz up-line-or-beginning-search down-line-or-beginning-search
+zle -N up-line-or-beginning-search
+zle -N down-line-or-beginning-search
+for _km in viins vicmd; do
+    bindkey -M $_km '^[[A' up-line-or-beginning-search
+    bindkey -M $_km '^[OA' up-line-or-beginning-search
+    bindkey -M $_km '^[[B' down-line-or-beginning-search
+    bindkey -M $_km '^[OB' down-line-or-beginning-search
+done
+unset _km
+
 
 
 #export NVM_DIR="$HOME/.nvm"
 #[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 #[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-# Syntax highlighting (Homebrew) — prefix derived from brew's own path
-# (/usr/local/bin/brew → /usr/local) instead of the slow `brew --prefix`
+# Syntax highlighting — Homebrew on darwin (prefix derived from brew's own path,
+# /usr/local/bin/brew → /usr/local, instead of the slow `brew --prefix`), or the
+# git clone that bootstrap/components/zsh_syntax_linux.sh makes on Linux.
 _brew_prefix="${HOMEBREW_PREFIX:-${commands[brew]:h:h}}"
-if [[ -f "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" ]]; then
-    source "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"
-fi
-unset _brew_prefix
+for _hl in "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" \
+           "$HOME/.local/share/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"; do
+    [[ -f $_hl ]] && { source "$_hl"; break }
+done
+unset _brew_prefix _hl
 
 # ── startup banner (engine lives in the isg theme) ──
 source "$ISG_DOTFILES/zsh/startup.zsh"
