@@ -3,7 +3,7 @@
 # Requires: DOTFILES_DIR to be set
 
 ensure_dotfiles() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     echo "[STEP] Verifying dotfiles..."
     local failed=0
 
@@ -64,7 +64,7 @@ ensure_dotfiles() {
 }
 
 link_dotfiles() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     echo "[STEP] Linking dotfiles..."
 
     # Link Zsh config

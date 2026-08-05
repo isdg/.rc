@@ -8,7 +8,7 @@ alias v.='vim .'
 alias c='claude'
 alias tm='tmux'
 alias os='orchbus'   # cockpit for triaging Claude Code sessions
-alias tt='bash "${ISG_DOTFILES:-$HOME/.dotfiles}/toggle_theme.sh"'   # toggle light/dark
+alias tt='bash "${ISG_DOTFILES:-$HOME/.rc}/toggle_theme.sh"'   # toggle light/dark
 
 # gjobs — cross-terminal "jobs". The `jobs` builtin only sees the current
 # shell's job table, so this shows every terminal-attached process grouped by
@@ -52,9 +52,9 @@ export GLAMOUR_STYLE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev
 # value (a tmux global env snapshot, a long-lived parent process) launders
 # itself through every new shell indefinitely.
 export PALACE_DIR="$(env -u PALACE_DIR plc config 2>/dev/null)"
-source "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/palace.zsh"
+source "${ISG_DOTFILES:-$HOME/.rc}/zsh/palace.zsh"
 
 # Machine-local, gitignored aliases/functions (work-specific helpers, private
 # repo names, employer paths). Never published; source it only if it exists.
-[ -f "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/aliases.ignored.zsh" ] \
-   && source "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/aliases.ignored.zsh"
+[ -f "${ISG_DOTFILES:-$HOME/.rc}/zsh/aliases.ignored.zsh" ] \
+   && source "${ISG_DOTFILES:-$HOME/.rc}/zsh/aliases.ignored.zsh"

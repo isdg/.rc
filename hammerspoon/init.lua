@@ -2,7 +2,7 @@
 --                 HAMMERSPOON CONFIGURATION (isg)
 -- ============================================================
 -- Open source (MIT) macOS automation in Lua. Config is tracked in
--- ~/.dotfiles/hammerspoon and symlinked to ~/.hammerspoon (see bootstrap).
+-- ~/.rc/hammerspoon and symlinked to ~/.hammerspoon (see bootstrap).
 --
 -- Feature: a Spotlight-style translation / dictionary popup on a hotkey.
 

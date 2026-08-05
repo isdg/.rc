@@ -1,5 +1,5 @@
 # Ghostty config — light theme, JetBrains Mono ExtraLight
-# layout/spacing inspired by ~/.dotfiles/hyper/.hyper.js
+# layout/spacing inspired by ~/.rc/hyper/.hyper.js
 
 # --- font ---
 font-family = JetBrains Mono

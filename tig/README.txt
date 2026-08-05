@@ -7,7 +7,7 @@ TIG SETUP
 
 Create a symlink from the repo tig configuration to your home directory:
 
-    > ln -sf "$HOME/.dotfiles/tig/.tigrc" \
+    > ln -sf "$HOME/.rc/tig/.tigrc" \
           "$HOME/.tigrc"
 
 -------------------------------------------------------------------------------

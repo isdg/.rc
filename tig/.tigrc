@@ -49,9 +49,9 @@ color title-focus white blue bold
 # Per-mode overrides, last so they win: theme-active.tigrc is a symlink to
 # theme-{dark,light}.tigrc that toggle_theme.sh flips, the same idiom as
 # Ghostty's theme-active.conf and the k9s skin. -q keeps tig quiet when the
-# symlink is absent (never toggled, or a clone outside ~/.dotfiles), leaving
+# symlink is absent (never toggled, or a clone outside ~/.rc), leaving
 # the fallback above in place. tig reads this at startup only.
-source -q ~/.dotfiles/tig/theme-active.tigrc
+source -q ~/.rc/tig/theme-active.tigrc
 
 # -- Key bindings: main view --------------------------------------------------
 

@@ -3,7 +3,7 @@
   "owner": {
     "name": "Isai Gordeev"
   },
-  "description": "Personal Claude Code skills, maintained locally in .dotfiles.",
+  "description": "Personal Claude Code skills, maintained locally in .rc.",
   "plugins": [
     {
       "name": "isg-skills",

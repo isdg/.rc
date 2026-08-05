@@ -39,7 +39,7 @@
     "isg": {
       "source": {
         "source": "directory",
-        "path": "/Users/isg/.dotfiles"
+        "path": "/Users/isg/.rc"
       }
     }
   },

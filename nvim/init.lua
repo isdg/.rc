@@ -16,7 +16,7 @@ require("options")
 require("russian")
 
 -- Sibling files in ../vim, resolved via this file's real path (so the
--- dotfiles dir doesn't have to be ~/.dotfiles):
+-- dotfiles dir doesn't have to be ~/.rc):
 --   fzf-layout.vim  — fzf.vim window/preview layout (shared with vim/.vimrc)
 do
    local this_file = vim.fn.resolve(debug.getinfo(1, "S").source:sub(2))

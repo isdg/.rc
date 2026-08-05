@@ -3,7 +3,7 @@
 # Requires: DOTFILES_DIR to be set
 
 ensure_fonts_darwin() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     echo "[STEP] Verifying fonts..."
     if [ ! -d "$dotfiles_dir/fonts" ]; then
         echo "[SKIP] fonts/ directory not found in dotfiles"
@@ -25,7 +25,7 @@ ensure_fonts_darwin() {
 }
 
 ensure_fonts_linux() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     echo "[STEP] Verifying fonts..."
     if [ ! -d "$dotfiles_dir/fonts" ]; then
         echo "[SKIP] fonts/ directory not found in dotfiles"
@@ -47,7 +47,7 @@ ensure_fonts_linux() {
 }
 
 install_fonts_darwin() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
 
     echo "[STEP] Installing fonts..."
 
@@ -63,7 +63,7 @@ install_fonts_darwin() {
 }
 
 install_fonts_linux() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
 
     echo "[STEP] Installing fonts..."
 

@@ -20,7 +20,7 @@ Plugins (neovim-native):
 
 Create a symlink from the repo to the Neovim config directory:
 
-    > ln -sf "$HOME/.dotfiles/nvim" "$HOME/.config/nvim"
+    > ln -sf "$HOME/.rc/nvim" "$HOME/.config/nvim"
 
 -------------------------------------------------------------------------------
 2. Install plugins

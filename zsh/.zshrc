@@ -7,7 +7,7 @@ zmodload zsh/datetime
 typeset -gF _BANNER_T0=$EPOCHREALTIME
 
 # Repo root, resolved from THIS file's real path so the config works under any
-# directory name (~/.dotfiles, ~/.rc, …) — not just a hardcoded one. %x = the
+# directory name (~/.rc, ~/.dotfiles, …) — not just a hardcoded one. %x = the
 # file being sourced; :A resolves the ~/.zshrc symlink to the repo; :h:h climbs
 # zsh/ up to the repo root. Exported so children (tmux, scripts) can use it too.
 export ISG_DOTFILES="${${(%):-%x}:A:h:h}"

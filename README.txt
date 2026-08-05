@@ -18,10 +18,10 @@ Includes configs for:
 QUICK START
 -------------------------------------------------------------------------------
 
-Clone into ~/.dotfiles:
+Clone into ~/.rc:
 
-    > git clone <repo-url> "$HOME/.dotfiles"
-    > cd "$HOME/.dotfiles"
+    > git clone <repo-url> "$HOME/.rc"
+    > cd "$HOME/.rc"
 
 Run the bootstrap for your OS:
 
@@ -76,10 +76,10 @@ MANUAL SETUP (if you'd rather not run bootstrap)
 
 1. Link the core dotfiles:
 
-    > ln -fs "$HOME/.dotfiles/zsh/.zshrc"      "$HOME/.zshrc"
-    > ln -fs "$HOME/.dotfiles/vim/.vimrc"      "$HOME/.vimrc"
-    > ln -fs "$HOME/.dotfiles/tmux/.tmux.conf" "$HOME/.tmux.conf"
-    > ln -fs "$HOME/.dotfiles/nvim"            "$HOME/.config/nvim"
+    > ln -fs "$HOME/.rc/zsh/.zshrc"      "$HOME/.zshrc"
+    > ln -fs "$HOME/.rc/vim/.vimrc"      "$HOME/.vimrc"
+    > ln -fs "$HOME/.rc/tmux/.tmux.conf" "$HOME/.tmux.conf"
+    > ln -fs "$HOME/.rc/nvim"            "$HOME/.config/nvim"
 
    There is no framework to install and no theme link to make — .zshrc is
    plain zsh and sources zsh/isg.zsh-theme from the repo directly.
