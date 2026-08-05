@@ -70,6 +70,11 @@
 "   :History         Open file history
 "   :BLines          Search inside current buffer
 
+" GIT (fzf; same keys as nvim)
+"   <leader>gm       All repo commits
+"   <leader>gf       Commits for the current buffer
+"   <leader>gl       Commits for the current line (or selection, in visual)
+
 " COMMENTING
 "   <C-shift-_>            Toggle comment (normal/visual mode)
 
@@ -449,8 +454,13 @@ nnoremap <leader>A :Rg<CR>
 
 " Git commits (fzf) — include author in log so fzf can filter by it
 let g:fzf_commits_log_options = '--color=always --format="%C(auto)%h%d %s %C(blue)[%an]%C(reset) %C(black)%C(bold)%cr"'
-nnoremap <leader>gj :Commits<CR>
-nnoremap <leader>gk :BCommits<CR>
+" Same keys as nvim (nvim/lua/keymaps/git.lua): gm repo log, gf this buffer's
+" history, gl line history. A range on :BCommits becomes `git log -L a,b:file`,
+" which is how gl works — `.` for the cursor line, '<,'> for a selection.
+nnoremap <leader>gm :Commits<CR>
+nnoremap <leader>gf :BCommits<CR>
+nnoremap <leader>gl :.BCommits<CR>
+xnoremap <leader>gl :BCommits<CR>
 
 " ============================================================
 "                      COMMENTING
