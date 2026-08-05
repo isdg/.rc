@@ -439,6 +439,10 @@ nnoremap <C-n> :NERDTreeToggle<CR> " Toggle NERDTree
 nnoremap <C-f> :NERDTreeFind<CR>   " Find current file
 let NERDTreeShowHidden=1
 let g:NERDTreeWinSize=40
+" Close the tree once a file is opened — the explorer is for picking a file, not
+" for living next to the buffer. Matches nvim-tree's actions.open_file.quit_on_open
+" (nvim/lua/plugins/nav.lua). Reopen with <C-n>.
+let NERDTreeQuitOnOpen=1
 autocmd FileType nerdtree setlocal number
 
 " ============================================================
