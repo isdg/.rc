@@ -10,7 +10,7 @@ Includes configs for:
   - Zsh (plain zsh, no framework + isg theme (forked from sobole) + fzf)
   - Vim and Neovim
   - Tmux (with TPM + tmux-resurrect)
-  - Ghostty, Hyper, VSCode, Zed
+  - Ghostty, VSCode, Zed
   - Tig, JetBrains Mono + Computer Modern fonts
   - macOS defaults & key remapping
 
@@ -30,7 +30,7 @@ Run the bootstrap for your OS:
 
 The bootstrap is modular (see bootstrap/components/) and handles:
 Homebrew, packages, dotfile symlinks, vim-plug + plugins, fzf, fonts,
-tig, vscode, hyper, key remapping, and macOS defaults.
+tig, vscode, key remapping, and macOS defaults.
 
 Profiles (macOS). darwin.sh reads two component registries at the top of
 the file — CORE and EXTRA — and --minimal runs only CORE with the smaller
@@ -62,7 +62,6 @@ LAYOUT
     nvim/           init.lua + lazy.nvim setup
     tmux/           .tmux.conf
     ghostty/        terminal config
-    hyper/          terminal config
     vscode/         settings + keybindings
     zed/            settings
     tig/            git TUI config

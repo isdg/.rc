@@ -62,7 +62,6 @@ brew "minikube"
 brew "mysql"
 
 # GUI apps
-cask "hyper"
 cask "docker-desktop"
 cask "visual-studio-code"
 
