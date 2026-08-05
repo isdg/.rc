@@ -76,8 +76,10 @@
 "   <leader>gl       Commits for the current line (or selection, in visual)
 "   <leader>gd       Changed files (git status)
 
-" COMMENTING
-"   <C-shift-_>            Toggle comment (normal/visual mode)
+" COMMENTING  (same keys as nvim)
+"   gcc                    Toggle comment on the line (3gcc = 3 lines)
+"   gc                     Toggle comment on a visual selection
+"   <C-_>                  Same toggle, on Ctrl-/
 
 " COC (LSP)
 "   <CR>             Confirm completion
@@ -486,6 +488,14 @@ let g:NERDToggleCheckAllLines = 1
 " has no trailing-comment syntax — a `" text` suffix lands inside the RHS.
 nmap <C-_> <Plug>NERDCommenterToggle
 vmap <C-_> <Plug>NERDCommenterToggle
+
+" nvim's keys too (Comment.nvim): gcc toggles the current line — with a count,
+" that many lines — and gc toggles a visual selection.
+" `gc{motion}` (gcap, gc3j) is NOT provided: NERDCommenter works on lines and
+" selections, not as an operator. tpope/vim-commentary is the drop-in that adds
+" motions, if that turns out to matter.
+nmap gcc <Plug>NERDCommenterToggle
+xmap gc  <Plug>NERDCommenterToggle
 
 
 " ============================================================
