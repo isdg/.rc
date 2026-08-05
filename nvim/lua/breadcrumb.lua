@@ -10,7 +10,11 @@ function M.show()
    -- Try LSP first
    local clients = vim.lsp.get_clients({ bufnr = 0 })
    if #clients > 0 then
-      local params = vim.lsp.util.make_position_params()
+      -- documentSymbol takes only { textDocument } — the cursor position that
+      -- make_position_params() adds was never read, and asking for it in nvim
+      -- 0.11 warns "position_encoding param is required". The cursor row is
+      -- read straight from the window below instead.
+      local params = { textDocument = vim.lsp.util.make_text_document_params(0) }
       local results = vim.lsp.buf_request_sync(0, "textDocument/documentSymbol", params, 1000)
       local row = vim.api.nvim_win_get_cursor(0)[1] - 1
       local parts = {}

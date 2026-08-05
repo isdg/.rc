@@ -41,6 +41,9 @@ copy-on-select = false
 mouse-hide-while-typing = true
 confirm-close-surface = false
 shell-integration = detect
+# auto-installs xterm-ghostty terminfo on remote hosts via `ssh` wrapper (needs
+# Ghostty 1.4.0+ client-side; falls back to TERM=xterm-256color if tic fails)
+shell-integration-features = ssh-env,ssh-terminfo
 
 # --- behavior ---
 

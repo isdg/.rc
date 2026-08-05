@@ -169,13 +169,25 @@ fi
 
 if [[ "$ISG_FZF_THEME" != 'false' ]]; then
   if (( $+commands[fzf] )); then
-    # This theme is the same for both light and dark themes:
+    # The selected row (bg+/fg+) is the one colour that cannot be shared: a
+    # light-theme selection (#dce7f2 with dark text) reads as a glaring white
+    # bar on the dark background. Each mode borrows its editor's own selection
+    # colours — nvim/colors/vs_{dark,light}.vim `hi Search` — so the picker
+    # matches the buffer underneath it. `prompt` likewise: black is invisible
+    # on dark.
+    if [[ "$ISG_THEME_MODE" == 'dark' ]]; then
+      local _fzf_sel='bg+:#264F78,fg+:#D4D4D4'   # vs_dark  hi Search
+      local _fzf_prompt='prompt:blue'
+    else
+      local _fzf_sel='bg+:#dce7f2,fg+:bright-black'
+      local _fzf_prompt='prompt:black'
+    fi
     export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
       --preview-window=down:55%
-      --color=bg:-1,fg:-1,bg+:#dce7f2,fg+:bright-black
+      --color=bg:-1,fg:-1,$_fzf_sel
       --color=hl:bright-blue,hl+:blue
       --color=header:green,info:green,pointer:blue
-      --color=marker:bright-blue,prompt:black,spinner:blue"
+      --color=marker:bright-blue,$_fzf_prompt,spinner:blue"
 
     # fzf-tab theme, setting the default color for suggestions (blue for me)
     # Test all colors: `msgcat --color=test`

@@ -1,0 +1,42 @@
+# Minimal profile — used by `./bootstrap/darwin.sh --minimal`.
+#
+# The tmux + nvim + zsh experience and the tools those configs actually invoke,
+# nothing else. Deliberately absent: language toolchains (llvm, llvm@17,
+# openjdk, maven, zig, zls, rust, node, pipx), media/graphics libs (ffmpeg,
+# cairo, freetype, glfw, harfbuzz), infra (docker-desktop, minikube, mysql,
+# dive), extra TUIs (vifm, nom, glow, w3m, tokei, tree, sd) and VS Code with its
+# extensions. Roughly 1 GB installed versus ~14-15 GB for the full Brewfile.
+#
+# Consequence worth knowing: without node/llvm/zig there are no LSP servers for
+# mason to hand nvim. Everything else — pickers, treesitter, gitsigns, fugitive,
+# the keymaps — works, since treesitter compiles parsers with the cc from the
+# Xcode command line tools.
+
+# Editors
+brew "neovim"
+brew "vim"
+
+# Multiplexer
+brew "tmux"
+
+# Shell
+brew "zsh"
+brew "zsh-syntax-highlighting"
+brew "zoxide"   # frecency dir jump (z / zi)
+
+# Pickers & previews — fzf.vim, telescope and the tmux picker scripts need all
+# four: fzf itself, rg + fd as sources, bat for preview panes.
+brew "fzf"
+brew "ripgrep"
+brew "fd"
+brew "bat"
+
+# Git
+brew "git"
+brew "gh"
+brew "tig"     # tui git; tig/ config is symlinked by the tig component
+brew "git-delta"  # .gitconfig sets `pager = delta` — git paging breaks without it
+
+# Terminal emulator. Kept even in the minimal profile: it is the terminal these
+# configs are written for (ghostty/config, theme-{dark,light}.conf).
+cask "ghostty"

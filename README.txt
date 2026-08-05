@@ -32,6 +32,24 @@ The bootstrap is modular (see bootstrap/components/) and handles:
 Homebrew, packages, Oh My Zsh, dotfile symlinks, vim-plug + plugins,
 fzf, fonts, tig, vscode, hyper, key remapping, and macOS defaults.
 
+Profiles (macOS). darwin.sh reads two component registries at the top of
+the file — CORE and EXTRA — and --minimal runs only CORE with the smaller
+darwin/Brewfile.minimal:
+
+    > ./bootstrap/darwin.sh --minimal    # tmux + nvim + zsh core, ~0.8 GB
+    > ./bootstrap/darwin.sh              # everything, ~14-15 GB
+
+Minimal gets the editors, tmux, zsh, the fzf/rg/fd/bat picker stack, git
++ gh + tig + delta, Ghostty, dotfile symlinks and fonts. It leaves out
+language toolchains (llvm, openjdk, zig, rust, node), media/graphics
+libs, docker/minikube/mysql, VS Code with its extensions, and the
+Rust-built side tools (plc, hr, omni, orchbus) — so there are no LSP
+servers for mason to install.
+
+Either profile can be verified without changing anything:
+
+    > ./bootstrap/darwin.sh --ensure [--minimal]
+
 Restart your terminal (or `exec zsh`) when it finishes.
 
 -------------------------------------------------------------------------------
