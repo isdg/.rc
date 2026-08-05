@@ -7,7 +7,7 @@ Built for older hardware and large codebases (~1M lines) where heavy
 IDEs feel sluggish.
 
 Includes configs for:
-  - Zsh (Oh My Zsh + isg theme (forked from sobole) + fzf)
+  - Zsh (plain zsh, no framework + isg theme (forked from sobole) + fzf)
   - Vim and Neovim
   - Tmux (with TPM + tmux-resurrect)
   - Ghostty, Hyper, VSCode, Zed
@@ -29,8 +29,8 @@ Run the bootstrap for your OS:
     > ./bootstrap/linux.sh         # Linux
 
 The bootstrap is modular (see bootstrap/components/) and handles:
-Homebrew, packages, Oh My Zsh, dotfile symlinks, vim-plug + plugins,
-fzf, fonts, tig, vscode, hyper, key remapping, and macOS defaults.
+Homebrew, packages, dotfile symlinks, vim-plug + plugins, fzf, fonts,
+tig, vscode, hyper, key remapping, and macOS defaults.
 
 Profiles (macOS). darwin.sh reads two component registries at the top of
 the file — CORE and EXTRA — and --minimal runs only CORE with the smaller
@@ -81,30 +81,22 @@ MANUAL SETUP (if you'd rather not run bootstrap)
     > ln -fs "$HOME/.dotfiles/tmux/.tmux.conf" "$HOME/.tmux.conf"
     > ln -fs "$HOME/.dotfiles/nvim"            "$HOME/.config/nvim"
 
-2. Install Oh My Zsh:
+   There is no framework to install and no theme link to make — .zshrc is
+   plain zsh and sources zsh/isg.zsh-theme from the repo directly.
 
-    > sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
-
-3. Link the theme:
-
-    > ln -fs "$HOME/.dotfiles/zsh/isg.zsh-theme" \
-             "$HOME/.oh-my-zsh/custom/themes/isg.zsh-theme"
-
-   Then set ZSH_THEME="isg" in .zshrc.
-
-4. Install vim-plug and plugins:
+2. Install vim-plug and plugins:
 
     > curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
     > vim +PlugInstall +qall
 
-5. Install TPM and tmux plugins:
+3. Install TPM and tmux plugins:
 
     > git clone https://github.com/tmux-plugins/tpm ~/.tmux/plugins/tpm
 
    Then inside tmux: prefix + I
 
-6. Reload:
+4. Reload:
 
     > source ~/.zshrc
 

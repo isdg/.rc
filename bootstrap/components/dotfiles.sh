@@ -8,8 +8,6 @@ ensure_dotfiles() {
     local failed=0
 
     _check_link ".zshrc"        "$HOME/.zshrc"        "$dotfiles_dir/zsh/.zshrc"        || failed=1
-    _check_link "isg.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/isg.zsh-theme" \
-                                "$dotfiles_dir/zsh/isg.zsh-theme"                        || failed=1
     _check_link ".vimrc"        "$HOME/.vimrc"        "$dotfiles_dir/vim/.vimrc"         || failed=1
     _check_link ".tmux.conf"    "$HOME/.tmux.conf"    "$dotfiles_dir/tmux/.tmux.conf"    || failed=1
     _check_link ".gitconfig"    "$HOME/.gitconfig"    "$dotfiles_dir/.gitconfig"         || failed=1
@@ -77,9 +75,7 @@ link_dotfiles() {
     ln -sf "$dotfiles_dir/zsh/.zshrc" "$HOME/.zshrc"
     echo "[OK] Linked .zshrc"
 
-    # Link Zsh theme
-    ln -sf "$dotfiles_dir/zsh/isg.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/isg.zsh-theme"
-    echo "[OK] Linked isg.zsh-theme"
+    # The zsh theme needs no link — .zshrc sources it from the repo directly.
 
     # Link Vim config
     if [ -f "$HOME/.vimrc" ] && [ ! -L "$HOME/.vimrc" ]; then

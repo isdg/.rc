@@ -16,7 +16,6 @@ export DOTFILES_DIR
 # Load components
 source "$SCRIPT_DIR/components/helpers.sh"
 source "$SCRIPT_DIR/components/packages_linux.sh"
-source "$SCRIPT_DIR/components/ohmyzsh.sh"
 source "$SCRIPT_DIR/components/zsh_syntax_linux.sh"
 source "$SCRIPT_DIR/components/directories.sh"
 source "$SCRIPT_DIR/components/dotfiles.sh"
@@ -41,7 +40,6 @@ if [[ "${1:-}" == "--ensure" ]]; then
     set +e  # collect all failures instead of stopping at first
 
     ensure_packages_linux      || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_ohmyzsh             || FAILURES=$((FAILURES + 1)); echo ""
     ensure_zsh_syntax_linux    || FAILURES=$((FAILURES + 1)); echo ""
     ensure_directories         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_dotfiles            || FAILURES=$((FAILURES + 1)); echo ""
@@ -73,8 +71,6 @@ echo ""
 
 # Run components
 install_packages_linux
-echo ""
-install_ohmyzsh
 echo ""
 install_zsh_syntax_linux
 echo ""
