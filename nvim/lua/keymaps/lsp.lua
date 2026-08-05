@@ -9,7 +9,7 @@ lmap("n", "D", function()
    vim.diagnostic.enable(not vim.diagnostic.is_enabled())
 end, { desc = "Toggle diagnostics" })
 
--- Searchable list of all diagnostics (pairs with ]d/[d jump, ge float).
+-- Searchable list of all diagnostics (pairs with ]d/[d jump, gK float).
 lmap("n", "d", "<cmd>Telescope diagnostics<CR>", { desc = "List diagnostics" })
 
 vim.api.nvim_create_autocmd("LspAttach", {
@@ -20,7 +20,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
       map("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
       map("n", "gr", "<cmd>Telescope lsp_references<CR>", opts)
       map("n", "K", vim.lsp.buf.hover, opts)
-      map("n", "ge", function()
+      map("n", "gK", function()
          vim.diagnostic.open_float({ scope = "cursor" })
       end, opts)
       map("n", "]d", vim.diagnostic.goto_next, opts)

@@ -92,7 +92,7 @@
 "   :CocList         Show Coc features (diagnostics, extensions)
 "   <leader>d / D    Diagnostics: list / toggle visibility
 "   ]d / [d          Next / previous diagnostic
-"   ge               Diagnostic message under cursor
+"   gK               Diagnostic message under cursor
 
 " ============================================================
 "                      NAVIGATION EXTENDED
@@ -374,13 +374,14 @@ nnoremap <silent> <leader>F :call CocActionAsync('format')<CR>
 
 " Diagnostics, same keys as nvim (nvim/lua/keymaps/lsp.lua):
 "   <leader>d  searchable list      ]d / [d  next / previous
-"   <leader>D  hide/show them       ge       message for the line under cursor
+"   <leader>D  hide/show them       gK       message for the line under cursor
 " coc's own convention is [g/]g; these use nvim's [d/]d so the two editors
 " agree. diagnostic.enableSign is false in coc-settings.json (matching nvim's
-" vim.diagnostic.config({ signs = false })), so `ge` is how you read the text.
+" vim.diagnostic.config({ signs = false })), so `gK` is how you read the text.
+" gK rather than ge: ge is the built-in "end of previous word" motion.
 nnoremap <silent> <leader>d :CocList diagnostics<CR>
 nnoremap <silent> <leader>D :call CocAction('diagnosticToggle')<CR>
-nmap <silent> ge <Plug>(coc-diagnostic-info)
+nmap <silent> gK <Plug>(coc-diagnostic-info)
 nmap <silent> ]d <Plug>(coc-diagnostic-next)
 nmap <silent> [d <Plug>(coc-diagnostic-prev)
 
