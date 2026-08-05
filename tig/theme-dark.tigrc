@@ -12,3 +12,9 @@
 # `default` fg is the terminal foreground, #D4D4D4: 4.74:1 on the bar, and the
 # same fg/bg pairing fzf uses for fg+/bg+.
 color cursor default color24 bold
+
+# The focused view's title bar, the same ANSI blue and the worse offender of the
+# two: `white` is #a6adc8 under Mocha, which on #89b4fa is 1.06:1 — text and bar
+# within a hair of the same lightness. Same treatment as the cursor above, and
+# deliberately the same colour: one selection blue for the whole UI.
+color title-focus default color24 bold
