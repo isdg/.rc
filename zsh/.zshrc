@@ -10,7 +10,7 @@ typeset -gF _BANNER_T0=$EPOCHREALTIME
 # directory name (~/.rc, ~/.dotfiles, …) — not just a hardcoded one. %x = the
 # file being sourced; :A resolves the ~/.zshrc symlink to the repo; :h:h climbs
 # zsh/ up to the repo root. Exported so children (tmux, scripts) can use it too.
-export ISG_DOTFILES="${${(%):-%x}:A:h:h}"
+export ISGRC="${${(%):-%x}:A:h:h}"
 
 # Theme mode (dark|light) read from the single source of truth written by
 # toggle_theme.sh. New shells always reflect the current theme and no tracked
@@ -81,7 +81,7 @@ git_prompt_info() {
     echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${state}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
 }
 
-source "$ISG_DOTFILES/zsh/isg.zsh-theme"
+source "$ISGRC/zsh/isg.zsh-theme"
 
 # oh-my-zsh's ls/grep colour aliases. -G is BSD/macOS; GNU ls wants --color,
 # where -G means "hide group" instead — pick by OSTYPE rather than probing, so
@@ -140,12 +140,12 @@ export PATH="$HOME/.cargo/bin:$PATH"   # cargo-installed binaries (plc)
 export EDITOR='nvim'
 export VISUAL='nvim'
 
-source "$ISG_DOTFILES/zsh/git.zsh"      # both before aliases.zsh, so personal
-source "$ISG_DOTFILES/zsh/dirs.zsh"     # aliases keep precedence
-source "$ISG_DOTFILES/zsh/aliases.zsh"
-source "$ISG_DOTFILES/zsh/fzf.zsh"
-source "$ISG_DOTFILES/zsh/vimode.zsh"
-source "$ISG_DOTFILES/zsh/omni.zsh"
+source "$ISGRC/zsh/git.zsh"      # both before aliases.zsh, so personal
+source "$ISGRC/zsh/dirs.zsh"     # aliases keep precedence
+source "$ISGRC/zsh/aliases.zsh"
+source "$ISGRC/zsh/fzf.zsh"
+source "$ISGRC/zsh/vimode.zsh"
+source "$ISGRC/zsh/omni.zsh"
 
 # Up/Down search history by the prefix already typed — the one oh-my-zsh binding
 # that is genuinely missed. Must come after vimode.zsh: its `bindkey -v`
@@ -179,7 +179,7 @@ done
 unset _brew_prefix _hl
 
 # ── startup banner (engine lives in the isg theme) ──
-source "$ISG_DOTFILES/zsh/startup.zsh"
+source "$ISGRC/zsh/startup.zsh"
 
 banner_info "%Bisg%b · zsh"
 banner_info "%D{%a %d %b %Y · %H:%M}"
