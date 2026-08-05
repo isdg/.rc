@@ -10,6 +10,7 @@ BANNER_LOG_FUNCS=(
     log_shell
     log_host
     log_ssh
+    log_tmux
 )
 
 # zsh version + startup time, e.g. "zsh 5.9 · 361 ms".
@@ -32,15 +33,20 @@ log_host() {
     banner_log "${HOST%%.*} · ${where}"
 }
 
-# tmux, one minimal line — inside: current session · clients · detached;
-# outside: counts only, silent when the server is idle or absent
+# tmux, one minimal line — inside: current session first, then the counts,
+# e.g. "tmux · dots · 3 sessions · 1 client · 2 detached"; outside: counts
+# only, silent when the server is idle or absent.
+# list-sessions prints one #{session_attached} per session — 0 when detached.
 log_tmux() {
     (( $+commands[tmux] )) || return 0
-    local -a detached clients seg
-    detached=( ${(f)"$(command tmux list-sessions \
-        -F '#{?session_attached,,#{session_name}}' 2>/dev/null)"} )
+    local -a sessions detached clients seg
+    sessions=( ${(f)"$(command tmux list-sessions \
+        -F '#{session_attached}' 2>/dev/null)"} )
+    detached=( ${(M)sessions:#0} )
     clients=( ${(f)"$(command tmux list-clients -F x 2>/dev/null)"} )
     [[ -n $TMUX ]] && seg+=("$(command tmux display-message -p '#S' 2>/dev/null)")
+    local ss="sessions"; (( ${#sessions} == 1 )) && ss="session"
+    (( ${#sessions} )) && seg+=("${#sessions} $ss")
     local cs="clients"; (( ${#clients} == 1 )) && cs="client"
     (( ${#clients} ))  && seg+=("${#clients} $cs")
     (( ${#detached} )) && seg+=("${#detached} detached")
