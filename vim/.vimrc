@@ -23,6 +23,7 @@
 "   <leader>/        Search history
 "   <leader>y        Yank to system clipboard
 "   <leader>v        Reselect last visual selection
+"   <leader>F        Format buffer (on demand; nothing formats on save)
 "   .                Redo last command 
 "   u                Undo last command
 "   U                Undo all changes on current line
@@ -343,6 +344,11 @@ nmap <silent> gy <Plug>(coc-type-definition)
 nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 nnoremap <silent> K :call CocActionAsync('doHover')<CR>
+
+" Format on demand, never on save — matches nvim's <leader>F (keymaps/edit.lua).
+" coc.preferences.formatOnSaveFiletypes was removed from coc-settings.json so a
+" write only writes.
+nnoremap <silent> <leader>F :call CocActionAsync('format')<CR>
 
 
 " ============================================================

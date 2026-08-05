@@ -127,13 +127,10 @@ return {
          -- Disable diagnostic signs (matches coc-settings.json)
          vim.diagnostic.config({ signs = false })
 
-         -- Format on save for specific filetypes
-         vim.api.nvim_create_autocmd("BufWritePre", {
-            pattern = { "*.json", "*.rs", "*.go", "*.zig" },
-            callback = function()
-               vim.lsp.buf.format({ async = false })
-            end,
-         })
+         -- No format-on-save. json/rust/go/zig used to be reformatted here via
+         -- vim.lsp.buf.format on BufWritePre; they are covered on demand by
+         -- <leader>F, which falls back to the LSP formatter when conform has no
+         -- formatter configured for the filetype.
       end,
    },
 
