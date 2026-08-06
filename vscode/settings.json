@@ -83,13 +83,16 @@
     //  a little grayer white theme for ~17:00
     //    #e0e0e0
     //
-    //  a default one
+    //  a slightly grey one
     //    #f2f2f2
+    //
+    //  a default one
+    //    #fafafa
 
     "[Visual Studio Light]": {
-      "editor.background": "#f2f2f2",
-      "sideBar.background": "#f2f2f2",
-      "editor.lineHighlightBorder": "#f2f2f2", // the bounding line color
+      "editor.background": "#fafafa",
+      "sideBar.background": "#fafafa",
+      "editor.lineHighlightBorder": "#fafafa", // the bounding line color
       "editor.foreground": "#000000",
       "editorLineNumber.foreground": "#c0c0c0",
       "editorLineNumber.activeForeground": "#999999",
