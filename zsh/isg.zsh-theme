@@ -268,7 +268,12 @@ add-zsh-hook precmd __isg::precmd
 #
 # Config
 #   BANNER_DISABLE=1           skip rendering entirely
-#   BANNER_ACCENT=color        mascot color (default: yellow)
+#   BANNER_ACCENT=color        mascot color (default: 244, a mid grey that
+#                              holds up on both the dark and light background).
+#                              Any %F{..} value: a base name, or 0-255. Note
+#                              zsh has no `grey`/`gray` name — both fall back
+#                              to the default foreground — so greys need a
+#                              number.
 # ----------------------------------------------------------------------------
 
 typeset -ga BANNER_LOG_FUNCS=()
@@ -444,7 +449,7 @@ banner_render() {
     for (( i = 1; i <= rows; i++ )); do
         mascot="${_banner_mascot[i]:-}"
         info="${_banner_info_lines[i]:-}"
-        print -P -- "  %F{${BANNER_ACCENT:-yellow}}${(r:${_banner_mascot_width}:)mascot}%f   ${info}"
+        print -P -- "  %F{${BANNER_ACCENT:-244}}${(r:${_banner_mascot_width}:)mascot}%f   ${info}"
     done
     (( ${#_banner_log_lines} )) && print
     # dark theme: blue, like the prompt's current-dir; light: default fg
