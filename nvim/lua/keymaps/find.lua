@@ -24,7 +24,7 @@ lmap("n", "E", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", { desc = "Wor
 -- make_position_params). To actually narrow the picker to the enclosing symbol,
 -- pass { default_text = <name> } here.
 lmap("n", "e", function() require("telescope.builtin").lsp_document_symbols() end,
-   { desc = "Document symbols" })
+    { desc = "Document symbols" })
 lmap("n", "i", function() require("breadcrumb").show() end, { desc = "Show breadcrumb" })
 lmap("n", "B", "<cmd>History<CR>", { desc = "Recent files (fzf)" })
 

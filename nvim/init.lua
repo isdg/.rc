@@ -19,19 +19,19 @@ require("russian")
 -- dotfiles dir doesn't have to be ~/.rc):
 --   fzf-layout.vim  — fzf.vim window/preview layout (shared with vim/.vimrc)
 do
-   local this_file = vim.fn.resolve(debug.getinfo(1, "S").source:sub(2))
-   local dotfiles_dir = vim.fn.fnamemodify(this_file, ":p:h:h")
-   vim.cmd("source " .. dotfiles_dir .. "/vim/fzf-layout.vim")
+    local this_file = vim.fn.resolve(debug.getinfo(1, "S").source:sub(2))
+    local dotfiles_dir = vim.fn.fnamemodify(this_file, ":p:h:h")
+    vim.cmd("source " .. dotfiles_dir .. "/vim/fzf-layout.vim")
 end
 
 -- Bootstrap lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-   vim.fn.system({
-      "git", "clone", "--filter=blob:none",
-      "https://github.com/folke/lazy.nvim.git",
-      "--branch=stable", lazypath,
-   })
+    vim.fn.system({
+        "git", "clone", "--filter=blob:none",
+        "https://github.com/folke/lazy.nvim.git",
+        "--branch=stable", lazypath,
+    })
 end
 vim.opt.rtp:prepend(lazypath)
 
@@ -42,13 +42,13 @@ require("keymaps")
 -- written by toggle_theme.sh). Read at startup so new instances always match the
 -- current theme — no sed of this file. Falls back to light.
 local function isg_theme_mode()
-   local cfg = vim.env.XDG_CONFIG_HOME or (vim.env.HOME .. "/.config")
-   local fh = io.open(cfg .. "/isg/theme", "r")
-   if not fh then
-      return "light"
-   end
-   local m = (fh:read("l") or ""):gsub("%s+", "")
-   fh:close()
-   return (m == "dark" or m == "light") and m or "light"
+    local cfg = vim.env.XDG_CONFIG_HOME or (vim.env.HOME .. "/.config")
+    local fh = io.open(cfg .. "/isg/theme", "r")
+    if not fh then
+        return "light"
+    end
+    local m = (fh:read("l") or ""):gsub("%s+", "")
+    fh:close()
+    return (m == "dark" or m == "light") and m or "light"
 end
 vim.cmd("colorscheme vs_" .. isg_theme_mode())
