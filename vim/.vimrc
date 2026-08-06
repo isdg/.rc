@@ -263,9 +263,9 @@ set breakindentopt=shift:2,min:20
 " ----------------------------
 "        TABS & INDENTS
 " ----------------------------
-set tabstop=3         " Number of spaces per tab
-set softtabstop=3     " Number of spaces when editing tabs
-set shiftwidth=3      " Spaces per auto-indent
+set tabstop=4         " Number of spaces per tab
+set softtabstop=4     " Number of spaces when editing tabs
+set shiftwidth=4      " Spaces per auto-indent
 set expandtab         " Use spaces instead of tabs
 
 " ----------------------------

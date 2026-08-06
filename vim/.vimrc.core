@@ -28,7 +28,7 @@ set number ruler showcmd laststatus=2
 set incsearch hlsearch ignorecase smartcase
 set hidden scrolloff=4 backspace=indent,eol,start display=lastline
 set wrap linebreak autoindent smartindent
-set tabstop=3 softtabstop=3 shiftwidth=3 expandtab
+set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
 set ttimeout ttimeoutlen=50
 
 " Make the built-in finders below usable
