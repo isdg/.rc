@@ -44,7 +44,8 @@ banner_host_info() {
 # the session actually holding a client.
 # Every socket in $TMUX_TMPDIR/tmux-$UID is one server; a stale one answers
 # nothing and is skipped, so only live servers are listed, socket order.
-# list-sessions prints a client count per session — 0 means detached.
+# list-sessions prints a client count per session — 0 means detached, and a
+# session held by two windows scores two stars: "default:9(rc**)".
 # Silent when tmux is absent or no server is alive.
 log_tmux() {
     (( $+commands[tmux] )) || return 0
@@ -58,7 +59,10 @@ log_tmux() {
         (( ${#sessions} )) || continue
         attached=()
         for line in $sessions; do
-            [[ ${line%% *} == 0 ]] || attached+=( "${line#* }*" )
+            # #{session_attached} is a client COUNT, not a flag, so spend one
+            # star per client: two windows on the same session read "rc**".
+            local -i n=${line%% *}
+            (( n )) && attached+=( "${line#* }${(l:n::*:)}" )
         done
         mark=""
         (( ${#attached} )) && mark="(${(j:,:)attached})"
