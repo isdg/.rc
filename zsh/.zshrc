@@ -181,7 +181,7 @@ unset _brew_prefix _hl
 # ── startup banner (engine lives in the isg theme) ──
 source "$ISGRC/zsh/startup.zsh"
 
-banner_info "%Bisg%b · zsh"
+banner_info "%Bisg%b · $(banner_host_info)"
 banner_info "%D{%a %d %b %Y · %H:%M}"
 _banner_branch=$(command git symbolic-ref --short HEAD 2>/dev/null)
 banner_info "%~${_banner_branch:+ · $_banner_branch}"

@@ -5,18 +5,20 @@
 # (and may do the startup work that produces it — banner_run demotes a noisy
 # command's output into the logs, e.g. log_ssh's ssh-agent handling).
 # Add a func below and list it in the registry; remove a line to silence it.
+#
+# banner_host_info is the exception: it prints instead of registering, because
+# it feeds the first info line beside the mascot rather than the logs.
 
 BANNER_LOG_FUNCS=(
     log_shell
-    log_host
-    log_ssh
     log_tmux
+    log_ssh
 )
 
 # zsh version + startup time, e.g. "zsh 5.9 · 361 ms".
 # _BANNER_T0 is stamped on .zshrc line 1; the timing is dropped if it's unset.
 log_shell() {
-    local seg="v$ZSH_VERSION"
+    local seg="zsh $ZSH_VERSION"
     if [[ -n $_BANNER_T0 ]]; then
         local -i ms=$(( (EPOCHREALTIME - _BANNER_T0) * 1000 ))
         seg+=" · ${ms} ms"
@@ -25,12 +27,15 @@ log_shell() {
 }
 
 # host + session type, e.g. "isg-darwin · local" / "isg-darwin · ssh from 10.0.0.5"
-log_host() {
+# — who and where, so it belongs on the identity line next to the user name
+# rather than buried in the logs. Printed, not registered: .zshrc assembles the
+# info lines itself, before banner_render walks the log registry.
+banner_host_info() {
     local where="local"
     if [[ -n $SSH_CONNECTION || -n $SSH_TTY ]]; then
         where="ssh from ${SSH_CONNECTION%% *}"
     fi
-    banner_log "${HOST%%.*} · ${where}"
+    print -r -- "${HOST%%.*} · ${where}"
 }
 
 # tmux, one laconic line — the whole server picture as slug:sessions, with the
