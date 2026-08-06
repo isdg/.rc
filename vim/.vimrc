@@ -470,10 +470,10 @@ nnoremap <leader>B :History<CR>
 nnoremap <leader>e :CocList outline<CR>
 nnoremap <leader>E :CocList symbols<CR>
 
-" c gets a bat preview via FzfBLinesPreview — fzf.vim's own :BLines has none;
-" see vim/fzf-layout.vim. C is fzf.vim's :Lines, every open buffer.
+" Both get a bat preview from vim/fzf-layout.vim — fzf.vim ships :BLines and
+" :Lines without one. c is this buffer, C is every open buffer.
 nnoremap <leader>c :call FzfBLinesPreview()<CR>
-nnoremap <leader>C :Lines<CR>
+nnoremap <leader>C :call FzfLinesPreview()<CR>
 
 " Search symbols accross project
 nnoremap <leader>a :RG<CR>

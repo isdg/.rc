@@ -12,7 +12,7 @@ let g:fzf_vim = get(g:, 'fzf_vim', {})
 let g:fzf_vim.preview_window = ['down,60%', 'ctrl-/']
 
 " ------------------------------------------------------------
-"  BLines with a preview  (<leader>C)
+"  BLines with a preview  (<leader>c)
 " ------------------------------------------------------------
 " :BLines is one of the fzf.vim commands that ships with NO preview:
 " fzf#vim#buffer_lines() builds its own --options list and never routes through
@@ -61,4 +61,66 @@ function! FzfBLinesPreview() abort
     endif
 
     call fzf#vim#buffer_lines('', { 'options': l:opts }, 0)
+endfunction
+
+" ------------------------------------------------------------
+"  Lines with a preview  (<leader>C)
+" ------------------------------------------------------------
+" :Lines has the same gap as :BLines — fzf#vim#lines() assembles its own
+" --options and never routes through fzf#vim#with_preview() either.
+"
+" Harder than the BLines case: the entries span every listed buffer, so the
+" preview has to work out WHICH file each one came from. Build a
+" bufnr -> path manifest up front and let the preview look the path up by the
+" buffer number carried in the entry.
+function! FzfLinesPreview() abort
+    " Same reasoning as FzfBLinesPreview — preview the BUFFER, not the file on
+    " disk, wherever the two can disagree, or unsaved edits shift every
+    " previewed line. Unmodified buffers point straight at their own file, so
+    " the common case writes nothing and this stays cheap.
+    let l:manifest = tempname()
+    let l:rows = []
+    for l:b in filter(range(1, bufnr('$')), 'buflisted(v:val)')
+        let l:path = fnamemodify(bufname(l:b), ':p')
+        if getbufvar(l:b, '&modified') || empty(l:path) || !filereadable(l:path)
+            let l:ext = fnamemodify(bufname(l:b), ':e')
+            let l:path = tempname() . (empty(l:ext) ? '' : '.' . l:ext)
+            call writefile(getbufline(l:b, 1, '$'), l:path)
+        endif
+        call add(l:rows, l:b . "\t" . l:path)
+    endfor
+    call writefile(l:rows, l:manifest)
+
+    " fzf#vim#_lines() formats an entry as
+    "     <bufnr> \t <bufname> \t <lnum> \t <text>
+    " but only fills the bufname in when &columns > 120, and fzf's default
+    " delimiter splits on runs of whitespace — so on a narrow window every
+    " field after the first shifts left by one. Pin --delimiter to the tab and
+    " the positions hold at any width, which is how fzf.vim's own sink reads
+    " these entries back (split(line, "\t")). --nth then has to be restated in
+    " the same terms: 3.. is lnum + text, matching what fzf.vim searches.
+    "
+    " Both numbers arrive space-padded from the "%2d" / "%4d " formats, so
+    " strip them to digits before use, exactly as FzfBLinesPreview does.
+    " Centring maths and the --decorations=always note are the same as there.
+    let l:preview = 'b=$(printf "%s" {1} | tr -dc "[:digit:]"); '
+                \ . 'n=$(printf "%s" {3} | tr -dc "[:digit:]"); '
+                \ . 'f=$(awk -F"\t" -v b="$b" ''$1 == b { print $2; exit }'' '
+                \ . shellescape(l:manifest) . '); '
+                \ . '[ -n "$f" ] || exit 0; '
+                \ . 'h=${FZF_PREVIEW_LINES:-40}; '
+                \ . 's=$(( n - (h - 1) / 2 )); [ "$s" -lt 1 ] && s=1; '
+                \ . 'bat --color=always --style=numbers --decorations=always '
+                \ . '--highlight-line "$n" '
+                \ . '--line-range "$s:$(( s + h - 1 ))" '
+                \ . '"$f"'
+
+    let l:pw = get(g:fzf_vim, 'preview_window', ['down,60%', 'ctrl-/'])
+    let l:opts = ['--delimiter', '\t', '--nth', '3..',
+                \ '--preview', l:preview, '--preview-window', l:pw[0]]
+    if len(l:pw) > 1
+        let l:opts += ['--bind', l:pw[1] . ':toggle-preview']
+    endif
+
+    call fzf#vim#lines('', { 'options': l:opts })
 endfunction
