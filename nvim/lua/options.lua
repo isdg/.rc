@@ -32,9 +32,9 @@ vim.opt.breakindent = true
 vim.opt.breakindentopt = "shift:2,min:20"
 
 -- Tabs & indents
-vim.opt.tabstop = 3
-vim.opt.softtabstop = 3
-vim.opt.shiftwidth = 3
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
 -- Navigation & search
@@ -61,7 +61,7 @@ vim.opt.exrc = true
 -- Force the interactive swap dialog instead of the silent W325 auto-ignore
 -- when another nvim already has the file open.
 vim.api.nvim_create_autocmd("SwapExists", {
-   callback = function() vim.v.swapchoice = "" end,
+    callback = function() vim.v.swapchoice = "" end,
 })
 
 -- Clipboard provider, chosen by context:
@@ -75,15 +75,15 @@ vim.api.nvim_create_autocmd("SwapExists", {
 -- hang/prompt) -- use the terminal's own paste (Cmd+V, bracketed) for outside
 -- text.
 if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
-   local osc52 = require("vim.ui.clipboard.osc52")
-   local function paste_reg()
-      return function()
-         return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
-      end
-   end
-   vim.g.clipboard = {
-      name = "OSC 52",
-      copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
-      paste = { ["+"] = paste_reg(), ["*"] = paste_reg() },
-   }
+    local osc52 = require("vim.ui.clipboard.osc52")
+    local function paste_reg()
+        return function()
+            return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+        end
+    end
+    vim.g.clipboard = {
+        name = "OSC 52",
+        copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
+        paste = { ["+"] = paste_reg(), ["*"] = paste_reg() },
+    }
 end

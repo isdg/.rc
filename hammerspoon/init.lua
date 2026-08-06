@@ -19,14 +19,14 @@ require("screenshot_clip").start()
 
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher
-   .new(hs.configdir, function(files)
-      for _, f in ipairs(files) do
-         if f:sub(-4) == ".lua" then
-            hs.reload()
-            return
-         end
-      end
-   end)
-   :start()
+    .new(hs.configdir, function(files)
+        for _, f in ipairs(files) do
+            if f:sub(-4) == ".lua" then
+                hs.reload()
+                return
+            end
+        end
+    end)
+    :start()
 
 hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌘⇧J scroll · 📋 screenshots)")

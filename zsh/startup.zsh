@@ -33,24 +33,31 @@ log_host() {
     banner_log "${HOST%%.*} · ${where}"
 }
 
-# tmux, one laconic line — the whole server picture as slug:sessions, starred
-# where a session has a client, e.g. "tmux · a:1 default:9* misc:4".
+# tmux, one laconic line — the whole server picture as slug:sessions, with the
+# attached sessions named in brackets, e.g. "tmux · a:1 default:9(rc*) misc:4".
+# A server with nothing attached carries no bracket at all, so the eye lands on
+# the session actually holding a client.
 # Every socket in $TMUX_TMPDIR/tmux-$UID is one server; a stale one answers
 # nothing and is skipped, so only live servers are listed, socket order.
 # list-sessions prints a client count per session — 0 means detached.
 # Silent when tmux is absent or no server is alive.
 log_tmux() {
     (( $+commands[tmux] )) || return 0
-    local sock mark
-    local -a clients live servers
+    local sock line mark
+    local -a sessions attached servers
     for sock in ${TMUX_TMPDIR:-/tmp}/tmux-${UID}/*(=N); do
-        clients=( ${(f)"$(command tmux -S $sock list-sessions \
-            -F '#{session_attached}' 2>/dev/null)"} )
-        (( ${#clients} )) || continue
-        live=( ${clients:#0} )       # drop the detached; keep in an array —
-        mark=""                      # ${#${clients:#0}} measures, not counts
-        (( ${#live} )) && mark="*"
-        servers+=( "${sock:t}:${#clients}${mark}" )
+        # "<attached> <name>" per session — the count leads so a name
+        # containing spaces still survives the ${line#* } split below.
+        sessions=( ${(f)"$(command tmux -S $sock list-sessions \
+            -F '#{session_attached} #{session_name}' 2>/dev/null)"} )
+        (( ${#sessions} )) || continue
+        attached=()
+        for line in $sessions; do
+            [[ ${line%% *} == 0 ]] || attached+=( "${line#* }*" )
+        done
+        mark=""
+        (( ${#attached} )) && mark="(${(j:,:)attached})"
+        servers+=( "${sock:t}:${#sessions}${mark}" )
     done
     (( ${#servers} )) || return 0
     banner_log "tmux · ${(j: :)servers}"

@@ -2,24 +2,24 @@
 --                       MISC
 -- ============================================================
 return {
-   -- ANSI colorizer for captured tmux scrollback (prefix N). Renders raw
-   -- escape sequences as real highlights while keeping text searchable.
-   -- lazy = true: only loaded when require("baleia") is called, which happens
-   -- exclusively from the tmux capture launch -- never in normal editing.
-   {
-      "m00qek/baleia.nvim",
-      lazy = true,
-   },
+    -- ANSI colorizer for captured tmux scrollback (prefix N). Renders raw
+    -- escape sequences as real highlights while keeping text searchable.
+    -- lazy = true: only loaded when require("baleia") is called, which happens
+    -- exclusively from the tmux capture launch -- never in normal editing.
+    {
+        "m00qek/baleia.nvim",
+        lazy = true,
+    },
 
-   -- hr: reading-list sidebar over the `hr` CLI. Portable Vimscript plugin
-   -- (works in vim too); replaces the old lua/hr/init.lua module. Loaded on
-   -- the :Hr* commands, fired by <leader>r (see lua/keymaps.lua).
-   {
-      "isdg/hr.vim",
-      cmd = { "Hr", "HrToggle", "HrOpen", "HrClose", "HrStart", "HrRefresh", "HrSync", "HrLocate" },
-   },
+    -- hr: reading-list sidebar over the `hr` CLI. Portable Vimscript plugin
+    -- (works in vim too); replaces the old lua/hr/init.lua module. Loaded on
+    -- the :Hr* commands, fired by <leader>r (see lua/keymaps.lua).
+    {
+        "isdg/hr.vim",
+        cmd = { "Hr", "HrToggle", "HrOpen", "HrClose", "HrStart", "HrRefresh", "HrSync", "HrLocate" },
+    },
 
-   -- TODO: nvim-dap (Debug Adapter Protocol) - enable after learning raw GDB
-   -- Plugins: mfussenegger/nvim-dap, rcarriga/nvim-dap-ui, theHamsta/nvim-dap-virtual-text
-   -- Install codelldb via Mason: :MasonInstall codelldb
+    -- TODO: nvim-dap (Debug Adapter Protocol) - enable after learning raw GDB
+    -- Plugins: mfussenegger/nvim-dap, rcarriga/nvim-dap-ui, theHamsta/nvim-dap-virtual-text
+    -- Install codelldb via Mason: :MasonInstall codelldb
 }

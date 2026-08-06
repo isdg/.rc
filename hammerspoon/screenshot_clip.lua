@@ -15,75 +15,75 @@ local M = {}
 -- Resolve the screenshot save location, honouring
 -- `defaults write com.apple.screencapture location`; falls back to ~/Desktop.
 local function screenshotDir()
-   local home = os.getenv("HOME")
-   local out = hs.execute("defaults read com.apple.screencapture location 2>/dev/null") or ""
-   out = out:gsub("%s+$", "")
-   if out == "" then return home .. "/Desktop" end
-   if out:sub(1, 1) == "~" then out = home .. out:sub(2) end
-   return out
+    local home = os.getenv("HOME")
+    local out = hs.execute("defaults read com.apple.screencapture location 2>/dev/null") or ""
+    out = out:gsub("%s+$", "")
+    if out == "" then return home .. "/Desktop" end
+    if out:sub(1, 1) == "~" then out = home .. out:sub(2) end
+    return out
 end
 
 -- Small top-right toast (hs.alert only centers, so use a tiny canvas instead).
 local function toast(text)
-   local scr = hs.screen.mainScreen():frame()
-   local w, h, margin = 108, 26, 12
-   local c = hs.canvas.new({
-      x = scr.x + scr.w - w - margin,
-      y = scr.y + margin,
-      w = w,
-      h = h,
-   })
-   c:appendElements({
-      type = "rectangle",
-      action = "fill",
-      roundedRectRadii = { xRadius = 6, yRadius = 6 },
-      fillColor = { alpha = 0.8, red = 0, green = 0, blue = 0 },
-   }, {
-      type = "text",
-      text = text,
-      textSize = 12,
-      textColor = { white = 1 },
-      textAlignment = "center",
-      frame = { x = 0, y = 5, w = w, h = h },
-   })
-   c:level(hs.canvas.windowLevels.overlay)
-   c:show()
-   hs.timer.doAfter(1.2, function() c:delete() end)
+    local scr = hs.screen.mainScreen():frame()
+    local w, h, margin = 108, 26, 12
+    local c = hs.canvas.new({
+        x = scr.x + scr.w - w - margin,
+        y = scr.y + margin,
+        w = w,
+        h = h,
+    })
+    c:appendElements({
+        type = "rectangle",
+        action = "fill",
+        roundedRectRadii = { xRadius = 6, yRadius = 6 },
+        fillColor = { alpha = 0.8, red = 0, green = 0, blue = 0 },
+    }, {
+        type = "text",
+        text = text,
+        textSize = 12,
+        textColor = { white = 1 },
+        textAlignment = "center",
+        frame = { x = 0, y = 5, w = w, h = h },
+    })
+    c:level(hs.canvas.windowLevels.overlay)
+    c:show()
+    hs.timer.doAfter(1.2, function() c:delete() end)
 end
 
 local seen = {}
 
 local function handle(files)
-   for _, path in ipairs(files) do
-      local name = path:match("[^/]+$") or ""
-      if name:match("^Screenshot") and name:sub(-4):lower() == ".png" and not seen[path] then
-         local attr = hs.fs.attributes(path)
-         -- only act on just-created files (avoid re-copying on dir rescans)
-         if attr and (os.time() - attr.modification) <= 5 then
-            seen[path] = true
-            -- copy immediately; the watcher can fire mid-write, so if the image
-            -- isn't readable yet, retry every 50ms (up to ~1s) instead of
-            -- eating a fixed delay every time.
-            local tries = 0
-            local function tryCopy()
-               local img = hs.image.imageFromPath(path)
-               if img then
-                  hs.pasteboard.writeObjects(img)
-                  toast("📋 copied")
-               elseif tries < 20 then
-                  tries = tries + 1
-                  hs.timer.doAfter(0.05, tryCopy)
-               end
+    for _, path in ipairs(files) do
+        local name = path:match("[^/]+$") or ""
+        if name:match("^Screenshot") and name:sub(-4):lower() == ".png" and not seen[path] then
+            local attr = hs.fs.attributes(path)
+            -- only act on just-created files (avoid re-copying on dir rescans)
+            if attr and (os.time() - attr.modification) <= 5 then
+                seen[path] = true
+                -- copy immediately; the watcher can fire mid-write, so if the image
+                -- isn't readable yet, retry every 50ms (up to ~1s) instead of
+                -- eating a fixed delay every time.
+                local tries = 0
+                local function tryCopy()
+                    local img = hs.image.imageFromPath(path)
+                    if img then
+                        hs.pasteboard.writeObjects(img)
+                        toast("📋 copied")
+                    elseif tries < 20 then
+                        tries = tries + 1
+                        hs.timer.doAfter(0.05, tryCopy)
+                    end
+                end
+                tryCopy()
             end
-            tryCopy()
-         end
-      end
-   end
+        end
+    end
 end
 
 function M.start()
-   M.watcher = hs.pathwatcher.new(screenshotDir(), handle):start()
-   return M
+    M.watcher = hs.pathwatcher.new(screenshotDir(), handle):start()
+    return M
 end
 
 return M

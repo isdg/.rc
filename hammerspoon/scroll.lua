@@ -30,12 +30,12 @@ local COLOR = { red = 0.55, green = 0.45, blue = 1.0, alpha = 0.95 } -- accent
 
 -- Direction key -> { dx, dy, isPage }. Negative dy scrolls down.
 local DIRS = {
-   j = { 0, -1, false }, -- down
-   k = { 0, 1, false },  -- up
-   h = { 1, 0, false },  -- left
-   l = { -1, 0, false }, -- right
-   d = { 0, -1, true },  -- half-page down
-   u = { 0, 1, true },   -- half-page up
+    j = { 0, -1, false }, -- down
+    k = { 0, 1, false },  -- up
+    h = { 1, 0, false },  -- left
+    l = { -1, 0, false }, -- right
+    d = { 0, -1, true },  -- half-page down
+    u = { 0, 1, true },   -- half-page up
 }
 
 local mode          -- hs.hotkey.modal used only to ENTER + exit the mode
@@ -45,81 +45,81 @@ local held = {}     -- direction-key name -> true while down
 local border        -- hs.canvas indicator
 
 local function scroll(dx, dy)
-   -- offsets are {horizontal, vertical}; negative vertical scrolls down.
-   hs.eventtap.event.newScrollEvent({ dx, dy }, {}, "pixel"):post()
+    -- offsets are {horizontal, vertical}; negative vertical scrolls down.
+    hs.eventtap.event.newScrollEvent({ dx, dy }, {}, "pixel"):post()
 end
 
 -- One frame: for each held direction post its scroll. Under Shift, post it
 -- `FASTMUL` times (more discrete events) so line-based terminals speed up too.
 local function tick()
-   local reps = hs.eventtap.checkKeyboardModifiers().shift and FASTMUL or 1
-   for name in pairs(held) do
-      local d = DIRS[name]
-      local base = d[3] and PAGE or STEP
-      for _ = 1, reps do
-         scroll(d[1] * base, d[2] * base)
-      end
-   end
+    local reps = hs.eventtap.checkKeyboardModifiers().shift and FASTMUL or 1
+    for name in pairs(held) do
+        local d = DIRS[name]
+        local base = d[3] and PAGE or STEP
+        for _ = 1, reps do
+            scroll(d[1] * base, d[2] * base)
+        end
+    end
 end
 
 -- Border indicator on the screen under the pointer; no mouse callbacks, so it's
 -- transparent to hit-testing and lets scroll events fall through to the app.
 local function showBorder()
-   local screen = hs.mouse.getCurrentScreen() or hs.screen.mainScreen()
-   local f = screen:fullFrame()
-   border = hs.canvas.new(f)
-   border[1] = {
-      type = "rectangle",
-      action = "stroke",
-      strokeColor = COLOR,
-      strokeWidth = BORDER,
-      roundedRectRadii = { xRadius = 10, yRadius = 10 },
-      frame = { x = BORDER / 2, y = BORDER / 2, w = f.w - BORDER, h = f.h - BORDER },
-   }
-   border:level(hs.canvas.windowLevels.overlay)
-   border:behaviorAsLabels({ "canJoinAllSpaces", "stationary" })
-   border:clickActivating(false)
-   border:canvasMouseEvents(false, false, false, false)
-   border:show()
+    local screen = hs.mouse.getCurrentScreen() or hs.screen.mainScreen()
+    local f = screen:fullFrame()
+    border = hs.canvas.new(f)
+    border[1] = {
+        type = "rectangle",
+        action = "stroke",
+        strokeColor = COLOR,
+        strokeWidth = BORDER,
+        roundedRectRadii = { xRadius = 10, yRadius = 10 },
+        frame = { x = BORDER / 2, y = BORDER / 2, w = f.w - BORDER, h = f.h - BORDER },
+    }
+    border:level(hs.canvas.windowLevels.overlay)
+    border:behaviorAsLabels({ "canJoinAllSpaces", "stationary" })
+    border:clickActivating(false)
+    border:canvasMouseEvents(false, false, false, false)
+    border:show()
 end
 
 local function hideBorder()
-   if border then border:delete(); border = nil end
+    if border then border:delete(); border = nil end
 end
 
 local function start()
-   held = {}
-   tap = hs.eventtap.new(
-      { hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp },
-      function(e)
-         local name = hs.keycodes.map[e:getKeyCode()] -- physical key, Shift-agnostic
-         if name and DIRS[name] then
-            held[name] = (e:getType() == hs.eventtap.event.types.keyDown) or nil
-            return true -- swallow direction keys so they don't type
-         end
-         return false -- pass everything else through (esc/q/i handled by modal)
-      end)
-   tap:start()
-   ticker = hs.timer.doEvery(INTERVAL, tick)
-   showBorder()
+    held = {}
+    tap = hs.eventtap.new(
+        { hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp },
+        function(e)
+            local name = hs.keycodes.map[e:getKeyCode()] -- physical key, Shift-agnostic
+            if name and DIRS[name] then
+                held[name] = (e:getType() == hs.eventtap.event.types.keyDown) or nil
+                return true -- swallow direction keys so they don't type
+            end
+            return false -- pass everything else through (esc/q/i handled by modal)
+        end)
+    tap:start()
+    ticker = hs.timer.doEvery(INTERVAL, tick)
+    showBorder()
 end
 
 local function stop()
-   if tap then tap:stop(); tap = nil end
-   if ticker then ticker:stop(); ticker = nil end
-   held = {}
-   hideBorder()
+    if tap then tap:stop(); tap = nil end
+    if ticker then ticker:stop(); ticker = nil end
+    held = {}
+    hideBorder()
 end
 
 -- Set up scroll mode, entered via mods+key. Mirrors translate.bind's shape.
 function M.bind(mods, key)
-   mode = hs.hotkey.modal.new(mods, key)
-   for _, k in ipairs({ "escape", "q", "i" }) do
-      mode:bind({}, k, function() mode:exit() end)
-   end
-   function mode:entered() start() end
-   function mode:exited() stop() end
-   return M
+    mode = hs.hotkey.modal.new(mods, key)
+    for _, k in ipairs({ "escape", "q", "i" }) do
+        mode:bind({}, k, function() mode:exit() end)
+    end
+    function mode:entered() start() end
+    function mode:exited() stop() end
+    return M
 end
 
 return M
