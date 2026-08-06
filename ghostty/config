@@ -2,7 +2,7 @@
 
 # --- font ---
 font-family = JetBrains Mono
-font-style = Light
+font-style = Regular
 font-style-bold = false
 font-size = 13
 adjust-cell-height = 25%
