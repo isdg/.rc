@@ -7,10 +7,10 @@ zmodload zsh/datetime
 typeset -gF _BANNER_T0=$EPOCHREALTIME
 
 # Repo root, resolved from THIS file's real path so the config works under any
-# directory name (~/.dotfiles, ~/.rc, …) — not just a hardcoded one. %x = the
+# directory name (~/.rc, ~/.dotfiles, …) — not just a hardcoded one. %x = the
 # file being sourced; :A resolves the ~/.zshrc symlink to the repo; :h:h climbs
 # zsh/ up to the repo root. Exported so children (tmux, scripts) can use it too.
-export ISG_DOTFILES="${${(%):-%x}:A:h:h}"
+export ISGRC="${${(%):-%x}:A:h:h}"
 
 # Theme mode (dark|light) read from the single source of truth written by
 # toggle_theme.sh. New shells always reflect the current theme and no tracked
@@ -19,12 +19,12 @@ ISG_THEME_MODE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev/null 
 ISG_DEFAULT_USER=true # show user name
 
 # ── init ──
-# Plain zsh — oh-my-zsh was dropped (Aug 2026). Measured: it cost 158 ms of a
-# 471 ms startup and 17 MB, while contributing 4 aliases this config had ever
-# used (ls, grep, history, ..) and 0 of the 197 git aliases from the one plugin
-# it loaded. Everything below is what it did do for us, reproduced by hand —
-# options, completion styles, key bindings, URL quoting — at no measurable cost,
-# because none of its 158 ms was spent on these.
+# Plain zsh — oh-my-zsh was dropped (Aug 2026). Measured: it cost ~141 ms of a
+# ~480 ms warm startup and 17 MB, and nearly all of that went to compaudit, a
+# second compdump and 21 lib files — not to the parts worth having. Those are
+# reproduced by hand below (options, completion styles, key bindings, URL
+# quoting) at no measurable cost. Its git aliases were in use and are vendored
+# in zsh/git.zsh.
 setopt prompt_subst interactive_comments extended_glob auto_cd
 
 # options oh-my-zsh's libs set that are worth keeping
@@ -81,10 +81,16 @@ git_prompt_info() {
     echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${state}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
 }
 
-source "$ISG_DOTFILES/zsh/isg.zsh-theme"
+source "$ISGRC/zsh/isg.zsh-theme"
 
-# the oh-my-zsh aliases this config actually used, per shell history
-alias ls='ls -G'
+# oh-my-zsh's ls/grep colour aliases. -G is BSD/macOS; GNU ls wants --color,
+# where -G means "hide group" instead — pick by OSTYPE rather than probing, so
+# this costs no subprocess (oh-my-zsh ran `ls --color=tty` to decide).
+if [[ $OSTYPE == darwin* || $OSTYPE == *bsd* ]]; then
+    alias ls='ls -G'
+else
+    alias ls='ls --color=tty'
+fi
 alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv}'
 alias history='fc -l 1'
 
@@ -134,10 +140,12 @@ export PATH="$HOME/.cargo/bin:$PATH"   # cargo-installed binaries (plc)
 export EDITOR='nvim'
 export VISUAL='nvim'
 
-source "$ISG_DOTFILES/zsh/aliases.zsh"
-source "$ISG_DOTFILES/zsh/fzf.zsh"
-source "$ISG_DOTFILES/zsh/vimode.zsh"
-source "$ISG_DOTFILES/zsh/omni.zsh"
+source "$ISGRC/zsh/git.zsh"      # both before aliases.zsh, so personal
+source "$ISGRC/zsh/dirs.zsh"     # aliases keep precedence
+source "$ISGRC/zsh/aliases.zsh"
+source "$ISGRC/zsh/fzf.zsh"
+source "$ISGRC/zsh/vimode.zsh"
+source "$ISGRC/zsh/omni.zsh"
 
 # Up/Down search history by the prefix already typed — the one oh-my-zsh binding
 # that is genuinely missed. Must come after vimode.zsh: its `bindkey -v`
@@ -171,7 +179,7 @@ done
 unset _brew_prefix _hl
 
 # ── startup banner (engine lives in the isg theme) ──
-source "$ISG_DOTFILES/zsh/startup.zsh"
+source "$ISGRC/zsh/startup.zsh"
 
 banner_info "%Bisg%b · zsh"
 banner_info "%D{%a %d %b %Y · %H:%M}"

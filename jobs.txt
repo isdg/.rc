@@ -52,7 +52,7 @@ Notes / gotchas:
   twice — you'll SIGHUP an unsaved editor.
 - fg/bg toggle ONE terminal by time-slicing. When you want several things truly
   running side-by-side, visible, surviving disconnect → graduate to tmux (see
-  TMUX.txt) or, for agents, Claude Code background jobs.
+  tmux.txt) or, for agents, Claude Code background jobs.
 
 Quick patterns:
   Ctrl-Z ; bg ; disown        Suspend → background → orphan, in one breath

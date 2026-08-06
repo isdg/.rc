@@ -3,7 +3,7 @@
 # Requires: DOTFILES_DIR to be set
 
 ensure_dotfiles() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     echo "[STEP] Verifying dotfiles..."
     local failed=0
 
@@ -64,7 +64,7 @@ ensure_dotfiles() {
 }
 
 link_dotfiles() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     echo "[STEP] Linking dotfiles..."
 
     # Link Zsh config
@@ -119,18 +119,36 @@ link_dotfiles() {
     ln -sf "$dotfiles_dir/.gitconfig" "$HOME/.gitconfig"
     echo "[OK] Linked .gitconfig"
 
-    # Link Vim color schemes (skip if source and target are the same directory)
+    # Link Vim color schemes (skip if source and target are the same directory).
+    # A dangling $dst_dir — e.g. ~/.vim/colors is itself a symlink to a repo path
+    # that moved — used to make realpath fail, every ln fail, and this still print
+    # [OK] because the exit status went unchecked. Drop a broken link, create the
+    # directory if absent, and report failures.
     local src_dir="$dotfiles_dir/vim/.vim/colors"
     local dst_dir="$HOME/.vim/colors"
-    if [ "$(realpath "$src_dir")" != "$(realpath "$dst_dir")" ]; then
+    if [ -L "$dst_dir" ] && [ ! -e "$dst_dir" ]; then
+        echo "[FIX] ~/.vim/colors was a dangling symlink; repointing it"
+        rm -f "$dst_dir"
+    fi
+    if [ -L "$dst_dir" ] || [ -d "$dst_dir" ]; then
+        if [ "$(realpath "$src_dir")" = "$(realpath "$dst_dir")" ]; then
+            echo "[SKIP] Vim colors already in place (source and target are the same)"
+            src_dir=""
+        fi
+    else
+        ln -sfn "$src_dir" "$dst_dir"
+        echo "[OK] Linked ~/.vim/colors -> $src_dir"
+        src_dir=""
+    fi
+    if [ -n "$src_dir" ]; then
         for color_file in "$src_dir"/*.vim; do
-            if [ -f "$color_file" ]; then
-                ln -sf "$color_file" "$dst_dir/$(basename "$color_file")"
+            [ -f "$color_file" ] || continue
+            if ln -sf "$color_file" "$dst_dir/$(basename "$color_file")"; then
                 echo "[OK] Linked $(basename "$color_file")"
+            else
+                echo "[FAIL] Could not link $(basename "$color_file") into $dst_dir"
             fi
         done
-    else
-        echo "[SKIP] Vim colors already in place (source and target are the same)"
     fi
 
     # Link Neovim config (skip if already pointing to the right place)

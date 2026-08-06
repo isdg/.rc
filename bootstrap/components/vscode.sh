@@ -3,7 +3,7 @@
 # Requires: DOTFILES_DIR to be set
 
 ensure_vscode_darwin() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     local vscode_dir="$HOME/Library/Application Support/Code/User"
     echo "[STEP] Verifying VSCode..."
     local failed=0
@@ -20,7 +20,7 @@ ensure_vscode_darwin() {
 }
 
 ensure_vscode_linux() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     local vscode_dir="$HOME/.config/Code/User"
     echo "[STEP] Verifying VSCode..."
     local failed=0
@@ -37,7 +37,7 @@ ensure_vscode_linux() {
 }
 
 link_vscode_darwin() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     local vscode_dir="$HOME/Library/Application Support/Code/User"
 
     echo "[STEP] Setting up VSCode..."
@@ -61,7 +61,7 @@ link_vscode_darwin() {
 }
 
 link_vscode_linux() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     local vscode_dir="$HOME/.config/Code/User"
 
     echo "[STEP] Setting up VSCode..."

@@ -137,7 +137,7 @@ name() { ...; }   Define a function. The () is empty; the body lives in { }.
         (Contrast { ...; } which groups in the CURRENT shell.)
   $ (cd /; echo "inside: $PWD"); echo "outside: $PWD"
   inside: /
-  outside: /Users/isg/.dotfiles
+  outside: /Users/isg/.rc
 
 alias  Text shortcut expanded before execution (rc staple).
   $ alias ll='ls -1'; alias ll

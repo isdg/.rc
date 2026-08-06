@@ -5,7 +5,7 @@ by one vault directory (`$PALACE_DIR`, `~/backup/palace`) and one binary
 (`plc`). The vault path is persisted in `~/.plcrc` (`PALACE_DIR = …`); `plc`
 reads it, and `zsh/aliases.zsh` exports it via `plc config`. Documented here as
 a single named module so the pieces don't get rediscovered from scratch later —
-see `MODULARIZE.txt`.
+see `modularize.txt`.
 
 ## Pieces
 

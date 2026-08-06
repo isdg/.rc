@@ -3,7 +3,7 @@
 # Requires: DOTFILES_DIR to be set
 
 ensure_darwin_defaults() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     local script="$dotfiles_dir/darwin/defaults.sh"
     echo "[STEP] Verifying Darwin defaults script..."
     if [ -f "$script" ]; then
@@ -15,7 +15,7 @@ ensure_darwin_defaults() {
 }
 
 apply_darwin_defaults() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     local script="$dotfiles_dir/darwin/defaults.sh"
 
     echo "[STEP] Applying Darwin defaults..."

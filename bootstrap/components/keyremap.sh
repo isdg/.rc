@@ -5,7 +5,7 @@
 # Requires: DOTFILES_DIR to be set
 
 ensure_keyremap_darwin() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     local src="$dotfiles_dir/darwin/keyremap/com.local.KeyRemap.plist"
     local dst="$HOME/Library/LaunchAgents/com.local.KeyRemap.plist"
     echo "[STEP] Verifying keyboard remap..."
@@ -17,7 +17,7 @@ ensure_keyremap_darwin() {
 }
 
 install_keyremap_darwin() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     local src="$dotfiles_dir/darwin/keyremap/com.local.KeyRemap.plist"
     local dst_dir="$HOME/Library/LaunchAgents"
     local dst="$dst_dir/com.local.KeyRemap.plist"

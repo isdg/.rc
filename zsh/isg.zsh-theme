@@ -250,7 +250,7 @@ add-zsh-hook precmd __isg::precmd
 #
 #          ▼ q₀        isg · zsh
 #   ┄┬─┬─┬─┬─┬─┬┄      Wed 11 Jun 2026 · 20:42
-#   ┄┤0│1│1│0│1├┄      ~/.dotfiles · main
+#   ┄┤0│1│1│0│1├┄      ~/.rc · main
 #   ┄┴─┴─┴─┴─┴─┴┄
 #   δ(q₀,0)=⟨B,1,R⟩
 #
