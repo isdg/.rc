@@ -452,11 +452,10 @@ banner_render() {
         print -P -- "  %F{${BANNER_ACCENT:-244}}${(r:${_banner_mascot_width}:)mascot}%f   ${info}"
     done
     (( ${#_banner_log_lines} )) && print
-    # dark theme: blue, like the prompt's current-dir; light: default fg
-    local log_on='' log_off=''
-    [[ "$ISG_THEME_MODE" == 'dark' ]] && log_on='%F{grey}' log_off='%f'
+    # no colour of their own: the logs take the default foreground, the same
+    # as the info lines beside the mascot, in both themes
     for line in "${_banner_log_lines[@]}"; do
-        print -P -- "    ${log_on}· ${line//\%/%%}${log_off}"
+        print -P -- "    · ${line//\%/%%}"
     done
     print
     # consumed — a re-source/re-render starts clean
