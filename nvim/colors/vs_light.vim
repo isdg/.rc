@@ -36,13 +36,13 @@ let g:terminal_color_15 = '#bcc0cc'
 " =====================
 " Basic UI colors
 " =====================
-hi Normal       guifg=#000000 guibg=#F2F2F2
+hi Normal       guifg=#000000 guibg=#FAFAFA
 hi Cursor       guifg=#FFFFFF guibg=#000000
 hi Visual       guibg=#ADD6FF
-hi LineNr       guifg=#c0c0c0 guibg=#F2F2F2
-hi CursorLineNr guifg=#999999 guibg=#F2F2F2
-hi StatusLine   guifg=#000000 guibg=#F2F2F2
-hi StatusLineNC guifg=#AAAAAA guibg=#F2F2F2
+hi LineNr       guifg=#c0c0c0 guibg=#FAFAFA
+hi CursorLineNr guifg=#999999 guibg=#FAFAFA
+hi StatusLine   guifg=#000000 guibg=#FAFAFA
+hi StatusLineNC guifg=#AAAAAA guibg=#FAFAFA
 hi VertSplit    guifg=#D4D4D4 guibg=#FFFFFF
 hi Pmenu        guifg=#000000 guibg=#F3F3F3
 hi PmenuSel     guifg=#FFFFFF guibg=#007ACC
@@ -132,12 +132,12 @@ hi CursorLine   guibg=#E5EBF1
 " =====================
 " Window filler / zen-mode backdrop
 " =====================
-hi EndOfBuffer  guifg=#F2F2F2 guibg=#F2F2F2
-hi WinSeparator guifg=#F2F2F2 guibg=#F2F2F2
-hi NonText      guifg=#F2F2F2 guibg=#F2F2F2
-hi ZenBg        guifg=#F2F2F2 guibg=#F2F2F2
-hi SignColumn   guibg=#F2F2F2
-hi FoldColumn   guibg=#F2F2F2
+hi EndOfBuffer  guifg=#FAFAFA guibg=#FAFAFA
+hi WinSeparator guifg=#FAFAFA guibg=#FAFAFA
+hi NonText      guifg=#FAFAFA guibg=#FAFAFA
+hi ZenBg        guifg=#FAFAFA guibg=#FAFAFA
+hi SignColumn   guibg=#FAFAFA
+hi FoldColumn   guibg=#FAFAFA
 
 " =====================
 " nvim-tree highlights

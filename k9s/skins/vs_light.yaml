@@ -1,16 +1,16 @@
 # k9s light skin — VS Code "Visual Studio Light".
-# Palette matches nvim colors/vs_light.vim (bg #F2F2F2 / fg #000000, blue #0000FF,
+# Palette matches nvim colors/vs_light.vim (bg #FAFAFA / fg #000000, blue #0000FF,
 # link/type #0451a5, string #a31515, enum/teal #267F99, tag/special #800000,
 # error #FF0000, warn #BF8803). Keep in sync with vs_dark.yaml. Selected by
 # skins/skin-active.yaml, flipped by toggle_theme.sh.
 k9s:
   body:
     fgColor: "#000000"
-    bgColor: "#f2f2f2"
+    bgColor: "#fafafa"
     logoColor: "#0000ff"
   prompt:
     fgColor: "#000000"
-    bgColor: "#f2f2f2"
+    bgColor: "#fafafa"
     suggestColor: "#0451a5"
   info:
     fgColor: "#999999"
@@ -46,13 +46,13 @@ k9s:
       completedColor: "#999999"
     title:
       fgColor: "#000000"
-      bgColor: "#f2f2f2"
+      bgColor: "#fafafa"
       highlightColor: "#800000"
       counterColor: "#0000ff"
       filterColor: "#267f99"
   views:
     charts:
-      bgColor: "#f2f2f2"
+      bgColor: "#fafafa"
       defaultDialColors:
         - "#0000ff"
         - "#ff0000"
@@ -61,17 +61,17 @@ k9s:
         - "#ff0000"
     table:
       fgColor: "#000000"
-      bgColor: "#f2f2f2"
+      bgColor: "#fafafa"
       cursorFgColor: "#ffffff"
       cursorBgColor: "#007acc"
       markColor: "#bf8803"
       header:
         fgColor: "#0000ff"
-        bgColor: "#f2f2f2"
+        bgColor: "#fafafa"
         sorterColor: "#267f99"
     xray:
       fgColor: "#000000"
-      bgColor: "#f2f2f2"
+      bgColor: "#fafafa"
       cursorColor: "#add6ff"
       graphicColor: "#0451a5"
       showIcons: false
@@ -81,7 +81,7 @@ k9s:
       valueColor: "#a31515"
     logs:
       fgColor: "#000000"
-      bgColor: "#f2f2f2"
+      bgColor: "#fafafa"
       indicator:
         fgColor: "#ffffff"
         bgColor: "#007acc"
