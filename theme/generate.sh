@@ -29,6 +29,7 @@ ghostty.tpl ghostty/theme-MODE.conf
 tmux.tpl    tmux/theme-MODE.conf
 tig.tpl     tig/theme-MODE.tigrc
 fzf.tpl     fzf/opts-MODE.conf
+k9s.tpl     k9s/skins/vs_MODE.yaml
 '
 
 # Placeholder pattern, hoisted into a variable: bash 3.2 mishandles an inline

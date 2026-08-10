@@ -60,6 +60,33 @@ isg_palette() {
         ISG_BORDER='#444444'
         ISG_BORDER_ACTIVE='#777777'
 
+        # ── UI chrome (k9s) ──
+        # The two k9s skins were hand-tuned independently and are not symmetric,
+        # so several of these pairs are genuinely different roles rather than one
+        # role in two shades — see the light branch for the contrast.
+        ISG_FG_DIM='#888888'            # info labels, completed, yaml colons
+        ISG_BG_ALT='#252526'            # dialogs, panels raised off the body
+        ISG_BORDER_UI='#454545'
+        ISG_ON_ACCENT='#ffffff'         # text on a filled accent (buttons, cursor)
+        ISG_CRUMB_FG="$ISG_BG"          # crumbs invert: body colour on accent
+        # Four near-identical blues, kept apart because that is what the skins do
+        # today. Collapsing them is the obvious next simplification, but it moves
+        # pixels, so it is not part of this refactor.
+        ISG_ACCENT='#569cd6'            # logo, labels, menu keys, focus, headers
+        ISG_ACCENT_DEEP='#569cd6'       # suggestions, crumbs, xray graphics
+        ISG_ACCENT_BRIGHT='#87cfff'
+        ISG_BUTTON_BG='#0078d4'
+        ISG_BUTTON_FOCUS_BG='#007acc'
+        ISG_TABLE_CURSOR_BG='#264f78'
+        ISG_XRAY_CURSOR='#264f78'
+        ISG_TITLE_HL='#87cfff'
+        # Syntax-ish roles, from nvim colors/vs_dark.vim
+        ISG_STRING='#ce9178'
+        ISG_NUMBER='#b5cea8'
+        ISG_TYPE='#4ec9b0'
+        ISG_ERROR='#f44747'
+        ISG_WARN='#f9e2af'
+
         # ── name-only tokens ──
         ISG_FZF_PROMPT='blue'
         # color24 (#005f87) is nearest256(ISG_SEL_BG) — a 256-palette stand-in,
@@ -99,6 +126,29 @@ isg_palette() {
         ISG_UI_MSG='#333333'
         ISG_BORDER='#cccccc'
         ISG_BORDER_ACTIVE='#888888'
+
+        # ── UI chrome (k9s) ── see the dark branch for the naming
+        ISG_FG_DIM='#999999'
+        ISG_BG_ALT='#f3f3f3'
+        ISG_BORDER_UI='#d4d4d4'
+        ISG_ON_ACCENT='#ffffff'
+        ISG_CRUMB_FG='#ffffff'          # light crumbs do NOT invert to the body
+        # Here the four blues really are four different colours, where dark reuses
+        # ISG_ACCENT for two of them.
+        ISG_ACCENT='#0000ff'
+        ISG_ACCENT_DEEP='#0451a5'
+        ISG_ACCENT_BRIGHT='#007acc'
+        ISG_BUTTON_BG='#007acc'
+        ISG_BUTTON_FOCUS_BG='#0451a5'
+        ISG_TABLE_CURSOR_BG='#007acc'   # not ISG_SEL_BG: a filled bar, not a tint
+        ISG_XRAY_CURSOR='#add6ff'
+        ISG_TITLE_HL='#800000'          # tag/special, where dark uses a pale blue
+        # Syntax-ish roles, from nvim colors/vs_light.vim
+        ISG_STRING='#a31515'
+        ISG_NUMBER='#098658'
+        ISG_TYPE='#267f99'
+        ISG_ERROR='#ff0000'
+        ISG_WARN='#bf8803'
 
         # ── name-only tokens ──
         ISG_FZF_PROMPT='black'
