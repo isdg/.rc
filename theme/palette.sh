@@ -128,7 +128,11 @@ isg_palette() {
         ISG_BORDER_ACTIVE='#888888'
 
         # ── UI chrome (k9s) ── see the dark branch for the naming
-        ISG_FG_DIM='#999999'
+        # 4.29:1 on this background. #999999 was 2.73:1, where dark's #888888
+        # gets 3.78:1 — a light-only regression from the move to #FAFAFA. This is
+        # also ISG_UI_FG_DIM's light value: the same grey tmux already uses for
+        # secondary text, which is where the two tools should have agreed anyway.
+        ISG_FG_DIM='#777777'
         ISG_BG_ALT='#f3f3f3'
         ISG_BORDER_UI='#d4d4d4'
         ISG_ON_ACCENT='#ffffff'
@@ -148,7 +152,8 @@ isg_palette() {
         ISG_NUMBER='#098658'
         ISG_TYPE='#267f99'
         ISG_ERROR='#ff0000'
-        ISG_WARN='#bf8803'
+        # 4.04:1, same amber hue. #BF8803 was 2.99:1 against dark's 10.54:1.
+        ISG_WARN='#a67102'
 
         # ── name-only tokens ──
         ISG_FZF_PROMPT='black'
