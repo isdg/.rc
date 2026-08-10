@@ -17,7 +17,7 @@ k9s:
     bgColor: "#fafafa"
     suggestColor: "#0451a5"
   info:
-    fgColor: "#999999"
+    fgColor: "#777777"
     sectionColor: "#000000"
   dialog:
     fgColor: "#000000"
@@ -45,9 +45,9 @@ k9s:
       modifyColor: "#098658"
       addColor: "#40a02b"
       errorColor: "#ff0000"
-      highlightColor: "#bf8803"
+      highlightColor: "#a67102"
       killColor: "#d20f39"
-      completedColor: "#999999"
+      completedColor: "#777777"
     title:
       fgColor: "#000000"
       bgColor: "#fafafa"
@@ -68,7 +68,7 @@ k9s:
       bgColor: "#fafafa"
       cursorFgColor: "#ffffff"
       cursorBgColor: "#007acc"
-      markColor: "#bf8803"
+      markColor: "#a67102"
       header:
         fgColor: "#0000ff"
         bgColor: "#fafafa"
@@ -81,7 +81,7 @@ k9s:
       showIcons: false
     yaml:
       keyColor: "#0000ff"
-      colonColor: "#999999"
+      colonColor: "#777777"
       valueColor: "#a31515"
     logs:
       fgColor: "#000000"
