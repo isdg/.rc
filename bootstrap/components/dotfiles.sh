@@ -8,6 +8,7 @@ ensure_dotfiles() {
     local failed=0
 
     _check_link ".zshrc"        "$HOME/.zshrc"        "$dotfiles_dir/zsh/.zshrc"        || failed=1
+    _check_link ".zshenv"       "$HOME/.zshenv"       "$dotfiles_dir/zsh/.zshenv"       || failed=1
     _check_link ".vimrc"        "$HOME/.vimrc"        "$dotfiles_dir/vim/.vimrc"         || failed=1
     _check_link ".tmux.conf"    "$HOME/.tmux.conf"    "$dotfiles_dir/tmux/.tmux.conf"    || failed=1
     _check_link ".gitconfig"    "$HOME/.gitconfig"    "$dotfiles_dir/.gitconfig"         || failed=1
@@ -74,6 +75,17 @@ link_dotfiles() {
     fi
     ln -sf "$dotfiles_dir/zsh/.zshrc" "$HOME/.zshrc"
     echo "[OK] Linked .zshrc"
+
+    # .zshenv, read by non-interactive shells too (tmux popups, nvim's :! …),
+    # which is where $FZF_DEFAULT_OPTS_FILE has to come from. Backed up rather
+    # than clobbered: a pre-existing one usually carries a toolchain line
+    # (cargo, nvm) worth reading before it is discarded.
+    if [ -f "$HOME/.zshenv" ] && [ ! -L "$HOME/.zshenv" ]; then
+        echo "[BACKUP] Backing up existing .zshenv to .zshenv.backup"
+        mv "$HOME/.zshenv" "$HOME/.zshenv.backup"
+    fi
+    ln -sf "$dotfiles_dir/zsh/.zshenv" "$HOME/.zshenv"
+    echo "[OK] Linked .zshenv"
 
     # The zsh theme needs no link — .zshrc sources it from the repo directly.
 
@@ -191,6 +203,14 @@ link_dotfiles() {
     if [ ! -e "$active" ]; then
         ln -sf "theme-$(cat "$theme_file").conf" "$active"
         echo "[OK] Seeded ghostty/theme-active.conf -> theme-$(cat "$theme_file").conf"
+    fi
+
+    # fzf options file, same idiom. Seeded unconditionally (-e is false for a
+    # dangling link, and a dangling $FZF_DEFAULT_OPTS_FILE is worse than none:
+    # fzf exits 2 on a missing file instead of falling back to its defaults).
+    if [ -d "$dotfiles_dir/fzf" ]; then
+        ln -sf "opts-$(cat "$theme_file").conf" "$dotfiles_dir/fzf/opts-active.conf"
+        echo "[OK] Seeded fzf/opts-active.conf -> opts-$(cat "$theme_file").conf"
     fi
 
     # Link k9s skins + seed the active-skin symlink (default: current mode).
