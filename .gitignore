@@ -16,6 +16,10 @@ k9s/skins/skin-active.yaml
 # toggle_theme.sh (.tigrc sources it with -q). Per-machine state.
 tig/theme-active.tigrc
 
+# Active fzf options file — a symlink to opts-{dark,light}.conf, flipped by
+# toggle_theme.sh ($FZF_DEFAULT_OPTS_FILE points at it, see zsh/.zshenv).
+fzf/opts-active.conf
+
 # Machine-local zsh aliases/functions (work-specific, private repo names, etc.)
 # sourced by aliases.zsh if present. Never published.
 zsh/aliases.ignored.zsh

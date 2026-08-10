@@ -54,6 +54,16 @@ if [ -d "$TIG_DIR" ]; then
     STATUS+="tig: $MODE (on new tig)\n"
 fi
 
+# --- fzf: swap the opts-active.conf symlink ($FZF_DEFAULT_OPTS_FILE points at
+# it; see zsh/.zshenv). Same idiom once more, and the reason every fzf on the
+# machine — our pickers, fzf-tab, nvim's fzf.vim, the ~/omni tmux popups —
+# follows the toggle without being told about it individually. ---
+FZF_DIR="$SCRIPT_DIR/fzf"
+if [ -d "$FZF_DIR" ]; then
+    ln -sf "opts-$MODE.conf" "$FZF_DIR/opts-active.conf"
+    STATUS+="fzf: $MODE (on new fzf)\n"
+fi
+
 # --- Tmux: re-source so the if-shell re-reads the mode file and repaints ---
 # The styles live in tmux/theme-{dark,light}.conf; nothing is sed'd here.
 if tmux source-file "$TMUX_CONF" 2>/dev/null; then
