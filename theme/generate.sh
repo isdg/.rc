@@ -22,14 +22,17 @@ ROOT=$(cd "$(dirname "$0")/.." && pwd)
 
 . "$ROOT/theme/palette.sh"
 
-# What gets rendered: <template> <output path, MODE substituted>.
+# What gets rendered: <template> <output path>. MODE is substituted in both, so
+# a tool whose two modes differ structurally can carry one template per mode
+# (bat does: the light theme has scopes the dark one leaves to inherit).
 # Add a tool by writing a template and adding one line here.
 ISG_TARGETS='
-ghostty.tpl ghostty/theme-MODE.conf
-tmux.tpl    tmux/theme-MODE.conf
-tig.tpl     tig/theme-MODE.tigrc
-fzf.tpl     fzf/opts-MODE.conf
-k9s.tpl     k9s/skins/vs_MODE.yaml
+ghostty.tpl  ghostty/theme-MODE.conf
+tmux.tpl     tmux/theme-MODE.conf
+tig.tpl      tig/theme-MODE.tigrc
+fzf.tpl      fzf/opts-MODE.conf
+k9s.tpl      k9s/skins/vs_MODE.yaml
+bat-MODE.tpl bat/themes/vs_MODE.tmTheme
 '
 
 # Placeholder pattern, hoisted into a variable: bash 3.2 mishandles an inline
@@ -75,6 +78,7 @@ for mode in dark light; do
     isg_palette "$mode"
     while read -r tpl out; do
         [ -n "$tpl" ] || continue
+        tpl=${tpl//MODE/$mode}
         out=${out//MODE/$mode}
         tmp="$ROOT/$out.generating.$$"
         # Render to a temp file first: a failed substitution must not leave a
