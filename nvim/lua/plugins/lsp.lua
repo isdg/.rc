@@ -156,6 +156,21 @@ return {
                     ["<CR>"] = cmp.mapping.confirm({ select = false }),
                     ["<C-j>"] = cmp.mapping.select_next_item(),
                     ["<C-k>"] = cmp.mapping.select_prev_item(),
+                    -- Coarse movement, <C-d>/<C-u> as in normal mode. These stay
+                    -- scoped to the menu for free: cmp.mapping.select_*_item runs
+                    -- fallback() when the menu is closed, so with no menu up the
+                    -- insert-mode defaults survive untouched (|i_CTRL-D| removes
+                    -- a shiftwidth of indent, |i_CTRL-U| kills what you typed).
+                    -- Select, not the Insert default, so a 4-entry jump doesn't
+                    -- drag four candidates through the buffer on the way past.
+                    ["<C-d>"] = cmp.mapping.select_next_item({
+                        behavior = cmp.SelectBehavior.Select,
+                        count = 4,
+                    }),
+                    ["<C-u>"] = cmp.mapping.select_prev_item({
+                        behavior = cmp.SelectBehavior.Select,
+                        count = 4,
+                    }),
                     -- Trigger the menu on demand. This is the escape hatch that
                     -- makes <leader>S (toggle auto-suggestions) usable: it goes
                     -- through cmp.complete(), which ignores
