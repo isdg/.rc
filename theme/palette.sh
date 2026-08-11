@@ -45,7 +45,16 @@ isg_palette() {
         # ── surfaces ── match nvim colors/vs_dark.vim `hi Normal`
         ISG_BG='#2f2f2f'
         ISG_FG='#d4d4d4'
-        ISG_CURSOR='#cccccc'
+        # Brighter than ISG_FG deliberately. Ghostty draws the cursor for every
+        # TUI that does not colour its own, and nvim is one of those — it
+        # defines no Cursor group and names none in 'guicursor' — so this slot
+        # is the cursor in the editor as much as at the prompt. At #cccccc it
+        # sat just under the body text, so inside a word it read as one paler
+        # cell rather than as the cursor. Nothing else on this background is
+        # brighter than the text, which is what makes white findable at a
+        # glance. cursor-text stays ISG_BG, so the glyph underneath still
+        # punches through as a hole. Moves bat's caret too.
+        ISG_CURSOR='#ffffff'
 
         # ── selection ── nvim colors/vs_dark.vim `hi Search`, so a picker's
         # selected row matches the buffer underneath it
