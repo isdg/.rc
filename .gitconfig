@@ -62,3 +62,9 @@
 	smtpServerPort = 587
 	smtpEncryption = tls
 	smtpUser = isai.gordeev.2022@polytechnique.org
+[credential "https://github.com"]
+	helper = 
+	helper = !/usr/local/bin/gh auth git-credential
+[credential "https://gist.github.com"]
+	helper = 
+	helper = !/usr/local/bin/gh auth git-credential
