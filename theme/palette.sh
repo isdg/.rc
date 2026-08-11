@@ -117,6 +117,14 @@ isg_palette() {
         # contrast (#26). nvim's diagnostics are their own yellow, and on dark this
         # single value covers Warn, Info and Hint plus all three undercurls.
         ISG_DIAG_WARN='#cca700'
+
+        # ── vim only ──
+        # Vim's statusline is a filled colour bar; Neovim's is seamless (bg=BG).
+        # That divergence is deliberate for now — unifying it would change what
+        # vim looks like — so it gets its own two slots rather than pretending
+        # the two editors agree.
+        ISG_VIM_STATUS_BG='#007acc'
+        ISG_VIM_STATUS_NC_FG='#bbbbbb'
         ;;
     light)
         ISG_MODE='light'
@@ -209,6 +217,11 @@ isg_palette() {
         # it moves pixels. See the PR discussion.
         ISG_SEARCH_BG='#90c2f9'
         ISG_DIAG_WARN='#bf8803'
+
+        # ── vim only ── see the dark branch. Note this is a *green* bar, where
+        # dark's is blue: the two vim statuslines never matched each other either.
+        ISG_VIM_STATUS_BG='#16825d'
+        ISG_VIM_STATUS_NC_FG='#919191'
         ;;
     *)
         printf 'palette: unknown mode %s (want dark|light)\n' "$1" >&2
