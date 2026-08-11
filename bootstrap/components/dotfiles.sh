@@ -2,6 +2,28 @@
 # Component: Link dotfiles (shared)
 # Requires: DOTFILES_DIR to be set
 
+# Every per-tool theme file is generated from theme/palette.sh and committed, so
+# a stale one means somebody edited the output instead of the palette — and the
+# next `theme/generate.sh` will silently revert their change. Cheap to detect
+# (it re-renders in memory and compares), so both the installer and the verifier
+# check it. Deliberately does not regenerate: writing into the repo during a
+# bootstrap run would dirty the tree without being asked.
+_check_theme_generated() {
+    local dotfiles_dir="$1"
+    local gen="$dotfiles_dir/theme/generate.sh"
+
+    [ -f "$gen" ] || return 0          # older checkout, nothing to check
+
+    if bash "$gen" --check >/dev/null 2>&1; then
+        echo "[OK] Theme files match theme/palette.sh"
+        return 0
+    fi
+    echo "[FAIL] Theme files are stale — a generated file was edited by hand:"
+    bash "$gen" --check 2>&1 | sed 's/^/       /'
+    echo "       Fix: bash $gen   (then commit the result)"
+    return 1
+}
+
 ensure_dotfiles() {
     local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     echo "[STEP] Verifying dotfiles..."
@@ -12,6 +34,8 @@ ensure_dotfiles() {
     _check_link ".vimrc"        "$HOME/.vimrc"        "$dotfiles_dir/vim/.vimrc"         || failed=1
     _check_link ".tmux.conf"    "$HOME/.tmux.conf"    "$dotfiles_dir/tmux/.tmux.conf"    || failed=1
     _check_link ".gitconfig"    "$HOME/.gitconfig"    "$dotfiles_dir/.gitconfig"         || failed=1
+
+    _check_theme_generated "$dotfiles_dir" || failed=1
 
     if [ -d "$HOME/.tmux/plugins/tpm" ]; then
         echo "[OK] TPM installed"
@@ -67,6 +91,11 @@ ensure_dotfiles() {
 link_dotfiles() {
     local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     echo "[STEP] Linking dotfiles..."
+
+    # Checked before anything is linked: these files are about to be symlinked
+    # into ~/, and a stale one is far more confusing once it is live. Reported,
+    # not fatal — a stale theme file should not stop the rest of a bootstrap.
+    _check_theme_generated "$dotfiles_dir" || true
 
     # Link Zsh config
     if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
