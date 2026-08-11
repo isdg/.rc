@@ -213,6 +213,15 @@ link_dotfiles() {
         echo "[OK] Seeded fzf/opts-active.conf -> opts-$(cat "$theme_file").conf"
     fi
 
+    # delta config, same idiom. Seeded unconditionally like fzf's: git ignores a
+    # missing include silently, so a dangling link would leave `git diff` pinned
+    # to whatever delta defaults to with no hint as to why.
+    if [ -d "$dotfiles_dir/git" ]; then
+        ln -sf "delta-$(cat "$theme_file").gitconfig" \
+               "$dotfiles_dir/git/delta-active.gitconfig"
+        echo "[OK] Seeded git/delta-active.gitconfig -> delta-$(cat "$theme_file").gitconfig"
+    fi
+
     # Link k9s skins + seed the active-skin symlink (default: current mode).
     # k9s never writes into skins/, so symlinking just that subdir keeps its
     # runtime state (logs, clusters/) out of the repo. toggle_theme.sh flips

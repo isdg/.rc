@@ -64,6 +64,17 @@ if [ -d "$FZF_DIR" ]; then
     STATUS+="fzf: $MODE (on new fzf)\n"
 fi
 
+# --- delta: swap the delta-active.gitconfig symlink (~/.gitconfig [include]s
+# it). Same idiom once more. delta cannot read the mode file and only asks
+# whether the background is light, so this is the only way `git diff` follows
+# the toggle -- it was pinned to light before. Takes effect on the next git
+# command, no reload needed. ---
+GIT_DIR_RC="$SCRIPT_DIR/git"
+if [ -d "$GIT_DIR_RC" ]; then
+    ln -sf "delta-$MODE.gitconfig" "$GIT_DIR_RC/delta-active.gitconfig"
+    STATUS+="delta: $MODE (on next git)\n"
+fi
+
 # --- Tmux: re-source so the if-shell re-reads the mode file and repaints ---
 # The styles live in tmux/theme-{dark,light}.conf; nothing is sed'd here.
 if tmux source-file "$TMUX_CONF" 2>/dev/null; then

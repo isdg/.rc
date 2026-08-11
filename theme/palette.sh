@@ -32,6 +32,9 @@ isg_palette() {
     case "$1" in
     dark)
         ISG_MODE='dark'
+        # Not a colour: delta has no "which mode am I in" of its own and takes a
+        # boolean, so the mode has to be expressible as a value like any other.
+        ISG_IS_LIGHT='false'
         # ── ANSI ramp ──
         ISG_ANSI_0='#45475a';  ISG_ANSI_8='#585b70'
         ISG_ANSI_1='#f38ba8';  ISG_ANSI_9='#f37799'
@@ -120,6 +123,7 @@ isg_palette() {
         ;;
     light)
         ISG_MODE='light'
+        ISG_IS_LIGHT='true'
         # ── ANSI ramp ──
         ISG_ANSI_0='#5c5f77';  ISG_ANSI_8='#6c6f85'
         ISG_ANSI_1='#d20f39';  ISG_ANSI_9='#de293e'

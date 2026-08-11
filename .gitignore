@@ -20,6 +20,10 @@ tig/theme-active.tigrc
 # toggle_theme.sh ($FZF_DEFAULT_OPTS_FILE points at it, see zsh/.zshenv).
 fzf/opts-active.conf
 
+# Active delta config — a symlink to delta-{dark,light}.gitconfig, flipped by
+# toggle_theme.sh (~/.gitconfig [include]s it). Per-machine state.
+git/delta-active.gitconfig
+
 # Machine-local zsh aliases/functions (work-specific, private repo names, etc.)
 # sourced by aliases.zsh if present. Never published.
 zsh/aliases.ignored.zsh

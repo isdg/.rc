@@ -13,7 +13,6 @@
 	diffFilter = delta --color-only
 [delta]
 	navigate = true
-	light = true
 	; Plain `git diff` content (no background highlight, no syntax coloring),
 	; but keep delta's line-number gutter and paging/navigation.
 	; - +/- styles are foreground-only and OMIT the `syntax` keyword, so whole
@@ -34,7 +33,6 @@
 	line-numbers-right-format = "{np:>4} : "
 	line-numbers-left-style = blue
 	line-numbers-right-style = blue
-	line-numbers-zero-style = "#cccccc"
 	; Page with quit-if-one-screen: short diffs auto-quit and stay in the
 	; terminal (feels like stdout), long diffs open in less (wrapped +
 	; navigable), -X keeps content in scrollback on quit.
@@ -46,6 +44,16 @@
 	file-style = blue
 	; drop the "Δ" modified-file symbol -- show just the path
 	file-modified-label = ""
+; delta's two mode-dependent settings -- `light` and the gutter colour -- come
+; from here. The symlink is flipped by toggle_theme.sh and the files are generated
+; from theme/palette.sh, so `git diff` finally follows the theme like everything
+; else. Everything in [delta] above uses ANSI names and already did.
+;
+; git expands `~` but not variables, so this assumes the repo is at ~/.rc, which
+; is what bootstrap's DOTFILES_DIR default and every _check_link already assume.
+; A missing path is silently ignored by git; bootstrap seeds the symlink.
+[include]
+	path = ~/.rc/git/delta-active.gitconfig
 [merge]
 	conflictStyle = diff3
 [diff]
