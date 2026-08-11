@@ -34,7 +34,12 @@
 	line-numbers-right-format = "{np:>4} : "
 	line-numbers-left-style = blue
 	line-numbers-right-style = blue
-	line-numbers-zero-style = "#cccccc"
+	; `white` is ANSI 7, so the terminal supplies the colour and it follows the
+	; theme -- theme/palette.sh ISG_ANSI_7, #a6adc8 dark / #acb0be light. A hex
+	; here would be baked as 24-bit and identical in both modes, which is what
+	; "#cccccc" was. Every other style in this section is already a name; this was
+	; the last literal colour in the file.
+	line-numbers-zero-style = white
 	; Page with quit-if-one-screen: short diffs auto-quit and stay in the
 	; terminal (feels like stdout), long diffs open in less (wrapped +
 	; navigable), -X keeps content in scrollback on quit.
