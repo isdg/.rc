@@ -17,6 +17,17 @@ vim.g.git_messenger_always_into_popup = true
 vim.opt.termguicolors = true
 vim.opt.background = "light"
 
+-- Neovim's default shapes, with each mode's entry additionally naming the
+-- Cursor highlight group. The group is the point: in the TUI Neovim only
+-- recolours the cursor (OSC 12) when guicursor names a group, so without this
+-- the colorschemes' `hi Cursor` was dead in both modes and the cursor was
+-- whatever Ghostty drew -- cursor-color #cccccc, a hair off the #d4d4d4 body
+-- text, hence hard to spot inside a word. Shapes are unchanged: block outside
+-- insert, thin bar in insert. The t: entry is Neovim's default verbatim and
+-- keeps TermCursor, which :terminal wants distinct from the editing cursor.
+vim.opt.guicursor = "n-v-c-sm:block-Cursor,i-ci-ve:ver25-Cursor,"
+    .. "r-cr-o:hor20-Cursor,t:block-blinkon500-blinkoff500-TermCursor"
+
 -- Window/terminal title = current file name. tmux captures this as #{pane_title}
 -- so it can name the window "nvim:<file>" instead of the cwd (see .tmux.conf
 -- automatic-rename-format). %t = filename tail (empty for a [No Name] buffer).

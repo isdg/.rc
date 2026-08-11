@@ -44,6 +44,17 @@ let g:terminal_color_15 = '#bac2de'
 
 " Editor colors
 hi Normal       guifg=#d4d4d4 guibg=#2f2f2f
+" Cursor. The light scheme's mirror of this is guibg=#d4d4d4 — the foreground
+" colour, so the block is the opposite of the page. That inverts badly here:
+" dark #d4d4d4 is #d4d4d4 and Ghostty's cursor-color is #cccccc, both a hair
+" off each other and off the body text, so a block cursor sitting inside a word
+" read as one slightly-paler cell rather than as the cursor. White instead: not
+" a role from the palette, because nothing else on this background wants to be
+" brighter than the text, which is exactly what makes it findable. guifg is the
+" background, so the glyph beneath punches through as a hole — the same
+" inversion ghostty/theme-dark.conf documents for cursor-text.
+" Inert unless 'guicursor' names this group; nvim/lua/options.lua does.
+hi Cursor       guifg=#2f2f2f guibg=#ffffff
 hi CursorLine   guibg=#2a2a2a
 hi Visual       guibg=#3a3d41
 hi LineNr       guifg=#555555 guibg=#2f2f2f
