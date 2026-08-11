@@ -33,6 +33,7 @@ tig.tpl      tig/theme-MODE.tigrc
 fzf.tpl      fzf/opts-MODE.conf
 k9s.tpl      k9s/skins/vs_MODE.yaml
 bat-MODE.tpl bat/themes/vs_MODE.tmTheme
+nvim-MODE.tpl nvim/colors/vs_MODE.vim
 '
 
 # Placeholder pattern, hoisted into a variable: bash 3.2 mishandles an inline

@@ -108,6 +108,15 @@ isg_palette() {
         ISG_LINE_HL='#2a2a2a'
         ISG_VISUAL_BG='#3a3d41'         # the editor's own selection, not SEL_BG
         ISG_GUTTER_FG='#555555'         # also invisibles
+
+        # ── editor chrome (nvim) ──
+        ISG_BG_DEEP='#1e1e1e'           # floats, :terminal, Error bg — below BG
+        ISG_FG_FAINT='#6b6b6b'          # inactive statusline, unused-symbol hints
+        ISG_SEARCH_BG='#264f78'         # nvim `hi Search`; MatchParen too
+        # NOT ISG_WARN: that is k9s's amber and was already retuned once for light
+        # contrast (#26). nvim's diagnostics are their own yellow, and on dark this
+        # single value covers Warn, Info and Hint plus all three undercurls.
+        ISG_DIAG_WARN='#cca700'
         ;;
     light)
         ISG_MODE='light'
@@ -190,6 +199,16 @@ isg_palette() {
         # Unreferenced by bat-dark.tpl, so they are not defined above.
         ISG_DOC_COMMENT='#008000'
         ISG_MD_BOLD='#000080'
+
+        # ── editor chrome (nvim) ── see the dark branch
+        ISG_BG_DEEP='#ffffff'           # only VertSplit's bg here; dark uses it more
+        ISG_FG_FAINT='#aaaaaa'
+        # Note this is NOT ISG_SEL_BG (#dce7f2). fzf's opts-light.conf claims to
+        # mirror nvim's `hi Search`, but nvim's is #90C2F9 and always has been —
+        # the two drifted apart before either was written down. Left as-is: fixing
+        # it moves pixels. See the PR discussion.
+        ISG_SEARCH_BG='#90c2f9'
+        ISG_DIAG_WARN='#bf8803'
         ;;
     *)
         printf 'palette: unknown mode %s (want dark|light)\n' "$1" >&2
