@@ -95,6 +95,19 @@ isg_palette() {
         # white on it is 2.11:1, while `default` on color24 is 4.74:1.
         ISG_TIG_SEL_FG='default'
         ISG_TIG_SEL_BG='color24'
+
+        # ── syntax highlighting (bat) ── from vim/.vim/colors/vs_dark.vim
+        # ISG_COMMENT is deliberately NOT ISG_FG_DIM even though both are #888888
+        # here: FG_DIM is k9s chrome and has already been retuned once for light
+        # contrast. Sharing them would drag bat's comments along with it.
+        ISG_COMMENT='#888888'
+        ISG_PUNCTUATION='#888888'
+        ISG_STRING_ESCAPE='#d16969'
+        ISG_TAG='#569cd6'
+        ISG_TAG_ATTR='#9cdcfe'
+        ISG_LINE_HL='#2a2a2a'
+        ISG_VISUAL_BG='#3a3d41'         # the editor's own selection, not SEL_BG
+        ISG_GUTTER_FG='#555555'         # also invisibles
         ;;
     light)
         ISG_MODE='light'
@@ -161,6 +174,22 @@ isg_palette() {
         # 4.91:1 and needs no 256-index stand-in.
         ISG_TIG_SEL_FG='white'
         ISG_TIG_SEL_BG='blue'
+
+        # ── syntax highlighting (bat) ── from vim/.vim/colors/vs_light.vim
+        # See the dark branch on why ISG_COMMENT is not ISG_FG_DIM.
+        ISG_COMMENT='#999999'
+        ISG_PUNCTUATION='#000000'
+        ISG_STRING_ESCAPE='#811f3f'
+        ISG_TAG='#800000'
+        ISG_TAG_ATTR='#e50000'
+        ISG_LINE_HL='#e5ebf1'
+        ISG_VISUAL_BG='#add6ff'
+        ISG_GUTTER_FG='#c0c0c0'
+        # Light-only scopes: the light theme distinguishes doc comments and gives
+        # markdown bold a colour, where the dark theme leaves both to inherit.
+        # Unreferenced by bat-dark.tpl, so they are not defined above.
+        ISG_DOC_COMMENT='#008000'
+        ISG_MD_BOLD='#000080'
         ;;
     *)
         printf 'palette: unknown mode %s (want dark|light)\n' "$1" >&2

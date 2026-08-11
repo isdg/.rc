@@ -18,13 +18,13 @@
     <dict>
       <key>settings</key>
       <dict>
-        <key>background</key>    <string>#fafafa</string>
-        <key>foreground</key>    <string>#000000</string>
-        <key>caret</key>         <string>#000000</string>
-        <key>lineHighlight</key> <string>#e5ebf1</string>
-        <key>selection</key>     <string>#add6ff</string>
-        <key>gutterForeground</key> <string>#c0c0c0</string>
-        <key>invisibles</key>    <string>#c0c0c0</string>
+        <key>background</key>    <string>${ISG_BG}</string>
+        <key>foreground</key>    <string>${ISG_FG}</string>
+        <key>caret</key>         <string>${ISG_FG}</string>
+        <key>lineHighlight</key> <string>${ISG_LINE_HL}</string>
+        <key>selection</key>     <string>${ISG_VISUAL_BG}</string>
+        <key>gutterForeground</key> <string>${ISG_GUTTER_FG}</string>
+        <key>invisibles</key>    <string>${ISG_GUTTER_FG}</string>
       </dict>
     </dict>
 
@@ -34,109 +34,109 @@
       <key>scope</key><string>comment, punctuation.definition.comment</string>
       <key>settings</key><dict>
         <key>fontStyle</key><string>italic</string>
-        <key>foreground</key><string>#999999</string>
+        <key>foreground</key><string>${ISG_COMMENT}</string>
       </dict>
     </dict>
     <dict>
       <key>name</key><string>Doc comment</string>
       <key>scope</key><string>comment.block.documentation</string>
-      <key>settings</key><dict><key>foreground</key><string>#008000</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_DOC_COMMENT}</string></dict>
     </dict>
 
     <!-- Strings -->
     <dict>
       <key>name</key><string>String</string>
       <key>scope</key><string>string, string.quoted, string.template</string>
-      <key>settings</key><dict><key>foreground</key><string>#a31515</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_STRING}</string></dict>
     </dict>
     <dict>
       <key>name</key><string>Escape / special char</string>
       <key>scope</key><string>constant.character.escape, string.regexp, constant.other.placeholder</string>
-      <key>settings</key><dict><key>foreground</key><string>#811f3f</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_STRING_ESCAPE}</string></dict>
     </dict>
 
     <!-- Numbers / language constants -->
     <dict>
       <key>name</key><string>Number / Float</string>
       <key>scope</key><string>constant.numeric</string>
-      <key>settings</key><dict><key>foreground</key><string>#098658</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_NUMBER}</string></dict>
     </dict>
     <dict>
       <key>name</key><string>Boolean</string>
       <key>scope</key><string>constant.language</string>
-      <key>settings</key><dict><key>foreground</key><string>#098658</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_NUMBER}</string></dict>
     </dict>
     <dict>
       <key>name</key><string>Named constant</string>
       <key>scope</key><string>support.constant, constant.other</string>
-      <key>settings</key><dict><key>foreground</key><string>#0000ff</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_ACCENT}</string></dict>
     </dict>
 
     <!-- Keywords (blue), storage class (blue), operator (black) -->
     <dict>
       <key>name</key><string>Keyword / storage</string>
       <key>scope</key><string>keyword, keyword.control, keyword.other, storage, storage.type, storage.modifier</string>
-      <key>settings</key><dict><key>foreground</key><string>#0000ff</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_ACCENT}</string></dict>
     </dict>
     <dict>
       <key>name</key><string>Operator</string>
       <key>scope</key><string>keyword.operator, punctuation.separator, punctuation.terminator</string>
-      <key>settings</key><dict><key>foreground</key><string>#000000</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_FG}</string></dict>
     </dict>
 
     <!-- Types / classes: ISG_ACCENT_DEEP; enum: teal -->
     <dict>
       <key>name</key><string>Type / class / struct</string>
       <key>scope</key><string>entity.name.type, entity.name.class, entity.other.inherited-class, support.type, support.class, storage.type.class</string>
-      <key>settings</key><dict><key>foreground</key><string>#0451a5</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_ACCENT_DEEP}</string></dict>
     </dict>
     <dict>
       <key>name</key><string>Enum</string>
       <key>scope</key><string>entity.name.type.enum, variable.other.enummember, constant.other.enum</string>
-      <key>settings</key><dict><key>foreground</key><string>#267f99</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_TYPE}</string></dict>
     </dict>
 
     <!-- Functions: ISG_ACCENT_DEEP (matches vs_light.vim) -->
     <dict>
       <key>name</key><string>Function</string>
       <key>scope</key><string>entity.name.function, support.function, meta.function-call, variable.function</string>
-      <key>settings</key><dict><key>foreground</key><string>#0451a5</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_ACCENT_DEEP}</string></dict>
     </dict>
 
     <!-- Variables: plain black (matches VS Light) -->
     <dict>
       <key>name</key><string>Variable</string>
       <key>scope</key><string>variable, variable.other, variable.parameter, meta.definition.variable</string>
-      <key>settings</key><dict><key>foreground</key><string>#000000</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_FG}</string></dict>
     </dict>
     <dict>
       <key>name</key><string>Builtin variable (this/self)</string>
       <key>scope</key><string>variable.language</string>
-      <key>settings</key><dict><key>foreground</key><string>#0000ff</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_ACCENT}</string></dict>
     </dict>
 
     <!-- Tags (maroon), attributes, punctuation (black) -->
     <dict>
       <key>name</key><string>Tag</string>
       <key>scope</key><string>entity.name.tag</string>
-      <key>settings</key><dict><key>foreground</key><string>#800000</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_TAG}</string></dict>
     </dict>
     <dict>
       <key>name</key><string>Tag attribute</string>
       <key>scope</key><string>entity.other.attribute-name</string>
-      <key>settings</key><dict><key>foreground</key><string>#e50000</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_TAG_ATTR}</string></dict>
     </dict>
     <dict>
       <key>name</key><string>Punctuation / delimiter</string>
       <key>scope</key><string>punctuation, meta.brace, punctuation.definition</string>
-      <key>settings</key><dict><key>foreground</key><string>#000000</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_PUNCTUATION}</string></dict>
     </dict>
 
     <!-- Errors -->
     <dict>
       <key>name</key><string>Invalid</string>
       <key>scope</key><string>invalid, invalid.illegal</string>
-      <key>settings</key><dict><key>foreground</key><string>#ff0000</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_ERROR}</string></dict>
     </dict>
 
     <!-- Markdown -->
@@ -145,7 +145,7 @@
       <key>scope</key><string>markup.heading, entity.name.section</string>
       <key>settings</key><dict>
         <key>fontStyle</key><string>bold</string>
-        <key>foreground</key><string>#800000</string>
+        <key>foreground</key><string>${ISG_TAG}</string>
       </dict>
     </dict>
     <dict>
@@ -153,7 +153,7 @@
       <key>scope</key><string>markup.bold</string>
       <key>settings</key><dict>
         <key>fontStyle</key><string>bold</string>
-        <key>foreground</key><string>#000080</string>
+        <key>foreground</key><string>${ISG_MD_BOLD}</string>
       </dict>
     </dict>
     <dict>
@@ -161,18 +161,18 @@
       <key>scope</key><string>markup.italic</string>
       <key>settings</key><dict>
         <key>fontStyle</key><string>italic</string>
-        <key>foreground</key><string>#0000ff</string>
+        <key>foreground</key><string>${ISG_ACCENT}</string>
       </dict>
     </dict>
     <dict>
       <key>name</key><string>Link</string>
       <key>scope</key><string>markup.underline.link, string.other.link</string>
-      <key>settings</key><dict><key>foreground</key><string>#0451a5</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_ACCENT_DEEP}</string></dict>
     </dict>
     <dict>
       <key>name</key><string>Raw / code</string>
       <key>scope</key><string>markup.raw, markup.inline.raw</string>
-      <key>settings</key><dict><key>foreground</key><string>#098658</string></dict>
+      <key>settings</key><dict><key>foreground</key><string>${ISG_NUMBER}</string></dict>
     </dict>
 
   </array>
