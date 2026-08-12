@@ -112,7 +112,9 @@ Tmux Cheat Sheet
   ├──────────────────┼─────────────────────────────┤
   │ Ctrl+B x         │ Kill current pane           │
   ├──────────────────┼─────────────────────────────┤
-  │ Ctrl+B z         │ Zoom pane (full screen)     │
+  │ Ctrl+B Z         │ Zoom pane (full screen)     │
+  ├──────────────────┼─────────────────────────────┤
+  │ Ctrl+B z         │ Zen mode (hide status bar)  │
   └──────────────────┴─────────────────────────────┘
 
   Text/Copy
