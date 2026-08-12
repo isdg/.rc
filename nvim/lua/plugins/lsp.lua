@@ -153,9 +153,62 @@ return {
                     end,
                 },
                 mapping = cmp.mapping.preset.insert({
-                    ["<CR>"] = cmp.mapping.confirm({ select = true }),
+                    ["<CR>"] = cmp.mapping.confirm({ select = false }),
                     ["<C-j>"] = cmp.mapping.select_next_item(),
                     ["<C-k>"] = cmp.mapping.select_prev_item(),
+                    -- Coarse movement, <C-d>/<C-u> as in normal mode. These stay
+                    -- scoped to the menu for free: cmp.mapping.select_*_item runs
+                    -- fallback() when the menu is closed, so with no menu up the
+                    -- insert-mode defaults survive untouched (|i_CTRL-D| removes
+                    -- a shiftwidth of indent, |i_CTRL-U| kills what you typed).
+                    -- Select, not the Insert default, so a 4-entry jump doesn't
+                    -- drag four candidates through the buffer on the way past.
+                    ["<C-d>"] = cmp.mapping.select_next_item({
+                        behavior = cmp.SelectBehavior.Select,
+                        count = 4,
+                    }),
+                    ["<C-u>"] = cmp.mapping.select_prev_item({
+                        behavior = cmp.SelectBehavior.Select,
+                        count = 4,
+                    }),
+                    -- Trigger the menu on demand. This is the escape hatch that
+                    -- makes <leader>S (toggle auto-suggestions) usable: it goes
+                    -- through cmp.complete(), which ignores
+                    -- completion.autocomplete entirely.
+                    -- <C-l>, not <C-Space>: macOS binds Ctrl+Space to the input
+                    -- source switcher, so the terminal never sees it. Insert-mode
+                    -- CTRL-L has no Neovim default (:h i_CTRL-L does not exist —
+                    -- CTRL-L is only meaningful inside |i_CTRL-X| completion
+                    -- mode), and this is a different mode from the normal-mode
+                    -- <C-l> window motion in keymaps/editor.lua.
+                    --
+                    -- One key, three states, because what you want from it
+                    -- depends on what is on screen:
+                    --   no menu      → open the menu
+                    --   menu, no doc → pin the doc float for the entry
+                    --   doc pinned   → put it away
+                    -- The float cannot be *entered*: cmp opens it with
+                    -- nvim_open_win(..., false, ...) and never focuses it, and
+                    -- any window jump leaves insert mode, which closes the menu
+                    -- underneath it. Pinning (is_docs_view_pinned) is the
+                    -- equivalent — it keeps the float up while <C-j>/<C-k> walk
+                    -- the list, instead of it coming and going per entry.
+                    ["<C-l>"] = cmp.mapping(function()
+                        if not cmp.visible() then
+                            cmp.complete()
+                        elseif cmp.visible_docs() then
+                            cmp.close_docs()
+                        else
+                            -- completeopt has `noselect`, so a freshly opened
+                            -- menu has no selected entry — and open_docs() is a
+                            -- no-op without one. Land on the first entry (Select,
+                            -- so nothing is written to the buffer) first.
+                            if not cmp.get_selected_entry() then
+                                cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
+                            end
+                            cmp.open_docs()
+                        end
+                    end, { "i" }),
                 }),
                 sources = cmp.config.sources({
                     { name = "nvim_lsp" },
