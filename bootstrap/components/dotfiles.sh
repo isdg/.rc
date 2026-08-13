@@ -58,6 +58,20 @@ ensure_dotfiles() {
         echo "[OK] Vim colors (source and target are the same directory)"
     fi
 
+    # coc.nvim only ever reads ~/.vim/coc-settings.json, so that single file is
+    # linked rather than the directory around it. -ef (same inode) covers the
+    # case where ~/.vim *is* the repo directory: then there is nothing to link,
+    # and a plain _check_link would fail on a regular file.
+    local coc_src="$dotfiles_dir/vim/.vim/coc-settings.json"
+    local coc_dst="$HOME/.vim/coc-settings.json"
+    if [ -f "$coc_src" ]; then
+        if [ ! -L "$coc_dst" ] && [ "$coc_dst" -ef "$coc_src" ]; then
+            echo "[OK] coc-settings.json (source and target are the same file)"
+        else
+            _check_link "coc-settings.json" "$coc_dst" "$coc_src" || failed=1
+        fi
+    fi
+
     _check_link "nvim config"    "$HOME/.config/nvim"     "$dotfiles_dir/nvim"     || failed=1
     _check_link "ghostty config" "$HOME/.config/ghostty"  "$dotfiles_dir/ghostty"  || failed=1
 
@@ -190,6 +204,23 @@ link_dotfiles() {
                 echo "[FAIL] Could not link $(basename "$color_file") into $dst_dir"
             fi
         done
+    fi
+
+    # Link coc.nvim settings (see the matching note in ensure_dotfiles)
+    local coc_src="$dotfiles_dir/vim/.vim/coc-settings.json"
+    local coc_dst="$HOME/.vim/coc-settings.json"
+    if [ -f "$coc_src" ]; then
+        if [ ! -L "$coc_dst" ] && [ "$coc_dst" -ef "$coc_src" ]; then
+            echo "[SKIP] coc-settings.json already in place (source and target are the same file)"
+        else
+            mkdir -p "$HOME/.vim"
+            if [ -f "$coc_dst" ] && [ ! -L "$coc_dst" ]; then
+                echo "[BACKUP] Backing up existing coc-settings.json to coc-settings.json.backup"
+                mv "$coc_dst" "$coc_dst.backup"
+            fi
+            ln -sf "$coc_src" "$coc_dst"
+            echo "[OK] Linked coc-settings.json"
+        fi
     fi
 
     # Link Neovim config (skip if already pointing to the right place)

@@ -40,8 +40,11 @@ source "$SCRIPT_DIR/components/darwin_defaults.sh"
 #
 # CORE  — the terminal experience: brew, the package set for the active profile,
 #         shell, dotfile symlinks, fonts, vim/tmux/fzf/tig wiring. Always runs.
+#         The keyboard remap lives here rather than with the other macOS tweaks:
+#         it changes what every keystroke does, so a --minimal box without it is
+#         not usable in the way the rest of this config assumes.
 # EXTRA — GUI apps, VS Code, the Rust-built side tools (plc, hr, omni, orchbus)
-#         and macOS system tweaks. Skipped by --minimal.
+#         and macOS system defaults. Skipped by --minimal.
 BOOTSTRAP_CORE_FUNCS=(
     "install_homebrew|ensure_homebrew"
     "install_packages_darwin|ensure_packages_darwin"
@@ -52,6 +55,7 @@ BOOTSTRAP_CORE_FUNCS=(
     "install_vim_plugins|ensure_vim_plugins"
     "install_fzf_darwin|ensure_fzf_darwin"
     "set_default_shell_darwin|ensure_default_shell_darwin"
+    "install_keyremap_darwin|ensure_keyremap_darwin"
 )
 BOOTSTRAP_EXTRA_FUNCS=(
     "install_gui_apps_darwin|ensure_gui_apps_darwin"
@@ -59,7 +63,6 @@ BOOTSTRAP_EXTRA_FUNCS=(
     "install_plc|ensure_plc"
     "install_tmux_plugins|ensure_tmux_plugins"
     "install_hr|ensure_hr"
-    "install_keyremap_darwin|ensure_keyremap_darwin"
     "apply_darwin_defaults|ensure_darwin_defaults"
 )
 
