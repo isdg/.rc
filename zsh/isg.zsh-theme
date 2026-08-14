@@ -169,25 +169,14 @@ fi
 
 if [[ "$ISG_FZF_THEME" != 'false' ]]; then
   if (( $+commands[fzf] )); then
-    # The selected row (bg+/fg+) is the one colour that cannot be shared: a
-    # light-theme selection (#dce7f2 with dark text) reads as a glaring white
-    # bar on the dark background. Each mode borrows its editor's own selection
-    # colours — nvim/colors/vs_{dark,light}.vim `hi Search` — so the picker
-    # matches the buffer underneath it. `prompt` likewise: black is invisible
-    # on dark.
-    if [[ "$ISG_THEME_MODE" == 'dark' ]]; then
-      local _fzf_sel='bg+:#264F78,fg+:#D4D4D4'   # vs_dark  hi Search
-      local _fzf_prompt='prompt:blue'
-    else
-      local _fzf_sel='bg+:#dce7f2,fg+:bright-black'
-      local _fzf_prompt='prompt:black'
-    fi
-    export FZF_DEFAULT_OPTS="$FZF_DEFAULT_OPTS
-      --preview-window=down:55%
-      --color=bg:-1,fg:-1,$_fzf_sel
-      --color=hl:bright-blue,hl+:blue
-      --color=header:green,info:green,pointer:blue
-      --color=marker:bright-blue,$_fzf_prompt,spinner:blue"
+    # fzf's own colours are NOT set here. They live in fzf/opts-{dark,light}.conf
+    # and reach fzf through $FZF_DEFAULT_OPTS_FILE, exported from zsh/.zshenv so
+    # that non-interactive shells — tmux popups, nvim, anything spawned by a
+    # `zsh -c` — get them too, which an interactive-only export never could.
+    # Setting them in FZF_DEFAULT_OPTS additionally would *override* that file
+    # (fzf applies the file first, the variable second), reintroducing the stale
+    # copy tmux freezes in its server environment. Only fzf-tab's zstyles, which
+    # are a zsh-side plugin setting and can't live in an fzf options file, remain.
 
     # fzf-tab theme, setting the default color for suggestions (blue for me)
     # Test all colors: `msgcat --color=test`
@@ -250,7 +239,7 @@ add-zsh-hook precmd __isg::precmd
 #
 #          ▼ q₀        isg · zsh
 #   ┄┬─┬─┬─┬─┬─┬┄      Wed 11 Jun 2026 · 20:42
-#   ┄┤0│1│1│0│1├┄      ~/.dotfiles · main
+#   ┄┤0│1│1│0│1├┄      ~/.rc · main
 #   ┄┴─┴─┴─┴─┴─┴┄
 #   δ(q₀,0)=⟨B,1,R⟩
 #
@@ -268,7 +257,12 @@ add-zsh-hook precmd __isg::precmd
 #
 # Config
 #   BANNER_DISABLE=1           skip rendering entirely
-#   BANNER_ACCENT=color        mascot color (default: yellow)
+#   BANNER_ACCENT=color        mascot color (default: 244, a mid grey that
+#                              holds up on both the dark and light background).
+#                              Any %F{..} value: a base name, or 0-255. Note
+#                              zsh has no `grey`/`gray` name — both fall back
+#                              to the default foreground — so greys need a
+#                              number.
 # ----------------------------------------------------------------------------
 
 typeset -ga BANNER_LOG_FUNCS=()
@@ -444,14 +438,13 @@ banner_render() {
     for (( i = 1; i <= rows; i++ )); do
         mascot="${_banner_mascot[i]:-}"
         info="${_banner_info_lines[i]:-}"
-        print -P -- "  %F{${BANNER_ACCENT:-yellow}}${(r:${_banner_mascot_width}:)mascot}%f   ${info}"
+        print -P -- "  %F{${BANNER_ACCENT:-244}}${(r:${_banner_mascot_width}:)mascot}%f   ${info}"
     done
     (( ${#_banner_log_lines} )) && print
-    # dark theme: blue, like the prompt's current-dir; light: default fg
-    local log_on='' log_off=''
-    [[ "$ISG_THEME_MODE" == 'dark' ]] && log_on='%F{grey}' log_off='%f'
+    # no colour of their own: the logs take the default foreground, the same
+    # as the info lines beside the mascot, in both themes
     for line in "${_banner_log_lines[@]}"; do
-        print -P -- "    ${log_on}· ${line//\%/%%}${log_off}"
+        print -P -- "    · ${line//\%/%%}"
     done
     print
     # consumed — a re-source/re-render starts clean

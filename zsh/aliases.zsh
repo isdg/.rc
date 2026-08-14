@@ -8,7 +8,7 @@ alias v.='vim .'
 alias c='claude'
 alias tm='tmux'
 alias os='orchbus'   # cockpit for triaging Claude Code sessions
-alias tt='bash "${ISG_DOTFILES:-$HOME/.dotfiles}/toggle_theme.sh"'   # toggle light/dark
+alias tt='bash "${ISGRC:-$HOME/.rc}/toggle_theme.sh"'   # toggle light/dark
 
 # gjobs — cross-terminal "jobs". The `jobs` builtin only sees the current
 # shell's job table, so this shows every terminal-attached process grouped by
@@ -42,6 +42,37 @@ export GH_PAGER='less -FX'
 # shell) after toggle_theme.sh flips the marker to follow it.
 export GLAMOUR_STYLE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev/null || echo light)"
 
+# k9s: force a terminfo entry its TUI library can actually use, but only inside
+# tmux. Outside tmux k9s renders the skin exactly; inside it, everything came out
+# blue-grey.
+#
+# Measured rather than guessed: the body background sampled as #bcc0cc and the
+# selected row as #456eff. Those are palette indexes 15 and 12 — i.e. the skin's
+# #fafafa and #007acc quantized to the nearest of the standard 16 ANSI colours,
+# with Ghostty then painting those two slots from our own ramp (theme/palette.sh
+# ISG_ANSI_15 / ISG_ANSI_12). So k9s was emitting 16-colour output, which is also
+# why the wash looked blue rather than plain grey.
+#
+# The cause is tcell's terminfo lookup, not a missing file:
+# /usr/share/terminfo/74/tmux-256color exists and ncurses finds it (`infocmp
+# tmux-256color` works), and COLORTERM=truecolor is already set in the pane —
+# neither is enough. xterm-256color is an entry tcell handles, and with COLORTERM
+# present it then goes to 24-bit and the skin renders exactly.
+#
+# Scoped on purpose. Only k9s is affected, because only k9s uses tcell — nvim,
+# bat, tig and fzf are all correct in tmux already. In particular do NOT "fix"
+# this by changing default-terminal in tmux/.tmux.conf: that would change TERM for
+# every program to fix one, and tmux wants a tmux-*/screen-* entry inside, which
+# together with `terminal-features ',*:RGB'` is what gives everything else its
+# truecolor.
+k9s() {
+  if [[ -n $TMUX ]]; then
+    TERM=xterm-256color command k9s "$@"
+  else
+    command k9s "$@"
+  fi
+}
+
 # Palace notes — thin `plc` wrappers now ship with the dotfiles. The vault path
 # is persisted in ~/.plcrc; ask `plc config` for it instead of hardcoding here,
 # so there is exactly one source of truth.
@@ -52,9 +83,9 @@ export GLAMOUR_STYLE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev
 # value (a tmux global env snapshot, a long-lived parent process) launders
 # itself through every new shell indefinitely.
 export PALACE_DIR="$(env -u PALACE_DIR plc config 2>/dev/null)"
-source "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/palace.zsh"
+source "${ISGRC:-$HOME/.rc}/zsh/palace.zsh"
 
 # Machine-local, gitignored aliases/functions (work-specific helpers, private
 # repo names, employer paths). Never published; source it only if it exists.
-[ -f "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/aliases.ignored.zsh" ] \
-   && source "${ISG_DOTFILES:-$HOME/.dotfiles}/zsh/aliases.ignored.zsh"
+[ -f "${ISGRC:-$HOME/.rc}/zsh/aliases.ignored.zsh" ] \
+   && source "${ISGRC:-$HOME/.rc}/zsh/aliases.ignored.zsh"

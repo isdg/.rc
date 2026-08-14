@@ -17,6 +17,22 @@ vim.g.git_messenger_always_into_popup = true
 vim.opt.termguicolors = true
 vim.opt.background = "light"
 
+-- Colour the terminal cursor from the colorscheme instead of leaving it to
+-- Ghostty. The default 'guicursor' names no highlight group, so Neovim never
+-- emits OSC 12 and the caret keeps whatever cursor-color the terminal read at
+-- launch — which toggle_theme.sh cannot change without a Ghostty reload, and
+-- was why the cursor stayed light in a dark editor. Appending -Cursor to each
+-- mode makes Neovim set the colour on entry (from `hi Cursor` guibg, defined in
+-- both vs_dark and vs_light) and restore it with OSC 112 on exit. Verified to
+-- work under TERM=tmux-256color as well, so it survives tmux.
+-- The shapes are Neovim's defaults, repeated verbatim; only the group is new.
+vim.opt.guicursor = table.concat({
+    "n-v-c-sm:block-Cursor",
+    "i-ci-ve:ver25-Cursor",
+    "r-cr-o:hor20-Cursor",
+    "t:block-blinkon500-blinkoff500-TermCursor",
+}, ",")
+
 -- Window/terminal title = current file name. tmux captures this as #{pane_title}
 -- so it can name the window "nvim:<file>" instead of the cwd (see .tmux.conf
 -- automatic-rename-format). %t = filename tail (empty for a [No Name] buffer).
@@ -32,9 +48,9 @@ vim.opt.breakindent = true
 vim.opt.breakindentopt = "shift:2,min:20"
 
 -- Tabs & indents
-vim.opt.tabstop = 3
-vim.opt.softtabstop = 3
-vim.opt.shiftwidth = 3
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
 vim.opt.expandtab = true
 
 -- Navigation & search
@@ -61,7 +77,7 @@ vim.opt.exrc = true
 -- Force the interactive swap dialog instead of the silent W325 auto-ignore
 -- when another nvim already has the file open.
 vim.api.nvim_create_autocmd("SwapExists", {
-   callback = function() vim.v.swapchoice = "" end,
+    callback = function() vim.v.swapchoice = "" end,
 })
 
 -- Clipboard provider, chosen by context:
@@ -75,15 +91,15 @@ vim.api.nvim_create_autocmd("SwapExists", {
 -- hang/prompt) -- use the terminal's own paste (Cmd+V, bracketed) for outside
 -- text.
 if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
-   local osc52 = require("vim.ui.clipboard.osc52")
-   local function paste_reg()
-      return function()
-         return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
-      end
-   end
-   vim.g.clipboard = {
-      name = "OSC 52",
-      copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
-      paste = { ["+"] = paste_reg(), ["*"] = paste_reg() },
-   }
+    local osc52 = require("vim.ui.clipboard.osc52")
+    local function paste_reg()
+        return function()
+            return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
+        end
+    end
+    vim.g.clipboard = {
+        name = "OSC 52",
+        copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
+        paste = { ["+"] = paste_reg(), ["*"] = paste_reg() },
+    }
 end

@@ -8,15 +8,15 @@ local map, lmap = leader.map, leader.lmap
 lmap("n", "s", "<cmd>w<CR>", { desc = "Save file" })
 -- Toggle the whole number column on/off (both number + relativenumber).
 lmap("n", "N", function()
-   local show = not (vim.wo.number or vim.wo.relativenumber)
-   vim.wo.number = show
-   vim.wo.relativenumber = false
+    local show = not (vim.wo.number or vim.wo.relativenumber)
+    vim.wo.number = show
+    vim.wo.relativenumber = false
 end, { desc = "Toggle line-number column" })
 -- Toggle relative numbers, keeping `number` on so the current line stays
 -- absolute (hybrid) instead of showing 0.
 lmap("n", "n", function()
-   vim.wo.number = true
-   vim.wo.relativenumber = not vim.wo.relativenumber
+    vim.wo.number = true
+    vim.wo.relativenumber = not vim.wo.relativenumber
 end, { desc = "Toggle relative numbers (hybrid)" })
 lmap("n", "w", "<cmd>q<CR>", { desc = "Quit file" })
 lmap("n", "W", "<cmd>q!<CR>", { desc = "Quit without saving" })
@@ -24,10 +24,16 @@ lmap("n", "Q", "<cmd>qa!<CR>", { desc = "Quit all without saving" })
 
 
 -- ─── Split management ───────────────────────────────────────────
-lmap("n", "h", "<C-w>h", { desc = "Move to left split" })
-lmap("n", "j", "<C-w>j", { desc = "Move to below split" })
-lmap("n", "k", "<C-w>k", { desc = "Move to above split" })
-lmap("n", "l", "<C-w>l", { desc = "Move to right split" })
+-- Ctrl rather than <leader>: one keystroke shorter for a motion used constantly,
+-- and Ctrl+letter is keyed off the physical key, so unlike the <leader>hjkl these
+-- replaced it needs no Russian-layout twin (see keymaps/leader.lua's lmap).
+-- <C-l> gives up Neovim's CTRL-L-default (nohlsearch + diffupdate + redraw):
+-- <Esc> already clears highlights below, and :redraw! / :diffupdate cover the
+-- rest. <C-h> is distinct from <BS> here — verified in both editors.
+map("n", "<C-h>", "<C-w>h", { desc = "Move to left split" })
+map("n", "<C-j>", "<C-w>j", { desc = "Move to below split" })
+map("n", "<C-k>", "<C-w>k", { desc = "Move to above split" })
+map("n", "<C-l>", "<C-w>l", { desc = "Move to right split" })
 
 map("n", "<leader>+", "<cmd>resize +5<CR>", { desc = "Increase height" })
 map("n", "<leader>-", "<cmd>resize -5<CR>", { desc = "Decrease height" })
@@ -67,6 +73,6 @@ lmap("n", "v", "gv", { desc = "Reselect visual" })
 local session_path = vim.fn.stdpath("data") .. "/session.vim"
 
 lmap("n", "<Tab>", "<cmd>mksession! " .. session_path .. "<CR><cmd>echo 'Session saved!'<CR>",
-   { desc = "Save session" })
+    { desc = "Save session" })
 lmap("n", "<S-Tab>", "<cmd>source " .. session_path .. "<CR><cmd>echo 'Session loaded!'<CR>",
-   { desc = "Load session" })
+    { desc = "Load session" })

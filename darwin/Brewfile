@@ -57,21 +57,19 @@ brew "harfbuzz"
 brew "libidn"
 
 # Infra / DB
+# Containers without Docker Desktop. Desktop used to supply both halves — the
+# client (/usr/local/bin/docker was a symlink into Docker.app) and the daemon —
+# so both are named explicitly here:
+#   docker  the CLI on its own
+#   colima  the daemon, a Lima VM. `colima start` boots it and installs a
+#           "colima" docker context; `colima stop` gives the RAM back, which the
+#           always-on Desktop VM never did.
+# docker-compose is the plugin, not the old standalone binary; it lands in
+# ~/.docker/cli-plugins so `docker compose` works.
+brew "docker"
+brew "docker-compose"
+brew "colima"
 brew "dive"
 brew "minikube"
 brew "mysql"
 
-# GUI apps
-cask "hyper"
-cask "docker-desktop"
-cask "visual-studio-code"
-
-# VS Code extensions
-vscode "charliermarsh.ruff"
-vscode "ms-python.debugpy"
-vscode "ms-python.python"
-vscode "ms-python.vscode-pylance"
-vscode "ms-python.vscode-python-envs"
-vscode "ms-vscode.cpptools"
-vscode "vscjava.vscode-java-pack"
-vscode "vscodevim.vim"

@@ -2,17 +2,40 @@
 # Component: Link dotfiles (shared)
 # Requires: DOTFILES_DIR to be set
 
+# Every per-tool theme file is generated from theme/palette.sh and committed, so
+# a stale one means somebody edited the output instead of the palette — and the
+# next `theme/generate.sh` will silently revert their change. Cheap to detect
+# (it re-renders in memory and compares), so both the installer and the verifier
+# check it. Deliberately does not regenerate: writing into the repo during a
+# bootstrap run would dirty the tree without being asked.
+_check_theme_generated() {
+    local dotfiles_dir="$1"
+    local gen="$dotfiles_dir/theme/generate.sh"
+
+    [ -f "$gen" ] || return 0          # older checkout, nothing to check
+
+    if bash "$gen" --check >/dev/null 2>&1; then
+        echo "[OK] Theme files match theme/palette.sh"
+        return 0
+    fi
+    echo "[FAIL] Theme files are stale — a generated file was edited by hand:"
+    bash "$gen" --check 2>&1 | sed 's/^/       /'
+    echo "       Fix: bash $gen   (then commit the result)"
+    return 1
+}
+
 ensure_dotfiles() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     echo "[STEP] Verifying dotfiles..."
     local failed=0
 
     _check_link ".zshrc"        "$HOME/.zshrc"        "$dotfiles_dir/zsh/.zshrc"        || failed=1
-    _check_link "isg.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/isg.zsh-theme" \
-                                "$dotfiles_dir/zsh/isg.zsh-theme"                        || failed=1
+    _check_link ".zshenv"       "$HOME/.zshenv"       "$dotfiles_dir/zsh/.zshenv"       || failed=1
     _check_link ".vimrc"        "$HOME/.vimrc"        "$dotfiles_dir/vim/.vimrc"         || failed=1
     _check_link ".tmux.conf"    "$HOME/.tmux.conf"    "$dotfiles_dir/tmux/.tmux.conf"    || failed=1
     _check_link ".gitconfig"    "$HOME/.gitconfig"    "$dotfiles_dir/.gitconfig"         || failed=1
+
+    _check_theme_generated "$dotfiles_dir" || failed=1
 
     if [ -d "$HOME/.tmux/plugins/tpm" ]; then
         echo "[OK] TPM installed"
@@ -33,6 +56,20 @@ ensure_dotfiles() {
         done
     else
         echo "[OK] Vim colors (source and target are the same directory)"
+    fi
+
+    # coc.nvim only ever reads ~/.vim/coc-settings.json, so that single file is
+    # linked rather than the directory around it. -ef (same inode) covers the
+    # case where ~/.vim *is* the repo directory: then there is nothing to link,
+    # and a plain _check_link would fail on a regular file.
+    local coc_src="$dotfiles_dir/vim/.vim/coc-settings.json"
+    local coc_dst="$HOME/.vim/coc-settings.json"
+    if [ -f "$coc_src" ]; then
+        if [ ! -L "$coc_dst" ] && [ "$coc_dst" -ef "$coc_src" ]; then
+            echo "[OK] coc-settings.json (source and target are the same file)"
+        else
+            _check_link "coc-settings.json" "$coc_dst" "$coc_src" || failed=1
+        fi
     fi
 
     _check_link "nvim config"    "$HOME/.config/nvim"     "$dotfiles_dir/nvim"     || failed=1
@@ -66,8 +103,13 @@ ensure_dotfiles() {
 }
 
 link_dotfiles() {
-    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.dotfiles}"
+    local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     echo "[STEP] Linking dotfiles..."
+
+    # Checked before anything is linked: these files are about to be symlinked
+    # into ~/, and a stale one is far more confusing once it is live. Reported,
+    # not fatal — a stale theme file should not stop the rest of a bootstrap.
+    _check_theme_generated "$dotfiles_dir" || true
 
     # Link Zsh config
     if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
@@ -77,9 +119,18 @@ link_dotfiles() {
     ln -sf "$dotfiles_dir/zsh/.zshrc" "$HOME/.zshrc"
     echo "[OK] Linked .zshrc"
 
-    # Link Zsh theme
-    ln -sf "$dotfiles_dir/zsh/isg.zsh-theme" "$HOME/.oh-my-zsh/custom/themes/isg.zsh-theme"
-    echo "[OK] Linked isg.zsh-theme"
+    # .zshenv, read by non-interactive shells too (tmux popups, nvim's :! …),
+    # which is where $FZF_DEFAULT_OPTS_FILE has to come from. Backed up rather
+    # than clobbered: a pre-existing one usually carries a toolchain line
+    # (cargo, nvm) worth reading before it is discarded.
+    if [ -f "$HOME/.zshenv" ] && [ ! -L "$HOME/.zshenv" ]; then
+        echo "[BACKUP] Backing up existing .zshenv to .zshenv.backup"
+        mv "$HOME/.zshenv" "$HOME/.zshenv.backup"
+    fi
+    ln -sf "$dotfiles_dir/zsh/.zshenv" "$HOME/.zshenv"
+    echo "[OK] Linked .zshenv"
+
+    # The zsh theme needs no link — .zshrc sources it from the repo directly.
 
     # Link Vim config
     if [ -f "$HOME/.vimrc" ] && [ ! -L "$HOME/.vimrc" ]; then
@@ -123,18 +174,53 @@ link_dotfiles() {
     ln -sf "$dotfiles_dir/.gitconfig" "$HOME/.gitconfig"
     echo "[OK] Linked .gitconfig"
 
-    # Link Vim color schemes (skip if source and target are the same directory)
+    # Link Vim color schemes (skip if source and target are the same directory).
+    # A dangling $dst_dir — e.g. ~/.vim/colors is itself a symlink to a repo path
+    # that moved — used to make realpath fail, every ln fail, and this still print
+    # [OK] because the exit status went unchecked. Drop a broken link, create the
+    # directory if absent, and report failures.
     local src_dir="$dotfiles_dir/vim/.vim/colors"
     local dst_dir="$HOME/.vim/colors"
-    if [ "$(realpath "$src_dir")" != "$(realpath "$dst_dir")" ]; then
+    if [ -L "$dst_dir" ] && [ ! -e "$dst_dir" ]; then
+        echo "[FIX] ~/.vim/colors was a dangling symlink; repointing it"
+        rm -f "$dst_dir"
+    fi
+    if [ -L "$dst_dir" ] || [ -d "$dst_dir" ]; then
+        if [ "$(realpath "$src_dir")" = "$(realpath "$dst_dir")" ]; then
+            echo "[SKIP] Vim colors already in place (source and target are the same)"
+            src_dir=""
+        fi
+    else
+        ln -sfn "$src_dir" "$dst_dir"
+        echo "[OK] Linked ~/.vim/colors -> $src_dir"
+        src_dir=""
+    fi
+    if [ -n "$src_dir" ]; then
         for color_file in "$src_dir"/*.vim; do
-            if [ -f "$color_file" ]; then
-                ln -sf "$color_file" "$dst_dir/$(basename "$color_file")"
+            [ -f "$color_file" ] || continue
+            if ln -sf "$color_file" "$dst_dir/$(basename "$color_file")"; then
                 echo "[OK] Linked $(basename "$color_file")"
+            else
+                echo "[FAIL] Could not link $(basename "$color_file") into $dst_dir"
             fi
         done
-    else
-        echo "[SKIP] Vim colors already in place (source and target are the same)"
+    fi
+
+    # Link coc.nvim settings (see the matching note in ensure_dotfiles)
+    local coc_src="$dotfiles_dir/vim/.vim/coc-settings.json"
+    local coc_dst="$HOME/.vim/coc-settings.json"
+    if [ -f "$coc_src" ]; then
+        if [ ! -L "$coc_dst" ] && [ "$coc_dst" -ef "$coc_src" ]; then
+            echo "[SKIP] coc-settings.json already in place (source and target are the same file)"
+        else
+            mkdir -p "$HOME/.vim"
+            if [ -f "$coc_dst" ] && [ ! -L "$coc_dst" ]; then
+                echo "[BACKUP] Backing up existing coc-settings.json to coc-settings.json.backup"
+                mv "$coc_dst" "$coc_dst.backup"
+            fi
+            ln -sf "$coc_src" "$coc_dst"
+            echo "[OK] Linked coc-settings.json"
+        fi
     fi
 
     # Link Neovim config (skip if already pointing to the right place)
@@ -177,6 +263,14 @@ link_dotfiles() {
     if [ ! -e "$active" ]; then
         ln -sf "theme-$(cat "$theme_file").conf" "$active"
         echo "[OK] Seeded ghostty/theme-active.conf -> theme-$(cat "$theme_file").conf"
+    fi
+
+    # fzf options file, same idiom. Seeded unconditionally (-e is false for a
+    # dangling link, and a dangling $FZF_DEFAULT_OPTS_FILE is worse than none:
+    # fzf exits 2 on a missing file instead of falling back to its defaults).
+    if [ -d "$dotfiles_dir/fzf" ]; then
+        ln -sf "opts-$(cat "$theme_file").conf" "$dotfiles_dir/fzf/opts-active.conf"
+        echo "[OK] Seeded fzf/opts-active.conf -> opts-$(cat "$theme_file").conf"
     fi
 
     # Link k9s skins + seed the active-skin symlink (default: current mode).

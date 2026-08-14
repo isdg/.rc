@@ -8,7 +8,7 @@
 " - Easy commenting with NERDCommenter
 " - Custom CLion-like light color scheme
 " - Russian keyboard layout remapped for Vim commands
-" - Tab and split management
+" - Split management
 " - Session saving and restoring
 
 " ============================================================
@@ -19,8 +19,10 @@
 "   <leader>w        Quit file
 "   <leader>W        Quit without saving
 "   <leader>Q        Quit all
-"   <leader>;        Command history
-"   <leader>/        Search history
+"   <leader>;        Command history (fzf)
+"   <leader>/        Search history (fzf)
+"   <leader>J        Jump list (fzf)
+"   <leader>:        Ex commands (fzf)
 "   <leader>y        Yank to system clipboard
 "   <leader>v        Reselect last visual selection
 "   <leader>F        Format buffer (on demand; nothing formats on save)
@@ -33,21 +35,11 @@
 "   <leader>e        Vertical split
 "   <leader>r        Horizontal split
 "   <leader>f        Keep only current split
-"   <leader>h/j/k/l  Move between splits
+"   <C-h/j/k/l>      Move between splits
 "   <leader>+/-         Resize split vertically
 "   <leader>< / >       Resize split horizontally
 "   <leader>=           Equalize all split sizes
 "   <C-w>H/J/K/L     Move split to left/bottom/top/right
-
-" TABS
-"   <leader>t        New tab
-"   <leader>u        Previous tab
-"   <leader>i        Next tab
-"   <leader>1..9     Jump to tab N
-"   gt / gT          Next / previous tab
-"   :tabm 0..9       Move current tab to position
-"   :tabclose        Close current tab
-"   :tabonly         Keep only current tab
 
 " SESSIONS
 "   <leader><Tab>    Save session
@@ -56,7 +48,7 @@
 "   :source ~/.vim/session.vim  Restore manually
 
 " NERDTREE
-"   <C-n>            Toggle NERDTree
+"   <leader>t        Toggle NERDTree
 "   <C-f>            Find current file in NERDTree
 "   I                Show/hide hidden files
 "   m                File management menu
@@ -70,8 +62,16 @@
 "   :History         Open file history
 "   :BLines          Search inside current buffer
 
-" COMMENTING
-"   <C-shift-_>            Toggle comment (normal/visual mode)
+" GIT (fzf; same keys as nvim)
+"   <leader>gm       All repo commits
+"   <leader>gf       Commits for the current buffer
+"   <leader>gl       Commits for the current line (or selection, in visual)
+"   <leader>gd       Changed files (git status)
+
+" COMMENTING  (same keys as nvim)
+"   gcc                    Toggle comment on the line (3gcc = 3 lines)
+"   gc                     Toggle comment on a visual selection
+"   <C-_>                  Same toggle, on Ctrl-/
 
 " COC (LSP)
 "   <CR>             Confirm completion
@@ -80,6 +80,10 @@
 "   K                Show documentation (hover)
 "   :CocRestart      Restart LSP client
 "   :CocList         Show Coc features (diagnostics, extensions)
+"   <leader>d / D    Diagnostics: list / toggle visibility
+"   ]d / [d          Next / previous diagnostic
+"   <leader>dk       Diagnostic message under cursor
+"   <leader>dl       Searchable list of diagnostics
 
 " ============================================================
 "                      NAVIGATION EXTENDED
@@ -116,9 +120,8 @@
 "   `.                Jump to last change in file
 "   '' / ``           Jump to previous cursor position (line / exact)
 
-" TABS & SPLITS (related)
-"   gt / gT           Next / previous tab
-"   <leader>h/j/k/l   Move between splits
+" SPLITS (related)
+"   <C-h/j/k/l>       Move between splits
 "   <leader>H/J/K/L   Move split window to left/bottom/top/right
 "   <leader>+/-/< />  Resize splits (height/width)
 "   <leader>=         Equalize all split sizes
@@ -153,7 +156,7 @@
 "   n / N             Repeat search (same / opposite direction)
 "   * / #             Search forward / backward for current word (exact match)
 "   g* / g#           Search forward / backward for partial word match
-"   <leader>/         Open search history
+"   <leader>/         Search history (fzf)
 "   :nohlsearch       Clear highlights after search
 
 " LINE & CHAR SEARCH
@@ -165,6 +168,8 @@
 
 " FUZZY & SYMBOL SEARCH (via plugins)
 "   <leader>p         Fuzzy find files (:Files)
+"   <leader>e / E     LSP symbols: this file / workspace
+"   <leader>c / C     Lines: this buffer / all open buffers
 "   <C-b>             Fuzzy find buffers (:Buffers)
 "   <C-e>             Fuzzy search inside current buffer
 "   :Rg <text>        Ripgrep search across project (requires ripgrep)
@@ -259,9 +264,9 @@ set breakindentopt=shift:2,min:20
 " ----------------------------
 "        TABS & INDENTS
 " ----------------------------
-set tabstop=3         " Number of spaces per tab
-set softtabstop=3     " Number of spaces when editing tabs
-set shiftwidth=3      " Spaces per auto-indent
+set tabstop=4         " Number of spaces per tab
+set softtabstop=4     " Number of spaces when editing tabs
+set shiftwidth=4      " Spaces per auto-indent
 set expandtab         " Use spaces instead of tabs
 
 " ----------------------------
@@ -303,6 +308,30 @@ let s:isg_mode = filereadable(s:isg_theme_file) ? trim(readfile(s:isg_theme_file
 if s:isg_mode !=# 'dark' && s:isg_mode !=# 'light' | let s:isg_mode = 'light' | endif
 execute 'colorscheme vs_' . s:isg_mode
 
+" Terminal cursor colour, in step with the colorscheme.
+"
+" Neovim gets this for free: 'guicursor' names the Cursor group and it emits the
+" escape itself. Terminal Vim never does — `hi Cursor` reaches a GUI only — so
+" the caret would keep the cursor-color Ghostty read at launch, which a theme
+" toggle cannot change without reloading Ghostty. The colorschemes publish the
+" hex as g:isg_cursor; write OSC 12 with it, and OSC 112 to hand the colour back
+" to the terminal on exit.
+"
+" t_ti/t_te carry the startup and exit case: both are sent after this file is
+" sourced, which is why appending here works — an autocmd on VimEnter does not,
+" its output goes nowhere that early. The ColorScheme hook then covers a live
+" :colorscheme, where echoraw() does reach the terminal.
+if !has('gui_running') && exists('g:isg_cursor')
+  let &t_ti .= "\<Esc>]12;" . g:isg_cursor . "\x07"
+  let &t_te = "\<Esc>]112\x07" . &t_te
+  if exists('*echoraw')
+    augroup isg_cursor_color
+      autocmd!
+      autocmd ColorScheme * call echoraw("\<Esc>]12;" . g:isg_cursor . "\x07")
+    augroup END
+  endif
+endif
+
 
 " ============================================================
 "               INSERT MODE NAVIGATION
@@ -329,6 +358,13 @@ Plug 'isdg/hr.vim'                               " hr reading-list sidebar
 
 let g:rainbow_active = 1
 
+" No NERDCommenter default mappings. It otherwise creates a dozen <leader>c*
+" maps (cc, ci, cu, cs, c$, …), none of which are used — commenting is on gcc /
+" gc / <C-_> — and each one makes <leader>c ambiguous, so that key would sit
+" waiting out 'timeoutlen' before firing. Must be set before plug#end(), which
+" is when the plugin file is sourced and reads this.
+let g:NERDCreateDefaultMappings = 0
+
 "
 call plug#end()
 
@@ -349,6 +385,25 @@ nnoremap <silent> K :call CocActionAsync('doHover')<CR>
 " coc.preferences.formatOnSaveFiletypes was removed from coc-settings.json so a
 " write only writes.
 nnoremap <silent> <leader>F :call CocActionAsync('format')<CR>
+
+" Diagnostics, same keys as nvim (nvim/lua/keymaps/lsp.lua):
+"   <leader>dk message under the cursor  ]d / [d  next / previous
+"   <leader>dl searchable list           <leader>D  hide/show them
+" coc's own convention is [g/]g; these use nvim's [d/]d so the two editors
+" agree. diagnostic.enableSign is false in coc-settings.json (matching nvim's
+" vim.diagnostic.config({ signs = false })), so <leader>dk is how you read the
+" text. Nothing is mapped to the bare <leader>d: as a prefix alone it answers
+" immediately, whereas a mapping there would have to sit out 'timeoutlen' first.
+"
+" The Russian twins are spelled out because DuplicateLeaderRu (below) walks the
+" single-letter table and so never sees a two-key sequence.
+nnoremap <silent> <leader>dl :CocList diagnostics<CR>
+nnoremap <silent> <leader>вд :CocList diagnostics<CR>
+nnoremap <silent> <leader>D :call CocAction('diagnosticToggle')<CR>
+nmap <silent> <leader>dk <Plug>(coc-diagnostic-info)
+nmap <silent> <leader>вл <Plug>(coc-diagnostic-info)
+nmap <silent> ]d <Plug>(coc-diagnostic-next)
+nmap <silent> [d <Plug>(coc-diagnostic-prev)
 
 
 " ============================================================
@@ -400,10 +455,18 @@ endfor
 " ============================================================
 "                       NERD TREE
 " ============================================================
-nnoremap <C-n> :NERDTreeToggle<CR> " Toggle NERDTree
-nnoremap <C-f> :NERDTreeFind<CR>   " Find current file
+" Tree on <leader>t, freed by dropping the (unused, long commented-out) tab
+" mappings. Same key in nvim, see nvim/lua/keymaps/tree.lua.
+" Comments go above the mapping, never after it: :map has no trailing-comment
+" syntax, so `" Toggle NERDTree` used to be part of the mapped keys.
+nnoremap <leader>t :NERDTreeToggle<CR>
+nnoremap <C-f> :NERDTreeFind<CR>
 let NERDTreeShowHidden=1
 let g:NERDTreeWinSize=40
+" Close the tree once a file is opened — the explorer is for picking a file, not
+" for living next to the buffer. Matches nvim-tree's actions.open_file.quit_on_open
+" (nvim/lua/plugins/nav.lua). Reopen with <leader>t.
+let NERDTreeQuitOnOpen=1
 autocmd FileType nerdtree setlocal number
 
 " ============================================================
@@ -431,15 +494,17 @@ nnoremap <leader>b :Buffers<CR>
 " Recent files (fzf v:oldfiles)
 nnoremap <leader>B :History<CR>
 
-" LSP document symbols (current file outline)
-nnoremap <leader>c :CocList outline<CR>
+" Lowercase = this buffer, uppercase = wider scope, for both pairs (same as
+" nvim, see nvim/lua/keymaps/find.lua):
+"   e / E   symbols in this file / across the workspace   (coc)
+"   c / C   lines in this buffer / across open buffers    (fzf)
+nnoremap <leader>e :CocList outline<CR>
+nnoremap <leader>E :CocList symbols<CR>
 
-" Fuzzy search lines in current buffer (with a bat preview — fzf.vim's own
-" :BLines has none; see vim/fzf-layout.vim)
-nnoremap <leader>C :call FzfBLinesPreview()<CR>
-
-" Search symbols accross open buffers
-nnoremap <leader>e :Lines<CR>
+" Both get a bat preview from vim/fzf-layout.vim — fzf.vim ships :BLines and
+" :Lines without one. c is this buffer, C is every open buffer.
+nnoremap <leader>c :call FzfBLinesPreview()<CR>
+nnoremap <leader>C :call FzfLinesPreview()<CR>
 
 " Search symbols accross project
 nnoremap <leader>a :RG<CR>
@@ -449,41 +514,45 @@ nnoremap <leader>A :Rg<CR>
 
 " Git commits (fzf) — include author in log so fzf can filter by it
 let g:fzf_commits_log_options = '--color=always --format="%C(auto)%h%d %s %C(blue)[%an]%C(reset) %C(black)%C(bold)%cr"'
-nnoremap <leader>gj :Commits<CR>
-nnoremap <leader>gk :BCommits<CR>
+" Same keys as nvim (nvim/lua/keymaps/git.lua): gm repo log, gf this buffer's
+" history, gl line history. A range on :BCommits becomes `git log -L a,b:file`,
+" which is how gl works — `.` for the cursor line, '<,'> for a selection.
+nnoremap <leader>gm :Commits<CR>
+nnoremap <leader>gf :BCommits<CR>
+nnoremap <leader>gl :.BCommits<CR>
+xnoremap <leader>gl :BCommits<CR>
+" Changed files (git status), the two-column prefix tells staged vs working
+" tree. Distinct from plain `gd` above, which is coc's go-to-definition.
+nnoremap <leader>gd :GFiles?<CR>
 
 " ============================================================
 "                      COMMENTING
 " ============================================================
-nnoremap <C-_> <Plug>NERDCommenterToggle " Toggle comment (normal mode)
-vnoremap <C-_> <Plug>NERDCommenterToggle " Toggle comment (visual mode)
+" Comment style, to match nvim's Comment.nvim: a space after the delimiter
+" ("-- x", not "--x") and comments aligned at the left margin rather than at the
+" line's indent-stripped start. Without NERDSpaceDelims the two editors produce
+" different text for the same key.
+let g:NERDSpaceDelims = 1
+let g:NERDDefaultAlign = 'left'
+" Also toggle based on all selected lines, so a partly-commented block
+" comments the rest instead of uncommenting — Comment.nvim's behaviour.
+let g:NERDToggleCheckAllLines = 1
 
+" Toggle comment on <C-_> (what Ctrl-/ sends), normal and visual — the same key
+" nvim uses (nvim/lua/keymaps/edit.lua maps it onto Comment.nvim's gcc/gc).
+" nmap/vmap rather than the noremap forms: <Plug>NERDCommenterToggle is itself a
+" mapping, so the recursive form is the documented way to invoke it. Note :map
+" has no trailing-comment syntax — a `" text` suffix lands inside the RHS.
+nmap <C-_> <Plug>NERDCommenterToggle
+vmap <C-_> <Plug>NERDCommenterToggle
 
-" ============================================================
-"                          TABS
-" ============================================================
-"
-" New tab
-"nnoremap <leader>t :tabnew<CR>    
-"
-" Previous tab
-"nnoremap <leader>u :tabprevious<CR>   
-"
-" Next tab
-"nnoremap <leader>i :tabnext<CR>       
-"
-"
-" Jump to tab 1–9
-"
-"nnoremap <leader>1 1gt
-"nnoremap <leader>2 2gt
-"nnoremap <leader>3 3gt
-"nnoremap <leader>4 4gt
-"nnoremap <leader>5 5gt
-"nnoremap <leader>6 6gt
-"nnoremap <leader>7 7gt
-"nnoremap <leader>8 8gt
-"nnoremap <leader>9 9gt
+" nvim's keys too (Comment.nvim): gcc toggles the current line — with a count,
+" that many lines — and gc toggles a visual selection.
+" `gc{motion}` (gcap, gc3j) is NOT provided: NERDCommenter works on lines and
+" selections, not as an operator. tpope/vim-commentary is the drop-in that adds
+" motions, if that turns out to matter.
+nmap gcc <Plug>NERDCommenterToggle
+xmap gc  <Plug>NERDCommenterToggle
 
 
 " ============================================================
@@ -504,10 +573,17 @@ nnoremap <leader>Q :qa<CR>   " Quit all
 " nnoremap <leader>f :only<CR>          " Keep only current split
 
 " Move between splits
-nnoremap <leader>h <C-w>h
-nnoremap <leader>j <C-w>j
-nnoremap <leader>k <C-w>k
-nnoremap <leader>l <C-w>l
+" Ctrl rather than <leader> (same as nvim, keymaps/editor.lua): one keystroke
+" shorter for a constant motion, and Ctrl+letter is keyed off the physical key,
+" so it needs no Russian-layout twin the way <leader>hjkl did.
+" <C-l> gives up vim's redraw-screen default; :redraw! covers it.
+" <C-h> is distinct from <BS> here (Ghostty sends 0x7f for Backspace) — checked
+" with separate mappings: 0x08 fires <C-h>, 0x7f fires <BS>.
+" Insert mode is untouched: <C-j>/<C-k> there stay coc's popup navigation.
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
 
 " Resize splits
 nnoremap <leader>+ :resize +5<CR>     " Increase height
@@ -519,8 +595,21 @@ nnoremap <leader>= <C-w>=             " Equalize all split sizes
 " ============================================================
 "                HISTORY & CLIPBOARD
 " ============================================================
-nnoremap <leader>; q:    " Command history
-nnoremap <leader>/ q/    " Search history
+" Fuzzy history and pickers on the same keys as nvim (keymaps/editor.lua):
+" ";" command history, "/" search history, "J" the jumplist, ":" every ex
+" command. All four come from fzf.vim, which vim already loads — the plugin
+" ships Jumps/Commands/History just like the copy nvim uses.
+"
+" q: and q/ are still there by typing them directly, for when the editable
+" cmdline window is what's wanted.
+"
+" (These two lines used to read `nnoremap <leader>; q:    " Command history`.
+"  :map has no trailing-comment syntax, so that text was part of the RHS and
+"  got typed into the cmdline window on every press.)
+nnoremap <leader>; :History:<CR>
+nnoremap <leader>/ :History/<CR>
+nnoremap <leader>J :Jumps<CR>
+nnoremap <leader>: :Commands<CR>
 
 " Swap jump list navigation (Ctrl+I = back, Ctrl+O = forward)
 nnoremap <C-i> <C-o>

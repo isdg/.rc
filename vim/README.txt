@@ -7,12 +7,12 @@ VIM SETUP
 
 Create a symlink from the repo Vim configuration to your home directory:
 
-    > ln -fs "$HOME/.dotfiles/vim/.vimrc" \
+    > ln -fs "$HOME/.rc/vim/.vimrc" \
           "$HOME/.vimrc"
 
 For colors 
 
-    > ln -fs "$HOME/.dotfiles/vim/.vim/colors/vs_dark.vim" \
+    > ln -fs "$HOME/.rc/vim/.vim/colors/vs_dark.vim" \
           "$HOME/.vim/vim/colors/vs_dark.vim"
 
 -------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 ============================================================
-  MODULARIZE.txt — custom extensions inventory + how to modularize
+  modularize.txt — custom extensions inventory + how to modularize
 ============================================================
 A survey of what lives in this repo: (A) custom tools you've built
 that are easy to forget, and (B) where the modularization seams are.
@@ -67,4 +67,4 @@ Done:
                    inside keymaps.lua          module
    tmux shells     prefix W big inline        tmux/window-picker.sh, like
                    string in .tmux.conf        fzf-content.sh / pane-capture.sh
-   palace          spread zsh/vim/nvim/bin    documented in PALACE.md
+   palace          spread zsh/vim/nvim/bin    documented in palace.md

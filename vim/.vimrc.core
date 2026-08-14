@@ -1,0 +1,145 @@
+" ============================================================
+"   .vimrc.core — portable comfort layer
+" ============================================================
+" Zero plugins, zero dependencies, writes nothing to disk. One file, ~1ms.
+" Works on vim 7+, nvim, and tiny builds (the `if 1` blocks are skipped when
+" +eval is missing — see :help no-eval-feature).
+"
+" Use it:
+"   vim  -u ~/.vimrc.core file
+"   nvim -u ~/.vimrc.core file
+"   scp ~/.vimrc.core host:~/.vimrc                 " remote box with no vimrc
+"   ssh host 'cat >> ~/.vimrc' < ~/.vimrc.core      " remote box that has one
+"
+" Keys match ~/.vimrc. The ones that were plugin-backed there fall back to
+" vim's built-ins here (netrw, wildmenu, :vimgrep, :ls) — same key, weaker
+" tool. Nothing here needs node, git, curl or a network.
+"
+" Not included on purpose: colorscheme/termguicolors (remote terminals may not
+" do truecolour, and ~/.vim/colors won't exist), undofile and swap redirection
+" (don't litter someone else's box), mouse (breaks select-to-copy on old vim).
+
+silent! set nocompatible
+
+" ============================================================
+"                        OPTIONS
+" ============================================================
+set number ruler showcmd laststatus=2
+set incsearch hlsearch ignorecase smartcase
+set hidden scrolloff=4 backspace=indent,eol,start display=lastline
+set wrap linebreak autoindent smartindent
+set tabstop=4 softtabstop=4 shiftwidth=4 expandtab
+set ttimeout ttimeoutlen=50
+
+" Make the built-in finders below usable
+set wildmenu wildmode=full
+set path+=**
+set wildignore+=*/.git/*,*/node_modules/*,*/build/*,*/target/*,*.o,*.pyc
+
+if 1
+  if has('multi_byte') | silent! set encoding=utf-8 | endif
+  if exists('+breakindent') | set breakindent breakindentopt=shift:2,min:20 | endif
+  if exists('+belloff') | set belloff=all | endif
+  if has('syntax') && !exists('g:syntax_on') | syntax enable | endif
+  if has('autocmd') | filetype plugin indent on | endif
+endif
+
+" ============================================================
+"                          KEYS
+" ============================================================
+let mapleader = " "
+
+" Files
+nnoremap <leader>s :w<CR>
+nnoremap <leader>w :q<CR>
+nnoremap <leader>W :q!<CR>
+nnoremap <leader>Q :qa<CR>
+
+" Splits — Ctrl, not <leader>, matching ~/.vimrc and nvim's keymaps/editor.lua.
+" One keystroke shorter for a constant motion, and Ctrl+letter is keyed off the
+" physical key, so it needs no Russian-layout twin the way <leader>hjkl did.
+" <C-l> gives up vim's redraw-screen default; :redraw! covers it.
+" Portability note for foreign terminals: <C-h> and <BS> are the same byte
+" unless the terminal sends 0x7f for Backspace (Ghostty does, so they stay
+" distinct there). Where they collide, Backspace in normal mode jumps a split
+" instead of moving left. Insert mode is untouched either way.
+nnoremap <C-h> <C-w>h
+nnoremap <C-j> <C-w>j
+nnoremap <C-k> <C-w>k
+nnoremap <C-l> <C-w>l
+
+" Resize
+nnoremap <leader>+ :resize +5<CR>
+nnoremap <leader>- :resize -5<CR>
+nnoremap <leader>< :vertical resize -5<CR>
+nnoremap <leader>> :vertical resize +5<CR>
+nnoremap <leader>= <C-w>=
+
+" History, selection, jumps (<C-i>/<C-o> swapped, as in ~/.vimrc)
+nnoremap <leader>; q:
+nnoremap <leader>/ q/
+nnoremap <leader>v gv
+nnoremap <C-i> <C-o>
+nnoremap <C-o> <C-i>
+
+" Plugin stand-ins — same key as ~/.vimrc, built-in tool
+nnoremap <C-n> :Explore<CR>
+nnoremap <leader>p :find *
+nnoremap <leader>b :ls<CR>:b
+nnoremap <leader>a :vimgrep // **<Left><Left><Left><Left>
+nnoremap <leader>A :copen<CR>
+nnoremap <leader>F mzgg=Gg`z
+
+" Dates (as in ~/.vimrc) and sessions
+nnoremap <leader>nt :execute "normal! a" . strftime("%a %d %b %Y at %H:%M:%S")<CR>
+nnoremap <leader>nT :execute "normal! a" . strftime("%Y-%m-%d %H:%M")<CR>
+nnoremap <leader><Tab> :call mkdir(expand('~/.vim'), 'p')<CR>:mksession! ~/.vim/session.vim<CR>
+nnoremap <leader><S-Tab> :source ~/.vim/session.vim<CR>
+
+if 1
+  " Clipboard yank only where vim was built with it (servers usually aren't)
+  if has('clipboard') | vnoremap <leader>y "+y | endif
+
+  " Reload whichever path this file was sourced from
+  let s:self = expand('<sfile>:p')
+  execute 'nnoremap <leader>R :source ' . s:self . '<CR>'
+endif
+
+" ============================================================
+"                    RUSSIAN LAYOUT
+" ============================================================
+" Cyrillic keys drive vim commands. Done with explicit maps, not 'langmap',
+" because Apple's /usr/bin/vim is built -langmap.
+
+if 1
+if has('multi_byte')
+  let s:ru = {
+  \ 'й':'q','ц':'w','у':'e','к':'r','е':'t','н':'y','г':'u','ш':'i','щ':'o','з':'p','х':'[','ъ':']',
+  \ 'ф':'a','ы':'s','в':'d','а':'f','п':'g','р':'h','о':'j','л':'k','д':'l','ж':';','э':"'",
+  \ 'я':'z','ч':'x','с':'c','м':'v','и':'b','т':'n','ь':'m','б':',','ю':'.','ё':'`',
+  \ 'Й':'Q','Ц':'W','У':'E','К':'R','Е':'T','Н':'Y','Г':'U','Ш':'I','Щ':'O','З':'P','Х':'{','Ъ':'}',
+  \ 'Ф':'A','Ы':'S','В':'D','А':'F','П':'G','Р':'H','О':'J','Л':'K','Д':'L','Ж':':','Э':'"',
+  \ 'Я':'Z','Ч':'X','С':'C','М':'V','И':'B','Т':'N','Ь':'M','Б':'<','Ю':'>','Ё':'~' }
+  for [s:k, s:v] in items(s:ru)
+    execute 'noremap' s:k s:v
+  endfor
+
+  " Doubled operators
+  for [s:k, s:v] in items({'вв':'dd','фф':'yy','сс':'cc','пп':'gg','яя':'zz'})
+    execute 'noremap' s:k s:v
+  endfor
+
+  " <leader> maps again on the Cyrillic key, so <leader>ы still saves. Reads the
+  " maps defined above back out, so this must come last.
+  let s:lead = {'q':'й','w':'ц','e':'у','r':'к','t':'е','y':'н','u':'г','i':'ш','o':'щ','p':'з',
+  \ 'a':'ф','s':'ы','d':'в','f':'а','g':'п','h':'р','j':'о','k':'л','l':'д',
+  \ 'z':'я','x':'ч','c':'с','v':'м','b':'и','n':'т','m':'ь',
+  \ 'A':'Ф','F':'А','Q':'Й','R':'К','S':'Ы','W':'Ц' }
+  for [s:k, s:v] in items(s:lead)
+    let s:n = maparg(' ' . s:k, 'n')
+    if !empty(s:n) | execute 'nnoremap <leader>' . s:v . ' ' . s:n | endif
+    let s:x = maparg(' ' . s:k, 'v')
+    if !empty(s:x) | execute 'vnoremap <leader>' . s:v . ' ' . s:x | endif
+  endfor
+endif
+endif

@@ -2,7 +2,7 @@
 --                 HAMMERSPOON CONFIGURATION (isg)
 -- ============================================================
 -- Open source (MIT) macOS automation in Lua. Config is tracked in
--- ~/.dotfiles/hammerspoon and symlinked to ~/.hammerspoon (see bootstrap).
+-- ~/.rc/hammerspoon and symlinked to ~/.hammerspoon (see bootstrap).
 --
 -- Feature: a Spotlight-style translation / dictionary popup on a hotkey.
 
@@ -19,14 +19,14 @@ require("screenshot_clip").start()
 
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher
-   .new(hs.configdir, function(files)
-      for _, f in ipairs(files) do
-         if f:sub(-4) == ".lua" then
-            hs.reload()
-            return
-         end
-      end
-   end)
-   :start()
+    .new(hs.configdir, function(files)
+        for _, f in ipairs(files) do
+            if f:sub(-4) == ".lua" then
+                hs.reload()
+                return
+            end
+        end
+    end)
+    :start()
 
 hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌘⇧J scroll · 📋 screenshots)")
