@@ -19,11 +19,18 @@ endif
 set background=light
 let g:colors_name = "vs_light"
 
+" Terminal cursor colour. Unlike Neovim — which emits OSC 12 for whatever group
+" 'guicursor' names — terminal Vim never turns `hi Cursor` into an escape, so
+" the group below only reaches a GUI. Publish the hex as well and let .vimrc
+" write OSC 12 itself; that is what keeps the caret in step with a theme toggle
+" while the running Ghostty still holds the old cursor-color.
+let g:isg_cursor = '${ISG_CURSOR}'
+
 " =====================
 " Basic UI colors
 " =====================
 hi Normal       guifg=${ISG_FG} guibg=${ISG_BG}
-hi Cursor       guifg=${ISG_ON_ACCENT} guibg=${ISG_FG}
+hi Cursor       guifg=${ISG_BG} guibg=${ISG_CURSOR}
 hi Visual       guibg=${ISG_VISUAL_BG}
 hi LineNr       guifg=${ISG_GUTTER_FG} guibg=${ISG_BG}
 hi CursorLineNr guifg=#999999 guibg=${ISG_BG}

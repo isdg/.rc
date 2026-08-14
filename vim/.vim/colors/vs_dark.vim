@@ -19,8 +19,16 @@ let g:colors_name = 'vs_dark'
 set background=dark
 set termguicolors
 
+" Terminal cursor colour. Unlike Neovim — which emits OSC 12 for whatever group
+" 'guicursor' names — terminal Vim never turns `hi Cursor` into an escape, so
+" the group below only reaches a GUI. Publish the hex as well and let .vimrc
+" write OSC 12 itself; that is what keeps the caret in step with a theme toggle
+" while the running Ghostty still holds the old cursor-color.
+let g:isg_cursor = '#ffffff'
+
 " Editor colors
 hi Normal       guifg=#d4d4d4 guibg=#2f2f2f
+hi Cursor       guifg=#2f2f2f guibg=#ffffff
 hi CursorLine   guibg=#2a2a2a
 hi Visual       guibg=#3a3d41
 hi LineNr       guifg=#555555 guibg=#2f2f2f

@@ -46,9 +46,13 @@ isg_palette() {
         ISG_BG='#2f2f2f'
         ISG_FG='#d4d4d4'
         # Brighter than ISG_FG deliberately. Ghostty draws the cursor for every
-        # TUI that does not colour its own, and nvim is one of those — it
-        # defines no Cursor group and names none in 'guicursor' — so this slot
-        # is the cursor in the editor as much as at the prompt. At #cccccc it
+        # TUI that does not colour its own, so this slot is the cursor at the
+        # prompt; the editors now paint it from this same value (nvim via `hi
+        # Cursor` + 'guicursor', vim via OSC 12 from .vimrc), which is what lets
+        # the caret follow a theme toggle before Ghostty is ever reloaded — so
+        # it is the cursor in the editor too, by agreement rather than by
+        # default. Keep the two in step: a mismatch shows as a colour jump on
+        # entering vim, in the one glyph nothing else repaints. At #cccccc it
         # sat just under the body text, so inside a word it read as one paler
         # cell rather than as the cursor. Nothing else on this background is
         # brighter than the text, which is what makes white findable at a

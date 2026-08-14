@@ -44,6 +44,12 @@ let g:terminal_color_15 = '${ISG_ANSI_15}'
 
 " Editor colors
 hi Normal       guifg=${ISG_FG} guibg=${ISG_BG}
+" Cursor is the *terminal* cursor: 'guicursor' names this group (see
+" lua/options.lua), so Neovim emits OSC 12 with guibg on entry and OSC 112 to
+" restore on exit. That is what makes the cursor follow a theme toggle without
+" reloading Ghostty, whose cursor-color the running window keeps until it does.
+" Mirrors ghostty/theme-dark.conf: guibg = cursor-color, guifg = cursor-text.
+hi Cursor       guifg=${ISG_BG} guibg=${ISG_CURSOR}
 hi CursorLine   guibg=${ISG_LINE_HL}
 hi Visual       guibg=${ISG_VISUAL_BG}
 hi LineNr       guifg=${ISG_GUTTER_FG} guibg=${ISG_BG}
