@@ -9,8 +9,20 @@ lmap("n", "D", function()
     vim.diagnostic.enable(not vim.diagnostic.is_enabled())
 end, { desc = "Toggle diagnostics" })
 
--- Searchable list of all diagnostics (pairs with ]d/[d jump, gK float).
-lmap("n", "d", "<cmd>Telescope diagnostics<CR>", { desc = "List diagnostics" })
+-- Diagnostics sit under <leader>d: k reads the one under the cursor (k as in K
+-- for hover), l lists them all. <leader>d is a prefix and nothing else — leaving
+-- the list on the bare <leader>d as well would make every press of it sit out
+-- 'timeoutlen' first, waiting to see whether a k or an l follows.
+--
+-- Global rather than on LspAttach, where the float used to live as gK: a
+-- diagnostic need not come from a language server, and its two siblings here
+-- are global already.
+lmap("n", "dk", function()
+    vim.diagnostic.open_float({ scope = "cursor" })
+end, { desc = "Diagnostic under cursor" })
+
+-- Searchable list of all diagnostics (pairs with ]d/[d jump, <leader>dk float).
+lmap("n", "dl", "<cmd>Telescope diagnostics<CR>", { desc = "List diagnostics" })
 
 -- Global toggle: the auto-popping completion menu on/off.
 --
@@ -42,9 +54,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
         map("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
         map("n", "gr", "<cmd>Telescope lsp_references<CR>", opts)
         map("n", "K", vim.lsp.buf.hover, opts)
-        map("n", "gK", function()
-            vim.diagnostic.open_float({ scope = "cursor" })
-        end, opts)
         map("n", "]d", vim.diagnostic.goto_next, opts)
         map("n", "[d", vim.diagnostic.goto_prev, opts)
     end,

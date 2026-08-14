@@ -82,7 +82,8 @@
 "   :CocList         Show Coc features (diagnostics, extensions)
 "   <leader>d / D    Diagnostics: list / toggle visibility
 "   ]d / [d          Next / previous diagnostic
-"   gK               Diagnostic message under cursor
+"   <leader>dk       Diagnostic message under cursor
+"   <leader>dl       Searchable list of diagnostics
 
 " ============================================================
 "                      NAVIGATION EXTENDED
@@ -386,15 +387,21 @@ nnoremap <silent> K :call CocActionAsync('doHover')<CR>
 nnoremap <silent> <leader>F :call CocActionAsync('format')<CR>
 
 " Diagnostics, same keys as nvim (nvim/lua/keymaps/lsp.lua):
-"   <leader>d  searchable list      ]d / [d  next / previous
-"   <leader>D  hide/show them       gK       message for the line under cursor
+"   <leader>dk message under the cursor  ]d / [d  next / previous
+"   <leader>dl searchable list           <leader>D  hide/show them
 " coc's own convention is [g/]g; these use nvim's [d/]d so the two editors
 " agree. diagnostic.enableSign is false in coc-settings.json (matching nvim's
-" vim.diagnostic.config({ signs = false })), so `gK` is how you read the text.
-" gK rather than ge: ge is the built-in "end of previous word" motion.
-nnoremap <silent> <leader>d :CocList diagnostics<CR>
+" vim.diagnostic.config({ signs = false })), so <leader>dk is how you read the
+" text. Nothing is mapped to the bare <leader>d: as a prefix alone it answers
+" immediately, whereas a mapping there would have to sit out 'timeoutlen' first.
+"
+" The Russian twins are spelled out because DuplicateLeaderRu (below) walks the
+" single-letter table and so never sees a two-key sequence.
+nnoremap <silent> <leader>dl :CocList diagnostics<CR>
+nnoremap <silent> <leader>вд :CocList diagnostics<CR>
 nnoremap <silent> <leader>D :call CocAction('diagnosticToggle')<CR>
-nmap <silent> gK <Plug>(coc-diagnostic-info)
+nmap <silent> <leader>dk <Plug>(coc-diagnostic-info)
+nmap <silent> <leader>вл <Plug>(coc-diagnostic-info)
 nmap <silent> ]d <Plug>(coc-diagnostic-next)
 nmap <silent> [d <Plug>(coc-diagnostic-prev)
 

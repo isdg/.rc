@@ -19,12 +19,28 @@ local eng_to_ru = {
     Z="Я", X="Ч", C="С", V="М", B="И", N="Т", M="Ь",
 }
 
+-- Translate a whole key sequence, so multi-key leader maps (<leader>dk) get a
+-- Russian twin too and not just single letters. Nil for anything with a key the
+-- table has no letter for — which is what keeps <Tab>, <S-Tab>, / : ; out of it,
+-- since a per-character walk would otherwise mangle the angle-bracket names.
+local function to_ru(key)
+    local out = {}
+    for ch in key:gmatch(".") do
+        if not eng_to_ru[ch] then
+            return nil
+        end
+        out[#out + 1] = eng_to_ru[ch]
+    end
+    return table.concat(out)
+end
+
 -- Map leader key for both English and Russian layouts
 function M.lmap(mode, key, action, opts)
     opts = opts or {}
     M.map(mode, "<leader>" .. key, action, opts)
-    if eng_to_ru[key] then
-        M.map(mode, "<leader>" .. eng_to_ru[key], action, opts)
+    local ru = to_ru(key)
+    if ru then
+        M.map(mode, "<leader>" .. ru, action, opts)
     end
 end
 
