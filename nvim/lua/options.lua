@@ -17,6 +17,22 @@ vim.g.git_messenger_always_into_popup = true
 vim.opt.termguicolors = true
 vim.opt.background = "light"
 
+-- Colour the terminal cursor from the colorscheme instead of leaving it to
+-- Ghostty. The default 'guicursor' names no highlight group, so Neovim never
+-- emits OSC 12 and the caret keeps whatever cursor-color the terminal read at
+-- launch — which toggle_theme.sh cannot change without a Ghostty reload, and
+-- was why the cursor stayed light in a dark editor. Appending -Cursor to each
+-- mode makes Neovim set the colour on entry (from `hi Cursor` guibg, defined in
+-- both vs_dark and vs_light) and restore it with OSC 112 on exit. Verified to
+-- work under TERM=tmux-256color as well, so it survives tmux.
+-- The shapes are Neovim's defaults, repeated verbatim; only the group is new.
+vim.opt.guicursor = table.concat({
+    "n-v-c-sm:block-Cursor",
+    "i-ci-ve:ver25-Cursor",
+    "r-cr-o:hor20-Cursor",
+    "t:block-blinkon500-blinkoff500-TermCursor",
+}, ",")
+
 -- Window/terminal title = current file name. tmux captures this as #{pane_title}
 -- so it can name the window "nvim:<file>" instead of the cwd (see .tmux.conf
 -- automatic-rename-format). %t = filename tail (empty for a [No Name] buffer).

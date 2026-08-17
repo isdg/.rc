@@ -82,7 +82,8 @@
 "   :CocList         Show Coc features (diagnostics, extensions)
 "   <leader>d / D    Diagnostics: list / toggle visibility
 "   ]d / [d          Next / previous diagnostic
-"   gK               Diagnostic message under cursor
+"   <leader>dk       Diagnostic message under cursor
+"   <leader>dl       Searchable list of diagnostics
 
 " ============================================================
 "                      NAVIGATION EXTENDED
@@ -307,6 +308,30 @@ let s:isg_mode = filereadable(s:isg_theme_file) ? trim(readfile(s:isg_theme_file
 if s:isg_mode !=# 'dark' && s:isg_mode !=# 'light' | let s:isg_mode = 'light' | endif
 execute 'colorscheme vs_' . s:isg_mode
 
+" Terminal cursor colour, in step with the colorscheme.
+"
+" Neovim gets this for free: 'guicursor' names the Cursor group and it emits the
+" escape itself. Terminal Vim never does — `hi Cursor` reaches a GUI only — so
+" the caret would keep the cursor-color Ghostty read at launch, which a theme
+" toggle cannot change without reloading Ghostty. The colorschemes publish the
+" hex as g:isg_cursor; write OSC 12 with it, and OSC 112 to hand the colour back
+" to the terminal on exit.
+"
+" t_ti/t_te carry the startup and exit case: both are sent after this file is
+" sourced, which is why appending here works — an autocmd on VimEnter does not,
+" its output goes nowhere that early. The ColorScheme hook then covers a live
+" :colorscheme, where echoraw() does reach the terminal.
+if !has('gui_running') && exists('g:isg_cursor')
+  let &t_ti .= "\<Esc>]12;" . g:isg_cursor . "\x07"
+  let &t_te = "\<Esc>]112\x07" . &t_te
+  if exists('*echoraw')
+    augroup isg_cursor_color
+      autocmd!
+      autocmd ColorScheme * call echoraw("\<Esc>]12;" . g:isg_cursor . "\x07")
+    augroup END
+  endif
+endif
+
 
 " ============================================================
 "               INSERT MODE NAVIGATION
@@ -362,15 +387,21 @@ nnoremap <silent> K :call CocActionAsync('doHover')<CR>
 nnoremap <silent> <leader>F :call CocActionAsync('format')<CR>
 
 " Diagnostics, same keys as nvim (nvim/lua/keymaps/lsp.lua):
-"   <leader>d  searchable list      ]d / [d  next / previous
-"   <leader>D  hide/show them       gK       message for the line under cursor
+"   <leader>dk message under the cursor  ]d / [d  next / previous
+"   <leader>dl searchable list           <leader>D  hide/show them
 " coc's own convention is [g/]g; these use nvim's [d/]d so the two editors
 " agree. diagnostic.enableSign is false in coc-settings.json (matching nvim's
-" vim.diagnostic.config({ signs = false })), so `gK` is how you read the text.
-" gK rather than ge: ge is the built-in "end of previous word" motion.
-nnoremap <silent> <leader>d :CocList diagnostics<CR>
+" vim.diagnostic.config({ signs = false })), so <leader>dk is how you read the
+" text. Nothing is mapped to the bare <leader>d: as a prefix alone it answers
+" immediately, whereas a mapping there would have to sit out 'timeoutlen' first.
+"
+" The Russian twins are spelled out because DuplicateLeaderRu (below) walks the
+" single-letter table and so never sees a two-key sequence.
+nnoremap <silent> <leader>dl :CocList diagnostics<CR>
+nnoremap <silent> <leader>вд :CocList diagnostics<CR>
 nnoremap <silent> <leader>D :call CocAction('diagnosticToggle')<CR>
-nmap <silent> gK <Plug>(coc-diagnostic-info)
+nmap <silent> <leader>dk <Plug>(coc-diagnostic-info)
+nmap <silent> <leader>вл <Plug>(coc-diagnostic-info)
 nmap <silent> ]d <Plug>(coc-diagnostic-next)
 nmap <silent> [d <Plug>(coc-diagnostic-prev)
 
