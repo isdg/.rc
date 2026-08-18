@@ -7,7 +7,7 @@ ensure_packages_linux() {
     # Split required from optional: nom and glow are not packaged on most
     # distros and prettier needs npm, so a single flat list reported [FAIL]
     # forever on a box that was in fact fine.
-    local required=(zsh git curl wget tmux vim nvim fzf rg)
+    local required=(zsh git curl wget tmux vim nvim fzf rg tig)
     local optional=(gh jq tree htop w3m sd prettier nom glow go cargo)
 
     for cmd in "${required[@]}"; do
@@ -82,7 +82,7 @@ install_packages_linux() {
             # it) and absent from bookworm — _apt_install drops it rather than
             # letting it veto the shell itself.
             _apt_install "base" \
-                zsh git gh curl wget jq tree htop tmux vim neovim fzf ripgrep \
+                zsh git gh tig curl wget jq tree htop tmux vim neovim fzf ripgrep \
                 nodejs npm python3 \
                 w3m glow
             # Docs
@@ -104,19 +104,19 @@ install_packages_linux() {
             _apt_install "zig" zig
             ;;
         dnf)
-            sudo dnf install -y zsh git gh curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
+            sudo dnf install -y zsh git gh tig curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
             ;;
         yum)
-            sudo yum install -y zsh git gh curl vim neovim fzf nodejs npm w3m || echo "[WARN] Some packages may have failed"
+            sudo yum install -y zsh git gh tig curl vim neovim fzf nodejs npm w3m || echo "[WARN] Some packages may have failed"
             ;;
         pacman)
-            sudo pacman -Sy --noconfirm zsh git github-cli curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
+            sudo pacman -Sy --noconfirm zsh git github-cli tig curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
             ;;
         zypper)
-            sudo zypper install -y zsh git gh curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
+            sudo zypper install -y zsh git gh tig curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
             ;;
         *)
-            echo "[WARN] Unknown package manager. Please install manually: zsh git gh curl vim neovim fzf ripgrep w3m glow"
+            echo "[WARN] Unknown package manager. Please install manually: zsh git gh tig curl vim neovim fzf ripgrep w3m glow"
             ;;
     esac
 
