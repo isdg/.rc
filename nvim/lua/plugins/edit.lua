@@ -59,7 +59,7 @@ return {
                     end,
                     col_offset = -20,
                     options = {
-                        number = true,
+                        number = false,
                         wrap = true,
                         linebreak = true,
                         breakindent = true,
