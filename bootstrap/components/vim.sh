@@ -35,13 +35,21 @@ install_vim_plugins() {
         echo "[SKIP] vim-plug already installed"
     fi
 
-    # Install Vim plugins
+    # Install Vim plugins. Errors used to go to /dev/null with an unconditional
+    # "[OK]" after them, which is how a Debian box reported a clean install
+    # while nvim 0.7.2 was aborting init.lua and installing no plugins at all.
     echo "[INFO] Installing Vim plugins..."
-    vim +PlugInstall +qall 2>/dev/null || true
-    echo "[OK] Vim plugins installed"
+    if vim +PlugInstall +qall; then
+        echo "[OK] Vim plugins installed"
+    else
+        echo "[WARN] Vim plugin install failed — run 'vim +PlugInstall +qall' to see why"
+    fi
 
     # Install Neovim plugins (lazy.nvim bootstraps itself on first run)
     echo "[INFO] Installing Neovim plugins..."
-    nvim --headless "+Lazy! sync" +qa 2>/dev/null || true
-    echo "[OK] Neovim plugins installed"
+    if nvim --headless "+Lazy! sync" +qa; then
+        echo "[OK] Neovim plugins installed"
+    else
+        echo "[WARN] Neovim plugin install failed — run 'nvim --headless \"+Lazy! sync\" +qa' to see why"
+    fi
 }
