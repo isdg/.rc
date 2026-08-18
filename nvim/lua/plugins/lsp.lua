@@ -96,7 +96,15 @@ return {
                 filetypes = { "go", "gomod", "gowork", "gotmpl" },
                 root_markers = { "go.mod", "go.work", ".git" },
                 settings = {
-                    gopls = { staticcheck = true },
+                    -- semanticTokens: gopls advertises semanticTokensProvider
+                    -- unconditionally but its own setting defaults to false, so
+                    -- textDocument/semanticTokens/full answers with an empty token
+                    -- array and Neovim paints nothing. Without it Go highlighting
+                    -- is whatever $VIMRUNTIME/syntax/go.vim manages on its own,
+                    -- which leaves types, function names and consts uncoloured
+                    -- (there is no treesitter go parser installed either).
+                    -- Tokens land on the @lsp.type.*.go / @lsp.mod.*.go groups.
+                    gopls = { staticcheck = true, semanticTokens = true },
                 },
             })
 
