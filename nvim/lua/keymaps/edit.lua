@@ -12,6 +12,8 @@ map("v", "<C-_>", "gc", { remap = true, desc = "Toggle comment" })
 -- ─── Zen mode ───────────────────────────────────────────────────
 -- lmap("n", "z", "<cmd>Goyo-10<CR>", { desc = "Toggle zen mode (Goyo)" })
 lmap("n", "z", "<cmd>ZenMode<CR>", { desc = "Toggle zen mode" })
+-- Height is full-height by default; :ZenHeight 0.8 / :ZenHeight 30 changes it
+-- for the session (see plugins/edit.lua and vim.g.zen_height in options.lua).
 
 
 -- ─── Format ────────────────────────────────────────────────────

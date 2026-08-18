@@ -13,6 +13,10 @@ vim.g.loaded_netrwPlugin = 1
 -- Git messenger: autofocus popup
 vim.g.git_messenger_always_into_popup = true
 
+-- Zen mode window height. <= 1 is a fraction of the editor height, > 1 is a
+-- row count. 1 = full height (the default). Change it live with :ZenHeight.
+vim.g.zen_height = 1
+
 -- Colors
 vim.opt.termguicolors = true
 vim.opt.background = "light"
