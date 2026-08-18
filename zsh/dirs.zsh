@@ -2,19 +2,28 @@
 # Vendored from oh-my-zsh's lib/directories.zsh (MIT) when oh-my-zsh was
 # dropped, because these were in use. Verbatim except the four setopts it also
 # set (auto_cd, auto_pushd, pushd_ignore_dups, pushd_minus) — .zshrc's init
-# block already sets those, and 1-9 below depend on them.
+# block sets all but auto_cd, and 1-9 below depend on the pushd ones.
 #
-# Two things worth knowing, both inherited as-is:
-#   - `..` is deliberately not defined, exactly as in oh-my-zsh: auto_cd handles
-#     it, so typing `..` still works.
-#   - `...` and friends are GLOBAL aliases, so they expand in any argument
-#     position, not just after cd: `vim ...`, `cp file ....`. They match whole
-#     words only, so `.../file` stays literal — same as under oh-my-zsh.
-
-alias -g ...='../..'
-alias -g ....='../../..'
-alias -g .....='../../../..'
-alias -g ......='../../../../..'
+# The upward aliases. oh-my-zsh left `..` to auto_cd and made `...` and friends
+# GLOBAL aliases expanding to `../..`, so they worked in argument position too
+# (`vim ...`). That arrangement depended on auto_cd for the common case: bare
+# `...` expanded to `../..` and auto_cd turned that into a cd.
+#
+# auto_cd is off now (see .zshrc — it silently cd'd into ~/.rc/tig whenever tig
+# was not installed), and a global alias cannot cover both positions without it:
+# a bare `...` would expand to `../..` and then be *executed*, which fails with
+# "permission denied: ../..". zsh resolves a word containing a slash straight
+# against the filesystem, so neither a function nor command_not_found_handler
+# can intercept it.
+#
+# So these are ordinary aliases that cd. Trade-off, deliberate: they no longer
+# expand as arguments — `vim ...` now passes `...` literally, where it used to
+# mean `vim ../..`. Spell those out (`vim ../..`), or say `cd ...`.
+alias ..='cd ..'
+alias ...='cd ../..'
+alias ....='cd ../../..'
+alias .....='cd ../../../..'
+alias ......='cd ../../../../..'
 
 alias -- -='cd -'
 alias 1='cd -1'

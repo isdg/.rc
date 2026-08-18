@@ -25,7 +25,14 @@ ISG_DEFAULT_USER=true # show user name
 # reproduced by hand below (options, completion styles, key bindings, URL
 # quoting) at no measurable cost. Its git aliases were in use and are vendored
 # in zsh/git.zsh.
-setopt prompt_subst interactive_comments extended_glob auto_cd
+# auto_cd is deliberately NOT set. It turns any command zsh cannot run into a
+# cd when a directory of that name happens to sit in $PWD, which reads as the
+# shell doing something at random. The case that gave it away: `t` is aliased to
+# tig, and on a box where tig was not installed, typing `t` in ~/.rc silently
+# moved the shell into ~/.rc/tig — the repo's tig *config* directory — instead
+# of saying "command not found". Every subdirectory here (fzf, theme, prompt,
+# tig) is a loaded gun of that kind. dirs.zsh defines `..` explicitly instead.
+setopt prompt_subst interactive_comments extended_glob
 
 # options oh-my-zsh's libs set that are worth keeping
 setopt auto_pushd pushd_ignore_dups pushd_minus  # cd builds a stack: cd -2, dirs -v
@@ -122,13 +129,38 @@ SAVEHIST=50000
 #alias python=/usr/local/bin/python3
 # export PATH="$HOME/nvim/bin:$PATH"
 
-# Created by `pipx` on 2024-06-11 08:50:53
-export PATH="$PATH:/Users/isg/.local/bin"
+# ~/.local/bin — pipx (which added this line in 2024, hardcoded to the macOS
+# $HOME and so dead on every Linux box), and the newer Neovim the Linux
+# bootstrap drops there when the distro's package is too old. Prepended, not
+# appended: the whole point is to beat an older /usr/bin copy.
+export PATH="$HOME/.local/bin:$PATH"
 
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+# fzf. ~/.fzf/bin goes first for the same reason: on a distro that also packages
+# fzf (Debian bookworm ships 0.38) the clone's modern binary has to win, or
+# ~/.fzf.zsh's `fzf --zsh` fails with "unknown option: --zsh" — leaving ^R bound
+# to redisplay and $FZF_DEFAULT_OPTS_FILE (fzf >= 0.48, set in .zshenv) ignored,
+# so every picker loses its colours too. fzf's own installer appends this, which
+# is precisely the bug.
+[[ -d $HOME/.fzf/bin ]] && export PATH="$HOME/.fzf/bin:$PATH"
+
+if [[ -f ~/.fzf.zsh ]]; then
+    source ~/.fzf.zsh
+else
+    # No clone: fall back to the snippets a distro package installs, so ^R and
+    # ^T still work on a box where only apt/pacman fzf is present.
+    for _fzf_dir in /usr/share/doc/fzf/examples /usr/share/fzf; do
+        [[ -f $_fzf_dir/key-bindings.zsh ]] && source $_fzf_dir/key-bindings.zsh
+        [[ -f $_fzf_dir/completion.zsh ]] && source $_fzf_dir/completion.zsh
+    done
+    unset _fzf_dir
+fi
 
 # zoxide — frecency directory jumping. `z foo` jumps to the best match, `zi foo`
 # picks via fzf. Builtin `cd` is left intact (no surprise remap).
+#
+# Deprecated (Aug 2026): the bootstraps no longer install it. This init stays
+# because it is already guarded — machines that still have zoxide keep `z`, and
+# a fresh box simply skips the line.
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
 export PATH="/usr/local/opt/llvm@17/bin:$PATH"
