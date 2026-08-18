@@ -47,6 +47,16 @@ return {
                         end
                         return text + gutter
                     end,
+                    -- Height comes from `vim.g.zen_height` so it can be
+                    -- changed at runtime (see :ZenHeight below). <= 1 is a
+                    -- fraction of the editor height, > 1 is a row count.
+                    -- Default 1 = full height.
+                    height = function()
+                        local h = tonumber(vim.g.zen_height) or 1
+                        local max = vim.o.lines - vim.o.cmdheight
+                        if vim.o.laststatus == 3 then max = max - 1 end
+                        return h <= 1 and max * h or h
+                    end,
                     col_offset = -20,
                     options = {
                         number = true,
@@ -56,6 +66,28 @@ return {
                     },
                 },
             })
+
+            -- :ZenHeight            → show the current value
+            -- :ZenHeight 0.8        → 80% of the editor height
+            -- :ZenHeight 30         → 30 rows
+            -- If zen mode is open, reopen it so the change is visible now.
+            vim.api.nvim_create_user_command("ZenHeight", function(args)
+                if args.args == "" then
+                    vim.notify("zen height: " .. tostring(vim.g.zen_height or 1))
+                    return
+                end
+                local h = tonumber(args.args)
+                if not h or h <= 0 then
+                    vim.notify("ZenHeight: expected a positive number", vim.log.levels.ERROR)
+                    return
+                end
+                vim.g.zen_height = h
+                local ok, view = pcall(require, "zen-mode.view")
+                if ok and view.is_open() then
+                    require("zen-mode").close()
+                    vim.schedule(function() require("zen-mode").open() end)
+                end
+            end, { nargs = "?", desc = "Get/set zen-mode window height" })
         end,
     },
 
