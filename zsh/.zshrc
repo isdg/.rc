@@ -25,7 +25,14 @@ ISG_DEFAULT_USER=true # show user name
 # reproduced by hand below (options, completion styles, key bindings, URL
 # quoting) at no measurable cost. Its git aliases were in use and are vendored
 # in zsh/git.zsh.
-setopt prompt_subst interactive_comments extended_glob auto_cd
+# auto_cd is deliberately NOT set. It turns any command zsh cannot run into a
+# cd when a directory of that name happens to sit in $PWD, which reads as the
+# shell doing something at random. The case that gave it away: `t` is aliased to
+# tig, and on a box where tig was not installed, typing `t` in ~/.rc silently
+# moved the shell into ~/.rc/tig — the repo's tig *config* directory — instead
+# of saying "command not found". Every subdirectory here (fzf, theme, prompt,
+# tig) is a loaded gun of that kind. dirs.zsh defines `..` explicitly instead.
+setopt prompt_subst interactive_comments extended_glob
 
 # options oh-my-zsh's libs set that are worth keeping
 setopt auto_pushd pushd_ignore_dups pushd_minus  # cd builds a stack: cd -2, dirs -v
