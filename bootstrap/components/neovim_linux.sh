@@ -13,9 +13,22 @@
 
 NVIM_MIN_MINOR=10   # minimum 0.x we support
 
+# Resolve nvim the way an interactive shell would. Plain `command -v nvim` is
+# not enough: ~/.local/bin is prepended by .zshrc, so a bash-run --ensure (or
+# any script, or a $EDITOR spawned from a non-zsh context) still sees the
+# distro's older /usr/bin/nvim and reports it.
+_nvim_bin() {
+    local candidate
+    for candidate in "$HOME/.local/bin/nvim" /usr/local/bin/nvim; do
+        [ -x "$candidate" ] && { echo "$candidate"; return 0; }
+    done
+    command -v nvim 2>/dev/null
+}
+
 _nvim_installed_version() {
-    command -v nvim > /dev/null 2>&1 || return 1
-    nvim --version 2>/dev/null | head -1 | sed -n 's/^NVIM v\([0-9][0-9.]*\).*/\1/p'
+    local bin; bin="$(_nvim_bin)"
+    [ -n "$bin" ] || return 1
+    "$bin" --version 2>/dev/null | head -1 | sed -n 's/^NVIM v\([0-9][0-9.]*\).*/\1/p'
 }
 
 # 0 = needs replacing (missing, unparseable, or older than the minimum).
@@ -50,10 +63,10 @@ ensure_neovim_linux() {
         return 1
     fi
     if _nvim_too_old; then
-        echo "[FAIL] nvim $version is older than 0.$NVIM_MIN_MINOR (this config will not load)"
+        echo "[FAIL] nvim $version at $(_nvim_bin) is older than 0.$NVIM_MIN_MINOR (this config will not load)"
         return 1
     fi
-    echo "[OK] nvim $version"
+    echo "[OK] nvim $version ($(_nvim_bin))"
 }
 
 install_neovim_linux() {
