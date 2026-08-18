@@ -28,6 +28,7 @@ source "$SCRIPT_DIR/components/pagers_linux.sh"
 source "$SCRIPT_DIR/components/zsh_syntax_linux.sh"
 source "$SCRIPT_DIR/components/directories.sh"
 source "$SCRIPT_DIR/components/dotfiles.sh"
+source "$SCRIPT_DIR/components/git_signing.sh"
 source "$SCRIPT_DIR/components/vscode.sh"
 source "$SCRIPT_DIR/components/fonts.sh"
 source "$SCRIPT_DIR/components/tig.sh"
@@ -54,6 +55,7 @@ if [[ "${1:-}" == "--ensure" ]]; then
     ensure_zsh_syntax_linux    || FAILURES=$((FAILURES + 1)); echo ""
     ensure_directories         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_dotfiles            || FAILURES=$((FAILURES + 1)); echo ""
+    ensure_git_signing         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_vscode_linux        || FAILURES=$((FAILURES + 1)); echo ""
     ensure_fonts_linux         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_tig                 || FAILURES=$((FAILURES + 1)); echo ""
@@ -90,6 +92,8 @@ echo ""
 create_directories
 echo ""
 link_dotfiles
+echo ""
+configure_git_signing   # after link_dotfiles: ~/.gitconfig has to be in place
 echo ""
 install_pagers_linux    # after link_dotfiles: needs ~/.config/bat/themes to
                         # exist before it can test and build the theme cache
