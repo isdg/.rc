@@ -14,7 +14,6 @@ brew "tig"   # tui git
 brew "tmux"
 brew "tokei"
 brew "tree"
-brew "zoxide"   # frecency dir jump (z / zi)
 brew "vifm"
 brew "wget"
 brew "nom"   # terminal RSS reader

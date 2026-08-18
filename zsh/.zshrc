@@ -150,6 +150,10 @@ fi
 
 # zoxide — frecency directory jumping. `z foo` jumps to the best match, `zi foo`
 # picks via fzf. Builtin `cd` is left intact (no surprise remap).
+#
+# Deprecated (Aug 2026): the bootstraps no longer install it. This init stays
+# because it is already guarded — machines that still have zoxide keep `z`, and
+# a fresh box simply skips the line.
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
 export PATH="/usr/local/opt/llvm@17/bin:$PATH"

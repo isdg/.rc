@@ -7,7 +7,7 @@ ensure_packages_linux() {
     # Split required from optional: nom and glow are not packaged on most
     # distros and prettier needs npm, so a single flat list reported [FAIL]
     # forever on a box that was in fact fine.
-    local required=(zsh git curl wget tmux vim nvim fzf rg zoxide)
+    local required=(zsh git curl wget tmux vim nvim fzf rg)
     local optional=(gh jq tree htop w3m sd prettier nom glow go cargo)
 
     for cmd in "${required[@]}"; do
@@ -135,24 +135,6 @@ install_packages_linux() {
             || echo "[WARN] nom install via 'go install' failed"
     else
         echo "[WARN] go not found, skipping nom (install from https://github.com/guyfedwards/nom/releases)"
-    fi
-
-    # zoxide (frecency cd) — separate install so a distro without the package
-    # doesn't break the bundled line above. Try the package manager, then fall
-    # back to the official installer (lands in ~/.local/bin, already on PATH).
-    if command -v zoxide > /dev/null 2>&1; then
-        echo "[SKIP] zoxide already installed"
-    else
-        case "$pkg_manager" in
-            apt)    sudo apt-get install -y zoxide || true ;;
-            dnf)    sudo dnf install -y zoxide || true ;;
-            yum)    sudo yum install -y zoxide || true ;;
-            pacman) sudo pacman -S --noconfirm zoxide || true ;;
-            zypper) sudo zypper install -y zoxide || true ;;
-        esac
-        command -v zoxide > /dev/null 2>&1 || \
-            curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh \
-            || echo "[WARN] zoxide install failed (see https://github.com/ajeetdsouza/zoxide)"
     fi
 
     # sd (find & replace CLI, sed alternative) — newer tool, not in every distro,

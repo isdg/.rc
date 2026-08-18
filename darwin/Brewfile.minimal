@@ -22,7 +22,6 @@ brew "tmux"
 # Shell
 brew "zsh"
 brew "zsh-syntax-highlighting"
-brew "zoxide"   # frecency dir jump (z / zi)
 
 # Pickers & previews — fzf.vim, telescope and the tmux picker scripts need all
 # four: fzf itself, rg + fd as sources, bat for preview panes.
