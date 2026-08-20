@@ -235,3 +235,9 @@ _banner_branch=$(command git symbolic-ref --short HEAD 2>/dev/null)
 banner_info "%~${_banner_branch:+ · $_banner_branch}"
 unset _banner_branch
 banner_render
+
+# Skip cosmos-saas's sync-env git hook (post-merge / post-checkout).
+# It runs `asdf plugin add supabase` on every merge/checkout because the
+# .tool-versions pin (2.101.0) can never match the Homebrew supabase on PATH.
+# Remove this line to restore it; run `uv sync` by hand when uv.lock changes.
+export LEFTHOOK_EXCLUDE=sync-env
