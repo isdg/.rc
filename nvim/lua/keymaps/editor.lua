@@ -45,7 +45,36 @@ map("n", "<leader>=", "<C-w>=", { desc = "Equalize splits" })
 -- ─── History & clipboard ────────────────────────────────────────
 -- Fuzzy history (fzf.vim), replacing the q: / q/ cmdline windows — those are
 -- still there by typing q: / q/ directly when an editable buffer is wanted.
-lmap("n", ";", "<cmd>History:<CR>", { desc = "Command history (fzf)" })
+-- Command history works like <leader>: (fzf's :Commands): picking an entry
+-- drops it into the command line and leaves the cursor there, so it can be
+-- edited before running. Plain :History: does the opposite — <CR> executes at
+-- once and only C-e puts it in the cmdline — and its sink is script-local, so
+-- drive fzf#run with our own source and sink instead.
+local function command_history()
+    local items = {}
+    for i = 1, vim.fn.histnr(":") do
+        local entry = vim.fn.histget(":", -i)
+        if entry ~= "" then
+            items[#items + 1] = entry
+        end
+    end
+    if #items == 0 then
+        vim.notify("No command history yet", vim.log.levels.INFO)
+        return
+    end
+    -- fzf#wrap applies g:fzf_layout and the colour setup, so this frames like
+    -- every other fzf.vim picker. +m: one entry at a time. --scheme=history is
+    -- what fzf.vim itself ranks history lists with.
+    vim.fn["fzf#run"](vim.fn["fzf#wrap"]("history-command", {
+        source = items,
+        options = { "+m", "--prompt", "Hist:> ", "--scheme=history" },
+        -- 'n' (no remap) + 't' (as if typed) — the same feedkeys fzf.vim uses
+        -- for its C-e path, which leaves the cmdline open and unexecuted.
+        sink = function(entry) vim.fn.feedkeys(":" .. entry, "nt") end,
+    }))
+end
+
+lmap("n", ";", command_history, { desc = "Command history → cmdline (fzf)" })
 lmap("n", "/", "<cmd>History/<CR>", { desc = "Search history (fzf)" })
 -- Jumplist as a list instead of stepping through it with <C-i>/<C-o>
 lmap("n", "J", "<cmd>Jumps<CR>", { desc = "Jump list (fzf)" })

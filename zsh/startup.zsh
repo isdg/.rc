@@ -39,18 +39,23 @@ banner_host_info() {
 }
 
 # tmux, one laconic line — the whole server picture as slug:sessions, with the
-# attached sessions named in brackets, e.g. "tmux · a:1 default:9(rc*) misc:4".
+# attached sessions named in brackets, e.g. "tmux · a:1 *default:9(rc*) misc:4".
 # A server with nothing attached carries no bracket at all, so the eye lands on
 # the session actually holding a client.
 # Every socket in $TMUX_TMPDIR/tmux-$UID is one server; a stale one answers
 # nothing and is skipped, so only live servers are listed, socket order.
 # list-sessions prints a client count per session — 0 means detached, and a
 # session held by two windows scores two stars: "default:9(rc**)".
+# The server this very shell sits in gets a leading star — "*default:10(rc*)"
+# — so the picture says which of several servers you are actually inside.
+# $TMUX is "<socket>,<pid>,<session>"; both sides go through :A because
+# /tmp is a symlink on darwin and the glob and $TMUX spell it differently.
 # Silent when tmux is absent or no server is alive.
 log_tmux() {
     (( $+commands[tmux] )) || return 0
-    local sock line mark
+    local sock line mark here self
     local -a sessions attached servers
+    [[ -n $TMUX ]] && here=${${TMUX%%,*}:A}
     for sock in ${TMUX_TMPDIR:-/tmp}/tmux-${UID}/*(=N); do
         # "<attached> <name>" per session — the count leads so a name
         # containing spaces still survives the ${line#* } split below.
@@ -66,7 +71,9 @@ log_tmux() {
         done
         mark=""
         (( ${#attached} )) && mark="(${(j:,:)attached})"
-        servers+=( "${sock:t}:${#sessions}${mark}" )
+        self=""
+        [[ -n $here && ${sock:A} == $here ]] && self="*"
+        servers+=( "${self}${sock:t}:${#sessions}${mark}" )
     done
     (( ${#servers} )) || return 0
     banner_log "tmux · ${(j: :)servers}"
