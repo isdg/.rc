@@ -1,0 +1,7 @@
+Include /Users/isg/.colima/ssh_config
+
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/github
+    IdentitiesOnly yes
