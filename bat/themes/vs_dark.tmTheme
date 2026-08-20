@@ -19,7 +19,7 @@
       <dict>
         <key>background</key>    <string>#2f2f2f</string>
         <key>foreground</key>    <string>#d4d4d4</string>
-        <key>caret</key>         <string>#ffffff</string>
+        <key>caret</key>         <string>#d4d4d4</string>
         <key>lineHighlight</key> <string>#2a2a2a</string>
         <key>selection</key>     <string>#3a3d41</string>
         <key>gutterForeground</key> <string>#555555</string>

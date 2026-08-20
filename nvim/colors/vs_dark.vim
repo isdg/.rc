@@ -49,7 +49,7 @@ hi Normal       guifg=#d4d4d4 guibg=#2f2f2f
 " restore on exit. That is what makes the cursor follow a theme toggle without
 " reloading Ghostty, whose cursor-color the running window keeps until it does.
 " Mirrors ghostty/theme-dark.conf: guibg = cursor-color, guifg = cursor-text.
-hi Cursor       guifg=#2f2f2f guibg=#ffffff
+hi Cursor       guifg=#2f2f2f guibg=#d4d4d4
 hi CursorLine   guibg=#2a2a2a
 hi Visual       guibg=#3a3d41
 hi LineNr       guifg=#555555 guibg=#2f2f2f

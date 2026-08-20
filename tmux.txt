@@ -162,6 +162,25 @@ Tmux Cheat Sheet
      and gives you the terminal's native selection instead — handy
      when you want to copy across multiple panes at once.
 
+  Russian layout
+
+  Every letter binding also answers on its Cyrillic key, the way
+  <leader> mappings do in vim/nvim — Ctrl+B ы opens the session
+  tree, Ctrl+B я toggles zen mode, and hjkl still move in copy
+  mode as рол д. Both key tables are covered: prefix and
+  copy-mode-vi.
+
+  This is swept from what is actually bound, after the plugins
+  load, so omni/orchbus/resurrect keys are twinned too and nothing
+  has to be listed by hand (tmux/russian.sh).
+
+  Only plain letters are twinned. Ctrl+B itself and the Ctrl-/Alt-
+  bindings need no twin: terminals derive those from the physical
+  key, so they already fire under either layout. Punctuation is
+  left alone — it does not sit on matching keys across the two.
+
+  Side effect: Ctrl+B ? lists each letter binding twice.
+
   Multiple Servers (separate socket = separate server)
 
   Each tmux server is identified by its socket. By default everything

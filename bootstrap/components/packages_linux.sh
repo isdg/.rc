@@ -3,9 +3,14 @@
 
 ensure_packages_linux() {
     echo "[STEP] Verifying packages..."
-    local failed=0
-    local cmds=(zsh git gh curl wget tmux vim nvim fzf rg tree prettier nom zoxide sd)
-    for cmd in "${cmds[@]}"; do
+    local failed=0 cmd
+    # Split required from optional: nom and glow are not packaged on most
+    # distros and prettier needs npm, so a single flat list reported [FAIL]
+    # forever on a box that was in fact fine.
+    local required=(zsh git curl wget tmux vim nvim fzf rg tig)
+    local optional=(gh jq tree htop w3m sd prettier nom glow go cargo)
+
+    for cmd in "${required[@]}"; do
         if command -v "$cmd" > /dev/null 2>&1; then
             echo "[OK] $cmd"
         else
@@ -13,7 +18,39 @@ ensure_packages_linux() {
             failed=1
         fi
     done
+    for cmd in "${optional[@]}"; do
+        command -v "$cmd" > /dev/null 2>&1 \
+            && echo "[OK] $cmd" \
+            || echo "[SKIP] $cmd not found (optional)"
+    done
     return $failed
+}
+
+# apt aborts the WHOLE transaction when a single name is unknown to it —
+# "E: Unable to locate package glow" and nothing else on the line gets
+# installed either. On Debian bookworm that one optional package silently took
+# zsh, tmux, neovim, fzf and ripgrep down with it, and `|| echo "[WARN] …"`
+# made it look like a partial success. So: split the list, install what this
+# release actually ships, and name the rest instead of failing the batch.
+_apt_install() {
+    local label="$1"; shift
+    local available=() missing=() pkg
+
+    for pkg in "$@"; do
+        if apt-cache show "$pkg" 2>/dev/null | grep -q '^Package:'; then
+            available+=("$pkg")
+        else
+            missing+=("$pkg")
+        fi
+    done
+
+    if [ ${#available[@]} -gt 0 ]; then
+        sudo apt-get install -y "${available[@]}" \
+            || echo "[WARN] $label: apt-get returned an error"
+    fi
+    if [ ${#missing[@]} -gt 0 ]; then
+        echo "[WARN] $label: not packaged in this release — skipped: ${missing[*]}"
+    fi
 }
 
 detect_package_manager() {
@@ -41,49 +78,45 @@ install_packages_linux() {
     case "$pkg_manager" in
         apt)
             sudo apt-get update || echo "[WARN] apt-get update had warnings, continuing..."
-            # Boring essentials
-            sudo apt-get install -y \
-                zsh git gh curl wget jq tree htop tmux vim neovim fzf ripgrep \
+            # Boring essentials. glow is optional (nothing in this repo calls
+            # it) and absent from bookworm — _apt_install drops it rather than
+            # letting it veto the shell itself.
+            _apt_install "base" \
+                zsh git gh tig curl wget jq tree htop tmux vim neovim fzf ripgrep \
                 nodejs npm python3 \
-                w3m glow \
-                || echo "[WARN] Some base packages may have failed"
+                w3m glow
             # Docs
-            sudo apt-get install -y man-db manpages-dev \
-                || echo "[WARN] man pages install failed"
+            _apt_install "man pages" man-db manpages-dev
             # Build toolchain
-            sudo apt-get install -y build-essential pkg-config \
-                || echo "[WARN] build toolchain install failed"
+            _apt_install "build toolchain" build-essential pkg-config
             # Kernel module + full kernel build deps
-            sudo apt-get install -y \
+            _apt_install "kernel build deps" \
                 "linux-headers-$(uname -r)" \
                 bc bison flex rsync kmod \
-                libssl-dev libelf-dev libncurses-dev \
-                || echo "[WARN] kernel build deps install failed (linux-headers may not match running kernel)"
+                libssl-dev libelf-dev libncurses-dev
             # USB userspace + headers
-            sudo apt-get install -y usbutils libusb-1.0-0-dev \
-                || echo "[WARN] USB tools install failed"
-            # Tracing & debugging
-            sudo apt-get install -y strace ltrace gdb linux-perf \
-                || echo "[WARN] tracing tools install failed"
+            _apt_install "USB tools" usbutils libusb-1.0-0-dev
+            # Tracing & debugging (ltrace is x86-only in Debian, so it drops out
+            # on an arm64 VM — without the split it took strace and gdb with it)
+            _apt_install "tracing tools" strace ltrace gdb linux-perf
             # Zig (compiler from apt; zls usually not packaged — install manually
             # from https://github.com/zigtools/zls/releases or via `zigup`)
-            sudo apt-get install -y zig \
-                || echo "[WARN] zig install failed (not all apt repos ship it)"
+            _apt_install "zig" zig
             ;;
         dnf)
-            sudo dnf install -y zsh git gh curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
+            sudo dnf install -y zsh git gh tig curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
             ;;
         yum)
-            sudo yum install -y zsh git gh curl vim neovim fzf nodejs npm w3m || echo "[WARN] Some packages may have failed"
+            sudo yum install -y zsh git gh tig curl vim neovim fzf nodejs npm w3m || echo "[WARN] Some packages may have failed"
             ;;
         pacman)
-            sudo pacman -Sy --noconfirm zsh git github-cli curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
+            sudo pacman -Sy --noconfirm zsh git github-cli tig curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
             ;;
         zypper)
-            sudo zypper install -y zsh git gh curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
+            sudo zypper install -y zsh git gh tig curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
             ;;
         *)
-            echo "[WARN] Unknown package manager. Please install manually: zsh git gh curl vim neovim fzf ripgrep w3m glow"
+            echo "[WARN] Unknown package manager. Please install manually: zsh git gh tig curl vim neovim fzf ripgrep w3m glow"
             ;;
     esac
 
@@ -102,24 +135,6 @@ install_packages_linux() {
             || echo "[WARN] nom install via 'go install' failed"
     else
         echo "[WARN] go not found, skipping nom (install from https://github.com/guyfedwards/nom/releases)"
-    fi
-
-    # zoxide (frecency cd) — separate install so a distro without the package
-    # doesn't break the bundled line above. Try the package manager, then fall
-    # back to the official installer (lands in ~/.local/bin, already on PATH).
-    if command -v zoxide > /dev/null 2>&1; then
-        echo "[SKIP] zoxide already installed"
-    else
-        case "$pkg_manager" in
-            apt)    sudo apt-get install -y zoxide || true ;;
-            dnf)    sudo dnf install -y zoxide || true ;;
-            yum)    sudo yum install -y zoxide || true ;;
-            pacman) sudo pacman -S --noconfirm zoxide || true ;;
-            zypper) sudo zypper install -y zoxide || true ;;
-        esac
-        command -v zoxide > /dev/null 2>&1 || \
-            curl -sSfL https://raw.githubusercontent.com/ajeetdsouza/zoxide/main/install.sh | sh \
-            || echo "[WARN] zoxide install failed (see https://github.com/ajeetdsouza/zoxide)"
     fi
 
     # sd (find & replace CLI, sed alternative) — newer tool, not in every distro,

@@ -13,12 +13,22 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
 export DOTFILES_DIR
 
+# Everything this script installs because the distro's own copy is too old —
+# neovim, bat, delta — lands in ~/.local/bin, which only .zshrc puts on PATH.
+# This script runs under bash, so without this line both the install steps and
+# every --ensure check measure the older /usr/bin copy and report a failure on
+# a machine that is actually fine.
+export PATH="$HOME/.local/bin:$PATH"
+
 # Load components
 source "$SCRIPT_DIR/components/helpers.sh"
 source "$SCRIPT_DIR/components/packages_linux.sh"
+source "$SCRIPT_DIR/components/neovim_linux.sh"
+source "$SCRIPT_DIR/components/pagers_linux.sh"
 source "$SCRIPT_DIR/components/zsh_syntax_linux.sh"
 source "$SCRIPT_DIR/components/directories.sh"
 source "$SCRIPT_DIR/components/dotfiles.sh"
+source "$SCRIPT_DIR/components/git_signing.sh"
 source "$SCRIPT_DIR/components/vscode.sh"
 source "$SCRIPT_DIR/components/fonts.sh"
 source "$SCRIPT_DIR/components/tig.sh"
@@ -40,9 +50,12 @@ if [[ "${1:-}" == "--ensure" ]]; then
     set +e  # collect all failures instead of stopping at first
 
     ensure_packages_linux      || FAILURES=$((FAILURES + 1)); echo ""
+    ensure_neovim_linux        || FAILURES=$((FAILURES + 1)); echo ""
+    ensure_pagers_linux        || FAILURES=$((FAILURES + 1)); echo ""
     ensure_zsh_syntax_linux    || FAILURES=$((FAILURES + 1)); echo ""
     ensure_directories         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_dotfiles            || FAILURES=$((FAILURES + 1)); echo ""
+    ensure_git_signing         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_vscode_linux        || FAILURES=$((FAILURES + 1)); echo ""
     ensure_fonts_linux         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_tig                 || FAILURES=$((FAILURES + 1)); echo ""
@@ -72,11 +85,18 @@ echo ""
 # Run components
 install_packages_linux
 echo ""
+install_neovim_linux    # before vim.sh: its Lazy sync needs a usable nvim
+echo ""
 install_zsh_syntax_linux
 echo ""
 create_directories
 echo ""
 link_dotfiles
+echo ""
+configure_git_signing   # after link_dotfiles: ~/.gitconfig has to be in place
+echo ""
+install_pagers_linux    # after link_dotfiles: needs ~/.config/bat/themes to
+                        # exist before it can test and build the theme cache
 echo ""
 link_vscode_linux
 echo ""
