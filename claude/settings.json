@@ -59,5 +59,9 @@
   "worktree": {
     "bgIsolation": "none"
   },
-  "disableAgentView": true
+  "disableAgentView": true,
+  "attribution": {
+    "commit": "",
+    "pr": ""
+  }
 }
