@@ -58,5 +58,10 @@
   "voiceEnabled": true,
   "worktree": {
     "bgIsolation": "none"
+  },
+  "disableAgentView": true,
+  "attribution": {
+    "commit": "",
+    "pr": ""
   }
 }
