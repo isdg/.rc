@@ -11,6 +11,7 @@
 #   plugins       the second layer (C-b C-b), whose letters need twins for the
 #                 same reason the prefix ones do — its C-b entry key does not,
 #                 being a control combination.
+#   splits        the layer's s sub-table, one level deeper, same reasoning.
 #
 # Only single Latin letters are twinned. C-b, M-1, Space, arrows and the
 # punctuation bindings are deliberately skipped: terminals derive control and
@@ -49,7 +50,7 @@ PAIRS=$(echo $PAIRS)
 conf="${TMPDIR:-/tmp}/tmux-russian.$$"
 : > "$conf"
 
-for table in prefix copy-mode-vi plugins; do
+for table in prefix copy-mode-vi plugins splits; do
     tmux list-keys -T "$table" | awk -v pairs="$PAIRS" '
         BEGIN {
             n = split(pairs, p, /[ \t\n]+/)
