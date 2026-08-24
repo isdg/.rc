@@ -172,6 +172,11 @@ export PATH="$HOME/.cargo/bin:$PATH"   # cargo-installed binaries (plc)
 export EDITOR='nvim'
 export VISUAL='nvim'
 
+# gpg-agent's pinentry needs a tty to prompt on. Without this, commit signing
+# (git_signing.sh leaves it on whenever the key is present) hangs silently
+# instead of asking for the passphrase.
+export GPG_TTY=$(tty)
+
 source "$ISGRC/zsh/git.zsh"      # both before aliases.zsh, so personal
 source "$ISGRC/zsh/dirs.zsh"     # aliases keep precedence
 source "$ISGRC/zsh/aliases.zsh"
