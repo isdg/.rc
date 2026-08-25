@@ -73,7 +73,12 @@ else
 fi
 
 # --- Splash: mascot + status, banner-style (mascots.sh) ---
+# Printed where the cursor already is, NOT onto a cleared screen. Toggling the
+# theme is something you do in the middle of working, and wiping the scrollback
+# to announce it threw away whatever you were looking at — the command output
+# that made you want more contrast in the first place.
+# Nothing in splash_render positions the cursor (no \e[H, no \e[J); it only
+# prints lines, so it appends cleanly wherever it lands.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/mascots.sh"
-clear
 splash_render "$MODE" "$STATUS"
