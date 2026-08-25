@@ -21,8 +21,8 @@ cur="$(cat "$THEME_FILE" 2>/dev/null || echo light)"
 mkdir -p "$(dirname "$THEME_FILE")"
 echo "$MODE" > "$THEME_FILE"
 STATUS+="mode: $cur -> $MODE\n"
-STATUS+="Vim/Neovim: vs_$MODE (on new session)\n"
-STATUS+="Zsh/bat: $MODE (on new zsh)\n"
+STATUS+="vim/nvim: vs_$MODE (on new session)\n"
+STATUS+="zsh/bat: $MODE (on new zsh)\n"
 
 # --- Ghostty: select theme via the theme-active.conf include symlink ---
 # One symlink swap replaces five seds on the tracked config; theme-active.conf
@@ -30,9 +30,9 @@ STATUS+="Zsh/bat: $MODE (on new zsh)\n"
 if [ -f "$REAL_GHOSTTY" ]; then
     GHOSTTY_DIR="$(dirname "$REAL_GHOSTTY")"
     ln -sf "theme-$MODE.conf" "$GHOSTTY_DIR/theme-active.conf"
-    STATUS+="Ghostty: $MODE (on new reload)\n"
+    STATUS+="ghostty: $MODE (on new reload)\n"
 else
-    STATUS+="Ghostty: config not found\n"
+    STATUS+="ghostty: config not found\n"
 fi
 
 # --- k9s: swap the skin-active.yaml symlink (config.yaml points ui.skin at it) ---
@@ -67,13 +67,18 @@ fi
 # --- Tmux: re-source so the if-shell re-reads the mode file and repaints ---
 # The styles live in tmux/theme-{dark,light}.conf; nothing is sed'd here.
 if tmux source-file "$TMUX_CONF" 2>/dev/null; then
-    STATUS+="Tmux: $MODE (reloaded)\n"
+    STATUS+="tmux: $MODE (reloaded)\n"
 else
-    STATUS+="Tmux: $MODE (on new session)\n"
+    STATUS+="tmux: $MODE (on new session)\n"
 fi
 
 # --- Splash: mascot + status, banner-style (mascots.sh) ---
+# Printed where the cursor already is, NOT onto a cleared screen. Toggling the
+# theme is something you do in the middle of working, and wiping the scrollback
+# to announce it threw away whatever you were looking at — the command output
+# that made you want more contrast in the first place.
+# Nothing in splash_render positions the cursor (no \e[H, no \e[J); it only
+# prints lines, so it appends cleanly wherever it lands.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/mascots.sh"
-clear
 splash_render "$MODE" "$STATUS"
