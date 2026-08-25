@@ -24,6 +24,12 @@ return {
     {
         "isdg/zen-mode.nvim",
         config = function()
+            -- Guard for the case where vim.g.zen_height is unset. options.lua sets
+            -- it at startup, so in practice this never decides the height — it is
+            -- named once anyway so the height function and :ZenHeight's readout
+            -- cannot report different numbers.
+            local DEFAULT_HEIGHT = 0.9
+
             require("zen-mode").setup({
                 window = {
                     -- A floating window's width is the *total* width -- the
@@ -50,9 +56,10 @@ return {
                     -- Height comes from `vim.g.zen_height` so it can be
                     -- changed at runtime (see :ZenHeight below). <= 1 is a
                     -- fraction of the editor height, > 1 is a row count.
-                    -- Default 1 = full height.
+                    -- Default 0.9 leaves a margin above and below rather than
+                    -- filling the screen edge to edge.
                     height = function()
-                        local h = tonumber(vim.g.zen_height) or 1
+                        local h = tonumber(vim.g.zen_height) or DEFAULT_HEIGHT
                         local max = vim.o.lines - vim.o.cmdheight
                         if vim.o.laststatus == 3 then max = max - 1 end
                         return h <= 1 and max * h or h
@@ -73,7 +80,7 @@ return {
             -- If zen mode is open, reopen it so the change is visible now.
             vim.api.nvim_create_user_command("ZenHeight", function(args)
                 if args.args == "" then
-                    vim.notify("zen height: " .. tostring(vim.g.zen_height or 1))
+                    vim.notify("zen height: " .. tostring(vim.g.zen_height or DEFAULT_HEIGHT))
                     return
                 end
                 local h = tonumber(args.args)
