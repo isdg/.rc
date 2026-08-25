@@ -23,10 +23,9 @@ selection-background = f81ce5
 selection-foreground = ffffff
 
 # --- window / layout ---
-# window-padding-x lives in width-{300,500,600}.conf and is selected by the
-# width-active.conf symlink, cycled by width.sh (alias `ww`). Same idiom as the
-# theme include above: the value that changes sits behind a gitignored symlink,
-# so widening the text column never shows up as a diff in this tracked file.
+# window-padding-x is written into width-active.conf by width.sh (alias `ww`):
+# `ww` toggles 400/600, `ww N` sets any width. That file is gitignored, so
+# widening the text column never shows up as a diff in this tracked one.
 # Larger padding = narrower text. Reload with cmd+shift+, to apply.
 config-file = width-active.conf
 window-padding-y = 12
