@@ -8,6 +8,11 @@ vscode/tasks.json
 # by toggle_theme.sh. Per-machine state, not tracked.
 ghostty/theme-active.conf
 
+# Active ghostty width include — a symlink to width-{300,500,600}.conf, cycled
+# by width.sh (alias `ww`). Untracked for the same reason as the theme include:
+# the value changes constantly and the tracked config must stay clean.
+ghostty/width-active.conf
+
 # Active k9s skin — a symlink to skins/vs_{dark,light}.yaml, flipped by
 # toggle_theme.sh (k9s config.yaml points ui.skin at it). Per-machine state.
 k9s/skins/skin-active.yaml

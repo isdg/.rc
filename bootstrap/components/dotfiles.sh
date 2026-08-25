@@ -265,6 +265,16 @@ link_dotfiles() {
         echo "[OK] Seeded ghostty/theme-active.conf -> theme-$(cat "$theme_file").conf"
     fi
 
+    # Ghostty width include, same idiom. Seeded unconditionally like the fzf one:
+    # ghostty/config includes it by name, and a missing include is not ignored --
+    # ghostty reports "error opening config-file ... FileNotFound" and drops
+    # window-padding-x entirely, so the window opens with no padding at all.
+    local width_active="$dotfiles_dir/ghostty/width-active.conf"
+    if [ -f "$dotfiles_dir/ghostty/width-300.conf" ]; then
+        [ -L "$width_active" ] || ln -sf "width-300.conf" "$width_active"
+        echo "[OK] Seeded ghostty/width-active.conf -> $(basename "$(readlink "$width_active")")"
+    fi
+
     # fzf options file, same idiom. Seeded unconditionally (-e is false for a
     # dangling link, and a dangling $FZF_DEFAULT_OPTS_FILE is worse than none:
     # fzf exits 2 on a missing file instead of falling back to its defaults).
