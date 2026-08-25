@@ -14,8 +14,12 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.git_messenger_always_into_popup = true
 
 -- Zen mode window height. <= 1 is a fraction of the editor height, > 1 is a
--- row count. 1 = full height (the default). Change it live with :ZenHeight.
-vim.g.zen_height = 1
+-- row count. 0.9 leaves a margin above and below instead of filling the screen
+-- edge to edge. Change it live with :ZenHeight.
+-- This is the operative default: it is set unconditionally at startup, so the
+-- fallback in plugins/edit.lua is only a guard for the case where this file has
+-- not run.
+vim.g.zen_height = 0.9
 
 -- Colors
 vim.opt.termguicolors = true
