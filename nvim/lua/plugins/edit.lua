@@ -30,6 +30,21 @@ return {
             -- cannot report different numbers.
             local DEFAULT_HEIGHT = 0.9
 
+            -- The window options the zen float is opened with. Hoisted out of the
+            -- setup table because the width function below has to size the gutters
+            -- for THESE values rather than for whatever the window zen was opened
+            -- from happens to have -- the two drifting apart is what made the zen
+            -- line 84 columns wide: the width budgeted for a number gutter that
+            -- `number = false` here then turned off, and the text took the space.
+            -- Anything not named here is inherited, so the width function falls
+            -- back to vim.wo for those.
+            local ZEN_OPTIONS = {
+                number = false,
+                wrap = true,
+                linebreak = true,
+                breakindent = true,
+            }
+
             require("zen-mode").setup({
                 window = {
                     -- A floating window's width is the *total* width -- the
@@ -39,12 +54,16 @@ return {
                     width = function()
                         local text = 80
                         local gutter = 0
-                        if vim.wo.number or vim.wo.relativenumber then
+                        local number = ZEN_OPTIONS.number
+                        if number == nil then number = vim.wo.number end
+                        local relnumber = ZEN_OPTIONS.relativenumber
+                        if relnumber == nil then relnumber = vim.wo.relativenumber end
+                        if number or relnumber then
                             -- numberwidth, or wider if the file needs more digits
                             local digits = #tostring(vim.api.nvim_buf_line_count(0)) + 1
                             gutter = gutter + math.max(vim.o.numberwidth, digits)
                         end
-                        local sc = vim.wo.signcolumn
+                        local sc = ZEN_OPTIONS.signcolumn or vim.wo.signcolumn
                         if sc == "yes" or sc == "auto" then
                             gutter = gutter + 2
                         else
@@ -65,12 +84,7 @@ return {
                         return h <= 1 and max * h or h
                     end,
                     col_offset = -20,
-                    options = {
-                        number = false,
-                        wrap = true,
-                        linebreak = true,
-                        breakindent = true,
-                    },
+                    options = ZEN_OPTIONS,
                 },
             })
 
