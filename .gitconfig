@@ -54,7 +54,29 @@
 [merge]
 	conflictStyle = diff3
 [diff]
-	colorMoved = default
+	; `blocks` rather than the `default`/`zebra` mode: zebra alternates a SECOND
+	; pair of colours so two adjacent moved blocks can be told apart, and there
+	; is no third red or green to spend on that -- see [color "diff"] below. The
+	; cost is that two moved blocks that land next to each other read as one.
+	colorMoved = blocks
+; Moved lines, kept inside the two-colour scheme the [delta] section above sets
+; up: bright red still means "gone from here", bright green still means "new
+; here", and the shade is the only thing that says the code moved rather than
+; changed. Git's own defaults are bold magenta/cyan, two hues that appear
+; nowhere else in this diff -- and delta passes git's move colours straight
+; through, so minus-style/plus-style never get a say over them. This is the only
+; place they can be set.
+;
+; Names, not hex, for the same reason every style above is a name: `brightred`
+; is ANSI 9, so ghostty/theme-MODE.conf supplies the value (#f37799 dark,
+; #de293e light) and the diff follows the theme toggle. Note the spelling --
+; git wants `brightred`, one word; `bright red` is a parse error.
+;
+; Only the two `blocks`-mode slots are set. The Alternative/Dimmed slots belong
+; to zebra and dimmed-zebra, which diff.colorMoved does not select.
+[color "diff"]
+	oldMoved = brightred
+	newMoved = brightgreen
 [pager]
 	diff = true
 [sendemail]
