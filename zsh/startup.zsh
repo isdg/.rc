@@ -26,14 +26,29 @@ log_shell() {
     banner_log "$seg"
 }
 
-# host + session type, e.g. "isg-darwin · local" / "isg-darwin · ssh from 10.0.0.5"
+# host + session type, e.g. "isg-darwin · local"
+# / "isg-darwin · 10.0.0.4 · ssh from 10.0.0.5"
 # — who and where, so it belongs on the identity line next to the user name
 # rather than buried in the logs. Printed, not registered: .zshrc assembles the
 # info lines itself, before banner_render walks the log registry.
+#
+# The name is always THIS machine ($HOST), never the peer: on a box you sshed
+# into it names the box you landed on. Under ssh the address of this machine
+# goes between the two, so the line reads inward-out — which host, at which
+# address, reached from where.
+#
+# Both addresses come out of $SSH_CONNECTION, "<client-ip> <client-port>
+# <server-ip> <server-port>": field 3 is this end of the socket, i.e. the
+# address the client actually reached, which is the useful one on a
+# multi-homed box. No ifconfig/ip subprocess at startup — sshd already knows.
+# A session with SSH_TTY but no SSH_CONNECTION (sudo dropping the latter) still
+# says "ssh", just without addresses, rather than printing empty separators.
 banner_host_info() {
     local where="local"
     if [[ -n $SSH_CONNECTION || -n $SSH_TTY ]]; then
-        where="ssh from ${SSH_CONNECTION%% *}"
+        local -a conn=( ${=SSH_CONNECTION} )
+        where="ssh${conn[1]:+ from $conn[1]}"
+        [[ -n $conn[3] ]] && where="$conn[3] · $where"
     fi
     print -r -- "${HOST%%.*} · ${where}"
 }
