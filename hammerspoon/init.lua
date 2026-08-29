@@ -6,6 +6,12 @@
 --
 -- Feature: a Spotlight-style translation / dictionary popup on a hotkey.
 
+-- Message port for the `hs` CLI (already on PATH via the homebrew cask). Without
+-- this the binary is installed but inert — every call answers "can't access
+-- Hammerspoon message port". Loading it makes `hs -c '<lua>'` evaluate in this
+-- config, which is the only way to test a hotkey's effects without pressing it.
+require("hs.ipc")
+
 local translate = require("translate")
 
 -- Hotkey: ⌘⌃T opens the popup. Change the mods/key here.
