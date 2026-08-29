@@ -10,19 +10,31 @@
 --
 -- Mechanism: while active, one eventtap tracks which direction keys are down
 -- (by physical keycode, so Shift doesn't change matching) and a single ~60fps
--- ticker posts the scroll. Holding Shift posts MORE events per frame (not bigger
--- ones) — terminals scroll by whole lines and ignore pixel magnitude, so extra
--- events are the only way to speed them up; pixel apps get faster too. A colored
--- border around the screen under the pointer is the mode indicator (like
--- Homerow), click/scroll-through so it never eats events.
+-- ticker posts the scroll. Two pacings, because the two kinds of target measure
+-- scrolling in different units — lines in a terminal, pixels everywhere else;
+-- see the tunables. A colored border around the screen under the pointer is the
+-- mode indicator (like Homerow), click/scroll-through so it never eats events.
 
 local M = {}
 
 -- Tunables -----------------------------------------------------------------
+-- Pixel apps: a per-frame offset, and SHIFT posts the frame's scroll several
+-- times over. Magnitude and event count both register here, so either works.
 local STEP = 12          -- px/frame for j/k/h/l (base pace)
-local FASTMUL = 6        -- hold SHIFT: post this many events/frame (fast; also
-                         -- speeds up terminals, which scroll by line not pixel)
 local PAGE = 30          -- px/frame for d/u (brisk dash)
+local FASTMUL = 6        -- hold SHIFT: post this many events/frame
+
+-- Terminals: a rate in LINES PER SECOND. Two things force the separate set.
+-- One, a terminal discards the pixel magnitude — one event is one notch however
+-- big it claims to be — but it does honour the count on a line-unit event, so
+-- N lines go in ONE event rather than N events. Two, per-frame counts are
+-- useless as a knob at 60fps: the smallest possible step, 1 line/frame, is 60
+-- lines a second, which overshoots a screen before you can lift the key. Rates
+-- are the number worth reasoning about; tick() carries the fractional remainder
+-- between frames so a slow rate still comes out smooth instead of stepping.
+local LINE_RATE = 22      -- lines/second in a terminal, holding a key
+local LINE_RATE_PAGE = 55 -- ... for d/u
+local LINEMUL = 3         -- ... multiplier while SHIFT is held
 local INTERVAL = 1 / 60  -- ~60 fps
 local BORDER = 5         -- indicator border thickness (px)
 local COLOR = { red = 0.55, green = 0.45, blue = 1.0, alpha = 0.95 } -- accent
@@ -44,6 +56,8 @@ local ticker        -- the ~60fps scroll pump
 local held = {}     -- direction-key name -> true while down
 local border        -- hs.canvas indicator
 local savedPos      -- pointer position to put back on exit
+local lineMode      -- true while the target scrolls by lines (a terminal)
+local lineDebt = {} -- direction -> fractional line carried to the next frame
 
 -- Aiming the pointer ---------------------------------------------------------
 -- Scroll events land on whatever is under the POINTER, which made this mode a
@@ -151,7 +165,8 @@ local function warpToFocus()
     local x, y = f.x + f.w / 2, f.y + f.h / 2 -- any other app: centre of window
 
     local app = win:application()
-    if app and app:bundleID() == GHOSTTY then
+    lineMode = app and app:bundleID() == GHOSTTY
+    if lineMode then
         local l, t, w, h, cols, rows = tmuxPaneCells()
         if l then
             local px, py = ghosttyPadding()
@@ -177,15 +192,26 @@ local function scroll(dx, dy)
     hs.eventtap.event.newScrollEvent({ dx, dy }, {}, "pixel"):post()
 end
 
--- One frame: for each held direction post its scroll. Under Shift, post it
--- `FASTMUL` times (more discrete events) so line-based terminals speed up too.
+-- One frame: for each held direction post its scroll. Two pacings, because the
+-- two kinds of target measure scrolling differently — lines in a terminal (see
+-- LINE_RATE above), pixels everywhere else. Shift is "fast" in both.
 local function tick()
-    local reps = hs.eventtap.checkKeyboardModifiers().shift and FASTMUL or 1
+    local fast = hs.eventtap.checkKeyboardModifiers().shift
     for name in pairs(held) do
         local d = DIRS[name]
-        local base = d[3] and PAGE or STEP
-        for _ = 1, reps do
-            scroll(d[1] * base, d[2] * base)
+        if lineMode then
+            local rate = (d[3] and LINE_RATE_PAGE or LINE_RATE) * (fast and LINEMUL or 1)
+            local owed = (lineDebt[name] or 0) + rate * INTERVAL
+            local n = math.floor(owed)
+            lineDebt[name] = owed - n -- keep the remainder; it is most of a slow rate
+            if n > 0 then
+                hs.eventtap.event.newScrollEvent({ d[1] * n, d[2] * n }, {}, "line"):post()
+            end
+        else
+            local base = d[3] and PAGE or STEP
+            for _ = 1, (fast and FASTMUL or 1) do
+                scroll(d[1] * base, d[2] * base)
+            end
         end
     end
 end
@@ -217,6 +243,7 @@ end
 
 local function start()
     held = {}
+    lineDebt = {}
     -- Before anything else: the pointer decides where the scrolling lands, and
     -- showBorder() reads it too, so the indicator follows the same window.
     warpToFocus()
