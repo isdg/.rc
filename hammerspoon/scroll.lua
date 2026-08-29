@@ -58,6 +58,7 @@ local border        -- hs.canvas indicator
 local savedPos      -- pointer position to put back on exit
 local lineMode      -- true while the target scrolls by lines (a terminal)
 local lineDebt = {} -- direction -> fractional line carried to the next frame
+local shiftHeld     -- Shift state, tracked from the tap's own flagsChanged
 
 -- Aiming the pointer ---------------------------------------------------------
 -- Scroll events land on whatever is under the POINTER, which made this mode a
@@ -196,7 +197,7 @@ end
 -- two kinds of target measure scrolling differently — lines in a terminal (see
 -- LINE_RATE above), pixels everywhere else. Shift is "fast" in both.
 local function tick()
-    local fast = hs.eventtap.checkKeyboardModifiers().shift
+    local fast = shiftHeld
     for name in pairs(held) do
         local d = DIRS[name]
         if lineMode then
@@ -247,9 +248,22 @@ local function start()
     -- Before anything else: the pointer decides where the scrolling lands, and
     -- showBorder() reads it too, so the indicator follows the same window.
     warpToFocus()
+    shiftHeld = false
+    -- flagsChanged is in the list for Shift alone: it is the ONLY event a bare
+    -- modifier generates, so without it the tap never learns Shift went down
+    -- while a direction key is already held — which is exactly how it is used,
+    -- press j, then lean on Shift to go faster. Reading the flags off the events
+    -- the tap already receives also beats asking the keyboard separately, which
+    -- answers for the last event the system processed and can lag a frame.
     tap = hs.eventtap.new(
-        { hs.eventtap.event.types.keyDown, hs.eventtap.event.types.keyUp },
+        { hs.eventtap.event.types.keyDown,
+          hs.eventtap.event.types.keyUp,
+          hs.eventtap.event.types.flagsChanged },
         function(e)
+            shiftHeld = e:getFlags().shift and true or false
+            if e:getType() == hs.eventtap.event.types.flagsChanged then
+                return false -- never swallow a modifier
+            end
             local name = hs.keycodes.map[e:getKeyCode()] -- physical key, Shift-agnostic
             if name and DIRS[name] then
                 held[name] = (e:getType() == hs.eventtap.event.types.keyDown) or nil
