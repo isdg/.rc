@@ -6,6 +6,12 @@
 --
 -- Feature: a Spotlight-style translation / dictionary popup on a hotkey.
 
+-- Message port for the `hs` CLI (already on PATH via the homebrew cask). Without
+-- this the binary is installed but inert — every call answers "can't access
+-- Hammerspoon message port". Loading it makes `hs -c '<lua>'` evaluate in this
+-- config, which is the only way to test a hotkey's effects without pressing it.
+require("hs.ipc")
+
 local translate = require("translate")
 
 -- Hotkey: ⌘⌃T opens the popup. Change the mods/key here.
@@ -16,6 +22,10 @@ require("screenshot_clip").start()
 
 -- Keyboard scrolling: ⌘⇧J enters scroll mode; then jk (up/down), du (half-page),
 -- hl (left/right), hold to scroll smoothly, ⇧ for fast, esc/q/i to exit. Any app.
+-- Entering warps the pointer onto the focused window (in Ghostty, onto the
+-- focused tmux pane) so the keys scroll what you are looking at — see scroll.lua.
+local scroll = require("scroll")
+scroll.bind({ "cmd", "shift" }, "j")
 
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher
