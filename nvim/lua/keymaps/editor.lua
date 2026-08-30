@@ -79,6 +79,59 @@ for _, dir in ipairs({ "h", "j", "k", "l" }) do
         { desc = "Move split " .. ({ h = "left", j = "down", k = "up", l = "right" })[dir] })
 end
 
+-- The rest of <C-w>, bent to match the tmux layer verb for verb. tmux is the
+-- one with the tighter constraint — its keys live in a key table where a bare
+-- letter is the whole binding — so nvim moves to meet it rather than the other
+-- way round, and the pair below ends up reading identically in both.
+--
+--   HJKL  resize        v / h  split         ;  last split      o  cycle
+--
+-- Each entry displaces a <C-w> default, and each is a default already reachable
+-- another way, which is the whole reason these four were the ones to spend:
+--   HJKL  moved a window to the far edge at full height/width. That verb is
+--         gone, not relocated — <C-w><C-hjkl> above covers rearranging, and it
+--         does it without flattening the layout, which is what HJKL was
+--         usually reached for by mistake anyway.
+--   h     navigated left. Bare <C-h> has done that since the top of this file.
+--   o     was `only`. Still one word away as :only, and unlike the others it
+--         has no keyed replacement, so it is the one real loss here.
+--   ;     was unmapped.
+-- <C-w>s (split) and <C-w>p (last split) are deliberately left alone, so every
+-- displaced verb except `only` keeps its vim-native key too.
+
+-- Resize directions follow tmux's, which are the opposite of what the letters
+-- suggest to a vim reader: they name where the BORDER travels, not whether the
+-- window grows. tmux's H is resize-pane -L, pulling the right edge leftward and
+-- so shrinking the window; K is -U, lifting the bottom edge and shrinking it
+-- too. Matching that beats matching vim's own +/- intuition, since the whole
+-- point is that the fingers do not have to know which program they are in.
+local RESIZE = 5 -- default step; <C-w> has no repeat table, so 1 would be a chore
+local resize_cmds = {
+    H = "vertical resize -", -- right border left  (tmux resize-pane -L)
+    L = "vertical resize +", -- right border right (tmux resize-pane -R)
+    J = "resize +",          -- bottom border down (tmux resize-pane -D)
+    K = "resize -",          -- bottom border up   (tmux resize-pane -U)
+}
+for key, cmd in pairs(resize_cmds) do
+    map("n", "<C-w>" .. key, function()
+        -- A count means that many cells, so 20<C-w>L is one deliberate haul
+        -- rather than four presses; bare is RESIZE.
+        vim.cmd(cmd .. (vim.v.count > 0 and vim.v.count or RESIZE))
+    end, { desc = "Resize split (" .. key .. ")" })
+end
+
+-- Splits keep tmux's letters, and its inversion with them: v is side by side,
+-- h is stacked. The flags read backwards against the letters in both programs
+-- for the same reason — :vsplit and tmux's -h name different halves of the same
+-- act, the divider versus the axis it cuts along — so naming them after vim's
+-- verb (v) and vim's other verb (h, for "horizontal divider") keeps the two
+-- consistent with each other even while each is odd on its own.
+map("n", "<C-w>v", "<cmd>vsplit<CR>", { desc = "Split side by side" })
+map("n", "<C-w>h", "<cmd>split<CR>", { desc = "Split stacked" })
+
+map("n", "<C-w>;", "<C-w>p", { desc = "Last split" })
+map("n", "<C-w>o", "<C-w>w", { desc = "Cycle splits" })
+
 map("n", "<leader>+", "<cmd>resize +5<CR>", { desc = "Increase height" })
 map("n", "<leader>-", "<cmd>resize -5<CR>", { desc = "Decrease height" })
 map("n", "<leader><", "<cmd>vertical resize -5<CR>", { desc = "Decrease width" })
