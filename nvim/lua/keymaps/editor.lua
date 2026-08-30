@@ -148,11 +148,13 @@ map("n", "<C-w>o", "<C-w>w", { desc = "Cycle splits" })
 -- layout tmux is the narrower of the two.
 map("n", "<C-w>E", "<C-w>=", { desc = "Equalize splits" })
 
-map("n", "<leader>+", "<cmd>resize +5<CR>", { desc = "Increase height" })
-map("n", "<leader>-", "<cmd>resize -5<CR>", { desc = "Decrease height" })
-map("n", "<leader><", "<cmd>vertical resize -5<CR>", { desc = "Decrease width" })
-map("n", "<leader>>", "<cmd>vertical resize +5<CR>", { desc = "Increase width" })
-map("n", "<leader>=", "<C-w>=", { desc = "Equalize splits" })
+-- <leader>+ - < > = used to resize and equalize here, in exactly the steps
+-- <C-w>HJKL and <C-w>E now take. Two keys for one verb is worse than either
+-- key alone: the second is a thing to maintain, a thing to read past, and a
+-- coin flip for the fingers at the moment of use. The <C-w> set is the one
+-- kept because it is the one that matches tmux.
+-- The identical maps in vim/.vimrc stay — that config has no <C-w> parity
+-- layer, so there they are not a duplicate but the only way to resize.
 
 
 -- ─── History & clipboard ────────────────────────────────────────
