@@ -120,14 +120,19 @@ for key, cmd in pairs(resize_cmds) do
     end, { desc = "Resize split (" .. key .. ")" })
 end
 
--- Splits keep tmux's letters, and its inversion with them: v is side by side,
--- h is stacked. The flags read backwards against the letters in both programs
--- for the same reason — :vsplit and tmux's -h name different halves of the same
--- act, the divider versus the axis it cuts along — so naming them after vim's
--- verb (v) and vim's other verb (h, for "horizontal divider") keeps the two
--- consistent with each other even while each is odd on its own.
-map("n", "<C-w>v", "<cmd>vsplit<CR>", { desc = "Split side by side" })
-map("n", "<C-w>h", "<cmd>split<CR>", { desc = "Split stacked" })
+-- Splits hang off s, one level deeper, the same shape as the tmux `splits`
+-- table: <C-w>sv is side by side, <C-w>sh is stacked. v/h rather than vim's
+-- v/s because the pair is then symmetrical and names the divider — v a vertical
+-- one, h a horizontal one — instead of one letter naming the divider and the
+-- other naming the command.
+--
+-- The cost is that <C-w>s is now a prefix, so the bare builtin behind it waits
+-- out 'timeoutlen' before firing. That is a real regression for anyone reaching
+-- for <C-w>s expecting an instant stacked split, and it is why this is worth
+-- stating: the replacement is <C-w>sh, one more key and no wait. <C-w>S and
+-- <C-w>v keep their builtin meanings untouched as the instant escape hatches.
+map("n", "<C-w>sv", "<cmd>vsplit<CR>", { desc = "Split side by side" })
+map("n", "<C-w>sh", "<cmd>split<CR>", { desc = "Split stacked" })
 
 map("n", "<C-w>;", "<C-w>p", { desc = "Last split" })
 map("n", "<C-w>o", "<C-w>w", { desc = "Cycle splits" })
