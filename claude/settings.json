@@ -35,7 +35,8 @@
     "rust-analyzer-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
     "mattpocock-skills@mattpocock": true,
-    "isg-skills@isg": true
+    "isg-skills@isg": true,
+    "clangd-lsp@claude-plugins-official": true
   },
   "extraKnownMarketplaces": {
     "mattpocock": {
