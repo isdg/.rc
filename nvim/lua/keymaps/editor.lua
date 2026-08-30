@@ -137,6 +137,17 @@ map("n", "<C-w>sh", "<cmd>split<CR>", { desc = "Split stacked" })
 map("n", "<C-w>;", "<C-w>p", { desc = "Last split" })
 map("n", "<C-w>o", "<C-w>w", { desc = "Cycle splits" })
 
+-- Equalize, on tmux's letter as well as vim's. <C-w>= is the builtin and stays
+-- the primary — it is documented, universal, and the symbol says the thing —
+-- but tmux spells this E (select-layout -E), and E was free here: it is the one
+-- <C-w> letter in this whole set that displaces no default at all.
+-- The two are not quite the same verb underneath, which is worth knowing before
+-- trusting the muscle memory in both directions: vim's = evens out every window
+-- on the screen, while tmux's -E spreads only the current pane and the ones
+-- adjacent to it. On a plain two-or-three-way split they agree; on a nested
+-- layout tmux is the narrower of the two.
+map("n", "<C-w>E", "<C-w>=", { desc = "Equalize splits" })
+
 map("n", "<leader>+", "<cmd>resize +5<CR>", { desc = "Increase height" })
 map("n", "<leader>-", "<cmd>resize -5<CR>", { desc = "Decrease height" })
 map("n", "<leader><", "<cmd>vertical resize -5<CR>", { desc = "Decrease width" })
