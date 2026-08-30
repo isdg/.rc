@@ -35,6 +35,50 @@ map("n", "<C-j>", "<C-w>j", { desc = "Move to below split" })
 map("n", "<C-k>", "<C-w>k", { desc = "Move to above split" })
 map("n", "<C-l>", "<C-w>l", { desc = "Move to right split" })
 
+-- Move the split itself, the one verb vim's <C-w> has no directional form of:
+-- it offers <C-w>x (exchange with *next*) and <C-w>r (rotate), both of which
+-- make you work out where a window will land, plus <C-w>HJKL, which is a
+-- different thing entirely — that throws a window to the far edge and makes it
+-- full height/width, destroying the layout rather than swapping within it.
+--
+-- On <C-w><C-hjkl>, which costs nothing: those are builtin synonyms for
+-- <C-w>hjkl, and navigation already lives on bare <C-hjkl> above, so the
+-- synonyms are dead weight here. Spending them makes nvim read exactly like the
+-- tmux layer — hjkl goes to a split, C-hjkl drags it there — so the two editors
+-- keep one set of muscle memory between them.
+--
+-- Swapping buffers rather than windows is what vim gives us, and it needs the
+-- view carried across by hand: winsaveview is per *window*, so a bare buffer
+-- swap leaves each window looking at its old scroll position and cursor line,
+-- and the file appears to jump. Focus follows the buffer that moved, matching
+-- the tmux binding — a move you have to chase is a move you did twice.
+--
+-- No wrapping, unlike tmux: `wincmd h` at the leftmost split simply stays put,
+-- and a silent no-op reads better in a 2-D layout than a jump to the far side.
+local function move_split(dir)
+    local from = vim.api.nvim_get_current_win()
+    vim.cmd("wincmd " .. dir)
+    local to = vim.api.nvim_get_current_win()
+    if to == from then return end -- nothing that way; leave the layout alone
+
+    local from_buf = vim.api.nvim_win_get_buf(from)
+    local to_buf = vim.api.nvim_win_get_buf(to)
+    local from_view = vim.api.nvim_win_call(from, vim.fn.winsaveview)
+    local to_view = vim.api.nvim_win_call(to, vim.fn.winsaveview)
+
+    vim.api.nvim_win_set_buf(from, to_buf)
+    vim.api.nvim_win_call(from, function() vim.fn.winrestview(to_view) end)
+    vim.api.nvim_win_set_buf(to, from_buf)
+    vim.api.nvim_win_call(to, function() vim.fn.winrestview(from_view) end)
+
+    vim.api.nvim_set_current_win(to) -- follow the buffer we just moved
+end
+
+for _, dir in ipairs({ "h", "j", "k", "l" }) do
+    map("n", "<C-w><C-" .. dir .. ">", function() move_split(dir) end,
+        { desc = "Move split " .. ({ h = "left", j = "down", k = "up", l = "right" })[dir] })
+end
+
 map("n", "<leader>+", "<cmd>resize +5<CR>", { desc = "Increase height" })
 map("n", "<leader>-", "<cmd>resize -5<CR>", { desc = "Decrease height" })
 map("n", "<leader><", "<cmd>vertical resize -5<CR>", { desc = "Decrease width" })
