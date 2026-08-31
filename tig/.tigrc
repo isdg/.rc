@@ -61,9 +61,6 @@ bind main O !git checkout %(commit)
 # Create a new branch from the selected commit (prompts for branch name)
 bind main B !git checkout -b %(prompt) %(commit)
 
-# Start an interactive rebase from the selected commit
-bind main R !git rebase -i %(commit)
-
 # Push the current branch to its remote
 bind main P !git push
 

@@ -25,16 +25,49 @@ log_shell() {
     banner_log "$seg"
 }
 
-# host + session type, e.g. "isg-darwin · local" / "isg-darwin · ssh from 10.0.0.5"
+# host + session type, e.g. "isg-darwin · local"
+# / "isg-darwin · 10.0.0.4 · ssh from 10.0.0.5"
 # — who and where, so it belongs on the identity line next to the user name
 # rather than buried in the logs. Printed, not registered: .zshrc assembles the
 # info lines itself, before banner_render walks the log registry.
+#
+# The name is always THIS machine ($HOST), never the peer: on a box you sshed
+# into it names the box you landed on. Under ssh the address of this machine
+# goes between the two, so the line reads inward-out — which host, at which
+# address, reached from where.
+#
+# Both addresses come out of $SSH_CONNECTION, "<client-ip> <client-port>
+# <server-ip> <server-port>": field 3 is this end of the socket, i.e. the
+# address the client actually reached, which is the useful one on a
+# multi-homed box. No ifconfig/ip subprocess at startup — sshd already knows.
+#
+# sudo is the hard case. `Defaults env_reset` wipes SSH_CONNECTION *and*
+# SSH_TTY, so a root shell on a remote box inherits nothing and the old code
+# fell through to "local" — the one claim that is certainly false there. The
+# environment cannot be trusted back into place either: those variables are
+# plain strings, so `SSH_CONNECTION="..." sudo -s` would forge the line. utmp
+# is the answer instead — sshd wrote the entry at login, sudo cannot touch it,
+# and `who -m` reads the one for the tty on stdin. The parenthesised field is
+# the origin; a local login has none, and a tmux pane has no utmp entry at all
+# on darwin, so both fall back to saying nothing rather than guessing.
+#
+# The probe costs a fork, so it is gated on SUDO_USER, which sudo sets itself:
+# an ordinary interactive startup never reaches it and stays subprocess-free.
+# SUDO_USER also names who made the jump, and that suffix rides along on every
+# branch — under `sudo -E` the ssh vars survive and both halves are known.
 banner_host_info() {
-    local where="local"
+    local where line
     if [[ -n $SSH_CONNECTION || -n $SSH_TTY ]]; then
-        where="ssh from ${SSH_CONNECTION%% *}"
+        local -a conn=( ${=SSH_CONNECTION} )
+        where="ssh${conn[1]:+ from $conn[1]}"
+        [[ -n $conn[3] ]] && where="$conn[3] · $where"
+    elif [[ -n $SUDO_USER ]]; then
+        line=$(command who -m 2>/dev/null)
+        [[ $line == *'('*')' ]] && where="ssh from ${${line##*\(}%\)}"
+    else
+        where="local"
     fi
-    print -r -- "${HOST%%.*} · ${where}"
+    print -r -- "${HOST%%.*}${where:+ · $where}${SUDO_USER:+ · via $SUDO_USER}"
 }
 
 # tmux, one laconic line — the whole server picture as slug:sessions, with the

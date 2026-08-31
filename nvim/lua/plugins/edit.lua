@@ -24,6 +24,27 @@ return {
     {
         "isdg/zen-mode.nvim",
         config = function()
+            -- Guard for the case where vim.g.zen_height is unset. options.lua sets
+            -- it at startup, so in practice this never decides the height — it is
+            -- named once anyway so the height function and :ZenHeight's readout
+            -- cannot report different numbers.
+            local DEFAULT_HEIGHT = 0.9
+
+            -- The window options the zen float is opened with. Hoisted out of the
+            -- setup table because the width function below has to size the gutters
+            -- for THESE values rather than for whatever the window zen was opened
+            -- from happens to have -- the two drifting apart is what made the zen
+            -- line 84 columns wide: the width budgeted for a number gutter that
+            -- `number = false` here then turned off, and the text took the space.
+            -- Anything not named here is inherited, so the width function falls
+            -- back to vim.wo for those.
+            local ZEN_OPTIONS = {
+                number = false,
+                wrap = true,
+                linebreak = true,
+                breakindent = true,
+            }
+
             require("zen-mode").setup({
                 window = {
                     -- A floating window's width is the *total* width -- the
@@ -33,12 +54,16 @@ return {
                     width = function()
                         local text = 80
                         local gutter = 0
-                        if vim.wo.number or vim.wo.relativenumber then
+                        local number = ZEN_OPTIONS.number
+                        if number == nil then number = vim.wo.number end
+                        local relnumber = ZEN_OPTIONS.relativenumber
+                        if relnumber == nil then relnumber = vim.wo.relativenumber end
+                        if number or relnumber then
                             -- numberwidth, or wider if the file needs more digits
                             local digits = #tostring(vim.api.nvim_buf_line_count(0)) + 1
                             gutter = gutter + math.max(vim.o.numberwidth, digits)
                         end
-                        local sc = vim.wo.signcolumn
+                        local sc = ZEN_OPTIONS.signcolumn or vim.wo.signcolumn
                         if sc == "yes" or sc == "auto" then
                             gutter = gutter + 2
                         else
@@ -50,20 +75,16 @@ return {
                     -- Height comes from `vim.g.zen_height` so it can be
                     -- changed at runtime (see :ZenHeight below). <= 1 is a
                     -- fraction of the editor height, > 1 is a row count.
-                    -- Default 1 = full height.
+                    -- Default 0.9 leaves a margin above and below rather than
+                    -- filling the screen edge to edge.
                     height = function()
-                        local h = tonumber(vim.g.zen_height) or 1
+                        local h = tonumber(vim.g.zen_height) or DEFAULT_HEIGHT
                         local max = vim.o.lines - vim.o.cmdheight
                         if vim.o.laststatus == 3 then max = max - 1 end
                         return h <= 1 and max * h or h
                     end,
                     col_offset = -20,
-                    options = {
-                        number = false,
-                        wrap = true,
-                        linebreak = true,
-                        breakindent = true,
-                    },
+                    options = ZEN_OPTIONS,
                 },
             })
 
@@ -73,7 +94,7 @@ return {
             -- If zen mode is open, reopen it so the change is visible now.
             vim.api.nvim_create_user_command("ZenHeight", function(args)
                 if args.args == "" then
-                    vim.notify("zen height: " .. tostring(vim.g.zen_height or 1))
+                    vim.notify("zen height: " .. tostring(vim.g.zen_height or DEFAULT_HEIGHT))
                     return
                 end
                 local h = tonumber(args.args)

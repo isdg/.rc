@@ -14,10 +14,11 @@ Create a symlink from the repo tig configuration to your home directory:
 2. Key bindings
 ---------------
 
-main view:
+See keys.txt in this folder: every binding from .tigrc, the built-in keys
+they sit next to, which defaults they shadow, and what is still free.
 
-    O   — checkout the selected commit
-              git checkout %(commit)
+The live answer always comes from tig itself — press h for the help view,
+then <Enter> on a collapsed "[+] ... bindings" line to expand that keymap.
 
 
 -------------------------------------------------------------------------------

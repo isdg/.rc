@@ -1,0 +1,178 @@
+
+TIG KEY BINDINGS
+================
+
+Everything bound in ~/.rc/tig/.tigrc, plus the built-in keys worth knowing
+because our bindings sit next to them (or on top of them).
+
+Authoritative source is tig itself: press h for the help view, then <Enter>
+on a "[+] ... bindings" line to expand that keymap. This file is the same
+content, curated.
+
+
+-------------------------------------------------------------------------------
+1. How to read a binding
+------------------------
+
+Every `bind <keymap> <key> <action>` line names the view it applies to.
+Lookup order when you press a key:
+
+    view keymap  ->  generic keymap  ->  tig's built-in defaults
+
+So a `bind main D ...` beats a `bind generic D ...`, which beats tig's own D.
+
+Action prefixes:
+
+    :     internal tig command (:toggle, :goto, ...)
+    !     run external command, show output, wait for a key
+    ?     prompt for confirmation first
+    @     run silently in the background, no pause
+    !@    what our copy bindings use — runs, no output, no pause
+
+
+-------------------------------------------------------------------------------
+2. Our bindings
+---------------
+
+main view — the commit log
+                                                     [ours]
+    O    git checkout %(commit)          checkout commit, detached HEAD
+    B    git checkout -b <prompt>        new branch here, asks for the name
+    P    git push                        push current branch
+    F    git fetch --all                 fetch every remote
+    !    git revert %(commit)            new commit undoing this one
+    D    git show | delta                syntax-highlighted diff, q to return
+    Y    copy %(commit)                  hash to clipboard
+
+diff view
+    [    :toggle diff-context -3         shrink context by 3 lines
+    ]    :toggle diff-context +3         grow context by 3 lines
+
+status view
+    A    git commit --amend              amend the last commit
+    P    git push                        push current branch
+    S    git stash push                  stash all uncommitted changes
+    R    ?git checkout -- %(file)        discard changes to file  [confirms]
+    D    ?git clean -f -- %(file)        delete untracked file    [confirms]
+
+stash view
+    P    git stash pop                   apply and drop the entry
+    D    git stash drop %(stash)         drop without applying
+
+blame / refs views
+    Y    copy %(commit) / %(branch)      hash in blame, branch name in refs
+
+generic — every view
+    Y    copy %(file)                    file path; overridden in the 3 above
+    g    move-first-line                 top of view
+    G    move-last-line                  bottom of view — but see §4
+    ^F   move-page-down
+    ^B   move-page-up
+    <Space>  enter                       same as <Enter>, open selection
+
+The last five restate tig's own defaults; they are documentation, not
+behaviour changes.
+
+
+-------------------------------------------------------------------------------
+3. Built-ins next to ours
+-------------------------
+
+Not in .tigrc — tig ships these. Listed because they cover the gaps our
+bindings leave.
+
+main
+    C    ?git cherry-pick %(commit)      replay this commit onto HEAD
+    H    :goto HEAD                      jump the cursor back to HEAD
+
+status
+    C    git commit                      the plain commit, next to our A
+    u    status-update                   stage / unstage file or chunk
+    !    status-revert                   revert chunk or file changes
+    M    status-merge                    open the merge tool
+
+stage
+    u    status-update                   stage / unstage chunk
+    1    stage-update-line               stage a single line
+    2    stage-update-part               stage part of a chunk
+    \    stage-split-chunk               split the chunk under the cursor
+    [ ]  :toggle diff-context -1 / +1    still ±1 here, not our ±3
+
+stash
+    A    ?git stash apply %(stash)       apply, keep the entry
+    !    ?git stash drop %(stash)        same as our D, with a confirmation
+
+refs
+    C    ?git checkout %(branch)         switch to the branch
+    !    ?git branch -D %(branch)        force-delete the branch
+
+reflog
+    C    ?git checkout %(branch)
+    !    ?git reset --hard %(commit)
+
+generic
+    m d l L t f b r s c y p h            switch to main, diff, log, reflog,
+                                         tree, blob, blame, refs, status,
+                                         stage, stash, pager, help
+    <Tab>    focus the next view
+    <        back to the previous view state
+    o        options menu, then a toggle key
+    e        open the selection in $EDITOR
+    :        tig command prompt
+    q / Q    close view / quit everything
+
+
+-------------------------------------------------------------------------------
+4. What our bindings shadow
+---------------------------
+
+Each entry below is a default we gave up. None of it is accidental, but it
+is the reason a key sometimes "does nothing" in one view and works in
+another.
+
+    main D      loses generic `D :toggle date`
+    main F      loses generic `F :toggle file-name`
+    status A    loses generic `A :toggle author`
+    status D    loses generic `D :toggle date`
+    status R    loses generic `R refresh` — use <F5> in the status view
+    status S    loses generic `S view-status` — `s` still gets you there
+    main O      loses generic `O maximize`
+
+All of those toggles remain reachable through the options menu: press o,
+then the toggle's own key (o d for dates, o A for author, and so on).
+
+Two things that are not our doing but read like bugs:
+
+    G in main   toggles the revision graph, it does not jump to the last
+                line. tig binds `G :toggle commit-title-graph` in the main
+                keymap, and a view keymap outranks our generic G. Use <End>
+                to reach the bottom of the log.
+
+    R in main   is refresh again. It used to be `git rebase -i` here; that
+                binding was removed because shadowing refresh on the view
+                you refresh most often cost more than it gave. Rebase from
+                the shell.
+
+
+-------------------------------------------------------------------------------
+5. Free keys in main
+--------------------
+
+Unclaimed in the main view by tig, by the generic keymap, and by .tigrc:
+
+    letters      a  u  w  x  E  M  U  V  Z
+    digits       0-9
+    symbols      +  =  ;  '  "  .  _  (  )  [  ]  {  }  \  @  *  &  >
+
+Taken in main, so binding one of these costs you something (§4 lists what):
+
+    A B C D F G H I J K L N O P Q R S T W X Y
+    b c d e f g h i j k l m n o p q r s t v y z
+    ! # $ % ^ ~ | , < - / ? : <Space>
+
+A key taken in another keymap is still free here — `[`, `]` and `\` are
+bound in diff and stage, `@` in diff, stage and pager, and none of them
+reach the main view.
+
+To re-derive this list after editing .tigrc: open tig, press h, expand the
+generic and main sections, and read off both.

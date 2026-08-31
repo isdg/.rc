@@ -56,5 +56,25 @@ vim.api.nvim_create_autocmd("LspAttach", {
         map("n", "K", vim.lsp.buf.hover, opts)
         map("n", "]d", vim.diagnostic.goto_next, opts)
         map("n", "[d", vim.diagnostic.goto_prev, opts)
+
+        -- <leader>df: act on what dk just read. It completes the <leader>d verb
+        -- set — k reads the diagnostic, l lists them all, f fixes it — so the
+        -- thing you do *about* a diagnostic sits with the two that show it to
+        -- you, and the whole group stays one key apart. Named for the intent
+        -- (fix) rather than the LSP's word for the mechanism (code action):
+        -- the list it opens is reached because something is wrong on this line.
+        --
+        -- On LspAttach rather than global, unlike its dk/dl siblings, and the
+        -- split is not arbitrary: those two are global precisely because a
+        -- diagnostic need not come from a language server, while a code action
+        -- by definition does. Buffer-local also means the key is simply absent
+        -- where nothing could answer it, instead of opening an empty menu.
+        --
+        -- The picker, not code_action({ apply = true }): the first action is not
+        -- reliably the fix you want — "add import" and "ignore this rule" sit
+        -- side by side in the same list — and silently applying an edit you did
+        -- not choose is worse than one extra keypress.
+        lmap("n", "df", vim.lsp.buf.code_action,
+            vim.tbl_extend("force", opts, { desc = "Fix diagnostic (code action)" }))
     end,
 })

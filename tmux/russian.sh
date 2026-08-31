@@ -5,9 +5,13 @@
 # mode. Without this, switching the layout to Russian silently disarms tmux:
 # prefix-s stops opening the session tree, hjkl stops moving in copy mode.
 #
-# Two tables, matching the two halves of the editor story:
+# Three tables, matching the two halves of the editor story plus the layer:
 #   prefix        the <leader> equivalent — every prefix-<letter> binding
 #   copy-mode-vi  the normal-mode equivalent — hjkl, v, y, w, b, G, ...
+#   plugins       the second layer (C-b C-b), whose letters need twins for the
+#                 same reason the prefix ones do — its C-b entry key does not,
+#                 being a control combination.
+#   splits        the layer's s sub-table, one level deeper, same reasoning.
 #
 # Only single Latin letters are twinned. C-b, M-1, Space, arrows and the
 # punctuation bindings are deliberately skipped: terminals derive control and
@@ -46,7 +50,7 @@ PAIRS=$(echo $PAIRS)
 conf="${TMPDIR:-/tmp}/tmux-russian.$$"
 : > "$conf"
 
-for table in prefix copy-mode-vi; do
+for table in prefix copy-mode-vi plugins splits; do
     tmux list-keys -T "$table" | awk -v pairs="$PAIRS" '
         BEGIN {
             n = split(pairs, p, /[ \t\n]+/)
