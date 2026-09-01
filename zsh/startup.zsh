@@ -3,15 +3,17 @@
 # Most register a dim log line below the banner: banner_render walks
 # BANNER_LOG_FUNCS top-to-bottom and each listed func calls banner_log "text"
 # (and may do the startup work that produces it — banner_run demotes a noisy
-# command's output into the logs, e.g. log_ssh's ssh-agent handling).
+# command's whole output into the logs when a line of its own won't do).
 # Add a func below and list it in the registry; remove a line to silence it.
 #
-# banner_host_info is the exception: it prints instead of registering, because
-# it feeds the first info line beside the mascot rather than the logs.
+# banner_host_info and banner_net_info are the exceptions: they print instead
+# of registering, because they feed the info lines beside the mascot rather
+# than the logs.
 
 BANNER_LOG_FUNCS=(
     log_shell
     log_tmux
+    log_ssh
 )
 
 # zsh version + startup time, e.g. "zsh 5.9 · 361 ms".
@@ -197,19 +199,77 @@ log_tmux() {
     return 0    # the loop above may run zero times; don't leak its status
 }
 
-# ssh-agent: reuse a reachable agent, add the key only if missing —
-# was a noisy "Agent pid" / "Identity added" popping on every shell
+# Keys log_ssh keeps in the agent, as paths to the private halves. Empty here
+# on purpose: which key a machine holds is a property of that machine, not of
+# this config, so a branch or a machine-local file sets it —
+#
+#     SSH_KEYS=( ~/.ssh/delos-new )
+#
+# With the list empty log_ssh still reports the agent but touches no keys, so
+# it is safe to register everywhere.
+typeset -ga SSH_KEYS=()
+
+# ssh-agent: reuse a reachable agent, add only the keys it is missing —
+# was a noisy "Agent pid" / "Identity added" popping on every shell.
+#
+# One `ssh-add -l` answers both questions asked of the agent: exit 2 means none
+# is reachable, and the output is the fingerprint list every key below is
+# checked against. So the common case — agent up, everything already loaded —
+# costs one fork plus one ssh-keygen per configured key.
+#
+# The agent line prints unconditionally, keys or none: whether an agent is even
+# there is worth knowing on a box you just sshed into, and it is the line that
+# explains a later "Permission denied (publickey)".
+#
+# ssh-add is run with askpass forced and pointed at a binary that fails, which
+# is what keeps this safe to register everywhere: on an encrypted key an
+# unguarded ssh-add sits on "Enter passphrase for …" and wedges the shell
+# before the prompt ever appears — verified under a pty, it waits forever.
+# Forced askpass makes it fail instead, and one `ssh-keygen -y -P ""` then
+# separates "encrypted" from a real error so the line can say which. Loading an
+# encrypted key stays a deliberate act you do by hand.
 log_ssh() {
-    local key=~/.ssh/delos-new fp
-    ssh-add -l &>/dev/null
-    if (( $? == 2 )); then              # no agent reachable → start one
-        eval "$(ssh-agent -s)" >/dev/null
-        banner_log "ssh-agent started · pid $SSH_AGENT_PID"
+    local key name have out line agent note="" fp type
+    local -i st n
+    have=$(ssh-add -l 2>/dev/null); st=$?
+    if (( st == 2 )); then              # no agent reachable → start one
+        eval "$(ssh-agent -s)" >/dev/null 2>&1
+        have=$(ssh-add -l 2>/dev/null); st=$?
+        (( st == 2 )) && { banner_log "ssh-agent · unreachable"; return 0 }
+        # a flag, not $SSH_AGENT_PID: that variable is often already exported
+        # by an agent started long ago, and a reused agent must not claim it
+        # has just been started
+        note=" · started · pid $SSH_AGENT_PID"
     fi
-    [[ -f $key.pub ]] && fp=$(ssh-keygen -lf $key.pub 2>/dev/null | awk '{print $2}')
-    if [[ -n $fp ]] && ssh-add -l 2>/dev/null | command grep -qF "$fp"; then
-        banner_log "ssh · delos-new ✓"
-    else
-        banner_run ssh-add $key
+    if (( st == 0 )); then
+        local -a fps=( ${(f)have} ); n=${#fps}
+        agent="$n key"; (( n == 1 )) || agent+="s"
+    else                                # exit 1 — agent is up but holds nothing
+        agent="no keys"
     fi
+    banner_log "ssh-agent$note · $agent"
+
+    for key in $SSH_KEYS; do
+        name=${key:t}
+        [[ -r $key ]] || { banner_log "ssh · $name · no key at ${key/#$HOME/~}"; continue }
+        # "256 SHA256:x2/Eb39… comment (ED25519)" — bits, fingerprint and type
+        # from the one call, so naming the key costs nothing extra. The
+        # fingerprint is the only half that distinguishes these: every key here
+        # carries the same comment.
+        local -a id=( ${(z)"$(ssh-keygen -lf $key.pub 2>/dev/null)"} )
+        fp=${id[2]} type=${${id[-1]#\(}%\)}
+        local tag="${(L)type}${fp:+ ${fp[1,14]}}"
+        if [[ -n $fp && $have == *$fp* ]]; then
+            banner_log "ssh · $name · $tag · loaded"
+        elif out=$(SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=/usr/bin/false DISPLAY= \
+                   ssh-add $key 2>&1); then
+            banner_log "ssh · $name · $tag · added"
+        elif ! ssh-keygen -y -P "" -f $key >/dev/null 2>&1; then
+            banner_log "ssh · $name · $tag · needs passphrase"
+        else
+            banner_log "ssh · $name · $tag · ssh-add failed"
+            for line in ${(f)out}; do banner_log "ssh · $name · $line"; done
+        fi
+    done
+    return 0
 }
