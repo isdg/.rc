@@ -205,8 +205,8 @@ log_tmux() {
 #
 #     SSH_KEYS=( ~/.ssh/delos-new )
 #
-# With the list empty log_ssh still reports the agent but touches no keys, so
-# it is safe to register everywhere.
+# With the list empty log_ssh reports the agent and stops there — no key is
+# touched and no agent is started — so it is safe to register everywhere.
 typeset -ga SSH_KEYS=()
 
 # ssh-agent: reuse a reachable agent, add only the keys it is missing —
@@ -229,12 +229,18 @@ typeset -ga SSH_KEYS=()
 # separates "encrypted" from a real error so the line can say which. Loading an
 # encrypted key stays a deliberate act you do by hand.
 log_ssh() {
-    local key name have out line agent note="" fp type
+    local key name have out line agent note="" fp type tag
     local -i st n
-    have=$(ssh-add -l 2>/dev/null); st=$?
-    if (( st == 2 )); then              # no agent reachable → start one
-        eval "$(ssh-agent -s)" >/dev/null 2>&1
-        have=$(ssh-add -l 2>/dev/null); st=$?
+    have=$(command ssh-add -l 2>/dev/null); st=$?
+    if (( st == 2 )); then              # no agent reachable
+        # Starting one is only worth a daemon when there is a key to put in it.
+        # This function runs at every login on every box, and nothing ever
+        # reaps an agent, so an unconditional start strands one per shell that
+        # did not inherit a socket. With no keys configured there is nothing to
+        # hold, so say what is true and start nothing.
+        (( ${#SSH_KEYS} )) || { banner_log "ssh-agent · not running"; return 0 }
+        eval "$(command ssh-agent -s)" >/dev/null 2>&1
+        have=$(command ssh-add -l 2>/dev/null); st=$?
         (( st == 2 )) && { banner_log "ssh-agent · unreachable"; return 0 }
         # a flag, not $SSH_AGENT_PID: that variable is often already exported
         # by an agent started long ago, and a reused agent must not claim it
@@ -256,18 +262,21 @@ log_ssh() {
         # from the one call, so naming the key costs nothing extra. The
         # fingerprint is the only half that distinguishes these: every key here
         # carries the same comment.
-        local -a id=( ${(z)"$(ssh-keygen -lf $key.pub 2>/dev/null)"} )
+        local -a id=( ${(z)"$(command ssh-keygen -lf $key.pub 2>/dev/null)"} )
         fp=${id[2]} type=${${id[-1]#\(}%\)}
-        local tag="${(L)type}${fp:+ ${fp[1,14]}}"
+        # separator folded in, so a key whose .pub is missing reads
+        # "ssh · name · added" rather than growing an empty field
+        tag="${(L)type}${fp:+ ${fp[1,14]}}"
+        tag=${tag:+ · $tag}
         if [[ -n $fp && $have == *$fp* ]]; then
-            banner_log "ssh · $name · $tag · loaded"
+            banner_log "ssh · $name$tag · loaded"
         elif out=$(SSH_ASKPASS_REQUIRE=force SSH_ASKPASS=/usr/bin/false DISPLAY= \
-                   ssh-add $key 2>&1); then
-            banner_log "ssh · $name · $tag · added"
-        elif ! ssh-keygen -y -P "" -f $key >/dev/null 2>&1; then
-            banner_log "ssh · $name · $tag · needs passphrase"
+                   command ssh-add $key 2>&1); then
+            banner_log "ssh · $name$tag · added"
+        elif ! command ssh-keygen -y -P "" -f $key >/dev/null 2>&1; then
+            banner_log "ssh · $name$tag · needs passphrase"
         else
-            banner_log "ssh · $name · $tag · ssh-add failed"
+            banner_log "ssh · $name$tag · ssh-add failed"
             for line in ${(f)out}; do banner_log "ssh · $name · $line"; done
         fi
     done
