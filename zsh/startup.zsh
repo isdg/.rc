@@ -25,49 +25,83 @@ log_shell() {
     banner_log "$seg"
 }
 
-# host + session type, e.g. "isg-darwin · local"
-# / "isg-darwin · 10.0.0.4 · ssh from 10.0.0.5"
-# — who and where, so it belongs on the identity line next to the user name
-# rather than buried in the logs. Printed, not registered: .zshrc assembles the
-# info lines itself, before banner_render walks the log registry.
+# The ssh origin recovered from utmp, computed at most once.
+#
+# sudo is the hard case for both info lines below. `Defaults env_reset` wipes
+# SSH_CONNECTION *and* SSH_TTY, so a root shell on a remote box inherits
+# nothing and naive code falls through to "local" — the one claim that is
+# certainly false there. The environment cannot be trusted back into place
+# either: those variables are plain strings, so `SSH_CONNECTION="..." sudo -s`
+# would forge the line. utmp is the answer instead — sshd wrote the entry at
+# login, sudo cannot touch it, and `who -m` reads the one for the tty on stdin.
+# The parenthesised field is the origin; a local login has none, and a tmux
+# pane has no utmp entry at all on darwin, so both yield "" and the callers
+# fall back to saying nothing rather than guessing.
+#
+# The probe costs a fork and both banner_host_info and banner_net_info want the
+# same answer, so it is memoised — one fork per login, not two. Callers gate it
+# on SUDO_USER, which sudo sets itself: an ordinary interactive startup never
+# reaches here and stays subprocess-free.
+_banner_sudo_origin() {
+    if (( ! ${+_banner_sudo_origin_done} )); then
+        typeset -g _banner_sudo_origin_done=1 _banner_sudo_origin=
+        local line=$(command who -m 2>/dev/null)
+        [[ $line == *'('*')' ]] && typeset -g _banner_sudo_origin=${${line##*\(}%\)}
+    fi
+    print -r -- "$_banner_sudo_origin"
+}
+
+# host + session kind, e.g. "isg-darwin · local" / "isg-darwin · ssh"
+# — who and what kind of session, so it belongs on the identity line next to
+# the user name rather than buried in the logs. Printed, not registered:
+# .zshrc assembles the info lines itself, before banner_render walks the log
+# registry.
 #
 # The name is always THIS machine ($HOST), never the peer: on a box you sshed
-# into it names the box you landed on. Under ssh the address of this machine
-# goes between the two, so the line reads inward-out — which host, at which
-# address, reached from where.
+# into it names the box you landed on. Deliberately address-free — the numbers
+# live on the line below, so this one answers "who and what" and never makes
+# you read an IP to find out you are simply at home.
 #
-# Both addresses come out of $SSH_CONNECTION, "<client-ip> <client-port>
-# <server-ip> <server-port>": field 3 is this end of the socket, i.e. the
-# address the client actually reached, which is the useful one on a
-# multi-homed box. No ifconfig/ip subprocess at startup — sshd already knows.
-#
-# sudo is the hard case. `Defaults env_reset` wipes SSH_CONNECTION *and*
-# SSH_TTY, so a root shell on a remote box inherits nothing and the old code
-# fell through to "local" — the one claim that is certainly false there. The
-# environment cannot be trusted back into place either: those variables are
-# plain strings, so `SSH_CONNECTION="..." sudo -s` would forge the line. utmp
-# is the answer instead — sshd wrote the entry at login, sudo cannot touch it,
-# and `who -m` reads the one for the tty on stdin. The parenthesised field is
-# the origin; a local login has none, and a tmux pane has no utmp entry at all
-# on darwin, so both fall back to saying nothing rather than guessing.
-#
-# The probe costs a fork, so it is gated on SUDO_USER, which sudo sets itself:
-# an ordinary interactive startup never reaches it and stays subprocess-free.
-# SUDO_USER also names who made the jump, and that suffix rides along on every
-# branch — under `sudo -E` the ssh vars survive and both halves are known.
+# SUDO_USER names who made the jump and rides along on every branch. Under sudo
+# on a local box the origin probe finds no parenthesis, so the line says only
+# "isg-darwin · via isg" — no session kind, because utmp cannot prove one.
 banner_host_info() {
-    local where line
+    local where
     if [[ -n $SSH_CONNECTION || -n $SSH_TTY ]]; then
-        local -a conn=( ${=SSH_CONNECTION} )
-        where="ssh${conn[1]:+ from $conn[1]}"
-        [[ -n $conn[3] ]] && where="$conn[3] · $where"
+        where="ssh"
     elif [[ -n $SUDO_USER ]]; then
-        line=$(command who -m 2>/dev/null)
-        [[ $line == *'('*')' ]] && where="ssh from ${${line##*\(}%\)}"
+        [[ -n $(_banner_sudo_origin) ]] && where="ssh"
     else
         where="local"
     fi
     print -r -- "${HOST%%.*}${where:+ · $where}${SUDO_USER:+ · via $SUDO_USER}"
+}
+
+# the two addresses, e.g. "100.81.165.60 · ssh from 100.70.55.75" — this end of
+# the connection first, then the peer, so the line reads inward-out: at which
+# address, reached from where. Second info line, directly under the identity.
+#
+# Both come out of $SSH_CONNECTION, "<client-ip> <client-port> <server-ip>
+# <server-port>": field 3 is this end of the socket, i.e. the address the
+# client actually reached, which is the useful one on a multi-homed box. No
+# ifconfig/ip subprocess at startup — sshd already knows.
+#
+# Prints nothing on a local login, and .zshrc then skips the line entirely:
+# there is no peer to name, and this machine's own address would cost a fork to
+# learn — too much for a number you did not ask for. Under sudo only the origin
+# survives (utmp records where the login came from, not which local address it
+# landed on), so the line degrades to "ssh from <origin>" rather than lying
+# about this end.
+banner_net_info() {
+    local here there
+    if [[ -n $SSH_CONNECTION ]]; then
+        local -a conn=( ${=SSH_CONNECTION} )
+        here=$conn[3] there=$conn[1]
+    elif [[ -n $SUDO_USER ]]; then
+        there=$(_banner_sudo_origin)
+    fi
+    [[ -z $here && -z $there ]] && return 0
+    print -r -- "${here}${here:+${there:+ · }}${there:+ssh from $there}"
 }
 
 # tmux, one laconic line — the whole server picture as slug:sessions, with the
