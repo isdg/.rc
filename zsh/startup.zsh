@@ -112,28 +112,69 @@ banner_net_info() {
 # nothing and is skipped, so only live servers are listed, socket order.
 # list-sessions prints a client count per session — 0 means detached, and a
 # session held by two windows scores two stars: "default:9(rc**)".
+# A client attached over ssh spends a "#" instead, so "misc*#" is one local
+# window plus one remote one and "work#" is a session nobody here is watching.
 # The server this very shell sits in gets a leading star — "*default:10(rc*)"
 # — so the picture says which of several servers you are actually inside.
 # $TMUX is "<socket>,<pid>,<session>"; both sides go through :A because
 # /tmp is a symlink on darwin and the glob and $TMUX spell it differently.
 # Silent when tmux is absent or no server is alive.
+#
+# Remoteness is not a tmux fact: none of the #{client_*} formats expose the
+# peer, so it comes from utmp the same way banner_host_info gets it — match
+# #{client_tty} against `who`, whose parenthesised field is the origin. That
+# costs one fork for `who` plus one list-clients per live server, so the whole
+# lookup is skipped when `who` shows nobody logged in from elsewhere, which is
+# every ordinary local login: one fork, and both the "#" and the per-host lines
+# below stay quiet.
 log_tmux() {
     (( $+commands[tmux] )) || return 0
-    local sock line mark here self
+    local sock line mark here self tty sess host
     local -a sessions attached servers
+    # rsess is host -> sessions and spans every server, so a box attached to
+    # sessions on two of them is named once; rcount is per server, since
+    # session names only mean anything inside one.
+    local -A origin rcount rsess
     [[ -n $TMUX ]] && here=${${TMUX%%,*}:A}
+    # tty -> origin, remote logins only. Empty means nobody is on from
+    # elsewhere, and every list-clients call below is then pointless.
+    for line in ${(f)"$(command who 2>/dev/null)"}; do
+        [[ $line == *'('*')' ]] || continue
+        origin[${${=line}[2]}]=${${line##*\(}%\)}
+    done
     for sock in ${TMUX_TMPDIR:-/tmp}/tmux-${UID}/*(=N); do
         # "<attached> <name>" per session — the count leads so a name
         # containing spaces still survives the ${line#* } split below.
         sessions=( ${(f)"$(command tmux -S $sock list-sessions \
             -F '#{session_attached} #{session_name}' 2>/dev/null)"} )
         (( ${#sessions} )) || continue
+        rcount=()
+        if (( ${#origin} )); then
+            # tty leads here for the same reason the count leads above: a tty
+            # never contains a space, a session name may.
+            for line in ${(f)"$(command tmux -S $sock list-clients \
+                -F '#{client_tty} #{client_session}' 2>/dev/null)"}; do
+                tty=${line%% *} sess=${line#* }
+                host=${origin[${tty:t}]}
+                [[ -n $host ]] || continue
+                (( rcount[$sess]++ ))
+                # two windows from one box are two marks but one mention
+                [[ ,${rsess[$host]}, == *,$sess,* ]] \
+                    || rsess[$host]+="${rsess[$host]:+,}$sess"
+            done
+        fi
         attached=()
         for line in $sessions; do
             # #{session_attached} is a client COUNT, not a flag, so spend one
-            # star per client: two windows on the same session read "rc**".
-            local -i n=${line%% *}
-            (( n )) && attached+=( "${line#* }${(l:n::*:)}" )
+            # mark per client: two windows on the same session read "rc**".
+            local -i n=${line%% *} r
+            sess=${line#* }
+            (( n )) || continue
+            r=${rcount[$sess]:-0}
+            # clamp: list-sessions and list-clients are two calls, so a client
+            # that attached between them would otherwise overrun the count
+            (( r > n )) && r=n
+            attached+=( "${sess}${(l:n-r::*:)}${(l:r::#:)}" )
         done
         mark=""
         (( ${#attached} )) && mark="(${(j:,:)attached})"
@@ -143,6 +184,17 @@ log_tmux() {
     done
     (( ${#servers} )) || return 0
     banner_log "tmux · ${(j: :)servers}"
+    # One line per host, naming what the "#" above can only point at, and
+    # nothing at all when every client is local. Host-first because a box you
+    # sshed in from usually holds several sessions, so this collapses the
+    # repetition the other pivot duplicates; one line each because the list
+    # then grows downward instead of running off the right edge — five clients
+    # on one line came to 92 columns. (ko) for a stable order: zsh does not
+    # promise one for an associative array's keys.
+    for host in ${(ko)rsess}; do
+        banner_log "tmux · remote · ${rsess[$host]//,/, } ← $host"
+    done
+    return 0    # the loop above may run zero times; don't leak its status
 }
 
 # ssh-agent: reuse a reachable agent, add the key only if missing —
