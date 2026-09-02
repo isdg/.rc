@@ -78,14 +78,25 @@ autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
 
 # minimal git_prompt_info — the one oh-my-zsh function the theme uses
+#
+# --exact-match on the tag, so the field is empty unless HEAD *is* the tag: it
+# shows up on a release commit and disappears again the moment you commit past
+# one. Plain `git describe` would always answer, but with "v1.4.2-7-gabc123",
+# which is a hash in the prompt nobody asked for.
+#
+# That is a third git call on every prompt in every repo, costing roughly what
+# the status --porcelain above it does. If it ever shows, moving the describe
+# inside the `||` branch limits it to a detached HEAD — which is when you are
+# most likely on a tag anyway — at no cost on a branch.
 git_prompt_info() {
-    local ref
+    local ref tag
     ref=$(command git symbolic-ref --short HEAD 2>/dev/null) ||
     ref=$(command git rev-parse --short HEAD 2>/dev/null) || return 0
+    tag=$(command git describe --tags --exact-match HEAD 2>/dev/null)
     local state=$ZSH_THEME_GIT_PROMPT_CLEAN
     [[ -n $(command git status --porcelain 2>/dev/null | head -1) ]] &&
         state=$ZSH_THEME_GIT_PROMPT_DIRTY
-    echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${state}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
+    echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${tag:+${ZSH_THEME_GIT_PROMPT_TAG_PREFIX}${tag}${ZSH_THEME_GIT_PROMPT_TAG_SUFFIX}}${state}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
 }
 
 source "$ISGRC/zsh/isg.zsh-theme"
