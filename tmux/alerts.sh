@@ -27,21 +27,38 @@ set -eu
 # tmux round-trip per window.
 fmt='#{session_name}:#{window_index}	#{window_name}	#{window_activity_flag}	#{window_silence_flag}	#{window_bell_flag}	#{monitor-activity}	#{monitor-silence}	#{window_panes}'
 
+# The status trails the name rather than leading the row. Most windows are not
+# armed most of the time, so a leading status column is a blank gutter down the
+# whole list; putting it last leaves the common case looking like omni's window
+# picker and lets an alert stick out to the right of it.
+#
+# Column widths come from the data, in END, because they cannot be known before
+# the last row is read — hardcoding them let agents-livekit-stack:2 run into its
+# own window name.
 list=$(tmux list-windows -a -F "$fmt" | awk -F'\t' '
 {
     target = $1; name = $2
-    act = $3; sil = $4; bel = $5; mon_a = $6; mon_s = $7; panes = $8
+    act = $3; sil = $4; bel = $5; mon_a = $6; mon_s = $7
 
     # Silence outranks activity for the same reason the status bar does it:
     # both flags stay raised once set, and a window that has stopped should
     # say so rather than report the burst before it.
-    if (bel == 1)      { rank = 0; sym = "!"; what = "bell" }
-    else if (sil == 1) { rank = 1; sym = "~"; what = "stopped" }
-    else if (act == 1) { rank = 2; sym = "*"; what = "running" }
-    else if (mon_a == 1 || mon_s + 0 > 0) { rank = 3; sym = "\xc2\xb7"; what = "watching" }
-    else               { rank = 4; sym = " "; what = "" }
+    if (bel == 1)      { r = 0; s = "!"; w = "bell" }
+    else if (sil == 1) { r = 1; s = "~"; w = "stopped" }
+    else if (act == 1) { r = 2; s = "*"; w = "running" }
+    else if (mon_a == 1 || mon_s + 0 > 0) { r = 3; s = "\xc2\xb7"; w = "watching" }
+    else               { r = 4; s = "";  w = "" }
 
-    printf "%d\t%s\t%s %-9s %-22s %s\n", rank, target, sym, what, target, name
+    n++; rk[n] = r; tg[n] = target; nm[n] = name; sy[n] = s; wh[n] = w
+    if (length(target) > tw) tw = length(target)
+    if (length(name)   > nw) nw = length(name)
+}
+END {
+    for (i = 1; i <= n; i++) {
+        line = sprintf("%-*s  %-*s  %s %s", tw, tg[i], nw, nm[i], sy[i], wh[i])
+        sub(/ +$/, "", line)
+        printf "%d\t%s\t%s\n", rk[i], tg[i], line
+    }
 }' | sort -k1,1n | cut -f2-)
 
 [ -n "$list" ] || { printf 'no windows\n'; sleep 1; exit 0; }
