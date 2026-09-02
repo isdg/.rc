@@ -96,7 +96,10 @@ git_prompt_info() {
     local state=$ZSH_THEME_GIT_PROMPT_CLEAN
     [[ -n $(command git status --porcelain 2>/dev/null | head -1) ]] &&
         state=$ZSH_THEME_GIT_PROMPT_DIRTY
-    echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${tag:+${ZSH_THEME_GIT_PROMPT_TAG_PREFIX}${tag}${ZSH_THEME_GIT_PROMPT_TAG_SUFFIX}}${state}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
+    # State before tag: a tag is arbitrarily long, and behind it the */= would
+    # sit at a different column in every repo. In front of it the marker stays
+    # a fixed distance from the branch name, where the eye already is.
+    echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${state}${tag:+${ZSH_THEME_GIT_PROMPT_TAG_PREFIX}${tag}${ZSH_THEME_GIT_PROMPT_TAG_SUFFIX}}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
 }
 
 source "$ISGRC/zsh/isg.zsh-theme"
