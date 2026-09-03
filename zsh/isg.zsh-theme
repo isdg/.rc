@@ -101,6 +101,10 @@ ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
 # no opinion about U+2714.
 ZSH_THEME_GIT_PROMPT_DIRTY=" %{$fg[red]%}*%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg[green]%}=%{$reset_color%}"
+# Ahead of / behind the upstream. Yellow for work you have not pushed, since it
+# is the one that is yours to act on; blue for commits waiting to come down.
+ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg[yellow]%}"
+ZSH_THEME_GIT_PROMPT_BEHIND="%{$fg[blue]%}"
 ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[cyan]%}§%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%}✚%{$reset_color%}"
 
