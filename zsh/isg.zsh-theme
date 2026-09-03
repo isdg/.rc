@@ -101,11 +101,6 @@ ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
 # no opinion about U+2714.
 ZSH_THEME_GIT_PROMPT_DIRTY=" %{$fg[red]%}*%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg[green]%}=%{$reset_color%}"
-# The tag HEAD sits exactly on, if any — yellow because that is what git itself
-# paints tags in `log --decorate`. Split into a prefix/suffix pair so the @ and
-# the colour live with the other prompt pieces rather than in git_prompt_info.
-ZSH_THEME_GIT_PROMPT_TAG_PREFIX=" %{$fg[yellow]%}@"
-ZSH_THEME_GIT_PROMPT_TAG_SUFFIX="%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[cyan]%}§%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%}✚%{$reset_color%}"
 
