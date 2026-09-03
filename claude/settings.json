@@ -56,7 +56,7 @@
   "alwaysThinkingEnabled": true,
   "effortLevel": "xhigh",
   "autoUpdatesChannel": "stable",
-  "tui": "fullscreen",
+  "tui": "default",
   "voice": {
     "enabled": true,
     "mode": "hold"
