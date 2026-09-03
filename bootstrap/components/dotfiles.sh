@@ -2,6 +2,90 @@
 # Component: Link dotfiles (shared)
 # Requires: DOTFILES_DIR to be set
 
+# Every plain "link this path to that path" dotfile, one `label|kind|src|dst`
+# line each. A function rather than an array because the entries need runtime
+# resolution: $HOME, the Darwin-vs-XDG split for nom, and the guards that drop
+# an entry whose source this checkout does not carry.
+#
+# link_dotfiles, ensure_dotfiles and the bootstrap journal all read this one
+# list, so they cannot drift apart — which they had: ensure_dotfiles used to
+# verify a strict subset of what link_dotfiles wrote.
+#
+# Deliberately not here, because they are not a straight a->b link: the vim
+# colors directory with its per-file fallback, the theme mode file, and the
+# generated *-active files inside the repo. Those stay hand-written below.
+_dotfile_links() {
+    local d="${DOTFILES_DIR:-$HOME/.rc}"
+
+    echo ".zshrc|file|$d/zsh/.zshrc|$HOME/.zshrc"
+    echo ".zshenv|file|$d/zsh/.zshenv|$HOME/.zshenv"
+    echo ".vimrc|file|$d/vim/.vimrc|$HOME/.vimrc"
+    echo ".tmux.conf|file|$d/tmux/.tmux.conf|$HOME/.tmux.conf"
+    echo ".gitconfig|file|$d/.gitconfig|$HOME/.gitconfig"
+    echo "nvim config|dir|$d/nvim|$HOME/.config/nvim"
+    echo "ghostty config|dir|$d/ghostty|$HOME/.config/ghostty"
+
+    # coc.nvim only ever reads ~/.vim/coc-settings.json, so that single file is
+    # linked rather than the directory around it. The same-inode case — ~/.vim
+    # *being* the repo's vim/.vim — is handled by _link_state, which reports it
+    # as `ok` instead of trying to back the repo's own file up.
+    if [ -f "$d/vim/.vim/coc-settings.json" ]; then
+        echo "coc-settings.json|file|$d/vim/.vim/coc-settings.json|$HOME/.vim/coc-settings.json"
+    fi
+
+    # Carries the custom vs_dark/vs_light preview themes.
+    if [ -d "$d/bat" ]; then
+        echo "bat config|dir|$d/bat|$HOME/.config/bat"
+    fi
+
+    # macOS only; carries the translation popup.
+    if [ -d "$d/hammerspoon" ] && [ "$(uname)" = "Darwin" ]; then
+        echo "hammerspoon|dir|$d/hammerspoon|$HOME/.hammerspoon"
+    fi
+
+    # k9s never writes into skins/, so symlinking just that subdir keeps its
+    # runtime state (logs, clusters/) out of the repo. plugins.yaml is the
+    # log-helper pair (snapshot→nvim, stream→tmux); k9s only reads it, so a
+    # per-file symlink is safe. Both used to clobber without even a [BACKUP]
+    # line; going through _relink is what fixed that.
+    if [ -d "$d/k9s/skins" ]; then
+        local k9s
+        if [ "$(uname)" = "Darwin" ]; then
+            k9s="$HOME/Library/Application Support/k9s"
+        else
+            k9s="${XDG_CONFIG_HOME:-$HOME/.config}/k9s"
+        fi
+        echo "k9s skins|dir|$d/k9s/skins|$k9s/skins"
+        if [ -f "$d/k9s/plugins.yaml" ]; then
+            echo "k9s plugins.yaml|file|$d/k9s/plugins.yaml|$k9s/plugins.yaml"
+        fi
+    fi
+
+    # nom (RSS reader): macOS uses Library/Application Support, Linux XDG.
+    if [ -f "$d/nom/config.yml" ]; then
+        if [ "$(uname)" = "Darwin" ]; then
+            echo "nom config.yml|file|$d/nom/config.yml|$HOME/Library/Application Support/nom/config.yml"
+        else
+            echo "nom config.yml|file|$d/nom/config.yml|${XDG_CONFIG_HOME:-$HOME/.config}/nom/config.yml"
+        fi
+    fi
+
+    # settings.json.local stays untouched — it is the per-machine override that
+    # shouldn't live in the repo.
+    if [ -f "$d/claude/settings.json" ]; then
+        echo "claude/settings.json|file|$d/claude/settings.json|$HOME/.claude/settings.json"
+    fi
+
+    # The statusLine command settings.json points at, linked separately because
+    # settings.json names it by path: a machine with the settings but not the
+    # script gets a prompt that silently renders nothing.
+    if [ -f "$d/claude/statusline-command.sh" ]; then
+        echo "claude/statusline-command.sh|file|$d/claude/statusline-command.sh|$HOME/.claude/statusline-command.sh"
+    fi
+
+    return 0
+}
+
 # Every per-tool theme file is generated from theme/palette.sh and committed, so
 # a stale one means somebody edited the output instead of the palette — and the
 # next `theme/generate.sh` will silently revert their change. Cheap to detect
@@ -29,11 +113,10 @@ ensure_dotfiles() {
     echo "[STEP] Verifying dotfiles..."
     local failed=0
 
-    _check_link ".zshrc"        "$HOME/.zshrc"        "$dotfiles_dir/zsh/.zshrc"        || failed=1
-    _check_link ".zshenv"       "$HOME/.zshenv"       "$dotfiles_dir/zsh/.zshenv"       || failed=1
-    _check_link ".vimrc"        "$HOME/.vimrc"        "$dotfiles_dir/vim/.vimrc"         || failed=1
-    _check_link ".tmux.conf"    "$HOME/.tmux.conf"    "$dotfiles_dir/tmux/.tmux.conf"    || failed=1
-    _check_link ".gitconfig"    "$HOME/.gitconfig"    "$dotfiles_dir/.gitconfig"         || failed=1
+    # Process substitution, not a pipe, so $failed survives the loop.
+    while IFS='|' read -r label _kind src dst; do
+        _check_link "$label" "$dst" "$src" || failed=1
+    done < <(_dotfile_links)
 
     _check_theme_generated "$dotfiles_dir" || failed=1
 
@@ -58,53 +141,6 @@ ensure_dotfiles() {
         echo "[OK] Vim colors (source and target are the same directory)"
     fi
 
-    # coc.nvim only ever reads ~/.vim/coc-settings.json, so that single file is
-    # linked rather than the directory around it. -ef (same inode) covers the
-    # case where ~/.vim *is* the repo directory: then there is nothing to link,
-    # and a plain _check_link would fail on a regular file.
-    local coc_src="$dotfiles_dir/vim/.vim/coc-settings.json"
-    local coc_dst="$HOME/.vim/coc-settings.json"
-    if [ -f "$coc_src" ]; then
-        if [ ! -L "$coc_dst" ] && [ "$coc_dst" -ef "$coc_src" ]; then
-            echo "[OK] coc-settings.json (source and target are the same file)"
-        else
-            _check_link "coc-settings.json" "$coc_dst" "$coc_src" || failed=1
-        fi
-    fi
-
-    _check_link "nvim config"    "$HOME/.config/nvim"     "$dotfiles_dir/nvim"     || failed=1
-    _check_link "ghostty config" "$HOME/.config/ghostty"  "$dotfiles_dir/ghostty"  || failed=1
-
-    if [ -d "$dotfiles_dir/bat" ]; then
-        _check_link "bat config"  "$HOME/.config/bat"      "$dotfiles_dir/bat"      || failed=1
-    fi
-
-    if [ -d "$dotfiles_dir/hammerspoon" ] && [ "$(uname)" = "Darwin" ]; then
-        _check_link "hammerspoon" "$HOME/.hammerspoon"     "$dotfiles_dir/hammerspoon" || failed=1
-    fi
-
-    local nom_src="$dotfiles_dir/nom/config.yml"
-    if [ -f "$nom_src" ]; then
-        local nom_dst
-        if [ "$(uname)" = "Darwin" ]; then
-            nom_dst="$HOME/Library/Application Support/nom/config.yml"
-        else
-            nom_dst="${XDG_CONFIG_HOME:-$HOME/.config}/nom/config.yml"
-        fi
-        _check_link "nom config.yml" "$nom_dst" "$nom_src" || failed=1
-    fi
-
-    if [ -f "$dotfiles_dir/claude/settings.json" ]; then
-        _check_link "claude/settings.json" "$HOME/.claude/settings.json" \
-                    "$dotfiles_dir/claude/settings.json" || failed=1
-    fi
-
-    if [ -f "$dotfiles_dir/claude/statusline-command.sh" ]; then
-        _check_link "claude/statusline-command.sh" \
-                    "$HOME/.claude/statusline-command.sh" \
-                    "$dotfiles_dir/claude/statusline-command.sh" || failed=1
-    fi
-
     return $failed
 }
 
@@ -117,42 +153,24 @@ link_dotfiles() {
     # not fatal — a stale theme file should not stop the rest of a bootstrap.
     _check_theme_generated "$dotfiles_dir" || true
 
-    # Link Zsh config
-    if [ -f "$HOME/.zshrc" ] && [ ! -L "$HOME/.zshrc" ]; then
-        echo "[BACKUP] Backing up existing .zshrc to .zshrc.backup"
-        mv "$HOME/.zshrc" "$HOME/.zshrc.backup"
-    fi
-    ln -sf "$dotfiles_dir/zsh/.zshrc" "$HOME/.zshrc"
-    echo "[OK] Linked .zshrc"
-
-    # .zshenv, read by non-interactive shells too (tmux popups, nvim's :! …),
-    # which is where $FZF_DEFAULT_OPTS_FILE has to come from. Backed up rather
-    # than clobbered: a pre-existing one usually carries a toolchain line
-    # (cargo, nvm) worth reading before it is discarded.
-    if [ -f "$HOME/.zshenv" ] && [ ! -L "$HOME/.zshenv" ]; then
-        echo "[BACKUP] Backing up existing .zshenv to .zshenv.backup"
-        mv "$HOME/.zshenv" "$HOME/.zshenv.backup"
-    fi
-    ln -sf "$dotfiles_dir/zsh/.zshenv" "$HOME/.zshenv"
-    echo "[OK] Linked .zshenv"
-
+    # Every plain a->b link, from the one table in _dotfile_links. .zshenv is in
+    # there too: read by non-interactive shells (tmux popups, nvim's :! …),
+    # which is where $FZF_DEFAULT_OPTS_FILE has to come from, and backed up
+    # rather than clobbered because a pre-existing one usually carries a
+    # toolchain line (cargo, nvm) worth reading before it is discarded.
+    #
     # The zsh theme needs no link — .zshrc sources it from the repo directly.
-
-    # Link Vim config
-    if [ -f "$HOME/.vimrc" ] && [ ! -L "$HOME/.vimrc" ]; then
-        echo "[BACKUP] Backing up existing .vimrc to .vimrc.backup"
-        mv "$HOME/.vimrc" "$HOME/.vimrc.backup"
-    fi
-    ln -sf "$dotfiles_dir/vim/.vimrc" "$HOME/.vimrc"
-    echo "[OK] Linked .vimrc"
-
-    # Link Tmux config
-    if [ -f "$HOME/.tmux.conf" ] && [ ! -L "$HOME/.tmux.conf" ]; then
-        echo "[BACKUP] Backing up existing .tmux.conf to .tmux.conf.backup"
-        mv "$HOME/.tmux.conf" "$HOME/.tmux.conf.backup"
-    fi
-    ln -sf "$dotfiles_dir/tmux/.tmux.conf" "$HOME/.tmux.conf"
-    echo "[OK] Linked .tmux.conf"
+    #
+    # A [FAIL] from one entry does not stop the others: same policy as the vim
+    # colors loop below, and --ensure is the net that catches it afterwards.
+    # Process substitution, not a pipe, so $bat_state survives the loop.
+    local bat_state=""
+    while IFS='|' read -r label kind src dst; do
+        if [ "$label" = "bat config" ]; then
+            bat_state="$(_link_state "$src" "$dst")"
+        fi
+        _relink "$label" "$kind" "$src" "$dst" || true
+    done < <(_dotfile_links)
 
     # Apply to any already-running tmux server. Unlike ghostty/k9s, tmux's
     # config reads the theme mode file directly at parse time (see the
@@ -171,14 +189,6 @@ link_dotfiles() {
     else
         echo "[SKIP] TPM already installed"
     fi
-
-    # Link Git config
-    if [ -f "$HOME/.gitconfig" ] && [ ! -L "$HOME/.gitconfig" ]; then
-        echo "[BACKUP] Backing up existing .gitconfig to .gitconfig.backup"
-        mv "$HOME/.gitconfig" "$HOME/.gitconfig.backup"
-    fi
-    ln -sf "$dotfiles_dir/.gitconfig" "$HOME/.gitconfig"
-    echo "[OK] Linked .gitconfig"
 
     # Link Vim color schemes (skip if source and target are the same directory).
     # A dangling $dst_dir — e.g. ~/.vim/colors is itself a symlink to a repo path
@@ -210,51 +220,6 @@ link_dotfiles() {
                 echo "[FAIL] Could not link $(basename "$color_file") into $dst_dir"
             fi
         done
-    fi
-
-    # Link coc.nvim settings (see the matching note in ensure_dotfiles)
-    local coc_src="$dotfiles_dir/vim/.vim/coc-settings.json"
-    local coc_dst="$HOME/.vim/coc-settings.json"
-    if [ -f "$coc_src" ]; then
-        if [ ! -L "$coc_dst" ] && [ "$coc_dst" -ef "$coc_src" ]; then
-            echo "[SKIP] coc-settings.json already in place (source and target are the same file)"
-        else
-            mkdir -p "$HOME/.vim"
-            if [ -f "$coc_dst" ] && [ ! -L "$coc_dst" ]; then
-                echo "[BACKUP] Backing up existing coc-settings.json to coc-settings.json.backup"
-                mv "$coc_dst" "$coc_dst.backup"
-            fi
-            ln -sf "$coc_src" "$coc_dst"
-            echo "[OK] Linked coc-settings.json"
-        fi
-    fi
-
-    # Link Neovim config (skip if already pointing to the right place)
-    local nvim_src="$dotfiles_dir/nvim"
-    local nvim_dst="$HOME/.config/nvim"
-    if [ "$(realpath "$nvim_src" 2>/dev/null)" != "$(realpath "$nvim_dst" 2>/dev/null)" ]; then
-        if [ -d "$nvim_dst" ] && [ ! -L "$nvim_dst" ]; then
-            echo "[BACKUP] Backing up existing nvim config to nvim.backup"
-            mv "$nvim_dst" "$HOME/.config/nvim.backup"
-        fi
-        ln -sf "$nvim_src" "$nvim_dst"
-        echo "[OK] Linked nvim config"
-    else
-        echo "[SKIP] Neovim config already in place (source and target are the same)"
-    fi
-
-    # Link Ghostty config (skip if already pointing to the right place)
-    local ghostty_src="$dotfiles_dir/ghostty"
-    local ghostty_dst="$HOME/.config/ghostty"
-    if [ "$(realpath "$ghostty_src" 2>/dev/null)" != "$(realpath "$ghostty_dst" 2>/dev/null)" ]; then
-        if [ -d "$ghostty_dst" ] && [ ! -L "$ghostty_dst" ]; then
-            echo "[BACKUP] Backing up existing ghostty config to ghostty.backup"
-            mv "$ghostty_dst" "$HOME/.config/ghostty.backup"
-        fi
-        ln -sf "$ghostty_src" "$ghostty_dst"
-        echo "[OK] Linked ghostty config"
-    else
-        echo "[SKIP] Ghostty config already in place (source and target are the same)"
     fi
 
     # Theme source of truth + ghostty active-theme include (default: light).
@@ -289,106 +254,21 @@ link_dotfiles() {
         echo "[OK] Seeded fzf/opts-active.conf -> opts-$(cat "$theme_file").conf"
     fi
 
-    # Link k9s skins + seed the active-skin symlink (default: current mode).
-    # k9s never writes into skins/, so symlinking just that subdir keeps its
-    # runtime state (logs, clusters/) out of the repo. toggle_theme.sh flips
-    # skin-active.yaml afterwards; config.yaml points ui.skin at it.
+    # The k9s skins/ and plugins.yaml links themselves come from the table; what
+    # is left here is the active-skin symlink *inside* the repo, which the table
+    # cannot express. toggle_theme.sh flips it afterwards; config.yaml points
+    # ui.skin at it, which is the one bit of manual setup k9s needs.
     if [ -d "$dotfiles_dir/k9s/skins" ]; then
-        local k9s_dst
-        if [ "$(uname)" = "Darwin" ]; then
-            k9s_dst="$HOME/Library/Application Support/k9s"
-        else
-            k9s_dst="${XDG_CONFIG_HOME:-$HOME/.config}/k9s"
-        fi
-        mkdir -p "$k9s_dst"
         ln -sf "vs_$(cat "$theme_file").yaml" "$dotfiles_dir/k9s/skins/skin-active.yaml"
-        if [ -e "$k9s_dst/skins" ] && [ ! -L "$k9s_dst/skins" ]; then
-            mv "$k9s_dst/skins" "$k9s_dst/skins.backup"
-        fi
-        ln -sfn "$dotfiles_dir/k9s/skins" "$k9s_dst/skins"
-        echo "[OK] Linked k9s skins (set ui.skin: skin-active in $k9s_dst/config.yaml)"
-
-        # Log-helper plugins (snapshot→nvim, stream→tmux). Single file, k9s
-        # only reads it, so a per-file symlink is safe.
-        if [ -f "$dotfiles_dir/k9s/plugins.yaml" ]; then
-            if [ -e "$k9s_dst/plugins.yaml" ] && [ ! -L "$k9s_dst/plugins.yaml" ]; then
-                mv "$k9s_dst/plugins.yaml" "$k9s_dst/plugins.yaml.backup"
-            fi
-            ln -sf "$dotfiles_dir/k9s/plugins.yaml" "$k9s_dst/plugins.yaml"
-            echo "[OK] Linked k9s plugins.yaml"
-        fi
+        echo "[INFO] k9s: set ui.skin: skin-active in its config.yaml"
     fi
 
-    # Link bat config dir (carries custom vs_dark/vs_light preview themes).
-    # Rebuild bat's theme cache so BAT_THEME=vs_dark/vs_light resolves.
-    local bat_src="$dotfiles_dir/bat"
-    local bat_dst="$HOME/.config/bat"
-    if [ -d "$bat_src" ] && [ "$(realpath "$bat_src" 2>/dev/null)" != "$(realpath "$bat_dst" 2>/dev/null)" ]; then
-        if [ -d "$bat_dst" ] && [ ! -L "$bat_dst" ]; then
-            echo "[BACKUP] Backing up existing bat config to bat.backup"
-            mv "$bat_dst" "$HOME/.config/bat.backup"
-        fi
-        ln -sf "$bat_src" "$bat_dst"
-        echo "[OK] Linked bat config"
-        if command -v bat >/dev/null 2>&1; then
-            bat cache --build >/dev/null 2>&1 && echo "[OK] Rebuilt bat theme cache"
-        fi
+    # bat reads its themes out of ~/.config/bat (linked from the table above),
+    # but only after its cache is rebuilt — without this BAT_THEME=vs_dark /
+    # vs_light does not resolve. Only when the link actually changed: a rebuild
+    # costs a second, and on a settled machine there is nothing new to compile.
+    if [ -n "$bat_state" ] && [ "$bat_state" != ok ] && command -v bat >/dev/null 2>&1; then
+        bat cache --build >/dev/null 2>&1 && echo "[OK] Rebuilt bat theme cache"
     fi
 
-    # Link Hammerspoon config (macOS only; carries the translation popup).
-    local hs_src="$dotfiles_dir/hammerspoon"
-    local hs_dst="$HOME/.hammerspoon"
-    if [ -d "$hs_src" ] && [ "$(uname)" = "Darwin" ] \
-       && [ "$(realpath "$hs_src" 2>/dev/null)" != "$(realpath "$hs_dst" 2>/dev/null)" ]; then
-        if [ -d "$hs_dst" ] && [ ! -L "$hs_dst" ]; then
-            echo "[BACKUP] Backing up existing .hammerspoon to .hammerspoon.backup"
-            mv "$hs_dst" "$HOME/.hammerspoon.backup"
-        fi
-        ln -sf "$hs_src" "$hs_dst"
-        echo "[OK] Linked Hammerspoon config"
-    fi
-
-    # Link nom config (RSS reader). macOS uses Library/Application Support,
-    # Linux uses XDG ~/.config.
-    local nom_src="$dotfiles_dir/nom/config.yml"
-    if [ -f "$nom_src" ]; then
-        local nom_dst
-        if [ "$(uname)" = "Darwin" ]; then
-            nom_dst="$HOME/Library/Application Support/nom/config.yml"
-        else
-            nom_dst="${XDG_CONFIG_HOME:-$HOME/.config}/nom/config.yml"
-        fi
-        mkdir -p "$(dirname "$nom_dst")"
-        if [ -f "$nom_dst" ] && [ ! -L "$nom_dst" ]; then
-            echo "[BACKUP] Backing up existing nom config.yml to config.yml.backup"
-            mv "$nom_dst" "$nom_dst.backup"
-        fi
-        ln -sf "$nom_src" "$nom_dst"
-        echo "[OK] Linked nom config.yml"
-    fi
-
-    # Link Claude Code settings (settings.json.local stays untouched — it's
-    # the per-machine override that shouldn't live in the repo)
-    if [ -f "$dotfiles_dir/claude/settings.json" ]; then
-        mkdir -p "$HOME/.claude"
-        if [ -f "$HOME/.claude/settings.json" ] && [ ! -L "$HOME/.claude/settings.json" ]; then
-            echo "[BACKUP] Backing up existing claude settings.json to settings.json.backup"
-            mv "$HOME/.claude/settings.json" "$HOME/.claude/settings.json.backup"
-        fi
-        ln -sf "$dotfiles_dir/claude/settings.json" "$HOME/.claude/settings.json"
-        echo "[OK] Linked claude/settings.json"
-    fi
-
-    # The statusLine command settings.json points at. Linked separately because
-    # settings.json names it by path, so a machine with the settings but not the
-    # script gets a prompt that silently renders nothing.
-    if [ -f "$dotfiles_dir/claude/statusline-command.sh" ]; then
-        mkdir -p "$HOME/.claude"
-        if [ -f "$HOME/.claude/statusline-command.sh" ] && [ ! -L "$HOME/.claude/statusline-command.sh" ]; then
-            echo "[BACKUP] Backing up existing claude statusline-command.sh to statusline-command.sh.backup"
-            mv "$HOME/.claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh.backup"
-        fi
-        ln -sf "$dotfiles_dir/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
-        echo "[OK] Linked claude/statusline-command.sh"
-    fi
 }
