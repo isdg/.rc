@@ -79,27 +79,17 @@ zle -N self-insert url-quote-magic
 
 # minimal git_prompt_info — the one oh-my-zsh function the theme uses
 #
-# --exact-match on the tag, so the field is empty unless HEAD *is* the tag: it
-# shows up on a release commit and disappears again the moment you commit past
-# one. Plain `git describe` would always answer, but with "v1.4.2-7-gabc123",
-# which is a hash in the prompt nobody asked for.
-#
-# That is a third git call on every prompt in every repo, costing roughly what
-# the status --porcelain above it does. If it ever shows, moving the describe
-# inside the `||` branch limits it to a detached HEAD — which is when you are
-# most likely on a tag anyway — at no cost on a branch.
+# Two git calls per prompt, which is the budget: a --exact-match tag field lived
+# here briefly and was removed. It cost a third call in every repo, tagged or
+# not, to render something that is empty except on a release commit.
 git_prompt_info() {
-    local ref tag
+    local ref
     ref=$(command git symbolic-ref --short HEAD 2>/dev/null) ||
     ref=$(command git rev-parse --short HEAD 2>/dev/null) || return 0
-    tag=$(command git describe --tags --exact-match HEAD 2>/dev/null)
     local state=$ZSH_THEME_GIT_PROMPT_CLEAN
     [[ -n $(command git status --porcelain 2>/dev/null | head -1) ]] &&
         state=$ZSH_THEME_GIT_PROMPT_DIRTY
-    # State before tag: a tag is arbitrarily long, and behind it the */= would
-    # sit at a different column in every repo. In front of it the marker stays
-    # a fixed distance from the branch name, where the eye already is.
-    echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${state}${tag:+${ZSH_THEME_GIT_PROMPT_TAG_PREFIX}${tag}${ZSH_THEME_GIT_PROMPT_TAG_SUFFIX}}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
+    echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${state}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
 }
 
 source "$ISGRC/zsh/isg.zsh-theme"
