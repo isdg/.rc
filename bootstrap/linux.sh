@@ -4,8 +4,17 @@
 # Assembles modular components for dotfiles setup
 #
 # Usage:
-#   ./linux.sh           — install / configure everything
-#   ./linux.sh --ensure  — verify everything is in place (no changes made)
+#   ./linux.sh               — install / configure everything
+#   ./linux.sh --ensure      — verify everything is in place (no changes made)
+#   ./linux.sh --plan        — list the dotfiles a run would modify, then stop
+#   ./linux.sh -m MSG        — describe the run instead of opening an editor
+#   ./linux.sh --no-journal  — skip the message prompt and the journal
+#
+# A run that would overwrite an existing dotfile, or repoint a symlink that
+# points elsewhere, first opens $EDITOR on a git-commit-style buffer listing
+# exactly those files. Save a message and the run proceeds and the message is
+# recorded in ~/.local/state/isg/bootstrap.log; save an empty message and the
+# run aborts having changed nothing. Nothing to modify means no prompt.
 #
 set -e
 
@@ -22,6 +31,7 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Load components
 source "$SCRIPT_DIR/components/helpers.sh"
+source "$SCRIPT_DIR/components/journal.sh"
 source "$SCRIPT_DIR/components/packages_linux.sh"
 source "$SCRIPT_DIR/components/neovim_linux.sh"
 source "$SCRIPT_DIR/components/pagers_linux.sh"
@@ -39,8 +49,45 @@ source "$SCRIPT_DIR/components/hr.sh"
 source "$SCRIPT_DIR/components/fzf.sh"
 source "$SCRIPT_DIR/components/shell.sh"
 
+# ── Arguments ──────────────────────────────────────────────────────────────────
+# Was a bare positional --ensure test; a real loop so the journal flags work
+# here too, and so a typo is rejected instead of silently starting an install.
+MODE=install
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --ensure)      MODE=ensure ;;
+        --plan)        BOOTSTRAP_PLAN_ONLY=1 ;;
+        --no-journal)  BOOTSTRAP_NO_JOURNAL=1 ;;
+        --message=*)   BOOTSTRAP_MESSAGE="${1#--message=}" ;;
+        -m|--message)
+            shift
+            if [ $# -eq 0 ]; then
+                echo "[ERROR] $0: -m needs a message (try --help)" >&2
+                exit 2
+            fi
+            BOOTSTRAP_MESSAGE="$1"
+            ;;
+        -h|--help)
+            sed -n '3,17p' "${BASH_SOURCE[0]}" | sed 's/^#\{1,\} \{0,1\}//'
+            exit 0
+            ;;
+        *)
+            echo "[ERROR] unknown option: $1 (try --help)" >&2
+            exit 2
+            ;;
+    esac
+    shift
+done
+
+# --plan is read-only and answers the same question in either mode, so it is
+# handled before the install/ensure split.
+if [ "$BOOTSTRAP_PLAN_ONLY" = "1" ]; then
+    bootstrap_journal_plan
+    exit 0
+fi
+
 # ── Ensure mode ────────────────────────────────────────────────────────────────
-if [[ "${1:-}" == "--ensure" ]]; then
+if [ "$MODE" = ensure ]; then
     echo "=========================================="
     echo "  Dotfiles Verify for Linux"
     echo "=========================================="
@@ -82,6 +129,10 @@ echo "  Dotfiles Bootstrap for Linux"
 echo "=========================================="
 echo ""
 
+# Describe the run before it changes anything; an empty message aborts here.
+bootstrap_journal_open || exit 1
+echo ""
+
 # Run components
 install_packages_linux
 echo ""
@@ -116,6 +167,8 @@ install_fzf_linux
 echo ""
 set_default_shell_linux
 echo ""
+
+bootstrap_journal_commit
 
 echo "=========================================="
 echo "  Installation Complete!"

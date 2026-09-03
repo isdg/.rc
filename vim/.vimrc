@@ -469,6 +469,11 @@ let g:NERDTreeWinSize=40
 let NERDTreeQuitOnOpen=1
 autocmd FileType nerdtree setlocal number
 
+" The buffer bootstrap opens to describe a run (bootstrap/components/journal.sh)
+" is a commit message in everything but name. It lives in $TMPDIR under a mktemp
+" suffix, so nothing infers the filetype without this.
+autocmd BufRead,BufNewFile BOOTSTRAP_EDITMSG* setfiletype gitcommit
+
 " ============================================================
 "                  HR (READING LIST)
 " ============================================================
