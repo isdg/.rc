@@ -99,6 +99,12 @@ ensure_dotfiles() {
                     "$dotfiles_dir/claude/settings.json" || failed=1
     fi
 
+    if [ -f "$dotfiles_dir/claude/statusline-command.sh" ]; then
+        _check_link "claude/statusline-command.sh" \
+                    "$HOME/.claude/statusline-command.sh" \
+                    "$dotfiles_dir/claude/statusline-command.sh" || failed=1
+    fi
+
     return $failed
 }
 
@@ -371,5 +377,18 @@ link_dotfiles() {
         fi
         ln -sf "$dotfiles_dir/claude/settings.json" "$HOME/.claude/settings.json"
         echo "[OK] Linked claude/settings.json"
+    fi
+
+    # The statusLine command settings.json points at. Linked separately because
+    # settings.json names it by path, so a machine with the settings but not the
+    # script gets a prompt that silently renders nothing.
+    if [ -f "$dotfiles_dir/claude/statusline-command.sh" ]; then
+        mkdir -p "$HOME/.claude"
+        if [ -f "$HOME/.claude/statusline-command.sh" ] && [ ! -L "$HOME/.claude/statusline-command.sh" ]; then
+            echo "[BACKUP] Backing up existing claude statusline-command.sh to statusline-command.sh.backup"
+            mv "$HOME/.claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh.backup"
+        fi
+        ln -sf "$dotfiles_dir/claude/statusline-command.sh" "$HOME/.claude/statusline-command.sh"
+        echo "[OK] Linked claude/statusline-command.sh"
     fi
 }
