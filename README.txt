@@ -53,6 +53,50 @@ Either profile can be verified without changing anything:
 Restart your terminal (or `exec zsh`) when it finishes.
 
 -------------------------------------------------------------------------------
+BOOTSTRAP MESSAGES
+-------------------------------------------------------------------------------
+
+A bootstrap run is destructive in two ways worth noticing before the fact: it
+moves an existing real file out of the way to a fixed `.backup` name (which
+overwrites any earlier backup of the same file), and it silently repoints a
+symlink that pointed somewhere else. So a run that would do either opens
+$EDITOR on a git-commit-style buffer listing exactly those files:
+
+    # Bootstrap: darwin · full profile · isg-darwin
+    # Dotfiles: 3cf3548 main *
+    #
+    # Write a message describing this bootstrap. Lines starting with '#' are
+    # ignored, and an empty message aborts the run without changing anything.
+    #
+    # Modifications to be made:
+    #   overwrite  ~/.tmux.conf     -> tmux/.tmux.conf
+    #              saved as ~/.tmux.conf.backup
+    #   relink     ~/.config/nvim   -> nvim
+    #              was -> ~/old-nvim
+    #
+    # 2 to modify · 12 already in place · 9 new
+
+Same contract as `git commit`: write a message and the run proceeds, save an
+empty one and it aborts having changed nothing. Links that are already correct
+and brand-new ones are counted but not listed — nothing is at stake there — so
+a settled machine re-running bootstrap gets no prompt at all.
+
+Accepted messages are appended to:
+
+    ${XDG_STATE_HOME:-~/.local/state}/isg/bootstrap.log
+
+with the timestamp, host, profile, and the branch/commit/dirty state of the
+checkout it was run from. That file lives outside the repo on purpose, so a
+bootstrap run never dirties the tree.
+
+    > ./bootstrap/darwin.sh --plan          # list what a run would modify, then stop
+    > ./bootstrap/darwin.sh -m 'message'    # describe it without opening an editor
+    > ./bootstrap/darwin.sh --no-journal    # skip the prompt and the journal
+
+A run with no terminal (CI, a pipe) skips the prompt and proceeds rather than
+blocking. `--ensure` never prompts; it changes nothing to describe.
+
+-------------------------------------------------------------------------------
 LAYOUT
 -------------------------------------------------------------------------------
 

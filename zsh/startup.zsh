@@ -201,9 +201,12 @@ log_tmux() {
 
 # Keys log_ssh keeps in the agent, as paths to the private halves. Empty here
 # on purpose: which key a machine holds is a property of that machine, not of
-# this config, so a branch or a machine-local file sets it —
+# this config, so ~/.zshrc.local sets it —
 #
 #     SSH_KEYS=( ~/.ssh/delos-new )
+#
+# Not a setup/<machine> branch: ~/.zshrc is a symlink into the working tree, so
+# a branch-held list empties itself the moment HEAD moves elsewhere.
 #
 # With the list empty log_ssh reports the agent and stops there — no key is
 # touched and no agent is started — so it is safe to register everywhere.

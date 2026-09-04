@@ -273,6 +273,17 @@ unset _brew_prefix _hl
 # ── startup banner (engine lives in the isg theme) ──
 source "$ISGRC/zsh/startup.zsh"
 
+# Whatever belongs to this box rather than to the config — SSH_KEYS above all.
+# Sourced exactly here: after startup.zsh, whose `typeset -ga SSH_KEYS=()` it
+# has to win over, and before banner_render, which is what runs log_ssh.
+#
+# In $HOME rather than on a setup/<machine> branch because ~/.zshrc is a symlink
+# into the working tree, so a branch-held value follows HEAD: a shell opened
+# while the repo sat on main got SSH_KEYS empty, and log_ssh — whose empty-list
+# guard only fires when no agent is reachable — then printed "ssh-agent · 1 key"
+# and added nothing, silently. $HOME is not a checkout, so this survives.
+[[ -r ~/.zshrc.local ]] && source ~/.zshrc.local
+
 # %n = the real user, not a hardcoded name: a root shell sourcing this config
 # (sudo -E, su -m) says "root", so the banner can't claim to be isg while the
 # shell can write anywhere.
