@@ -127,6 +127,16 @@ MANUAL SETUP (if you'd rather not run bootstrap)
    There is no framework to install and no theme link to make — .zshrc is
    plain zsh and sources zsh/isg.zsh-theme from the repo directly.
 
+   Anything true of this machine rather than of the config — the ssh keys
+   log_ssh loads into the agent, paths only this box has — goes in
+   ~/.zshrc.local, which .zshrc sources when it is present:
+
+    > cp "$HOME/.rc/zsh/zshrc.local.example" "$HOME/.zshrc.local"
+
+   That file stays outside the repo on purpose. ~/.zshrc is a symlink into the
+   working tree, so anything kept on a setup/<machine> branch follows HEAD and
+   vanishes the moment you check out something else.
+
 2. Install vim-plug and plugins:
 
     > curl -fLo ~/.vim/autoload/plug.vim --create-dirs \

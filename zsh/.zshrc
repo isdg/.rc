@@ -282,6 +282,7 @@ source "$ISGRC/zsh/startup.zsh"
 # while the repo sat on main got SSH_KEYS empty, and log_ssh — whose empty-list
 # guard only fires when no agent is reachable — then printed "ssh-agent · 1 key"
 # and added nothing, silently. $HOME is not a checkout, so this survives.
+# zsh/zshrc.local.example is the template to copy out.
 [[ -r ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # %n = the real user, not a hardcoded name: a root shell sourcing this config
