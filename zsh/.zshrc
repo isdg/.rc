@@ -273,12 +273,6 @@ unset _brew_prefix _hl
 # ── startup banner (engine lives in the isg theme) ──
 source "$ISGRC/zsh/startup.zsh"
 
-# This machine's ssh key, fed to log_ssh's general interface. Set here rather
-# than in startup.zsh so that file stays identical to main and never conflicts
-# on a merge — a key path belongs to the box, not to the shared config. Must
-# come before banner_render, which is what runs the log functions.
-SSH_KEYS=( ~/.ssh/delos-new )
-
 # %n = the real user, not a hardcoded name: a root shell sourcing this config
 # (sudo -E, su -m) says "root", so the banner can't claim to be isg while the
 # shell can write anywhere.
