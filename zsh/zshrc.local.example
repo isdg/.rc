@@ -1,0 +1,44 @@
+# Example ~/.zshrc.local — a starting point, not a live file. Copy it out:
+#
+#     cp "$ISGRC/zsh/zshrc.local.example" ~/.zshrc.local
+#
+# ~/.zshrc sources ~/.zshrc.local after zsh/startup.zsh, so anything set here
+# overrides the defaults that file declares, and before banner_render, so
+# log_ssh and the other banner log functions see the final values. Missing file
+# is fine — the source is guarded.
+#
+# Why $HOME and not the repo: ~/.zshrc is a symlink into the ~/.rc working tree,
+# so a value kept on a setup/<machine> branch follows HEAD and empties itself
+# the moment you check out anything else. That failed quietly — a shell opened
+# while the repo sat on main got SSH_KEYS empty and log_ssh, whose empty-list
+# guard only fires when no agent is reachable, printed "ssh-agent · 1 key" and
+# loaded no key at all. $HOME is not a checkout, so this file survives.
+#
+# Sibling convention: zsh/aliases.ignored.zsh is the same idea for aliases and
+# functions — gitignored, in-repo, sourced by aliases.zsh when present. Use that
+# one for shell sugar; use this one for what the box *is*.
+#
+# Machine-local means true of this box, not of the config: keys it holds, tools
+# only it has, escape hatches only it needs. Preferences belong in the tracked
+# files, where every machine gets them.
+
+# ── ssh ──
+# Private halves log_ssh loads into the ssh-agent at each interactive login.
+# Paths, not fingerprints. A key whose .pub is missing still loads, it just
+# prints without the type/fingerprint tag; a path that does not exist is
+# reported on the banner rather than being fatal. Encrypted keys are never
+# unlocked here — those stay a deliberate `ssh-add` you run by hand.
+SSH_KEYS=( ~/.ssh/delos-new )
+
+# ── environment ──
+# Tools installed somewhere only this box knows about.
+# export PATH="$HOME/opt/some-sdk/bin:$PATH"
+
+# Per-repo escape hatches. Example: cosmos-saas's sync-env lefthook hook runs
+# `asdf plugin add supabase` on every merge and checkout, and its .tool-versions
+# pin can never match the Homebrew supabase on PATH.
+# export LEFTHOOK_EXCLUDE=sync-env
+
+# Secrets: prefer a lookup over a literal, so the value is not sitting in a
+# plaintext dotfile that a stray `cat ~/.zshrc.local` or screen share exposes.
+# export SOME_TOKEN="$(security find-generic-password -w -s some-token 2>/dev/null)"
