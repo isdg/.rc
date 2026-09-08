@@ -84,6 +84,35 @@
 	smtpServerPort = 587
 	smtpEncryption = tls
 	smtpUser = isai.gordeev.2022@polytechnique.org
+; Parallelism. Git's *thread*-based parallelism is already on and needs nothing
+; here: pack.threads (delta search when packing), grep.threads, index.threads
+; and core.preloadIndex all default to 0/true, which git reads as "call
+; online_cpus() and use all of them". What ships OFF is the parallelism built on
+; child processes -- forking workers costs more to start and fails messier than
+; threads sharing an address space, so git makes you ask. Those are the three
+; sections below. 0 means the same auto-detect as the thread knobs.
+;
+; These are [global] scope on purpose. Setting them as GIT_CONFIG_KEY_* exports
+; from zsh/ would work, but `git config --show-scope` reports those as `command`
+; -- the same layer as `git -c` -- so they would override every repo's own
+; .git/config, including a monorepo that pinned a value deliberately. A repo
+; should still be able to disagree with this file.
+[checkout]
+	; Parallel worktree writes, via git-checkout--worker children (git 2.32+).
+	; Applies to checkout/switch/clone/reset --hard. Only engages above
+	; checkout.thresholdForParallelism (default 100 entries) -- under that the
+	; spawn and IPC cost outweighs the win, so small checkouts stay serial and
+	; there is no reason to tune the threshold.
+	workers = 0
+[fetch]
+	; Parallel submodule fetches, and parallel remotes under `git fetch
+	; --multiple`. Defaults to 1, i.e. one remote at a time.
+	parallel = 0
+[submodule]
+	; Overrides fetch.parallel for submodules specifically, and is what
+	; `git submodule update` reads. Set to match rather than to differ.
+	fetchJobs = 0
+
 ; Machine-local overrides. Last, so they win over everything above; missing is
 ; fine, git ignores an include path that does not exist. Untracked, so nothing
 ; here follows the repo to another machine.
