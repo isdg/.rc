@@ -1,0 +1,173 @@
+SPLITS — nvim windows and tmux panes on one set of keys
+
+The two layers are written to match verb for verb, so the fingers never have to
+know which program owns the split in front of them. tmux is the one with the
+tighter constraint — its keys live in a key table, where a bare letter is the
+whole binding — so nvim moves to meet tmux rather than the other way round.
+
+One column reads down: h goes to a split, H grows toward it, C-h drags it there.
+
+
+-- The shared set ---------------------------------------------------------
+Verb                    nvim                 tmux
+go to a split           C-h C-j C-k C-l      C-b C-b  h j k l
+move the split itself   C-w C-h C-j C-k C-l  C-b C-b  C-h C-j C-k C-l
+resize                  C-w H J K L          C-b C-b  H J K L
+equalize                C-w E   (or C-w =)   C-b C-b  E
+split side by side      C-w s v              C-b C-b  s v   (or prefix %)
+split stacked           C-w s h              C-b C-b  s h   (or prefix ")
+last split              C-w ;   (or C-w p)   —
+cycle                   C-w o                C-b C-b  o
+
+prefix is C-b, so "C-b C-b h" is: prefix, then the layer, then h.
+
+
+-- v and h name the divider, not the axis ---------------------------------
+tmux's -h/-v name the axis the split CUTS; vim's :vsplit/:split name the
+DIVIDER it leaves behind. The keys follow vim, so they read inverted against
+the tmux flags: v is side by side (a vertical divider) and runs split-window
+-h; h is stacked and runs -v.
+
+That inversion is why .tmux.conf aliases the two commands by where the new pane
+LANDS — split-right and split-down — which cannot be misread. Both carry
+-c "#{pane_current_path}", so a new pane starts in the directory you were in.
+
+tmux's own prefix % / prefix " stay bound to the same two aliases, and vim's
+<C-w>v / <C-w>S keep their builtin meanings. Nothing here removes an escape
+hatch.
+
+
+-- Resize letters name the border, not the window -------------------------
+H is resize-pane -L: it pulls the RIGHT border leftward, so the window gets
+SMALLER. K is -U, lifting the bottom border — smaller again. nvim copies tmux
+here (vertical resize -/+ etc.) rather than following vim's own +/- intuition,
+because the whole point is that the fingers do not have to know which program
+they are in.
+
+  step    nvim moves 5 cells; a count means exact cells, so 20<C-w>L is one
+          deliberate haul rather than four presses.
+  step    tmux moves 1 cell, but its table re-enters, so HHH walks the border
+          smoothly instead of jumping in fives.
+  coarse  prefix M-Left/Right/Up/Down keeps tmux's default resize of 5 for a
+          single big nudge, and repeats inside repeat-time.
+
+
+-- The tmux layer is a key table, and that shows -------------------------
+C-b C-b enters the `plugins` table. Escape or q leaves it. C-b C-b C-b sends a
+literal C-b, for a nested tmux over SSH — send-prefix moved inside the layer
+because the layer took its key. While the table is active status-left shows a
+`+`, the way the prefix shows a `*`: a key table is durable state, so
+#{client_key_table} can drive an indicator.
+
+  sticky     resize (H J K L), equalize (E) and pane moves (C-h C-j C-k C-l)
+             re-enter the table. They are inherently repetitive, and you are
+             not trying to type in the pane afterwards.
+  one-shot   navigation (h j k l) deliberately does NOT re-enter. You hop in
+             order to type in the pane you land on, and a sticky hop eats that
+             first keystroke — tmux would still own the keyboard, and the key
+             that finally exits the table is spent doing so rather than
+             reaching nvim.
+  exit       any unbound key also drops you out of the table, but is swallowed
+             doing it. Escape and q are the explicit pair, so that is never a
+             surprise.
+
+Alt was the alternative and it loses twice: in the root table apps rewrite it
+(nvim, readline and fzf all claim M-o and M-j), and in the prefix table it
+works but is invisible — tmux only learns a modifier once a whole key arrives,
+so there is no "prefix + Alt held" state to render.
+
+Sub-tables, one level deeper, because a tmux key is a single key — a sequence
+IS a table: s for splits (s v, s h), p for cross-window moves (p l, p s).
+
+russian.sh twins every letter binding in prefix, copy-mode-vi, plugins, splits
+and moves onto its Cyrillic key, so the whole layer answers with the keyboard
+in Russian.
+
+
+-- Moving a split is a swap underneath ------------------------------------
+Neither program has a "move this window there" verb, so both are built out of
+a swap — and both make the swap read as a move.
+
+tmux: C-b C-b C-h is swap-pane -t '{left-of}' followed by select-pane -t
+'{left-of}'. The select is the load-bearing half: it runs before anything has
+moved the cursor, so {left-of} still resolves from the unchanged position and
+now names the pane that just travelled there. Without it a swap leaves you
+pinned to the old position, suddenly driving the pane that swapped in. Both
+halves must use the same direction word for that to hold.
+
+nvim: <C-w><C-h> swaps the two BUFFERS and carries each window's view across by
+hand. winsaveview is per window, so a bare buffer swap leaves each window
+looking at its old scroll position and cursor line, and the file appears to
+jump. Focus follows the buffer that moved, matching tmux — a move you have to
+chase is a move you did twice.
+
+Not to be confused with vim's own <C-w>HJKL, which throws a window to the far
+edge at full height/width and flattens the layout. That verb is gone from this
+config, not relocated; it was usually reached for by mistake anyway.
+
+
+-- Where the two genuinely differ ----------------------------------------
+wrapping   tmux wraps at the edges — pushing left from the leftmost pane sends
+           it to the far right, which is exactly the swap you want in a
+           two-pane split. nvim stays put instead: at the leftmost split it is
+           a silent no-op, which reads better in a 2-D layout than a jump to
+           the far side.
+equalize   vim's = evens out every window on the screen; tmux's select-layout
+           -E spreads only the current pane and the ones adjacent to it. They
+           agree on a plain two- or three-way split and differ on a nested
+           layout, where tmux is the narrower of the two.
+reach      there is no vim-tmux-navigator here. C-h in nvim moves an nvim
+           split and never crosses into a tmux pane; the tmux layer never
+           reaches inside nvim. Two layers, one vocabulary.
+
+
+-- What each key cost ----------------------------------------------------
+nvim, four displaced <C-w> defaults, each already reachable another way:
+  H J K L   threw a window to the far edge at full height/width. Gone, not
+            relocated — <C-w><C-hjkl> rearranges without flattening.
+  h         navigated left. Bare C-h has done that since the top of the file.
+  o         was `only`. Still one word away as :only, and the one real loss
+            here, being the only displaced verb with no keyed replacement.
+  ;         was unmapped.
+<C-w>s is now a PREFIX, so the bare builtin behind it waits out 'timeoutlen' —
+a real regression if you reach for <C-w>s expecting an instant stacked split.
+The replacement is <C-w>sh: one more key and no wait. <C-w>p and <C-w>= are
+untouched, so every displaced verb except `only` keeps its vim-native key too.
+
+<C-l> gives up nvim's CTRL-L default (nohlsearch + diffupdate + redraw): <Esc>
+clears highlights, and :redraw! / :diffupdate cover the rest. <C-h> is distinct
+from <BS> here — verified in both editors.
+
+tmux: prefix E is unbound, equalize having moved into the layer where HJKL
+already lives; prefix o (cycle panes) moved into the layer too, displaced by
+orchbus. Both were spent on the layer rather than lost.
+
+
+-- Beyond the shared set (tmux only) -------------------------------------
+prefix %  /  prefix "        split right / down — tmux's own keys, kept
+prefix Z                     zoom the pane (z is zen mode: hide the status bar)
+prefix x                     kill the pane
+prefix Up Down Left Right    walk panes; -r, so C-b Up Up Up repeats
+C-b C-b p l                  PULL: a pane you pick arrives here as a split
+C-b C-b p s                  PUSH: send this pane at a picked target —
+                             join-pane into a pane, break-pane -d -a into a
+                             window or a session
+C-b C-b w                    write this pane's scrollback to a file
+prefix s  /  prefix w        session / window choosers, M-<letter> to jump
+
+Panes are also reachable by their contents rather than their position: omni's
+prefix a / prefix A search window text and land the cursor on the matched line
+(scope of each key in ~/omni/README.md), and prefix b is the fzf window jump.
+
+
+-- Source ----------------------------------------------------------------
+nvim   nvim/lua/keymaps/editor.lua    "Split management" section
+tmux   tmux/.tmux.conf                the `plugins` table, plus the `splits`
+                                      and `moves` sub-tables below it
+vim    vim/.vimrc                     plain vim has no <C-w> parity layer, so
+                                      resize stays on <leader>+ - < > = there
+
+After editing the tmux side: tmux source-file ~/.tmux.conf. A running server
+holds its bindings in memory, so a key you removed from the file survives until
+that re-source (or a fresh server), and a key you renamed keeps answering on
+the old name.

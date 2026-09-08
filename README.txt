@@ -159,6 +159,8 @@ NOTES
 
   - tmux prefix bindings: see tmux/.tmux.conf (new windows open to the
     right of current; & kills window and moves focus left).
+  - splits.txt is the split/pane reference: nvim's <C-w> layer and tmux's
+    C-b C-b layer share one set of keys, and it says where they differ.
   - toggle_theme.sh switches macOS light/dark mode and adjacent terminal
     themes in one shot.
   - manifest.txt lists the git worktrees used alongside main.
