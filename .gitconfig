@@ -113,6 +113,31 @@
 	; `git submodule update` reads. Set to match rather than to differ.
 	fetchJobs = 0
 
+; Filesystem monitor. The one part of git that is a genuinely threaded
+; long-running service rather than a fork-per-job: `git fsmonitor--daemon`
+; watches the worktree through FSEvents on background threads and answers "what
+; changed since token T", so status/diff/add skip the lstat() walk over every
+; tracked path. Built in since git 2.37, no Watchman needed -- both gits on this
+; box list `feature: fsmonitor--daemon` under `git version --build-options`.
+;
+; Started lazily, per repo: the first git command in a worktree spawns that
+; worktree's daemon, so repos never touched cost nothing. `git fsmonitor--daemon
+; status` inspects one and `... stop` kills it. Git declines to use it on
+; network filesystems, where the event stream cannot be trusted.
+;
+; untrackedCache is the companion rather than a separate idea. fsmonitor removes
+; the walk over *tracked* files; without the untracked cache, status still
+; readdir()s every directory hunting for new ones, which is most of the
+; remaining cost on a large worktree. It requires the filesystem to report
+; directory mtime honestly -- `git update-index --test-untracked-cache` passes
+; on APFS here.
+;
+; Second [core] block on purpose: this file groups by topic rather than by
+; section name, and git merges duplicate sections.
+[core]
+	fsmonitor = true
+	untrackedCache = true
+
 ; Machine-local overrides. Last, so they win over everything above; missing is
 ; fine, git ignores an include path that does not exist. Untracked, so nothing
 ; here follows the repo to another machine.
