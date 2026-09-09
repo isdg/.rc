@@ -3,7 +3,7 @@
 	email = isaigordeev@gmail.com
 	signingkey = E32BE35A
 [commit]
-	gpgsign = true
+	gpgsign = false
 [alias]
 	lg = log --all --oneline --graph --decorate
 	lgc = log --oneline --graph --decorate HEAD @{u}
