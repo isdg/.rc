@@ -24,9 +24,8 @@ $(__isg::current_caret) '
 
 PROMPT2='. '
 
-_return_status="%(?..%{$fg[red]%}%? ⚠️%{$reset_color%})"
-
-RPROMPT='%{$(echotc UP 1)%} ${_return_status}%{$(echotc DO 1)%}'
+# No RPROMPT: the exit-status segment that lived here shouted `130 ⚠️` on every
+# fzf Esc and Ctrl-C as loudly as on a real failure. `echo $?` on demand instead.
 
 __isg::current_caret () {
   # This function sets caret color and sign
