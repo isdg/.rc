@@ -88,6 +88,15 @@ vim.api.nvim_create_autocmd("SwapExists", {
     callback = function() vim.v.swapchoice = "" end,
 })
 
+-- The buffer bootstrap opens to describe a run (see bootstrap/components/
+-- journal.sh) is a commit message in everything but name: message on top, the
+-- files it is about to modify as '#' comments below. It lives in $TMPDIR under
+-- a mktemp suffix, so nothing infers the filetype without this.
+vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
+    pattern = "BOOTSTRAP_EDITMSG*",
+    callback = function() vim.bo.filetype = "gitcommit" end,
+})
+
 -- Clipboard provider, chosen by context:
 --   * Local: leave Neovim's default (pbcopy on macOS, xclip/wl on Linux). It
 --     writes the OS clipboard via a CLI call, so it works in EVERY terminal --

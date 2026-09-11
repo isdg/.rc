@@ -193,6 +193,10 @@ lmap("n", ";", command_history, { desc = "Command history → cmdline (fzf)" })
 lmap("n", "/", "<cmd>History/<CR>", { desc = "Search history (fzf)" })
 -- Jumplist as a list instead of stepping through it with <C-i>/<C-o>
 lmap("n", "J", "<cmd>Jumps<CR>", { desc = "Jump list (fzf)" })
+-- Changelist across every listed buffer, unlike g;/g, which stay in this one
+lmap("n", "C", "<cmd>Changes<CR>", { desc = "Change list (fzf)" })
+-- Marks with their file, line and text, so you pick one instead of recalling it
+lmap("n", "M", "<cmd>Marks<CR>", { desc = "Marks (fzf)" })
 -- Every ex command, including plugin ones; <CR> runs it
 lmap("n", ":", "<cmd>Commands<CR>", { desc = "Ex commands (fzf)" })
 

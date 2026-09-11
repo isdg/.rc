@@ -12,7 +12,7 @@ let g:fzf_vim = get(g:, 'fzf_vim', {})
 let g:fzf_vim.preview_window = ['down,60%', 'ctrl-/']
 
 " ------------------------------------------------------------
-"  BLines with a preview  (<leader>c)
+"  BLines with a preview  (<leader>l)
 " ------------------------------------------------------------
 " :BLines is one of the fzf.vim commands that ships with NO preview:
 " fzf#vim#buffer_lines() builds its own --options list and never routes through
@@ -54,8 +54,12 @@ function! FzfBLinesPreview() abort
 
     " Reuse the window/toggle-key from g:fzf_vim.preview_window above so this
     " stays in step with the rest of the fzf.vim commands.
+    " fzf.vim forces --layout=reverse-list on :BLines/:Lines unless
+    " $FZF_DEFAULT_OPTS names `reverse`, and ours live in $FZF_DEFAULT_OPTS_FILE,
+    " which it never reads. Restate the default so these read like every picker.
     let l:pw = get(g:fzf_vim, 'preview_window', ['down,60%', 'ctrl-/'])
-    let l:opts = ['--preview', l:preview, '--preview-window', l:pw[0]]
+    let l:opts = ['--layout=default',
+                \ '--preview', l:preview, '--preview-window', l:pw[0]]
     if len(l:pw) > 1
         let l:opts += ['--bind', l:pw[1] . ':toggle-preview']
     endif
@@ -64,7 +68,7 @@ function! FzfBLinesPreview() abort
 endfunction
 
 " ------------------------------------------------------------
-"  Lines with a preview  (<leader>C)
+"  Lines with a preview  (<leader>L)
 " ------------------------------------------------------------
 " :Lines has the same gap as :BLines — fzf#vim#lines() assembles its own
 " --options and never routes through fzf#vim#with_preview() either.
@@ -115,8 +119,9 @@ function! FzfLinesPreview() abort
                 \ . '--line-range "$s:$(( s + h - 1 ))" '
                 \ . '"$f"'
 
+    " --layout=default for the same reason as FzfBLinesPreview.
     let l:pw = get(g:fzf_vim, 'preview_window', ['down,60%', 'ctrl-/'])
-    let l:opts = ['--delimiter', '\t', '--nth', '3..',
+    let l:opts = ['--layout=default', '--delimiter', '\t', '--nth', '3..',
                 \ '--preview', l:preview, '--preview-window', l:pw[0]]
     if len(l:pw) > 1
         let l:opts += ['--bind', l:pw[1] . ':toggle-preview']

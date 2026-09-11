@@ -8,6 +8,15 @@
 #   ./darwin.sh --minimal           — install the tmux + nvim + zsh core only
 #   ./darwin.sh --ensure            — verify everything is in place (no changes)
 #   ./darwin.sh --ensure --minimal  — verify just the core
+#   ./darwin.sh --plan              — list the dotfiles a run would modify, then stop
+#   ./darwin.sh -m MSG              — describe the run instead of opening an editor
+#   ./darwin.sh --no-journal        — skip the message prompt and the journal
+#
+# A run that would overwrite an existing dotfile, or repoint a symlink that
+# points elsewhere, first opens $EDITOR on a git-commit-style buffer listing
+# exactly those files. Save a message and the run proceeds and the message is
+# recorded in ~/.local/state/isg/bootstrap.log; save an empty message and the
+# run aborts having changed nothing. Nothing to modify means no prompt.
 #
 set -e
 
@@ -17,6 +26,7 @@ export DOTFILES_DIR
 
 # Load components
 source "$SCRIPT_DIR/components/helpers.sh"
+source "$SCRIPT_DIR/components/journal.sh"
 source "$SCRIPT_DIR/components/homebrew.sh"
 source "$SCRIPT_DIR/components/packages_darwin.sh"
 source "$SCRIPT_DIR/components/gui_apps_darwin.sh"
@@ -71,21 +81,41 @@ BOOTSTRAP_EXTRA_FUNCS=(
 # ── Arguments ──────────────────────────────────────────────────────────────────
 MODE=install
 BOOTSTRAP_MINIMAL=0
-for arg in "$@"; do
-    case "$arg" in
+# while/shift rather than `for arg`, because -m has to consume the word after it.
+while [ $# -gt 0 ]; do
+    case "$1" in
         --ensure)          MODE=ensure ;;
         --minimal|--core)  BOOTSTRAP_MINIMAL=1 ;;
+        --plan)            BOOTSTRAP_PLAN_ONLY=1 ;;
+        --no-journal)      BOOTSTRAP_NO_JOURNAL=1 ;;
+        --message=*)       BOOTSTRAP_MESSAGE="${1#--message=}" ;;
+        -m|--message)
+            shift
+            if [ $# -eq 0 ]; then
+                echo "[ERROR] $0: -m needs a message (try --help)" >&2
+                exit 2
+            fi
+            BOOTSTRAP_MESSAGE="$1"
+            ;;
         -h|--help)
-            sed -n '3,11p' "${BASH_SOURCE[0]}" | sed 's/^#\{1,\} \{0,1\}//'
+            sed -n '3,19p' "${BASH_SOURCE[0]}" | sed 's/^#\{1,\} \{0,1\}//'
             exit 0
             ;;
         *)
-            echo "[ERROR] unknown option: $arg (try --help)" >&2
+            echo "[ERROR] unknown option: $1 (try --help)" >&2
             exit 2
             ;;
     esac
+    shift
 done
 export BOOTSTRAP_MINIMAL
+
+# --plan is read-only and answers the same question in either mode, so it is
+# handled before the install/ensure split.
+if [ "$BOOTSTRAP_PLAN_ONLY" = "1" ]; then
+    bootstrap_journal_plan
+    exit 0
+fi
 
 # Components for the selected profile, as "install|ensure" pairs on stdout.
 _profile_components() {
@@ -133,11 +163,17 @@ echo "  Profile: $(_profile_name)"
 echo "=========================================="
 echo ""
 
+# Describe the run before it changes anything; an empty message aborts here.
+bootstrap_journal_open || exit 1
+echo ""
+
 while IFS='|' read -r _install _ensure; do
     [ -z "$_install" ] && continue
     "$_install"
     echo ""
 done < <(_profile_components)
+
+bootstrap_journal_commit
 
 echo "=========================================="
 echo "  Installation Complete!"

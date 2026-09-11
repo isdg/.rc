@@ -39,6 +39,13 @@ Two more apply when designing an API, interface, or abstraction:
   the other four: prefer the smallest surface that stays complete, and expose
   seams rather than features.
 
+And one rule on how the code explains itself:
+
+- **Comments stay short** — 3 lines or fewer per comment block, whether
+  inline, block, or docstring-style. Write longer only when I ask for it in
+  that specific case. An explanation that won't fit is usually a signal to
+  restructure the code or name things better, not to write more prose.
+
 # Global preferences (apply in every project / folder)
 
 ## Commit conventions

@@ -142,7 +142,7 @@ return {
 
     -- flash: label-based visual jump (the avy/EasyMotion equivalent). Trigger,
     -- type 1-2 chars of any on-screen target, then a label appears -- type it to
-    -- jump. O(1) regardless of distance, complementing <leader>C (BLines) which
+    -- jump. O(1) regardless of distance, complementing <leader>l (BLines) which
     -- is search-list style. Single binding for now; format lives on <leader>F.
     --   <leader>f -> jump (normal/visual/operator-pending: d<leader>f<label>)
     --   <c-s>     -> toggle flash labels while typing a / search (no vi conflict)

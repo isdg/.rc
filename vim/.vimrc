@@ -469,6 +469,11 @@ let g:NERDTreeWinSize=40
 let NERDTreeQuitOnOpen=1
 autocmd FileType nerdtree setlocal number
 
+" The buffer bootstrap opens to describe a run (bootstrap/components/journal.sh)
+" is a commit message in everything but name. It lives in $TMPDIR under a mktemp
+" suffix, so nothing infers the filetype without this.
+autocmd BufRead,BufNewFile BOOTSTRAP_EDITMSG* setfiletype gitcommit
+
 " ============================================================
 "                  HR (READING LIST)
 " ============================================================
@@ -497,14 +502,19 @@ nnoremap <leader>B :History<CR>
 " Lowercase = this buffer, uppercase = wider scope, for both pairs (same as
 " nvim, see nvim/lua/keymaps/find.lua):
 "   e / E   symbols in this file / across the workspace   (coc)
-"   c / C   lines in this buffer / across open buffers    (fzf)
+"   l / L   lines in this buffer / across open buffers    (fzf)
 nnoremap <leader>e :CocList outline<CR>
 nnoremap <leader>E :CocList symbols<CR>
 
 " Both get a bat preview from vim/fzf-layout.vim — fzf.vim ships :BLines and
-" :Lines without one. c is this buffer, C is every open buffer.
-nnoremap <leader>c :call FzfBLinesPreview()<CR>
-nnoremap <leader>C :call FzfLinesPreview()<CR>
+" :Lines without one. l is this buffer, L is every open buffer.
+nnoremap <leader>l :call FzfBLinesPreview()<CR>
+nnoremap <leader>L :call FzfLinesPreview()<CR>
+
+" Position lists, freed up by the move above. Changes spans every listed
+" buffer, unlike g;/g, — Marks shows file and line so you pick, not recall.
+nnoremap <leader>C :Changes<CR>
+nnoremap <leader>M :Marks<CR>
 
 " Search symbols accross project
 nnoremap <leader>a :RG<CR>

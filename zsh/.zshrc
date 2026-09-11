@@ -78,14 +78,53 @@ autoload -Uz url-quote-magic
 zle -N self-insert url-quote-magic
 
 # minimal git_prompt_info — the one oh-my-zsh function the theme uses
+#
+# ONE git call, not the two this used to make. `status --porcelain=v2 --branch`
+# answers everything at once: the branch name, the upstream, how far ahead and
+# behind it is, and — in the lines after the header — whether anything is dirty.
+# symbolic-ref, the rev-parse fallback and the plain status all collapse into
+# it. Measured in this repo, 26.6ms -> 13.3ms per prompt.
+#
+# The header is fixed-shape and easy to read line by line:
+#     # branch.oid <sha>            always
+#     # branch.head <name>          or "(detached)"
+#     # branch.upstream <ref>       absent when there is none
+#     # branch.ab +N -M             absent when there is no upstream
+# so a missing upstream needs no special case: ab stays empty and the sync
+# field renders as nothing. Detached HEAD falls back to the short oid, which
+# the header already carries — that is what used to cost the second call.
+#
+# The loop breaks on the first non-header line: the dirty flag only needs to
+# know that ONE exists, and a repo with thousands of changed files should not
+# be read to the end to discover it.
+#
+# +N / -M rather than arrows, matching the ascii */= below. Both are only as
+# fresh as the last fetch — nothing here touches the network, so "behind" means
+# behind as of whenever you last looked.
+#
+# A tag field lived here briefly and was removed: --exact-match made it empty
+# except on a release commit, which is not worth a call.
 git_prompt_info() {
-    local ref
-    ref=$(command git symbolic-ref --short HEAD 2>/dev/null) ||
-    ref=$(command git rev-parse --short HEAD 2>/dev/null) || return 0
+    local line ref="" oid="" ab="" dirty=""
+    while IFS= read -r line; do
+        case $line in
+            "# branch.head "*) ref=${line#\# branch.head } ;;
+            "# branch.oid "*)  oid=${line#\# branch.oid } ;;
+            "# branch.ab "*)   ab=${line#\# branch.ab } ;;
+            "# "*)             ;;
+            *)                 dirty=1; break ;;
+        esac
+    done < <(command git status --porcelain=v2 --branch 2>/dev/null)
+    [[ -n $ref ]] || return 0
+    [[ $ref == "(detached)" ]] && ref=${oid[1,7]}
+
+    local ahead=${${ab%% *}#+} behind=${${ab##* }#-} sync=""
+    (( ahead ))  && sync+=" ${ZSH_THEME_GIT_PROMPT_AHEAD}+${ahead}%{$reset_color%}"
+    (( behind )) && sync+=" ${ZSH_THEME_GIT_PROMPT_BEHIND}-${behind}%{$reset_color%}"
+
     local state=$ZSH_THEME_GIT_PROMPT_CLEAN
-    [[ -n $(command git status --porcelain 2>/dev/null | head -1) ]] &&
-        state=$ZSH_THEME_GIT_PROMPT_DIRTY
-    echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${state}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
+    [[ -n $dirty ]] && state=$ZSH_THEME_GIT_PROMPT_DIRTY
+    echo "${ZSH_THEME_GIT_PROMPT_PREFIX}${ref}${state}${sync}${ZSH_THEME_GIT_PROMPT_SUFFIX}"
 }
 
 source "$ISGRC/zsh/isg.zsh-theme"
@@ -167,6 +206,24 @@ export PATH="/usr/local/opt/llvm@17/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"   # cargo-installed binaries (plc)
 
+# Homebrew. Same failure as ~/.local/bin above, one level up. /opt/homebrew/bin
+# reaches PATH on this Mac only through /etc/paths.d/homebrew, and macOS's
+# /usr/libexec/path_helper — run from /etc/zprofile — expands every line of
+# /etc/paths *before* it touches /etc/paths.d. /etc/paths line 3 is /usr/bin, so
+# the brew prefix is structurally guaranteed to lose; no edit under /etc/paths.d
+# can reorder that, the two lists are concatenated in that order by design. The
+# symptom was `git` resolving to Apple's 2.39.5 while brew's 2.53.0 sat unused.
+#
+# Has to be .zshrc, not .zshenv: a login zsh reads .zshenv *before* /etc/zprofile,
+# so path_helper would re-hoist /usr/bin over anything set there. .zshrc is the
+# first file that runs after it.
+#
+# sbin is included because path_helper never had it at all — /etc/paths.d/homebrew
+# lists only bin, so formulae installing to /opt/homebrew/sbin were invisible.
+# Guarded like the fzf line above so Linux boxes, which have no /opt/homebrew,
+# skip it rather than prepending a dead directory.
+[[ -d /opt/homebrew/bin ]] && export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$PATH"
+
 
 
 export EDITOR='nvim'
@@ -233,6 +290,18 @@ unset _brew_prefix _hl
 
 # ── startup banner (engine lives in the isg theme) ──
 source "$ISGRC/zsh/startup.zsh"
+
+# Whatever belongs to this box rather than to the config — SSH_KEYS above all.
+# Sourced exactly here: after startup.zsh, whose `typeset -ga SSH_KEYS=()` it
+# has to win over, and before banner_render, which is what runs log_ssh.
+#
+# In $HOME rather than on a setup/<machine> branch because ~/.zshrc is a symlink
+# into the working tree, so a branch-held value follows HEAD: a shell opened
+# while the repo sat on main got SSH_KEYS empty, and log_ssh — whose empty-list
+# guard only fires when no agent is reachable — then printed "ssh-agent · 1 key"
+# and added nothing, silently. $HOME is not a checkout, so this survives.
+# zsh/zshrc.local.example is the template to copy out.
+[[ -r ~/.zshrc.local ]] && source ~/.zshrc.local
 
 # %n = the real user, not a hardcoded name: a root shell sourcing this config
 # (sudo -E, su -m) says "root", so the banner can't claim to be isg while the

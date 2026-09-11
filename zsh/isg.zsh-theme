@@ -24,9 +24,8 @@ $(__isg::current_caret) '
 
 PROMPT2='. '
 
-_return_status="%(?..%{$fg[red]%}%? ⚠️%{$reset_color%})"
-
-RPROMPT='%{$(echotc UP 1)%} ${_return_status}%{$(echotc DO 1)%}'
+# No RPROMPT: the exit-status segment that lived here shouted `130 ⚠️` on every
+# fzf Esc and Ctrl-C as loudly as on a real failure. `echo $?` on demand instead.
 
 __isg::current_caret () {
   # This function sets caret color and sign
@@ -96,8 +95,15 @@ __isg::current_venv () {
 
 ZSH_THEME_GIT_PROMPT_PREFIX="%{$fg[green]%}"
 ZSH_THEME_GIT_PROMPT_SUFFIX="%{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_DIRTY=" %{$fg[red]%}✗%{$reset_color%}"
-ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg[green]%}✔%{$reset_color%}"
+# ASCII, not ✗/✔: * for a dirty tree is git's own convention (__git_ps1 marks
+# unstaged work with it), and both glyphs survive a terminal or font that has
+# no opinion about U+2714.
+ZSH_THEME_GIT_PROMPT_DIRTY=" %{$fg[red]%}*%{$reset_color%}"
+ZSH_THEME_GIT_PROMPT_CLEAN=" %{$fg[green]%}=%{$reset_color%}"
+# Ahead of / behind the upstream. Yellow for work you have not pushed, since it
+# is the one that is yours to act on; blue for commits waiting to come down.
+ZSH_THEME_GIT_PROMPT_AHEAD="%{$fg[yellow]%}"
+ZSH_THEME_GIT_PROMPT_BEHIND="%{$fg[blue]%}"
 ZSH_THEME_GIT_PROMPT_UNMERGED="%{$fg[cyan]%}§%{$reset_color%}"
 ZSH_THEME_GIT_PROMPT_ADDED="%{$fg[green]%}✚%{$reset_color%}"
 
