@@ -12,7 +12,7 @@ let g:fzf_vim = get(g:, 'fzf_vim', {})
 let g:fzf_vim.preview_window = ['down,60%', 'ctrl-/']
 
 " ------------------------------------------------------------
-"  BLines with a preview  (<leader>c)
+"  BLines with a preview  (<leader>l)
 " ------------------------------------------------------------
 " :BLines is one of the fzf.vim commands that ships with NO preview:
 " fzf#vim#buffer_lines() builds its own --options list and never routes through
@@ -64,7 +64,7 @@ function! FzfBLinesPreview() abort
 endfunction
 
 " ------------------------------------------------------------
-"  Lines with a preview  (<leader>C)
+"  Lines with a preview  (<leader>L)
 " ------------------------------------------------------------
 " :Lines has the same gap as :BLines — fzf#vim#lines() assembles its own
 " --options and never routes through fzf#vim#with_preview() either.

@@ -8,12 +8,12 @@ lmap("n", "p", "<cmd>Files<CR>", { desc = "Find files" })
 lmap("n", "b", "<cmd>Buffers<CR>", { desc = "Find buffers" })
 -- Lowercase = this buffer, uppercase = wider scope, for both pairs:
 --   e / E   symbols in this file / across the workspace   (LSP)
---   c / C   lines in this buffer / across open buffers    (fzf)
+--   l / L   lines in this buffer / across open buffers    (fzf)
 --
 -- FzfBLinesPreview / FzfLinesPreview (vim/fzf-layout.vim) rather than plain
 -- :BLines and :Lines — fzf.vim ships both without a preview pane.
-lmap("n", "c", "<cmd>call FzfBLinesPreview()<CR>", { desc = "Search lines in buffer" })
-lmap("n", "C", "<cmd>call FzfLinesPreview()<CR>", { desc = "Search lines in open buffers" })
+lmap("n", "l", "<cmd>call FzfBLinesPreview()<CR>", { desc = "Search lines in buffer" })
+lmap("n", "L", "<cmd>call FzfLinesPreview()<CR>", { desc = "Search lines in open buffers" })
 lmap("n", "a", "<cmd>RG<CR>", { desc = "Live ripgrep" })
 lmap("n", "A", "<cmd>Rg<CR>", { desc = "Ripgrep (fzf filter)" })
 lmap("n", "E", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", { desc = "Workspace symbols" })
