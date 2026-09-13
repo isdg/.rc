@@ -39,6 +39,10 @@ window-show-tab-bar = never
 # --- behavior ---
 bold-is-bright = true
 copy-on-select = false
+# Answer OSC 52 clipboard reads instead of the default prompt-every-time, so a
+# remote nvim's <leader>p can fetch this Mac's clipboard (nvim/lua/options.lua).
+# The cost: anything running in a pane can read the clipboard without asking.
+clipboard-read = allow
 mouse-hide-while-typing = true
 confirm-close-surface = false
 shell-integration = detect
