@@ -214,10 +214,30 @@ map("n", "<C-o>", "<C-i>", { noremap = true, desc = "Jump forward" })
 lmap("v", "y", '"+y', { desc = "Yank to clipboard" })
 
 -- Paste the system clipboard, the counterpart to <leader>y. p freed up when
--- file finding moved to <leader>f. Visual uses "+P, not "+p, so pasting over a
--- selection leaves the unnamed register alone and the same paste repeats.
+-- file finding moved to <leader>f. Visual uses "+P, not "+p, so a paste over a
+-- selection leaves the unnamed register alone and stays repeatable — which also
+-- matters over SSH, where "+ reads back the unnamed register (see options.lua).
 lmap("n", "p", '"+p', { desc = "Paste from clipboard" })
 lmap("v", "p", '"+P', { desc = "Paste from clipboard" })
+
+-- <leader>y{f,p,P}: put this buffer's name, absolute path or cwd-relative path
+-- on the clipboard. Same "+ as the yank above, so it reaches pbcopy locally and
+-- the local terminal over SSH; :. falls back to the full path outside cwd.
+local function yank_path(modifier)
+    return function()
+        local path = vim.fn.expand("%" .. modifier)
+        if path == "" then
+            vim.notify("Buffer has no file name", vim.log.levels.WARN)
+            return
+        end
+        vim.fn.setreg("+", path)
+        vim.notify("Copied " .. path)
+    end
+end
+
+lmap("n", "yf", yank_path(":t"), { desc = "Yank file name to clipboard" })
+lmap("n", "yp", yank_path(":p"), { desc = "Yank absolute path to clipboard" })
+lmap("n", "yP", yank_path(":."), { desc = "Yank relative path to clipboard" })
 
 -- Reselect last visual selection
 lmap("n", "v", "gv", { desc = "Reselect visual" })
