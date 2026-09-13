@@ -219,6 +219,25 @@ lmap("v", "y", '"+y', { desc = "Yank to clipboard" })
 lmap("n", "p", '"+p', { desc = "Paste from clipboard" })
 lmap("v", "p", '"+P', { desc = "Paste from clipboard" })
 
+-- <leader>y{f,p,P}: put this buffer's name, absolute path or cwd-relative path
+-- on the clipboard. Same "+ as the yank above, so it reaches pbcopy locally and
+-- the local terminal over SSH; :. falls back to the full path outside cwd.
+local function yank_path(modifier)
+    return function()
+        local path = vim.fn.expand("%" .. modifier)
+        if path == "" then
+            vim.notify("Buffer has no file name", vim.log.levels.WARN)
+            return
+        end
+        vim.fn.setreg("+", path)
+        vim.notify("Copied " .. path)
+    end
+end
+
+lmap("n", "yf", yank_path(":t"), { desc = "Yank file name to clipboard" })
+lmap("n", "yp", yank_path(":p"), { desc = "Yank absolute path to clipboard" })
+lmap("n", "yP", yank_path(":."), { desc = "Yank relative path to clipboard" })
+
 -- Reselect last visual selection
 lmap("n", "v", "gv", { desc = "Reselect visual" })
 
