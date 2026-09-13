@@ -24,6 +24,7 @@ return {
                 actions = { open_file = { quit_on_open = true } },
                 on_attach = function(bufnr)
                     local api = require("nvim-tree.api")
+                    local lmap = require("keymaps.leader").lmap
                     api.config.mappings.default_on_attach(bufnr) -- keep all defaults
 
                     local function push() -- remember the root we're leaving
@@ -51,6 +52,17 @@ return {
                     map("<C-]>", to_node, "nvim-tree: change root to node (+history)")
                     map("-", to_parent, "nvim-tree: root to parent (+history)")
                     map("<C-o>", back, "nvim-tree: previous root (back)")
+
+                    -- The <leader>y{f,p,P} trio a file buffer has (keymaps/editor.lua),
+                    -- aimed at the node under the cursor. nvim-tree's own y/Y/gy stay,
+                    -- and lmap adds the Russian twins the plugin's keys lack.
+                    local function ymap(lhs, fn, desc)
+                        lmap("n", lhs, fn,
+                            { buffer = bufnr, noremap = true, silent = true, desc = desc })
+                    end
+                    ymap("yf", api.fs.copy.filename, "nvim-tree: copy file name")
+                    ymap("yp", api.fs.copy.absolute_path, "nvim-tree: copy absolute path")
+                    ymap("yP", api.fs.copy.relative_path, "nvim-tree: copy relative path")
                 end,
             })
         end,
