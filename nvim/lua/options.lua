@@ -104,59 +104,19 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
 --   * Over SSH: pbcopy would target the remote box, so push to the *local*
 --     terminal with OSC 52 instead. Needs a terminal that supports OSC 52
 --     (Ghostty/iTerm2/kitty/WezTerm/Alacritty), which is what we run.
--- Reading back needs the terminal to answer an OSC 52 query, which Ghostty only
--- does with clipboard-read = allow (ghostty/config). A terminal that stays
--- silent costs a wait and then the unnamed register -- never a hang.
+-- Paste reads the local register rather than querying the terminal (which can
+-- hang/prompt) -- use the terminal's own paste (Cmd+V, bracketed) for outside
+-- text.
 if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
     local osc52 = require("vim.ui.clipboard.osc52")
-
-    local function unnamed_register()
-        return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
-    end
-
-    -- tmux swallows an OSC 52 read whole: the query never reaches the terminal,
-    -- and the reply to a passthrough-wrapped one never comes back. refresh-client
-    -- -l is its own path for it, parking the answer in a fresh paste buffer.
-    local function tmux_clipboard()
-        local function buffer_names()
-            return vim.fn.system({ "tmux", "list-buffers", "-F", "#{buffer_name}" })
-        end
-        local before = buffer_names()
-        vim.fn.system({ "tmux", "refresh-client", "-l" })
-        -- The reply is asynchronous, and tmux mints a new buffer for it even when
-        -- the contents repeat an old one, so the name list is the arrival signal.
-        local deadline = vim.uv.now() + 1000
-        while vim.uv.now() < deadline do
-            vim.uv.sleep(20)
-            if buffer_names() ~= before then
-                return vim.fn.system({ "tmux", "show-buffer" })
-            end
-        end
-    end
-
-    local function paste(reg)
-        local osc52_paste = osc52.paste(reg)
+    local function paste_reg()
         return function()
-            if not vim.env.TMUX then
-                local lines = osc52_paste()
-                return lines ~= 0 and lines or unnamed_register()
-            end
-            local text = tmux_clipboard()
-            if not text then
-                return unnamed_register()
-            end
-            -- A trailing newline is the clipboard saying "whole lines".
-            local linewise = text:sub(-1) == "\n"
-            return {
-                vim.split(linewise and text:sub(1, -2) or text, "\n", { plain = true }),
-                linewise and "V" or "v",
-            }
+            return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
         end
     end
-
     vim.g.clipboard = {
         name = "OSC 52",
         copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
-        paste = { ["+"] = paste("+"), ["*"] = paste("*") },
+        paste = { ["+"] = paste_reg(), ["*"] = paste_reg() },
     }
 end
