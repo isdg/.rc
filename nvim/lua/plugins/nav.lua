@@ -86,7 +86,7 @@ return {
                     },
                     -- Frame telescope like the fzf.vim commands, so the pickers that
                     -- ARE telescope (lsp_*_symbols, diagnostics) look
-                    -- the same as <leader>p/a/A/C. Mirrors vim/fzf-layout.vim:
+                    -- the same as <leader>f/a/A/C. Mirrors vim/fzf-layout.vim:
                     -- 0.95 x 0.95 window, preview stacked below the list at 60%.
                     -- Telescope's own previewer does the work — real buffers with
                     -- treesitter highlighting, and the match line centred and
@@ -144,7 +144,7 @@ return {
     -- type 1-2 chars of any on-screen target, then a label appears -- type it to
     -- jump. O(1) regardless of distance, complementing <leader>l (BLines) which
     -- is search-list style. Single binding for now; format lives on <leader>F.
-    --   <leader>f -> jump (normal/visual/operator-pending: d<leader>f<label>)
+    --   <leader>j -> jump (normal/visual/operator-pending: d<leader>j<label>)
     --   <c-s>     -> toggle flash labels while typing a / search (no vi conflict)
     {
         "folke/flash.nvim",
@@ -168,7 +168,7 @@ return {
             vim.api.nvim_create_autocmd("ColorScheme", { callback = fix_backdrop })
         end,
         keys = {
-            { "<leader>f", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash jump" },
+            { "<leader>j", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash jump" },
             { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
         },
     },
