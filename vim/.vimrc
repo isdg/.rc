@@ -34,7 +34,6 @@
 " SPLITS
 "   <leader>e        Vertical split
 "   <leader>r        Horizontal split
-"   <leader>f        Keep only current split
 "   <C-h/j/k/l>      Move between splits
 "   <leader>+/-         Resize split vertically
 "   <leader>< / >       Resize split horizontally
@@ -57,7 +56,7 @@
 "   za/zA/zo/zc      Folding commands
 
 " FUZZY FIND
-"   <leader>p        Search files
+"   <leader>f        Search files
 "   <C-b>            Search buffers
 "   :History         Open file history
 "   :BLines          Search inside current buffer
@@ -167,7 +166,7 @@
 "   ; / ,             Repeat last f/F/t/T forward / backward
 
 " FUZZY & SYMBOL SEARCH (via plugins)
-"   <leader>p         Fuzzy find files (:Files)
+"   <leader>f         Fuzzy find files (:Files)
 "   <leader>e / E     LSP symbols: this file / workspace
 "   <leader>c / C     Lines: this buffer / all open buffers
 "   <C-b>             Fuzzy find buffers (:Buffers)
@@ -490,8 +489,8 @@ execute 'source ' . s:script_dir . '/fzf-layout.vim'
 "                      FUZZY FIND
 " ============================================================
 
-" Search files (file palette)
-nnoremap <leader>p :Files<CR>   
+" Search files (file palette). Same key as nvim (keymaps/find.lua).
+nnoremap <leader>f :Files<CR>
 
 " Search buffers (buffer palette)
 nnoremap <leader>b :Buffers<CR>

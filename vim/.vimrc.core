@@ -84,7 +84,7 @@ nnoremap <C-o> <C-i>
 
 " Plugin stand-ins — same key as ~/.vimrc, built-in tool
 nnoremap <C-n> :Explore<CR>
-nnoremap <leader>p :find *
+nnoremap <leader>f :find *
 nnoremap <leader>b :ls<CR>:b
 nnoremap <leader>a :vimgrep // **<Left><Left><Left><Left>
 nnoremap <leader>A :copen<CR>
