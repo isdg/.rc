@@ -21,11 +21,11 @@
 # wants space and ctrl-j is fzf's `down`; it also reads like tmux's M-<letter>.
 #
 # Vim's scroll verbs on Alt, keeping fzf's ctrl defaults; the one key spent is
-# M-d (fzf's kill-word). Spelled up/down inverted because fzf's directions are
-# screen-relative and this layout grows bottom-up: half-page-up walks to `last`.
+# M-d (fzf's kill-word). Screen-relative, like fzf's own directions: the list
+# grows bottom-up, so M-d moves down the screen, toward the first match.
 --preview-window=down:55%
 --bind=alt-j:jump,jump:accept
---bind=alt-d:half-page-up,alt-u:half-page-down,alt-g:first,alt-G:last
+--bind=alt-d:half-page-down,alt-u:half-page-up,alt-g:first,alt-G:last
 --color=bg:-1,fg:-1,bg+:${ISG_SEL_BG},fg+:${ISG_SEL_FG}
 --color=hl:bright-blue,hl+:blue
 --color=header:green,info:green,pointer:blue
