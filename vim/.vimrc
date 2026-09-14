@@ -121,7 +121,7 @@
 
 " SPLITS (related)
 "   <C-h/j/k/l>       Move between splits
-"   <leader>H/J/K/L   Move split window to left/bottom/top/right
+"   <C-w>H/J/K/L      Move split window to left/bottom/top/right
 "   <leader>+/-/< />  Resize splits (height/width)
 "   <leader>=         Equalize all split sizes
 
@@ -495,8 +495,8 @@ nnoremap <leader>f :Files<CR>
 " Search buffers (buffer palette)
 nnoremap <leader>b :Buffers<CR>
 
-" Recent files (fzf v:oldfiles)
-nnoremap <leader>B :History<CR>
+" File history (fzf v:oldfiles). H for history; B was just the uppercase of b.
+nnoremap <leader>H :History<CR>
 
 " Lowercase = this buffer, uppercase = wider scope, for both pairs (same as
 " nvim, see nvim/lua/keymaps/find.lua):
