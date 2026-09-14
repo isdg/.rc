@@ -44,3 +44,7 @@ local ru_jumps = {
 for ru, en in pairs(ru_jumps) do
     vim.keymap.set({ "n", "v" }, ru, en, { noremap = true })
 end
+
+-- Handed out for keymaps/layer.lua, which reads keys rather than mapping them
+-- and so has to do this translation itself, once per press.
+return { to_latin = all }
