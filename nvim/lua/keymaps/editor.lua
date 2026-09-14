@@ -84,10 +84,10 @@ end
 -- letter is the whole binding — so nvim moves to meet it rather than the other
 -- way round, and the pair below ends up reading identically in both.
 --
---   HJKL  resize        v / h  split         ;  last split      o  cycle
+--   HJKL  resize     v / h  split     ;  last split     o  cycle     1-9  jump
 --
 -- Each entry displaces a <C-w> default, and each is a default already reachable
--- another way, which is the whole reason these four were the ones to spend:
+-- another way, which is the whole reason these five were the ones to spend:
 --   HJKL  moved a window to the far edge at full height/width. That verb is
 --         gone, not relocated — <C-w><C-hjkl> above covers rearranging, and it
 --         does it without flattening the layout, which is what HJKL was
@@ -96,6 +96,9 @@ end
 --   o     was `only`. Still one word away as :only, and unlike the others it
 --         has no keyed replacement, so it is the one real loss here.
 --   ;     was unmapped.
+--   1-9   were a count typed after <C-w> (<C-w>5+ raises by five). A count
+--         before the key means the same thing and is the spelling everything
+--         here already uses — the resize maps above read theirs that way.
 -- <C-w>s (split) and <C-w>p (last split) are deliberately left alone, so every
 -- displaced verb except `only` keeps its vim-native key too.
 
@@ -136,6 +139,15 @@ map("n", "<C-w>sh", "<cmd>split<CR>", { desc = "Split stacked" })
 
 map("n", "<C-w>;", "<C-w>p", { desc = "Last split" })
 map("n", "<C-w>o", "<C-w>w", { desc = "Cycle splits" })
+
+-- Straight to a split by number, the digits tmux's layer spends on panes —
+-- though vim numbers positionally (winnr(), top-left down) where tmux's
+-- pane_index is creation order. Clamped: :9wincmd w with four open is an E16.
+for i = 1, 9 do
+    map("n", "<C-w>" .. i, function()
+        vim.cmd(math.min(i, vim.fn.winnr("$")) .. "wincmd w")
+    end, { desc = "Go to split " .. i })
+end
 
 -- Equalize, on tmux's letter as well as vim's. <C-w>= is the builtin and stays
 -- the primary — it is documented, universal, and the symbol says the thing —
