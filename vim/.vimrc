@@ -276,6 +276,10 @@ set ruler             " Show cursor position
 set incsearch         " Incremental search
 set scrolloff=4       " Set space when scrolloff
 set hidden            " Allow switching buffers without saving
+" Vi-compatible default is empty: backspace stops dead at autoindent, a line
+" break, or wherever insert mode began. nvim defaults to this value and
+" .vimrc.core already sets it; plain vim was the one left with the 1976 rule.
+set backspace=indent,eol,start
 
 
 " ----------------------------
