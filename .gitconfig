@@ -148,3 +148,5 @@
 ; which is what a fresh Linux box hits.
 [include]
 	path = ~/.gitconfig.local
+[maintenance]
+	repo = /Users/isg/cosmos-main
