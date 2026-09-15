@@ -9,6 +9,12 @@ bindkey -v
 # letter on paste).
 export KEYTIMEOUT=10
 
+# Backspace deletes anything on the line, not just what this insert session typed.
+# zsh binds viins ^? to vi-backward-delete-char, which "won't delete past the point
+# where insert mode was last entered" — and a lost paste race plants that mid-paste.
+bindkey -M viins '^?' backward-delete-char
+bindkey -M viins '^H' backward-delete-char
+
 # In normal mode: v or n opens $EDITOR on the current command line
 autoload -Uz edit-command-line
 zle -N edit-command-line
