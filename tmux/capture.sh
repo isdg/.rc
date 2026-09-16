@@ -29,6 +29,12 @@ eval "$(tmux display -p -t "$pane" \
     'w=#{pane_width} h=#{pane_height} x=#{pane_left} y=#{pane_top} s=#{scroll_position}')"
 case ${s:-0} in ''|*[!0-9]*) s=0 ;; esac
 
+# The capture itself lives in $TMPDIR, so without this nvim would sit there and
+# every relative path in the output -- which is most of what a build or a test
+# run prints -- would resolve nowhere. Fetched on its own line, not through the
+# eval above: a directory may contain spaces, those four numbers may not.
+cwd=$(tmux display -p -t "$pane" '#{pane_current_path}')
+
 # Land on the screenful the pane is showing, not on the top of its history: the
 # popup sits exactly over that text, so opening anywhere else reads as the pane
 # jumping. Gzb is the bottom of the capture, then back up by however far
@@ -53,38 +59,62 @@ bare="setlocal nonumber norelativenumber signcolumn=no"
 # opens a cmdline over the last row when it is needed.
 chrome="set laststatus=0 cmdheight=0"
 
-# Both nvim lines are otherwise omni's, read off a live capture rather than
-# guessed. -e keeps the colour that baleia turns into highlights; plain asks for
-# none, which is the whole difference between the two keys.
+# P for promote: the popup is for a look, and sometimes a look turns into work.
+# P closes it and reopens the same capture as a pane, at the line being read.
+# A popup swallows the prefix, so this has to be a key inside nvim rather than a
+# tmux binding; buffer-local, and P because paste-before is the one normal-mode
+# key a pane's output has no use for. The line number doubles as the flag file.
+promote="$f.promote"
+promote_map="lua vim.keymap.set('n','P',function()
+    vim.fn.writefile({tostring(vim.fn.line('.'))},'$promote') vim.cmd('qa!') end,
+    {buffer=true,desc='capture: promote to a pane'})"
+
+# The nvim call is otherwise omni's, read off a live capture rather than guessed.
+# -e keeps the colour that baleia turns into highlights; plain asks for none,
+# which is the whole difference between the two keys.
 if [ "$pager" = "plain" ]; then
     tmux capture-pane -p -S - -t "$pane" > "$f"
-    open="nvim -n -c \"$chrome\" -c \"$bare\" -c \"$pos\" \"$f\""
+    colour=""
 else
     tmux capture-pane -p -e -S - -t "$pane" > "$f"
-    open="nvim -n -c \"lua pcall(function() require([[baleia]]).setup().once(0) end)\" \
-        -c \"$chrome\" -c \"$bare\" -c \"$pos\" \"$f\""
+    colour="-c \"lua pcall(function() require([[baleia]]).setup().once(0) end)\""
 fi
+open="nvim -n $colour -c \"$chrome\" -c \"$bare\" -c \"$promote_map\" -c \"$pos\" \"$f\""
 
 # The popup is the pane's twin down to the cell, so nothing inside it says which
 # of the two you are reading. -B leaves no border to hang -T on, so the status
-# line carries it: the window wears capture: while the capture is up.
-name=$(tmux display -p -t "$pane" '#{window_name}')
-auto=$(tmux show -wqv -t "$pane" automatic-rename || true)
-
-# rename-window turns automatic-rename off for that window as a side effect, so
-# putting the name back means restoring the option, not retyping the old name --
-# unless it was already off, which is someone having named this window by hand.
+# line carries it: @capture makes the window render as (name), in bold, for as
+# long as the capture is up (window-status-format in .tmux.conf).
+#
+# A flag rather than a renamed window, which is what this used to be: the name
+# goes on saying what is running, and nothing has to be put back afterwards --
+# rename-window turns automatic-rename off as a side effect, so restoring it
+# meant remembering both the name and whether the option had been on.
+keep=0 # set when P promotes the capture, which hands the file to a pane
 restore() {
-    rm -f "$f"
-    if [ "${auto:-on}" = "on" ]; then
-        tmux set -wu -t "$pane" automatic-rename
-    else
-        tmux rename-window -t "$pane" "$name"
+    if [ "$keep" = 0 ]; then
+        rm -f "$f"
     fi
+    tmux set -wu -t "$pane" @capture
 }
 trap restore EXIT INT TERM
 
-tmux rename-window -t "$pane" "capture:$name"
+tmux set -w -t "$pane" @capture 1
 # display-popup blocks until the popup closes, so restore runs when the reader
 # quits -- measured, not assumed.
-tmux display-popup -B -E -w "$w" -h "$h" -x "$x" -y "$y" "$open"
+tmux display-popup -B -E -d "$cwd" -w "$w" -h "$h" -x "$x" -y "$y" "$open"
+
+# P wrote the line it was on, so the pane opens looking at the same text. Split
+# below rather than beside: the new pane keeps the source pane's width, and the
+# capture's lines were wrapped to exactly that width when tmux rendered them.
+# The origin pane keeps its shell and its scrollback; only the window's geometry
+# gives way, which is the one thing a second pane cannot avoid asking for.
+# chrome stays out of it -- a pane covers nothing, so a statusline costs nothing
+# -- and the temp file now belongs to the pane, as omni's window owns its own.
+if [ -f "$promote" ]; then
+    keep=1
+    line=$(cat "$promote")
+    rm -f "$promote"
+    tmux split-window -v -t "$pane" -c "$cwd" \
+        "nvim -n $colour -c \"$bare\" -c \"normal! ${line}Gzz\" \"$f\""
+fi
