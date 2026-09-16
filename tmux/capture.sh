@@ -26,7 +26,7 @@ f=$(mktemp "${TMPDIR:-/tmp}/tmux-pane.XXXXXX")
 # agree only while the status line is at the bottom, as it is here.
 # scroll_position is how far copy-mode is scrolled back, and empty outside it.
 eval "$(tmux display -p -t "$pane" \
-    'w=#{pane_width} h=#{pane_height} x=#{pane_left} y=#{pane_top} s=#{scroll_position}')"
+    'w=#{pane_width} h=#{pane_height} x=#{pane_left} y=#{pane_top} s=#{scroll_position} win=#{window_id}')"
 case ${s:-0} in ''|*[!0-9]*) s=0 ;; esac
 
 # The capture itself lives in $TMPDIR, so without this nvim would sit there and
@@ -60,14 +60,14 @@ bare="setlocal nonumber norelativenumber signcolumn=no"
 chrome="set laststatus=0 cmdheight=0"
 
 # P for promote: the popup is for a look, and sometimes a look turns into work.
-# P closes it and reopens the same capture as a pane, at the line being read.
+# P closes it and reopens the same capture in a window, at the line being read.
 # A popup swallows the prefix, so this has to be a key inside nvim rather than a
 # tmux binding; buffer-local, and P because paste-before is the one normal-mode
 # key a pane's output has no use for. The line number doubles as the flag file.
 promote="$f.promote"
 promote_map="lua vim.keymap.set('n','P',function()
     vim.fn.writefile({tostring(vim.fn.line('.'))},'$promote') vim.cmd('qa!') end,
-    {buffer=true,desc='capture: promote to a pane'})"
+    {buffer=true,desc='capture: promote to a window'})"
 
 # The nvim call is otherwise omni's, read off a live capture rather than guessed.
 # -e keeps the colour that baleia turns into highlights; plain asks for none,
@@ -104,17 +104,17 @@ tmux set -w -t "$pane" @capture 1
 # quits -- measured, not assumed.
 tmux display-popup -B -E -d "$cwd" -w "$w" -h "$h" -x "$x" -y "$y" "$open"
 
-# P wrote the line it was on, so the pane opens looking at the same text. Split
-# below rather than beside: the new pane keeps the source pane's width, and the
-# capture's lines were wrapped to exactly that width when tmux rendered them.
-# The origin pane keeps its shell and its scrollback; only the window's geometry
-# gives way, which is the one thing a second pane cannot avoid asking for.
-# chrome stays out of it -- a pane covers nothing, so a statusline costs nothing
-# -- and the temp file now belongs to the pane, as omni's window owns its own.
+# P wrote the line it was on, so the window opens looking at the same text.
+# A window, not a split: the layout the capture came from is left exactly as it
+# was, and full width is never narrower than the pane the lines were wrapped to,
+# so nothing re-wraps. -a puts it next to the window it came from, the way
+# prefix c does -- targeted by window id, since new-window refuses a pane one.
+# chrome stays out of it (a window covers nothing, so a statusline costs
+# nothing), and the temp file goes with it, as omni's window owns its own.
 if [ -f "$promote" ]; then
     keep=1
     line=$(cat "$promote")
     rm -f "$promote"
-    tmux split-window -v -t "$pane" -c "$cwd" \
+    tmux new-window -a -t "$win" -c "$cwd" \
         "nvim -n $colour -c \"$bare\" -c \"normal! ${line}Gzz\" \"$f\""
 fi
