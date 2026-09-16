@@ -83,27 +83,23 @@ open="nvim -n $colour -c \"$chrome\" -c \"$bare\" -c \"$promote_map\" -c \"$pos\
 
 # The popup is the pane's twin down to the cell, so nothing inside it says which
 # of the two you are reading. -B leaves no border to hang -T on, so the status
-# line carries it: the window wears capture: while the capture is up.
-name=$(tmux display -p -t "$pane" '#{window_name}')
-auto=$(tmux show -wqv -t "$pane" automatic-rename || true)
-
-# rename-window turns automatic-rename off for that window as a side effect, so
-# putting the name back means restoring the option, not retyping the old name --
-# unless it was already off, which is someone having named this window by hand.
+# line carries it: @capture makes the window render as (name), in bold, for as
+# long as the capture is up (window-status-format in .tmux.conf).
+#
+# A flag rather than a renamed window, which is what this used to be: the name
+# goes on saying what is running, and nothing has to be put back afterwards --
+# rename-window turns automatic-rename off as a side effect, so restoring it
+# meant remembering both the name and whether the option had been on.
 keep=0 # set when P promotes the capture, which hands the file to a pane
 restore() {
     if [ "$keep" = 0 ]; then
         rm -f "$f"
     fi
-    if [ "${auto:-on}" = "on" ]; then
-        tmux set -wu -t "$pane" automatic-rename
-    else
-        tmux rename-window -t "$pane" "$name"
-    fi
+    tmux set -wu -t "$pane" @capture
 }
 trap restore EXIT INT TERM
 
-tmux rename-window -t "$pane" "capture:$name"
+tmux set -w -t "$pane" @capture 1
 # display-popup blocks until the popup closes, so restore runs when the reader
 # quits -- measured, not assumed.
 tmux display-popup -B -E -d "$cwd" -w "$w" -h "$h" -x "$x" -y "$y" "$open"
