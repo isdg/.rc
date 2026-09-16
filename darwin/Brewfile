@@ -70,5 +70,6 @@ brew "docker-compose"
 brew "colima"
 brew "dive"
 brew "minikube"
+brew "argocd"   # GitOps CD for k8s; Linux gets it from bootstrap/components
 brew "mysql"
 
