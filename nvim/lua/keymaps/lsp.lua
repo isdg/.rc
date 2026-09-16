@@ -10,7 +10,7 @@ lmap("n", "D", function()
 end, { desc = "Toggle diagnostics" })
 
 -- Diagnostics sit under <leader>d: k reads the one under the cursor (k as in K
--- for hover), l lists them all. <leader>d is a prefix and nothing else — leaving
+-- for hover), l and L list them. <leader>d is a prefix and nothing else — leaving
 -- the list on the bare <leader>d as well would make every press of it sit out
 -- 'timeoutlen' first, waiting to see whether a k or an l follows.
 --
@@ -21,8 +21,24 @@ lmap("n", "dk", function()
     vim.diagnostic.open_float({ scope = "cursor" })
 end, { desc = "Diagnostic under cursor" })
 
--- Searchable list of all diagnostics (pairs with ]d/[d jump, <leader>dk float).
-lmap("n", "dl", "<cmd>Telescope diagnostics<CR>", { desc = "List diagnostics" })
+-- Searchable list of diagnostics (pairs with ]d/[d jump, <leader>dk float).
+-- Lowercase is this buffer, uppercase widens it, the same split <leader>l/L and
+-- <leader>e/E use in keymaps/find.lua.
+lmap("n", "dl", function()
+    require("telescope.builtin").diagnostics({ bufnr = 0 })
+end, { desc = "List diagnostics (buffer)" })
+
+-- The repo root rather than the cwd, because nvim is as often started a few
+-- directories inside it. Trailing slash: telescope's root_dir filter is a raw
+-- prefix match on the filename, so ".../.rc" without it also keeps ".../.rc-main".
+--
+-- Scope is what the servers have already published — clangd and ts_ls only
+-- diagnose files you have opened, rust_analyzer and gopls report the whole
+-- crate or package. Nothing here opens files to make them report more.
+lmap("n", "dL", function()
+    local root = vim.fs.root(0, ".git") or vim.uv.cwd()
+    require("telescope.builtin").diagnostics({ root_dir = root .. "/" })
+end, { desc = "List diagnostics (repo)" })
 
 -- Global toggle: the auto-popping completion menu on/off.
 --
@@ -58,7 +74,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         map("n", "[d", vim.diagnostic.goto_prev, opts)
 
         -- <leader>df: act on what dk just read. It completes the <leader>d verb
-        -- set — k reads the diagnostic, l lists them all, f fixes it — so the
+        -- set — k reads the diagnostic, l/L list them, f fixes it — so the
         -- thing you do *about* a diagnostic sits with the two that show it to
         -- you, and the whole group stays one key apart. Named for the intent
         -- (fix) rather than the LSP's word for the mechanism (code action):
