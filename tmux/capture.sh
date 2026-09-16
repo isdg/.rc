@@ -40,16 +40,23 @@ if [ "$s" -gt 0 ]; then
     pos="normal! G${s}kzb"
 fi
 
+# No gutter: this is pane output, not a file, and every column one of these takes
+# is a column the text shifts by — which the popup shows as the pane's own lines
+# moving sideways under it. signcolumn goes for the same reason numbers do
+# (options.lua keeps it on globally), and setlocal so a file opened from in here
+# still gets the usual editing furniture.
+bare="setlocal nonumber norelativenumber signcolumn=no"
+
 # Both nvim lines are otherwise omni's, read off a live capture rather than
 # guessed. -e keeps the colour that baleia turns into highlights; plain asks for
 # none, which is the whole difference between the two keys.
 if [ "$pager" = "plain" ]; then
     tmux capture-pane -p -S - -t "$pane" > "$f"
-    open="nvim -n -c \"$pos\" \"$f\""
+    open="nvim -n -c \"$bare\" -c \"$pos\" \"$f\""
 else
     tmux capture-pane -p -e -S - -t "$pane" > "$f"
     open="nvim -n -c \"lua pcall(function() require([[baleia]]).setup().once(0) end)\" \
-        -c \"$pos\" \"$f\""
+        -c \"$bare\" -c \"$pos\" \"$f\""
 fi
 
 # The popup is the pane's twin down to the cell, so nothing inside it says which
