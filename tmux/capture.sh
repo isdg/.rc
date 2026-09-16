@@ -40,7 +40,26 @@ fi
 eval "$(tmux display -p -t "$pane" \
     'w=#{pane_width} h=#{pane_height} x=#{pane_left} y=#{pane_top}')"
 
-# display-popup blocks until the popup closes, so the cleanup below is reached
-# when the reader quits -- measured, not assumed.
+# The popup is the pane's twin down to the cell, so nothing inside it says which
+# of the two you are reading. -B leaves no border to hang -T on, so the status
+# line carries it: the window wears capture: while the capture is up.
+name=$(tmux display -p -t "$pane" '#{window_name}')
+auto=$(tmux show -wqv -t "$pane" automatic-rename || true)
+
+# rename-window turns automatic-rename off for that window as a side effect, so
+# putting the name back means restoring the option, not retyping the old name --
+# unless it was already off, which is someone having named this window by hand.
+restore() {
+    rm -f "$f"
+    if [ "${auto:-on}" = "on" ]; then
+        tmux set -wu -t "$pane" automatic-rename
+    else
+        tmux rename-window -t "$pane" "$name"
+    fi
+}
+trap restore EXIT INT TERM
+
+tmux rename-window -t "$pane" "capture:$name"
+# display-popup blocks until the popup closes, so restore runs when the reader
+# quits -- measured, not assumed.
 tmux display-popup -B -E -w "$w" -h "$h" -x "$x" -y "$y" "$open"
-rm -f "$f"
