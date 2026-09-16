@@ -29,6 +29,12 @@ eval "$(tmux display -p -t "$pane" \
     'w=#{pane_width} h=#{pane_height} x=#{pane_left} y=#{pane_top} s=#{scroll_position}')"
 case ${s:-0} in ''|*[!0-9]*) s=0 ;; esac
 
+# The capture itself lives in $TMPDIR, so without this nvim would sit there and
+# every relative path in the output -- which is most of what a build or a test
+# run prints -- would resolve nowhere. Fetched on its own line, not through the
+# eval above: a directory may contain spaces, those four numbers may not.
+cwd=$(tmux display -p -t "$pane" '#{pane_current_path}')
+
 # Land on the screenful the pane is showing, not on the top of its history: the
 # popup sits exactly over that text, so opening anywhere else reads as the pane
 # jumping. Gzb is the bottom of the capture, then back up by however far
@@ -87,4 +93,4 @@ trap restore EXIT INT TERM
 tmux rename-window -t "$pane" "capture:$name"
 # display-popup blocks until the popup closes, so restore runs when the reader
 # quits -- measured, not assumed.
-tmux display-popup -B -E -w "$w" -h "$h" -x "$x" -y "$y" "$open"
+tmux display-popup -B -E -d "$cwd" -w "$w" -h "$h" -x "$x" -y "$y" "$open"
