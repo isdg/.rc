@@ -21,24 +21,36 @@ fi
 
 f=$(mktemp "${TMPDIR:-/tmp}/tmux-pane.XXXXXX")
 
-# Both nvim lines are omni's own, read off a live capture rather than guessed,
-# so the popup and the window open the same editor. -e keeps the colour that
-# baleia turns into highlights; plain asks for none, which is the whole
-# difference between the two keys.
-if [ "$pager" = "plain" ]; then
-    tmux capture-pane -p -S - -t "$pane" > "$f"
-    open="nvim -n -c \"normal! 1Gzt\" \"$f\""
-else
-    tmux capture-pane -p -e -S - -t "$pane" > "$f"
-    open="nvim -n -c \"lua pcall(function() require([[baleia]]).setup().once(0) end)\" \
-        -c \"normal! 1Gzt\" \"$f\""
-fi
-
 # -B is what makes the size exact: a bordered popup is two cells smaller each
 # way. -x/-y are client coordinates and pane_left/pane_top window ones, which
 # agree only while the status line is at the bottom, as it is here.
+# scroll_position is how far copy-mode is scrolled back, and empty outside it.
 eval "$(tmux display -p -t "$pane" \
-    'w=#{pane_width} h=#{pane_height} x=#{pane_left} y=#{pane_top}')"
+    'w=#{pane_width} h=#{pane_height} x=#{pane_left} y=#{pane_top} s=#{scroll_position}')"
+case ${s:-0} in ''|*[!0-9]*) s=0 ;; esac
+
+# Land on the screenful the pane is showing, not on the top of its history: the
+# popup sits exactly over that text, so opening anywhere else reads as the pane
+# jumping. Gzb is the bottom of the capture, then back up by however far
+# copy-mode had already scrolled. omni's own 1Gzt is what this replaces.
+# An `[ … ] && pos=…` one-liner would abort the script under set -e every time
+# the test failed, which is every capture taken from a pane at its bottom.
+pos="normal! Gzb"
+if [ "$s" -gt 0 ]; then
+    pos="normal! G${s}kzb"
+fi
+
+# Both nvim lines are otherwise omni's, read off a live capture rather than
+# guessed. -e keeps the colour that baleia turns into highlights; plain asks for
+# none, which is the whole difference between the two keys.
+if [ "$pager" = "plain" ]; then
+    tmux capture-pane -p -S - -t "$pane" > "$f"
+    open="nvim -n -c \"$pos\" \"$f\""
+else
+    tmux capture-pane -p -e -S - -t "$pane" > "$f"
+    open="nvim -n -c \"lua pcall(function() require([[baleia]]).setup().once(0) end)\" \
+        -c \"$pos\" \"$f\""
+fi
 
 # The popup is the pane's twin down to the cell, so nothing inside it says which
 # of the two you are reading. -B leaves no border to hang -T on, so the status
