@@ -1,13 +1,16 @@
 " ============================================================
 "  fzf-layout.vim — shared fzf.vim window/preview layout
 " ============================================================
-" Nearly full-screen popup with the preview pane stacked vertically below
+" Full-screen popup with the preview pane stacked vertically below
 " the file list, for every fzf.vim command (:Files, :Rg, :Buffers, :History,
 " :Commits, …) — they inherit these via fzf#wrap(), which falls back to
 " g:fzf_layout/g:fzf_vim whenever a call doesn't set its own options.
 "
 " Sourced from both vim/.vimrc and nvim/init.lua.
-let g:fzf_layout = { 'window': { 'width': 0.95, 'height': 0.95 } }
+" 1.0 is the whole screen: fzf.vim floors height at &lines - 1, so the popup
+" takes everything but the command line. Matches omni's and orchbus's tmux
+" popups, which run -w 100% -h 100%.
+let g:fzf_layout = { 'window': { 'width': 1.0, 'height': 1.0 } }
 let g:fzf_vim = get(g:, 'fzf_vim', {})
 let g:fzf_vim.preview_window = ['down,60%', 'ctrl-/']
 
