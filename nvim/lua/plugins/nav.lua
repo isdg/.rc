@@ -87,7 +87,7 @@ return {
                     -- Frame telescope like the fzf.vim commands, so the pickers that
                     -- ARE telescope (lsp_*_symbols, diagnostics) look
                     -- the same as <leader>f/a/A/C. Mirrors vim/fzf-layout.vim:
-                    -- 0.95 x 0.95 window, preview stacked below the list at 60%.
+                    -- full-screen window, preview stacked below the list at 60%.
                     -- Telescope's own previewer does the work — real buffers with
                     -- treesitter highlighting, and the match line centred and
                     -- highlighted for free (bat via a termopen previewer would match
@@ -100,8 +100,8 @@ return {
                             -- fzf's 'down,60%' is below it. mirror flips them.
                             mirror = true,
                             preview_height = 0.6,
-                            width = 0.95,
-                            height = 0.95,
+                            width = 1.0,
+                            height = 1.0,
                             -- Default cutoff (40 lines) silently drops the preview in
                             -- a short window; fzf always shows it.
                             preview_cutoff = 0,
