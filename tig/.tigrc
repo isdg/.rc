@@ -14,6 +14,11 @@ set main-view-author = no
 # Hide the commit hash (id) column in main view
 set main-view-id = no
 
+# v1 is tig's old graph renderer: less accurate on tangled merges, but faster,
+# which is what it is recommended for in big repositories. G still cycles from
+# here: v1 -> no -> v2.
+set main-view-commit-title = graph:v1
+
 # Show relative dates in blame view
 set blame-view-date = relative
 
