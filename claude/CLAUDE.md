@@ -24,9 +24,10 @@ Three properties apply to every change (features, fixes, refactors):
 - **Complete** — implement every relevant case and conform to the full
   semantics of what you're touching. No quiet edge-case breakage; a fix that
   only covers the reported input isn't done.
-- **Idiomatic** — model the work with the language and its standard library,
-  and repeat the idioms of the surrounding code and similar domains rather than
-  inventing new ones.
+- **Best practices** — follow the settled practice of the language, its
+  standard library, and the surrounding code: its idioms, structure, and
+  tooling defaults, rather than inventing a local variant. Where the ecosystem
+  has a known answer, use it instead of a hand-rolled one.
 - **Robust** — the code must be well tested and reliable, and must keep the
   things that depend on it easy to test.
 
