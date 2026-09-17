@@ -12,6 +12,24 @@ let g:fzf_vim = get(g:, 'fzf_vim', {})
 let g:fzf_vim.preview_window = ['down,60%', 'ctrl-/']
 
 " ------------------------------------------------------------
+"  Query history  (<leader>a live ripgrep especially)
+" ------------------------------------------------------------
+" One file per command (fzf#run names it after the command), so :RG's queries
+" never mix with :Files'. The live-ripgrep query IS the search, so retyping a
+" long pattern was the real cost. fzf creates the directory itself.
+let g:fzf_history_dir = empty($XDG_DATA_HOME)
+    \ ? '~/.local/share/fzf-history'
+    \ : $XDG_DATA_HOME . '/fzf-history'
+
+" --history makes fzf remap ctrl-n/ctrl-p to history, spending the pair that
+" moves the cursor; put history on ctrl-j/ctrl-k and hand n/p back. Via
+" $FZF_DEFAULT_OPTS (g:fzf_layout refuses `options`) and so only inside vim.
+if $FZF_DEFAULT_OPTS !~# 'prev-history'
+    let $FZF_DEFAULT_OPTS = $FZF_DEFAULT_OPTS
+        \ . ' --bind=ctrl-j:next-history,ctrl-k:prev-history,ctrl-n:down,ctrl-p:up'
+endif
+
+" ------------------------------------------------------------
 "  BLines with a preview  (<leader>l)
 " ------------------------------------------------------------
 " :BLines is one of the fzf.vim commands that ships with NO preview:
