@@ -100,8 +100,11 @@ return {
                             -- fzf's 'down,60%' is below it. mirror flips them.
                             mirror = true,
                             preview_height = 0.6,
-                            width = 1.0,
-                            height = 1.0,
+                            -- NOT 1.0: telescope reads `>= 1` as a fixed count,
+                            -- so 1.0 is a one-column picker. {padding = 0} is its
+                            -- documented full-screen form (max minus 2*0).
+                            width = { padding = 0 },
+                            height = { padding = 0 },
                             -- Default cutoff (40 lines) silently drops the preview in
                             -- a short window; fzf always shows it.
                             preview_cutoff = 0,
