@@ -323,3 +323,6 @@ banner_render
 # .tool-versions pin (2.101.0) can never match the Homebrew supabase on PATH.
 # Remove this line to restore it; run `uv sync` by hand when uv.lock changes.
 export LEFTHOOK_EXCLUDE=sync-env
+
+# psql & friends from keg-only libpq (client tools only, currently 18.0).
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
