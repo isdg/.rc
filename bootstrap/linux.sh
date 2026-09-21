@@ -40,7 +40,6 @@ source "$SCRIPT_DIR/components/argocd_linux.sh"
 source "$SCRIPT_DIR/components/directories.sh"
 source "$SCRIPT_DIR/components/dotfiles.sh"
 source "$SCRIPT_DIR/components/git_signing.sh"
-source "$SCRIPT_DIR/components/vscode.sh"
 source "$SCRIPT_DIR/components/fonts.sh"
 source "$SCRIPT_DIR/components/tig.sh"
 source "$SCRIPT_DIR/components/vim.sh"
@@ -105,7 +104,6 @@ if [ "$MODE" = ensure ]; then
     ensure_directories         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_dotfiles            || FAILURES=$((FAILURES + 1)); echo ""
     ensure_git_signing         || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_vscode_linux        || FAILURES=$((FAILURES + 1)); echo ""
     ensure_fonts_linux         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_tig                 || FAILURES=$((FAILURES + 1)); echo ""
     ensure_vim_plugins         || FAILURES=$((FAILURES + 1)); echo ""
@@ -152,8 +150,6 @@ configure_git_signing   # after link_dotfiles: ~/.gitconfig has to be in place
 echo ""
 install_pagers_linux    # after link_dotfiles: needs ~/.config/bat/themes to
                         # exist before it can test and build the theme cache
-echo ""
-link_vscode_linux
 echo ""
 install_fonts_linux
 echo ""

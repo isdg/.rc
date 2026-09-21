@@ -1,6 +1,4 @@
 *.DS_Store
-vscode/tasks.json
-**launch.json
 *.swp
 .claude/worktrees
 
