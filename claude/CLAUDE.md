@@ -53,6 +53,23 @@ And two rules on how the work explains itself:
 
 # Global preferences (apply in every project / folder)
 
+## Database access
+
+- **Read-only by default.** Any database CLI or tool — `psql`, `supabase`,
+  `mysql`, `mongosh`, `redis-cli`, a cloud provider's CLI, an MCP database
+  tool — is for reading unless I say otherwise. `SELECT`, `EXPLAIN`, `\d`,
+  and list/describe/inspect commands need no permission; just run them.
+- **Writes need my explicit go-ahead.** `INSERT`/`UPDATE`/`DELETE`/
+  `TRUNCATE`, DDL (`CREATE`/`ALTER`/`DROP`), migrations (`supabase db push`,
+  `supabase migration up`, framework migrate commands), seeds, resets, and
+  role/permission grants: ask first, naming the exact statement and the
+  target database, then wait. Never run it and tell me afterwards.
+- **Authoring isn't applying.** Writing a migration or seed *file* is
+  ordinary work — just don't run it against a database.
+- **Permission is per-task and per-database.** Approving one write doesn't
+  open the rest of the session, and approval against a local throwaway
+  database never extends to a shared or production one.
+
 ## Commit conventions
 
 - **Never add co-author trailers.** Do not append `Co-Authored-By:` lines
