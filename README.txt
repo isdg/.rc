@@ -10,7 +10,7 @@ Includes configs for:
   - Zsh (plain zsh, no framework + isg theme (forked from sobole) + fzf)
   - Vim and Neovim
   - Tmux (with TPM + tmux-resurrect)
-  - Ghostty, VSCode, Zed
+  - Ghostty
   - Tig, JetBrains Mono + Computer Modern fonts
   - macOS defaults & key remapping
 
@@ -30,7 +30,7 @@ Run the bootstrap for your OS:
 
 The bootstrap is modular (see bootstrap/components/) and handles:
 Homebrew, packages, dotfile symlinks, vim-plug + plugins, fzf, fonts,
-tig, vscode, key remapping, and macOS defaults.
+tig, key remapping, and macOS defaults.
 
 Profiles (macOS). darwin.sh reads two component registries at the top of
 the file — CORE and EXTRA — and --minimal runs only CORE with the smaller
@@ -42,9 +42,8 @@ darwin/Brewfile.minimal:
 Minimal gets the editors, tmux, zsh, the fzf/rg/fd/bat picker stack, git
 + gh + tig + delta, Ghostty, dotfile symlinks and fonts. It leaves out
 language toolchains (llvm, openjdk, zig, rust, node), media/graphics
-libs, docker/minikube/mysql, VS Code with its extensions, and the
-Rust-built side tools (plc, hr, omni, orchbus) — so there are no LSP
-servers for mason to install.
+libs, docker/minikube/mysql, and the Rust-built side tools (plc, hr,
+omni, orchbus) — so there are no LSP servers for mason to install.
 
 Either profile can be verified without changing anything:
 
@@ -106,7 +105,6 @@ LAYOUT
     nvim/           init.lua + lazy.nvim setup
     tmux/           .tmux.conf
     ghostty/        terminal config
-    vscode/         settings + keybindings
     zed/            settings
     tig/            git TUI config
     fonts/          JetBrains Mono + Computer Modern

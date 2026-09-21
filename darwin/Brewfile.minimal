@@ -4,8 +4,8 @@
 # nothing else. Deliberately absent: language toolchains (llvm, llvm@17,
 # openjdk, maven, zig, zls, rust, node, pipx), media/graphics libs (ffmpeg,
 # cairo, freetype, glfw, harfbuzz), infra (docker-desktop, minikube, mysql,
-# dive), extra TUIs (vifm, nom, glow, w3m, tokei, tree, sd) and VS Code with its
-# extensions. Roughly 1 GB installed versus ~14-15 GB for the full Brewfile.
+# dive) and extra TUIs (vifm, nom, glow, w3m, tokei, tree, sd). Roughly 1 GB
+# installed versus ~14-15 GB for the full Brewfile.
 #
 # Consequence worth knowing: without node/llvm/zig there are no LSP servers for
 # mason to hand nvim. Everything else — pickers, treesitter, gitsigns, fugitive,

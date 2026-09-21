@@ -33,7 +33,6 @@ source "$SCRIPT_DIR/components/gui_apps_darwin.sh"
 source "$SCRIPT_DIR/components/directories.sh"
 source "$SCRIPT_DIR/components/dotfiles.sh"
 source "$SCRIPT_DIR/components/git_signing.sh"
-source "$SCRIPT_DIR/components/vscode.sh"
 source "$SCRIPT_DIR/components/fonts.sh"
 source "$SCRIPT_DIR/components/tig.sh"
 source "$SCRIPT_DIR/components/vim.sh"
@@ -54,8 +53,8 @@ source "$SCRIPT_DIR/components/darwin_defaults.sh"
 #         The keyboard remap lives here rather than with the other macOS tweaks:
 #         it changes what every keystroke does, so a --minimal box without it is
 #         not usable in the way the rest of this config assumes.
-# EXTRA — GUI apps, VS Code, the Rust-built side tools (plc, hr, omni, orchbus)
-#         and macOS system defaults. Skipped by --minimal.
+# EXTRA — GUI apps, the Rust-built side tools (plc, hr, omni, orchbus) and
+#         macOS system defaults. Skipped by --minimal.
 BOOTSTRAP_CORE_FUNCS=(
     "install_homebrew|ensure_homebrew"
     "install_packages_darwin|ensure_packages_darwin"
@@ -71,7 +70,6 @@ BOOTSTRAP_CORE_FUNCS=(
 )
 BOOTSTRAP_EXTRA_FUNCS=(
     "install_gui_apps_darwin|ensure_gui_apps_darwin"
-    "link_vscode_darwin|ensure_vscode_darwin"
     "install_plc|ensure_plc"
     "install_tmux_plugins|ensure_tmux_plugins"
     "install_hr|ensure_hr"
