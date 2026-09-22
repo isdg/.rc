@@ -1,6 +1,73 @@
 #!/usr/bin/env bash
 # Shared helpers for bootstrap components
 
+# Can the default toolchain actually link? Builds the smallest possible C
+# program; the interesting failures here are all at the link step.
+_cc_links() {
+    local out rc
+    command -v cc >/dev/null 2>&1 || return 1
+    out="$(mktemp -t ccprobe)" || return 1
+    printf 'int main(void){return 0;}\n' | cc -x c - -o "$out" 2>/dev/null
+    rc=$?
+    rm -f "$out"
+    return $rc
+}
+
+# macOS only: confirm cc can link before handing a Rust or Go build to it, and
+# pin SDKROOT to an SDK that works if it cannot.
+#
+# xcrun selects the highest-numbered SDK under the Command Line Tools, not the
+# one the MacOSX.sdk symlink points at. A machine carrying an SDK newer than its
+# CLT -- here SDK 27.0 beside CLT 26.6 -- therefore builds against tbd files
+# whose target its own linker cannot parse:
+#
+#   tapi error: malformed file .../MacOSX27.0.sdk/usr/lib/libSystem.B.tbd:
+#   unknown architecture arm64e.x1-macos
+#
+# Every build that links libc dies there. That took out plc, omni and orchbus
+# at once, and read as a problem with the repos they clone from -- the clone
+# and the compile both succeed, only the final link fails. MacOSX.sdk still
+# points at the SDK the CLT shipped with, so prefer that.
+#
+# A probe rather than a version comparison, because the question is only ever
+# "can this linker link", and that is cheap to ask directly.
+_export_buildable_sdk() {
+    if [ "$(uname)" != "Darwin" ]; then
+        return 0
+    fi
+    # An SDKROOT the caller chose on purpose is not ours to second-guess.
+    if [ -n "${SDKROOT:-}" ]; then
+        return 0
+    fi
+    if _cc_links; then
+        return 0
+    fi
+
+    # Read the broken SDK's version before pinning: xcrun answers for whatever
+    # SDKROOT says, so asking afterwards names the fix rather than the problem.
+    local fallback broken_ver
+    broken_ver="$(xcrun --show-sdk-version 2>/dev/null)"
+    fallback="$(xcode-select -p 2>/dev/null)/SDKs/MacOSX.sdk"
+    if [ ! -d "$fallback" ]; then
+        echo "[WARN] cc cannot link and no MacOSX.sdk to fall back to; native builds will fail"
+        return 0
+    fi
+
+    # Resolve the symlink: the value is going into the environment of every
+    # build below, and an unresolved one is harder to read in a log.
+    SDKROOT="$(cd "$fallback" && pwd -P)"
+    export SDKROOT
+
+    if _cc_links; then
+        echo "[INFO] Default SDK (${broken_ver:-unknown}) will not link; pinned SDKROOT=$SDKROOT"
+    else
+        echo "[WARN] Neither the default SDK nor $SDKROOT will link; native builds will fail"
+        echo "[INFO] Try: xcode-select --install, or softwareupdate --list for a Command Line Tools update"
+        unset SDKROOT
+    fi
+    return 0
+}
+
 # What linking $src to $dst would do to whatever sits at $dst right now. Echoes
 # exactly one of:
 #

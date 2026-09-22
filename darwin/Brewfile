@@ -44,7 +44,8 @@ brew "llvm"
 brew "llvm@17"
 brew "zig"
 brew "zls"   # Zig language server
-brew "rust"  # cargo — builds the plc binary
+brew "rust"  # cargo — builds the plc, omni and orchbus binaries
+brew "go"    # builds the hr binary
 
 # Graphics / media libs
 brew "cairo"
