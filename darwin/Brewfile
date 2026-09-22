@@ -1,5 +1,3 @@
-tap "homebrew/services"
-
 # Core CLI
 brew "bat"
 brew "curl"
