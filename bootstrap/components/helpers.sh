@@ -9,11 +9,9 @@
 #   overwrite  a real file or directory that has to be moved to .backup first
 #   relink     a symlink pointing somewhere else, which ln -sf silently repoints
 #
-# The one place link state is decided: _relink installs from it, _check_link
-# verifies from it, and the bootstrap journal turns the overwrite/relink cases
-# into the modifications it asks you to describe. A dangling symlink lands in
-# `relink` (its realpath is empty, $src's is not), which is what we want — it
-# is about to be replaced either way.
+# The one place link state is decided: _relink installs from it and _check_link
+# verifies from it. A dangling symlink lands in `relink` (its realpath is empty,
+# $src's is not), which is what we want — it is about to be replaced either way.
 _link_state() {
     local src="$1" dst="$2"
 

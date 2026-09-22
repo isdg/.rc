@@ -7,9 +7,9 @@
 # resolution: $HOME, the Darwin-vs-XDG split for nom, and the guards that drop
 # an entry whose source this checkout does not carry.
 #
-# link_dotfiles, ensure_dotfiles and the bootstrap journal all read this one
-# list, so they cannot drift apart — which they had: ensure_dotfiles used to
-# verify a strict subset of what link_dotfiles wrote.
+# link_dotfiles and ensure_dotfiles both read this one list, so they cannot
+# drift apart — which they had: ensure_dotfiles used to verify a strict subset
+# of what link_dotfiles wrote.
 #
 # Deliberately not here, because they are not a straight a->b link: the vim
 # colors directory with its per-file fallback, the theme mode file, and the
