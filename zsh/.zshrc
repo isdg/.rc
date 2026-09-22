@@ -206,6 +206,14 @@ export PATH="/usr/local/opt/llvm@17/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"   # cargo-installed binaries (plc)
 
+# postgresql@17 (Brewfile). Homebrew ships Postgres only as versioned formulae,
+# and versioned formulae are keg-only: the install is complete under
+# /opt/homebrew/opt/postgresql@17 but nothing is symlinked into the brew prefix,
+# so psql/pg_dump/createdb exist and are still "command not found". Guarded like
+# the fzf and Homebrew lines below, so a box without it skips the line.
+[[ -d /opt/homebrew/opt/postgresql@17/bin ]] && \
+    export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+
 # Homebrew. Same failure as ~/.local/bin above, one level up. /opt/homebrew/bin
 # reaches PATH on this Mac only through /etc/paths.d/homebrew, and macOS's
 # /usr/libexec/path_helper — run from /etc/zprofile — expands every line of
