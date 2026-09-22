@@ -61,6 +61,14 @@ _dotfile_links() {
         fi
     fi
 
+    # ssh client config. Unlike the gpg one below this is not Darwin-guarded:
+    # the only macOS-only keyword in it, UseKeychain, is wrapped in
+    # IgnoreUnknown so a Linux ssh skips it rather than dying on it. The file
+    # only -- keys, known_hosts and authorized_keys stay out of the repo.
+    if [ -f "$d/ssh/config" ]; then
+        echo "ssh config|file|$d/ssh/config|$HOME/.ssh/config"
+    fi
+
     # gpg-agent. Darwin only: the pinentry-program line in it is an absolute
     # /opt/homebrew path, which is meaningless on Linux and would wedge the
     # agent there rather than configure it. Only this one file is linked, never
@@ -188,6 +196,12 @@ link_dotfiles() {
     # leaving a fresh machine to that warning.
     if [ -d "$HOME/.gnupg" ]; then
         chmod 700 "$HOME/.gnupg"
+    fi
+    # Same for ~/.ssh, and for the same reason: ssh refuses to use a private key
+    # whose directory is group- or world-readable, so a 0755 ~/.ssh created by
+    # that mkdir would break every key put in it later.
+    if [ -d "$HOME/.ssh" ]; then
+        chmod 700 "$HOME/.ssh"
     fi
 
     # Apply to any already-running tmux server. Unlike ghostty/k9s, tmux's
