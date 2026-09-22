@@ -27,6 +27,7 @@ source "$SCRIPT_DIR/components/neovim_linux.sh"
 source "$SCRIPT_DIR/components/pagers_linux.sh"
 source "$SCRIPT_DIR/components/zsh_syntax_linux.sh"
 source "$SCRIPT_DIR/components/argocd_linux.sh"
+source "$SCRIPT_DIR/components/k9s_linux.sh"
 source "$SCRIPT_DIR/components/directories.sh"
 source "$SCRIPT_DIR/components/dotfiles.sh"
 source "$SCRIPT_DIR/components/git_signing.sh"
@@ -55,6 +56,7 @@ if [[ "${1:-}" == "--ensure" ]]; then
     ensure_pagers_linux        || FAILURES=$((FAILURES + 1)); echo ""
     ensure_zsh_syntax_linux    || FAILURES=$((FAILURES + 1)); echo ""
     ensure_argocd_linux        || FAILURES=$((FAILURES + 1)); echo ""
+    ensure_k9s_linux           || FAILURES=$((FAILURES + 1)); echo ""
     ensure_directories         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_dotfiles            || FAILURES=$((FAILURES + 1)); echo ""
     ensure_git_signing         || FAILURES=$((FAILURES + 1)); echo ""
@@ -92,6 +94,8 @@ echo ""
 install_zsh_syntax_linux
 echo ""
 install_argocd_linux
+echo ""
+install_k9s_linux
 echo ""
 create_directories
 echo ""

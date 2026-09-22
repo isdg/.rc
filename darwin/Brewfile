@@ -70,6 +70,8 @@ brew "docker-compose"
 brew "colima"
 brew "dive"
 brew "minikube"
+brew "k9s"      # k8s TUI; this repo carries its skins, plugins.yaml and a
+                # tmux TERM wrapper (zsh/aliases.zsh), so it has to be here
 brew "argocd"   # GitOps CD for k8s; Linux gets it from bootstrap/components
 brew "mysql"
 
