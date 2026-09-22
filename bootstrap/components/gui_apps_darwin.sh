@@ -9,7 +9,7 @@ _app_installed() {
 ensure_gui_apps_darwin() {
     echo "[STEP] Verifying GUI apps..."
     local failed=0
-    local apps=("Ghostty" "Homerow")
+    local apps=("Ghostty" "Homerow" "Spotify")
     for app in "${apps[@]}"; do
         if _app_installed "$app"; then
             echo "[OK] $app"
@@ -34,6 +34,14 @@ install_gui_apps_darwin() {
         echo "[SKIP] Homerow already installed"
     else
         brew install --cask homerow || echo "[WARN] Homerow installation failed"
+    fi
+
+    # Pinned in the Dock by darwin/defaults/dock.sh, which skips the tile when
+    # the app is missing — so install it before the defaults run.
+    if _app_installed "Spotify"; then
+        echo "[SKIP] Spotify already installed"
+    else
+        brew install --cask spotify || echo "[WARN] Spotify installation failed"
     fi
 
     echo "[OK] GUI apps installed"
