@@ -36,6 +36,7 @@ source "$SCRIPT_DIR/components/vim.sh"
 source "$SCRIPT_DIR/components/plc.sh"
 source "$SCRIPT_DIR/components/tmux_plugins.sh"
 source "$SCRIPT_DIR/components/hr.sh"
+source "$SCRIPT_DIR/components/ewl.sh"
 source "$SCRIPT_DIR/components/fzf.sh"
 source "$SCRIPT_DIR/components/shell.sh"
 
@@ -63,6 +64,7 @@ if [[ "${1:-}" == "--ensure" ]]; then
     ensure_plc                 || FAILURES=$((FAILURES + 1)); echo ""
     ensure_tmux_plugins        || FAILURES=$((FAILURES + 1)); echo ""
     ensure_hr                  || FAILURES=$((FAILURES + 1)); echo ""
+    ensure_ewl                 || FAILURES=$((FAILURES + 1)); echo ""
     ensure_fzf_linux           || FAILURES=$((FAILURES + 1)); echo ""
     ensure_default_shell_linux || FAILURES=$((FAILURES + 1)); echo ""
 
@@ -111,6 +113,8 @@ echo ""
 install_tmux_plugins
 echo ""
 install_hr
+echo ""
+install_ewl
 echo ""
 install_fzf_linux
 echo ""

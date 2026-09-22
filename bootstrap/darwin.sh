@@ -29,6 +29,7 @@ source "$SCRIPT_DIR/components/vim.sh"
 source "$SCRIPT_DIR/components/plc.sh"
 source "$SCRIPT_DIR/components/tmux_plugins.sh"
 source "$SCRIPT_DIR/components/hr.sh"
+source "$SCRIPT_DIR/components/ewl.sh"
 source "$SCRIPT_DIR/components/fzf.sh"
 source "$SCRIPT_DIR/components/shell.sh"
 source "$SCRIPT_DIR/components/keyremap.sh"
@@ -63,6 +64,7 @@ BOOTSTRAP_EXTRA_FUNCS=(
     "install_plc|ensure_plc"
     "install_tmux_plugins|ensure_tmux_plugins"
     "install_hr|ensure_hr"
+    "install_ewl|ensure_ewl"
     "apply_darwin_defaults|ensure_darwin_defaults"
 )
 
