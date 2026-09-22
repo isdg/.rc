@@ -61,6 +61,15 @@ _dotfile_links() {
         fi
     fi
 
+    # gpg-agent. Darwin only: the pinentry-program line in it is an absolute
+    # /opt/homebrew path, which is meaningless on Linux and would wedge the
+    # agent there rather than configure it. Only this one file is linked, never
+    # the directory -- ~/.gnupg is where the keyring, the trustdb and the agent
+    # sockets live, none of which belong in a repo.
+    if [ -f "$d/gpg/gpg-agent.conf" ] && [ "$(uname)" = "Darwin" ]; then
+        echo "gpg-agent.conf|file|$d/gpg/gpg-agent.conf|$HOME/.gnupg/gpg-agent.conf"
+    fi
+
     # nom (RSS reader): macOS uses Library/Application Support, Linux XDG.
     if [ -f "$d/nom/config.yml" ]; then
         if [ "$(uname)" = "Darwin" ]; then
@@ -171,6 +180,15 @@ link_dotfiles() {
         fi
         _relink "$label" "$kind" "$src" "$dst" || true
     done < <(_dotfile_links)
+
+    # _relink's `mkdir -p` makes a missing parent at the umask, i.e. 0755. For
+    # every other target that is fine; for ~/.gnupg it is not. gpg checks the
+    # mode of its own homedir and prints "unsafe permissions on homedir" on
+    # every single invocation until it is 0700, so tighten it here rather than
+    # leaving a fresh machine to that warning.
+    if [ -d "$HOME/.gnupg" ]; then
+        chmod 700 "$HOME/.gnupg"
+    fi
 
     # Apply to any already-running tmux server. Unlike ghostty/k9s, tmux's
     # config reads the theme mode file directly at parse time (see the

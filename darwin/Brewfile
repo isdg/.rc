@@ -6,6 +6,14 @@ brew "fzf"
 brew "git"
 brew "git-delta"   # .gitconfig sets `pager = delta`
 brew "gh"
+brew "gnupg"        # .gitconfig sets commit.gpgsign = true against key E32BE35A
+                    # and bootstrap/components/git_signing.sh gates on `gpg`
+                    # being on PATH, but nothing here ever installed it: a fresh
+                    # machine silently got signing switched off instead.
+brew "pinentry-mac" # the passphrase prompt gpg/gpg-agent.conf names by absolute
+                    # path. An agent pointed at a pinentry that is not installed
+                    # does not fall back, it fails to start, and every gpg call
+                    # then reports "No secret key" for keys that are right there.
 brew "ripgrep"
 brew "rsync"   # /usr/bin/rsync is openrsync since macOS 15.4 — it answers
                # `--version` with "protocol version 29 / rsync 2.6.9
