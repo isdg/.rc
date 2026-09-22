@@ -110,11 +110,11 @@ if [ "$MODE" = ensure ]; then
     FAILURES=0
     set +e  # collect all failures instead of stopping at first
 
-    while IFS='|' read -r _install _ensure; do
+    while IFS='|' read -r _install _ensure <&3; do
         [ -z "$_ensure" ] && continue
         "$_ensure" || FAILURES=$((FAILURES + 1))
         echo ""
-    done < <(_profile_components)
+    done 3< <(_profile_components)
 
     echo "=========================================="
     if [ "$FAILURES" -eq 0 ]; then
@@ -133,11 +133,22 @@ echo "  Profile: $(_profile_name)"
 echo "=========================================="
 echo ""
 
-while IFS='|' read -r _install _ensure; do
+# The component list is read on fd 3, not stdin. On stdin, the first component
+# that reads from it consumes the rest of the list and the loop quietly ends --
+# which is exactly what `vim +PlugInstall +qall` inside install_vim_plugins was
+# doing. Everything after component 8 (fzf, the shell, the keyboard remap, and
+# every EXTRA component: the GUI apps, plc, omni, orchbus, hr, ewl and the macOS
+# defaults) was skipped, and the script still printed "Installation Complete!"
+# because the loop had ended normally rather than failed.
+#
+# fd 3 rather than `"$_install" < /dev/null`, so components keep the real stdin
+# and an interactive prompt -- sudo for /etc/shells, chsh, an SSH passphrase --
+# can still be answered.
+while IFS='|' read -r _install _ensure <&3; do
     [ -z "$_install" ] && continue
     "$_install"
     echo ""
-done < <(_profile_components)
+done 3< <(_profile_components)
 
 echo "=========================================="
 echo "  Installation Complete!"
