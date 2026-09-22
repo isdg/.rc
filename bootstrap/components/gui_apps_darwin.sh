@@ -22,6 +22,10 @@ _gui_apps_darwin() {
     # hs.ipc needs.
     echo "Hammerspoon|hammerspoon|Launch it once and grant Accessibility (System Settings > Privacy & Security > Accessibility) -- the hotkeys post events and stay dead without it"
 
+    # darwin/defaults/dock.sh pins Spotify, and skips the tile when the app is
+    # missing. This component runs before the defaults do, so the tile lands.
+    echo "Spotify|spotify|"
+
     # Deliberately not here: Homerow. hammerspoon/scroll.lua does the scrolling
     # it was installed for, in Lua we control and with no licence -- see the
     # header there.
