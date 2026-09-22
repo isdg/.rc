@@ -5,8 +5,8 @@ font-family = JetBrains Mono
 font-style = ExtraLight
 font-style-bold = false
 font-size = 15
-adjust-cell-height = 22%
-adjust-cell-width = -5%
+adjust-cell-height = 20%
+adjust-cell-width = -10%
 font-feature = -liga
 font-feature = -calt
 
