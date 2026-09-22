@@ -4,17 +4,8 @@
 # Assembles modular components for dotfiles setup
 #
 # Usage:
-#   ./linux.sh               — install / configure everything
-#   ./linux.sh --ensure      — verify everything is in place (no changes made)
-#   ./linux.sh --plan        — list the dotfiles a run would modify, then stop
-#   ./linux.sh -m MSG        — describe the run instead of opening an editor
-#   ./linux.sh --no-journal  — skip the message prompt and the journal
-#
-# A run that would overwrite an existing dotfile, or repoint a symlink that
-# points elsewhere, first opens $EDITOR on a git-commit-style buffer listing
-# exactly those files. Save a message and the run proceeds and the message is
-# recorded in ~/.local/state/isg/bootstrap.log; save an empty message and the
-# run aborts having changed nothing. Nothing to modify means no prompt.
+#   ./linux.sh           — install / configure everything
+#   ./linux.sh --ensure  — verify everything is in place (no changes made)
 #
 set -e
 
@@ -31,12 +22,12 @@ export PATH="$HOME/.local/bin:$PATH"
 
 # Load components
 source "$SCRIPT_DIR/components/helpers.sh"
-source "$SCRIPT_DIR/components/journal.sh"
 source "$SCRIPT_DIR/components/packages_linux.sh"
 source "$SCRIPT_DIR/components/neovim_linux.sh"
 source "$SCRIPT_DIR/components/pagers_linux.sh"
 source "$SCRIPT_DIR/components/zsh_syntax_linux.sh"
 source "$SCRIPT_DIR/components/argocd_linux.sh"
+source "$SCRIPT_DIR/components/k9s_linux.sh"
 source "$SCRIPT_DIR/components/directories.sh"
 source "$SCRIPT_DIR/components/dotfiles.sh"
 source "$SCRIPT_DIR/components/git_signing.sh"
@@ -46,48 +37,12 @@ source "$SCRIPT_DIR/components/vim.sh"
 source "$SCRIPT_DIR/components/plc.sh"
 source "$SCRIPT_DIR/components/tmux_plugins.sh"
 source "$SCRIPT_DIR/components/hr.sh"
+source "$SCRIPT_DIR/components/ewl.sh"
 source "$SCRIPT_DIR/components/fzf.sh"
 source "$SCRIPT_DIR/components/shell.sh"
 
-# ── Arguments ──────────────────────────────────────────────────────────────────
-# Was a bare positional --ensure test; a real loop so the journal flags work
-# here too, and so a typo is rejected instead of silently starting an install.
-MODE=install
-while [ $# -gt 0 ]; do
-    case "$1" in
-        --ensure)      MODE=ensure ;;
-        --plan)        BOOTSTRAP_PLAN_ONLY=1 ;;
-        --no-journal)  BOOTSTRAP_NO_JOURNAL=1 ;;
-        --message=*)   BOOTSTRAP_MESSAGE="${1#--message=}" ;;
-        -m|--message)
-            shift
-            if [ $# -eq 0 ]; then
-                echo "[ERROR] $0: -m needs a message (try --help)" >&2
-                exit 2
-            fi
-            BOOTSTRAP_MESSAGE="$1"
-            ;;
-        -h|--help)
-            sed -n '3,17p' "${BASH_SOURCE[0]}" | sed 's/^#\{1,\} \{0,1\}//'
-            exit 0
-            ;;
-        *)
-            echo "[ERROR] unknown option: $1 (try --help)" >&2
-            exit 2
-            ;;
-    esac
-    shift
-done
-
-# --plan is read-only and answers the same question in either mode, so it is
-# handled before the install/ensure split.
-if [ "$BOOTSTRAP_PLAN_ONLY" = "1" ]; then
-    bootstrap_journal_plan
-    exit 0
-fi
-
 # ── Ensure mode ────────────────────────────────────────────────────────────────
-if [ "$MODE" = ensure ]; then
+if [[ "${1:-}" == "--ensure" ]]; then
     echo "=========================================="
     echo "  Dotfiles Verify for Linux"
     echo "=========================================="
@@ -101,6 +56,7 @@ if [ "$MODE" = ensure ]; then
     ensure_pagers_linux        || FAILURES=$((FAILURES + 1)); echo ""
     ensure_zsh_syntax_linux    || FAILURES=$((FAILURES + 1)); echo ""
     ensure_argocd_linux        || FAILURES=$((FAILURES + 1)); echo ""
+    ensure_k9s_linux           || FAILURES=$((FAILURES + 1)); echo ""
     ensure_directories         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_dotfiles            || FAILURES=$((FAILURES + 1)); echo ""
     ensure_git_signing         || FAILURES=$((FAILURES + 1)); echo ""
@@ -110,6 +66,7 @@ if [ "$MODE" = ensure ]; then
     ensure_plc                 || FAILURES=$((FAILURES + 1)); echo ""
     ensure_tmux_plugins        || FAILURES=$((FAILURES + 1)); echo ""
     ensure_hr                  || FAILURES=$((FAILURES + 1)); echo ""
+    ensure_ewl                 || FAILURES=$((FAILURES + 1)); echo ""
     ensure_fzf_linux           || FAILURES=$((FAILURES + 1)); echo ""
     ensure_default_shell_linux || FAILURES=$((FAILURES + 1)); echo ""
 
@@ -129,10 +86,6 @@ echo "  Dotfiles Bootstrap for Linux"
 echo "=========================================="
 echo ""
 
-# Describe the run before it changes anything; an empty message aborts here.
-bootstrap_journal_open || exit 1
-echo ""
-
 # Run components
 install_packages_linux
 echo ""
@@ -141,6 +94,8 @@ echo ""
 install_zsh_syntax_linux
 echo ""
 install_argocd_linux
+echo ""
+install_k9s_linux
 echo ""
 create_directories
 echo ""
@@ -163,12 +118,12 @@ install_tmux_plugins
 echo ""
 install_hr
 echo ""
+install_ewl
+echo ""
 install_fzf_linux
 echo ""
 set_default_shell_linux
 echo ""
-
-bootstrap_journal_commit
 
 echo "=========================================="
 echo "  Installation Complete!"

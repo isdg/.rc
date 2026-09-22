@@ -7,9 +7,9 @@
 # resolution: $HOME, the Darwin-vs-XDG split for nom, and the guards that drop
 # an entry whose source this checkout does not carry.
 #
-# link_dotfiles, ensure_dotfiles and the bootstrap journal all read this one
-# list, so they cannot drift apart — which they had: ensure_dotfiles used to
-# verify a strict subset of what link_dotfiles wrote.
+# link_dotfiles and ensure_dotfiles both read this one list, so they cannot
+# drift apart — which they had: ensure_dotfiles used to verify a strict subset
+# of what link_dotfiles wrote.
 #
 # Deliberately not here, because they are not a straight a->b link: the vim
 # colors directory with its per-file fallback, the theme mode file, and the
@@ -59,6 +59,23 @@ _dotfile_links() {
         if [ -f "$d/k9s/plugins.yaml" ]; then
             echo "k9s plugins.yaml|file|$d/k9s/plugins.yaml|$k9s/plugins.yaml"
         fi
+    fi
+
+    # ssh client config. Unlike the gpg one below this is not Darwin-guarded:
+    # the only macOS-only keyword in it, UseKeychain, is wrapped in
+    # IgnoreUnknown so a Linux ssh skips it rather than dying on it. The file
+    # only -- keys, known_hosts and authorized_keys stay out of the repo.
+    if [ -f "$d/ssh/config" ]; then
+        echo "ssh config|file|$d/ssh/config|$HOME/.ssh/config"
+    fi
+
+    # gpg-agent. Darwin only: the pinentry-program line in it is an absolute
+    # /opt/homebrew path, which is meaningless on Linux and would wedge the
+    # agent there rather than configure it. Only this one file is linked, never
+    # the directory -- ~/.gnupg is where the keyring, the trustdb and the agent
+    # sockets live, none of which belong in a repo.
+    if [ -f "$d/gpg/gpg-agent.conf" ] && [ "$(uname)" = "Darwin" ]; then
+        echo "gpg-agent.conf|file|$d/gpg/gpg-agent.conf|$HOME/.gnupg/gpg-agent.conf"
     fi
 
     # nom (RSS reader): macOS uses Library/Application Support, Linux XDG.
@@ -171,6 +188,21 @@ link_dotfiles() {
         fi
         _relink "$label" "$kind" "$src" "$dst" || true
     done < <(_dotfile_links)
+
+    # _relink's `mkdir -p` makes a missing parent at the umask, i.e. 0755. For
+    # every other target that is fine; for ~/.gnupg it is not. gpg checks the
+    # mode of its own homedir and prints "unsafe permissions on homedir" on
+    # every single invocation until it is 0700, so tighten it here rather than
+    # leaving a fresh machine to that warning.
+    if [ -d "$HOME/.gnupg" ]; then
+        chmod 700 "$HOME/.gnupg"
+    fi
+    # Same for ~/.ssh, and for the same reason: ssh refuses to use a private key
+    # whose directory is group- or world-readable, so a 0755 ~/.ssh created by
+    # that mkdir would break every key put in it later.
+    if [ -d "$HOME/.ssh" ]; then
+        chmod 700 "$HOME/.ssh"
+    fi
 
     # Apply to any already-running tmux server. Unlike ghostty/k9s, tmux's
     # config reads the theme mode file directly at parse time (see the

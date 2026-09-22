@@ -37,6 +37,8 @@ install_tmux_plugins() {
         return 0
     fi
 
+    _export_buildable_sdk
+
     local entry name rest repo src
     for entry in "${_TMUX_PLUGIN_BINS[@]}"; do
         name="${entry%%|*}"

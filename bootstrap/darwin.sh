@@ -8,15 +8,6 @@
 #   ./darwin.sh --minimal           — install the tmux + nvim + zsh core only
 #   ./darwin.sh --ensure            — verify everything is in place (no changes)
 #   ./darwin.sh --ensure --minimal  — verify just the core
-#   ./darwin.sh --plan              — list the dotfiles a run would modify, then stop
-#   ./darwin.sh -m MSG              — describe the run instead of opening an editor
-#   ./darwin.sh --no-journal        — skip the message prompt and the journal
-#
-# A run that would overwrite an existing dotfile, or repoint a symlink that
-# points elsewhere, first opens $EDITOR on a git-commit-style buffer listing
-# exactly those files. Save a message and the run proceeds and the message is
-# recorded in ~/.local/state/isg/bootstrap.log; save an empty message and the
-# run aborts having changed nothing. Nothing to modify means no prompt.
 #
 set -e
 
@@ -26,7 +17,6 @@ export DOTFILES_DIR
 
 # Load components
 source "$SCRIPT_DIR/components/helpers.sh"
-source "$SCRIPT_DIR/components/journal.sh"
 source "$SCRIPT_DIR/components/homebrew.sh"
 source "$SCRIPT_DIR/components/packages_darwin.sh"
 source "$SCRIPT_DIR/components/gui_apps_darwin.sh"
@@ -39,6 +29,7 @@ source "$SCRIPT_DIR/components/vim.sh"
 source "$SCRIPT_DIR/components/plc.sh"
 source "$SCRIPT_DIR/components/tmux_plugins.sh"
 source "$SCRIPT_DIR/components/hr.sh"
+source "$SCRIPT_DIR/components/ewl.sh"
 source "$SCRIPT_DIR/components/fzf.sh"
 source "$SCRIPT_DIR/components/shell.sh"
 source "$SCRIPT_DIR/components/keyremap.sh"
@@ -73,47 +64,28 @@ BOOTSTRAP_EXTRA_FUNCS=(
     "install_plc|ensure_plc"
     "install_tmux_plugins|ensure_tmux_plugins"
     "install_hr|ensure_hr"
+    "install_ewl|ensure_ewl"
     "apply_darwin_defaults|ensure_darwin_defaults"
 )
 
 # ── Arguments ──────────────────────────────────────────────────────────────────
 MODE=install
 BOOTSTRAP_MINIMAL=0
-# while/shift rather than `for arg`, because -m has to consume the word after it.
-while [ $# -gt 0 ]; do
-    case "$1" in
+for arg in "$@"; do
+    case "$arg" in
         --ensure)          MODE=ensure ;;
         --minimal|--core)  BOOTSTRAP_MINIMAL=1 ;;
-        --plan)            BOOTSTRAP_PLAN_ONLY=1 ;;
-        --no-journal)      BOOTSTRAP_NO_JOURNAL=1 ;;
-        --message=*)       BOOTSTRAP_MESSAGE="${1#--message=}" ;;
-        -m|--message)
-            shift
-            if [ $# -eq 0 ]; then
-                echo "[ERROR] $0: -m needs a message (try --help)" >&2
-                exit 2
-            fi
-            BOOTSTRAP_MESSAGE="$1"
-            ;;
         -h|--help)
-            sed -n '3,19p' "${BASH_SOURCE[0]}" | sed 's/^#\{1,\} \{0,1\}//'
+            sed -n '3,11p' "${BASH_SOURCE[0]}" | sed 's/^#\{1,\} \{0,1\}//'
             exit 0
             ;;
         *)
-            echo "[ERROR] unknown option: $1 (try --help)" >&2
+            echo "[ERROR] unknown option: $arg (try --help)" >&2
             exit 2
             ;;
     esac
-    shift
 done
 export BOOTSTRAP_MINIMAL
-
-# --plan is read-only and answers the same question in either mode, so it is
-# handled before the install/ensure split.
-if [ "$BOOTSTRAP_PLAN_ONLY" = "1" ]; then
-    bootstrap_journal_plan
-    exit 0
-fi
 
 # Components for the selected profile, as "install|ensure" pairs on stdout.
 _profile_components() {
@@ -138,11 +110,11 @@ if [ "$MODE" = ensure ]; then
     FAILURES=0
     set +e  # collect all failures instead of stopping at first
 
-    while IFS='|' read -r _install _ensure; do
+    while IFS='|' read -r _install _ensure <&3; do
         [ -z "$_ensure" ] && continue
         "$_ensure" || FAILURES=$((FAILURES + 1))
         echo ""
-    done < <(_profile_components)
+    done 3< <(_profile_components)
 
     echo "=========================================="
     if [ "$FAILURES" -eq 0 ]; then
@@ -161,17 +133,22 @@ echo "  Profile: $(_profile_name)"
 echo "=========================================="
 echo ""
 
-# Describe the run before it changes anything; an empty message aborts here.
-bootstrap_journal_open || exit 1
-echo ""
-
-while IFS='|' read -r _install _ensure; do
+# The component list is read on fd 3, not stdin. On stdin, the first component
+# that reads from it consumes the rest of the list and the loop quietly ends --
+# which is exactly what `vim +PlugInstall +qall` inside install_vim_plugins was
+# doing. Everything after component 8 (fzf, the shell, the keyboard remap, and
+# every EXTRA component: the GUI apps, plc, omni, orchbus, hr, ewl and the macOS
+# defaults) was skipped, and the script still printed "Installation Complete!"
+# because the loop had ended normally rather than failed.
+#
+# fd 3 rather than `"$_install" < /dev/null`, so components keep the real stdin
+# and an interactive prompt -- sudo for /etc/shells, chsh, an SSH passphrase --
+# can still be answered.
+while IFS='|' read -r _install _ensure <&3; do
     [ -z "$_install" ] && continue
     "$_install"
     echo ""
-done < <(_profile_components)
-
-bootstrap_journal_commit
+done 3< <(_profile_components)
 
 echo "=========================================="
 echo "  Installation Complete!"

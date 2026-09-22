@@ -1,7 +1,28 @@
-Include /Users/isg/.colima/ssh_config
+# ssh client config. Linked to ~/.ssh/config by bootstrap.
+#
+# Order is load-bearing: for a single-valued keyword ssh takes the FIRST value
+# it finds, not the most specific one, so per-host blocks have to precede the
+# `Host *` block at the bottom. Putting the catch-all first silently makes every
+# per-host setting below it dead.
+
+# colima writes this when a VM is running and deletes it when none is. A missing
+# Include is not an error in OpenSSH -- it is skipped -- so this is safe on a
+# machine where colima has never run. Tilde rather than /Users/isg, which only
+# resolved for one user on one machine.
+Include ~/.colima/ssh_config
 
 Host github.com
     HostName github.com
     User git
-    IdentityFile ~/.ssh/github
+    IdentityFile ~/.ssh/delos-new
     IdentitiesOnly yes
+
+Host *
+    # UseKeychain is an Apple addition; stock OpenSSH treats it as a fatal
+    # "Bad configuration option", which would take out ssh for every host on a
+    # Linux box. IgnoreUnknown makes it a no-op there instead, and must come
+    # before the keyword it covers.
+    IgnoreUnknown UseKeychain
+    AddKeysToAgent yes
+    UseKeychain yes
+    IdentityFile ~/.ssh/delos-new
