@@ -7,6 +7,11 @@ brew "git"
 brew "git-delta"   # .gitconfig sets `pager = delta`
 brew "gh"
 brew "ripgrep"
+brew "rsync"   # /usr/bin/rsync is openrsync since macOS 15.4 — it answers
+               # `--version` with "protocol version 29 / rsync 2.6.9
+               # compatible", i.e. a 2006 protocol, and rejects --info=progress2,
+               # --fuzzy and friends. Not keg-only, so /opt/homebrew/bin (put
+               # ahead of /usr/bin by zsh/.zshrc) shadows it with rsync 3.
 brew "sd"    # find & replace CLI (sed alternative)
 brew "tig"   # tui git
 brew "tmux"
@@ -74,4 +79,9 @@ brew "k9s"      # k8s TUI; this repo carries its skins, plugins.yaml and a
                 # tmux TERM wrapper (zsh/aliases.zsh), so it has to be here
 brew "argocd"   # GitOps CD for k8s; Linux gets it from bootstrap/components
 brew "mysql"
+brew "postgresql@17"   # psql + a local server. Every postgresql formula is
+                       # versioned and therefore keg-only, so unlike mysql it
+                       # links nothing into /opt/homebrew/bin — zsh/.zshrc puts
+                       # its bin on PATH. `brew services start postgresql@17`
+                       # runs the server; the client works without it.
 
