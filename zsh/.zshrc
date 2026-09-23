@@ -334,3 +334,8 @@ export LEFTHOOK_EXCLUDE=sync-env
 
 # psql & friends from keg-only libpq (client tools only, currently 18.0).
 export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+# The following lines have been added by Docker Desktop to enable Docker CLI completions.
+fpath=(/Users/isg/.docker/completions $fpath)
+autoload -Uz compinit
+(( ${+_comps[docker]} )) || compinit
+# End of Docker CLI completions

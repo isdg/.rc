@@ -54,7 +54,6 @@
   },
   "syntaxHighlightingDisabled": false,
   "alwaysThinkingEnabled": true,
-  "effortLevel": "auto",
   "autoUpdatesChannel": "stable",
   "tui": "fullscreen",
   "voice": {
@@ -65,5 +64,6 @@
   "editorMode": "vim",
   "verbose": true,
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "model": "claude-fable-5-1[1m]"
 }
