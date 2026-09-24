@@ -64,6 +64,5 @@
   "editorMode": "vim",
   "verbose": true,
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true,
-  "model": "claude-fable-5-1[1m]"
+  "voiceEnabled": true
 }
