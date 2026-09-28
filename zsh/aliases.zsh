@@ -30,10 +30,9 @@ gjobs() {
   (( found )) || echo "  (no tmux sockets / servers)"
 }
 
-# gh: page only when output exceeds one screen. less -F quits immediately if it
-# fits (so short output prints straight to stdout), -X leaves it on screen
-# instead of clearing. Overrides gh's default pager without touching ~/.config/gh.
-export GH_PAGER='less -FX'
+# gh pages through git's pager, so `gh pr diff` looks like `git diff`. delta
+# passes non-diff output through untouched and pages with .gitconfig's less -RFX.
+export GH_PAGER=delta
 
 # gh/glamour markdown theme. Inside tmux the OSC 11 background-colour query is
 # answered by tmux itself (with its dark default) rather than reaching the outer
