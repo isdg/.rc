@@ -17,6 +17,12 @@ Host github.com
     IdentityFile ~/.ssh/delos-new
     IdentitiesOnly yes
 
+Host github.com
+    HostName github.com
+    User git
+    IdentityFile ~/.ssh/github
+    IdentitiesOnly yes
+
 Host *
     # UseKeychain is an Apple addition; stock OpenSSH treats it as a fatal
     # "Bad configuration option", which would take out ssh for every host on a
