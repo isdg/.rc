@@ -212,6 +212,9 @@ if [[ "$ISG_LESS_THEME" != 'false' ]]; then
   export LESS_TERMCAP_so=$(printf '\e[30m')
   export LESS_TERMCAP_ue=$(printf '\e[0m')
   export LESS_TERMCAP_us=$(printf '\e[1;32m')
+  # Search matches only (the prompt keeps `so`): white on 256-colour red, which
+  # stays vivid in both modes where ANSI 1 goes pink in dark.
+  export LESS='--use-color -DS231.160'
 fi
 
 # ----------------------------------------------------------------------------
