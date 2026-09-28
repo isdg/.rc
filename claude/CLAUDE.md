@@ -42,10 +42,15 @@ Two more apply when designing an API, interface, or abstraction:
 
 And two rules on how the work explains itself:
 
-- **Comments stay short** — 3 lines or fewer per comment block, whether
-  inline, block, or docstring-style. Write longer only when I ask for it in
-  that specific case. An explanation that won't fit is usually a signal to
-  restructure the code or name things better, not to write more prose.
+- **Comments earn their place** — default to none; most code needs no
+  commentary, and matching the surrounding density is no licence to add it.
+  Write one only for what the code can't say itself: a non-obvious *why*, an
+  invariant, a workaround, a deliberate deviation. Never restate the line,
+  narrate the change, or mark sections. Where one is warranted, 3 lines is the
+  ceiling and one the norm, whether inline, block, or docstring-style — an
+  explanation that won't fit is usually a signal to restructure the code or
+  name things better, not to write more prose. Don't strip existing comments
+  unless I ask.
 - **Commit titles stay at 50 characters** — the subject line, `type(scope):`
   prefix included, is a hard budget. A summary that won't fit is usually a
   signal the commit does two things: split it, or name things tighter. Never

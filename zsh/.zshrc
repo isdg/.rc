@@ -242,6 +242,17 @@ export VISUAL='nvim'
 # instead of asking for the passphrase.
 export GPG_TTY=$(tty)
 
+# Ghostty only auto-sources its shell integration (the `ssh` wrapper behind
+# shell-integration-features = ssh-env,ssh-terminfo in ghostty/config) in
+# shells it spawns directly. tmux panes are not that — GHOSTTY_RESOURCES_DIR
+# reaches them by plain env inheritance, but the integration script itself
+# never runs, so `ssh` stays the real binary and remotes fail with "missing
+# or unsuitable terminal: xterm-ghostty". This is the guard Ghostty's own
+# ghostty-integration script recommends for exactly this case.
+if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
+    source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
+fi
+
 source "$ISGRC/zsh/git.zsh"      # both before aliases.zsh, so personal
 source "$ISGRC/zsh/dirs.zsh"     # aliases keep precedence
 source "$ISGRC/zsh/aliases.zsh"

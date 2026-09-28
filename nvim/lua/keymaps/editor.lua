@@ -217,6 +217,45 @@ map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlights" })
 
 -- Terminal: Esc exits terminal mode
 map("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+-- fzf pickers are terminals too, and every key, click or scroll must stay with
+-- fzf: Esc aborts it, and anything else that leaves terminal mode or the window
+-- (mouse, <C-\><C-n>) is undone while fzf runs. Once it exits, hands off.
+local function fzf_running(buf)
+    local job = vim.api.nvim_buf_is_valid(buf) and vim.b[buf].terminal_job_id
+    return job and vim.fn.jobwait({ job }, 0)[1] == -1
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "fzf",
+    callback = function(ev)
+        local buf = ev.buf
+        vim.keymap.set("t", "<Esc>", "<Esc>", { buffer = buf, desc = "Abort fzf" })
+        vim.api.nvim_create_autocmd("ModeChanged", {
+            buffer = buf,
+            callback = function()
+                if vim.v.event.old_mode ~= "t" then return end
+                vim.schedule(function()
+                    if vim.api.nvim_get_current_buf() == buf and fzf_running(buf) then
+                        vim.cmd.startinsert()
+                    end
+                end)
+            end,
+        })
+        vim.api.nvim_create_autocmd("WinLeave", {
+            buffer = buf,
+            callback = function()
+                local win = vim.api.nvim_get_current_win()
+                vim.schedule(function()
+                    if vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == buf
+                        and fzf_running(buf) then
+                        vim.api.nvim_set_current_win(win)
+                        vim.cmd.startinsert()
+                    end
+                end)
+            end,
+        })
+    end,
+})
 
 -- Swap jump list navigation (Ctrl+I = back, Ctrl+O = forward)
 map("n", "<C-i>", "<C-o>", { noremap = true, desc = "Jump back" })
