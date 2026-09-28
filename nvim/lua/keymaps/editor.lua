@@ -5,7 +5,7 @@ local leader = require("keymaps.leader")
 local map, lmap = leader.map, leader.lmap
 
 -- ─── File management ────────────────────────────────────────────
-lmap("n", "s", "<cmd>w<CR>", { desc = "Save file" })
+lmap("n", "w", "<cmd>w<CR>", { desc = "Save file" })
 -- Toggle the whole number column on/off (both number + relativenumber).
 lmap("n", "N", function()
     local show = not (vim.wo.number or vim.wo.relativenumber)
@@ -18,8 +18,8 @@ lmap("n", "n", function()
     vim.wo.number = true
     vim.wo.relativenumber = not vim.wo.relativenumber
 end, { desc = "Toggle relative numbers (hybrid)" })
-lmap("n", "w", "<cmd>q<CR>", { desc = "Quit file" })
-lmap("n", "W", "<cmd>q!<CR>", { desc = "Quit without saving" })
+lmap("n", "x", "<cmd>q<CR>", { desc = "Quit file" })
+lmap("n", "X", "<cmd>q!<CR>", { desc = "Quit without saving" })
 lmap("n", "Q", "<cmd>qa!<CR>", { desc = "Quit all without saving" })
 
 

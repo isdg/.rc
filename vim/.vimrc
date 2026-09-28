@@ -15,9 +15,9 @@
 "                      HOTKEYS
 " ============================================================
 " GENERAL
-"   <leader>s        Save file
-"   <leader>w        Quit file
-"   <leader>W        Quit without saving
+"   <leader>w        Save file
+"   <leader>x        Quit file
+"   <leader>X        Quit without saving
 "   <leader>Q        Quit all
 "   <leader>;        Command history (fzf)
 "   <leader>/        Search history (fzf)
@@ -220,8 +220,6 @@
 "                    ADVANCED (POWER) HOTKEYS (NOT IMPLEMENTED YET) #TODO
 " ============================================================
 "   <leader>R        Reload vimrc (source ~/.vimrc)
-"   <leader>x        Close current buffer (:bd)
-"   <leader>X        Force close buffer (:bd!)
 "   <leader>o        Close all other buffers
 "   <leader>n        Open new empty buffer
 "   <leader><leader> Switch between last two buffers
@@ -566,10 +564,10 @@ xmap gc  <Plug>NERDCommenterToggle
 " ============================================================
 "                   FILE MANAGEMENT
 " ============================================================
-nnoremap <leader>s :w<CR>    " Save file
-nnoremap <leader>w :q<CR>    " Quit file
-nnoremap <leader>W :q!<CR>   " Quit without saving
-nnoremap <leader>Q :qa<CR>   " Quit all
+nnoremap <leader>w :w<CR>
+nnoremap <leader>x :q<CR>
+nnoremap <leader>X :q!<CR>
+nnoremap <leader>Q :qa<CR>
 
 
 
