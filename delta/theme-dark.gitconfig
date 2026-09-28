@@ -1,0 +1,9 @@
+; GitHub's dark diff tints (15% / 40% alpha) blended onto ISG_BG #2f2f2f.
+[delta]
+	light = false
+	syntax-theme = vs_dark
+	minus-style = syntax "#4d3433"
+	minus-emph-style = syntax "#7f3d39"
+	plus-style = syntax "#2f4032"
+	plus-emph-style = syntax "#2e5c37"
+	zero-style = syntax

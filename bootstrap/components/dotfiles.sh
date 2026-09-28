@@ -364,6 +364,11 @@ link_dotfiles() {
         echo "[OK] Seeded fzf/opts-active.conf -> opts-$(cat "$theme_file").conf"
     fi
 
+    if [ -d "$dotfiles_dir/delta" ]; then
+        ln -sf "theme-$(cat "$theme_file").gitconfig" "$dotfiles_dir/delta/theme-active.gitconfig"
+        echo "[OK] Seeded delta/theme-active.gitconfig -> theme-$(cat "$theme_file").gitconfig"
+    fi
+
     # The k9s skins/ and plugins.yaml links themselves come from the table; what
     # is left here is the active-skin symlink *inside* the repo, which the table
     # cannot express. toggle_theme.sh flips it afterwards.

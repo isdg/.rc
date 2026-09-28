@@ -1,0 +1,9 @@
+; GitHub's light diff tints, over the vs_light syntax colours.
+[delta]
+	light = true
+	syntax-theme = vs_light
+	minus-style = syntax "#ffebe9"
+	minus-emph-style = syntax "#ffc1c0"
+	plus-style = syntax "#e6ffec"
+	plus-emph-style = syntax "#abf2bc"
+	zero-style = syntax

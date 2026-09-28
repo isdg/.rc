@@ -64,6 +64,13 @@ if [ -d "$FZF_DIR" ]; then
     STATUS+="fzf: $MODE (on new fzf)\n"
 fi
 
+# --- delta: swap the theme-active.gitconfig symlink (.gitconfig includes it) ---
+DELTA_DIR="$SCRIPT_DIR/delta"
+if [ -d "$DELTA_DIR" ]; then
+    ln -sf "theme-$MODE.gitconfig" "$DELTA_DIR/theme-active.gitconfig"
+    STATUS+="delta: $MODE (on next diff)\n"
+fi
+
 # --- Tmux: re-source so the if-shell re-reads the mode file and repaints ---
 # The styles live in tmux/theme-{dark,light}.conf; nothing is sed'd here.
 if tmux source-file "$TMUX_CONF" 2>/dev/null; then
