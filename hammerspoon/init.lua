@@ -20,12 +20,12 @@ translate.bind({ "cmd", "ctrl" }, "t")
 -- Auto-copy new screenshots (⌘⇧4 etc.) to the clipboard, keeping the file.
 require("screenshot_clip").start()
 
--- Keyboard scrolling: ⌘⇧J enters scroll mode; then jk (up/down), du (half-page),
+-- Keyboard scrolling: ⌃⇧J enters scroll mode; then jk (up/down), du (half-page),
 -- hl (left/right), hold to scroll smoothly, ⇧ for fast, esc/q/i to exit. Any app.
 -- Entering warps the pointer onto the focused window (in Ghostty, onto the
 -- focused tmux pane) so the keys scroll what you are looking at — see scroll.lua.
 local scroll = require("scroll")
-scroll.bind({ "cmd", "shift" }, "j")
+scroll.bind({ "ctrl", "shift" }, "j")
 
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher
@@ -39,4 +39,4 @@ hs.pathwatcher
     end)
     :start()
 
-hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌘⇧J scroll · 📋 screenshots)")
+hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll · 📋 screenshots)")

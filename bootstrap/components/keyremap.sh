@@ -2,6 +2,9 @@
 # Component: Keyboard remap (via hidutil UserKeyMapping)
 #   Right Command -> Return
 #   Caps Lock     <-> Backspace  (swap)
+#   Left Control  -> Command, Left Option -> Control, Left Command -> Option
+#   The plist lists that cycle reversed: macOS applies modifier-to-modifier
+#   mappings twice, and the reverse of a 3-cycle applied twice is the cycle.
 # Requires: DOTFILES_DIR to be set
 
 _keyremap_plist() { echo "${DOTFILES_DIR:-$HOME/.rc}/darwin/keyremap/com.local.KeyRemap.plist"; }
@@ -106,7 +109,7 @@ install_keyremap_darwin() {
     expected="$(_keyremap_expected_pairs "$src")"
     live="$(_keyremap_live_pairs)"
     if [ "$expected" = "$live" ]; then
-        echo "[OK] Key mapping active (right-cmd -> return, caps <-> backspace)"
+        echo "[OK] Key mapping active (right-cmd -> return, caps <-> backspace, left ctrl -> cmd -> opt -> ctrl)"
     elif [ -z "$live" ]; then
         echo "[WARN] Key mapping not active yet — log out and back in, or run:"
         echo "       launchctl kickstart -k $domain/com.local.KeyRemap"
