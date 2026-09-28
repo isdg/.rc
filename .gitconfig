@@ -14,14 +14,8 @@
 [delta]
 	navigate = true
 	light = true
-	; Plain `git diff` content (no background highlight, no syntax coloring),
-	; but keep delta's line-number gutter and paging/navigation.
-	; - +/- styles are foreground-only and OMIT the `syntax` keyword, so whole
-	;   changed lines are just red/green with no background highlight and no
-	;   syntax coloring (the `syntax` keyword is what enables both in delta).
-	; - emph styles match the line styles -> no brighter within-line emphasis.
-	; - zero-style normal -> context lines in the terminal's default color.
-	; Re-enable rich delta by setting these styles back to `syntax`.
+	; Plain red/green fallback. The GitHub-style syntax + tint styles come from
+	; delta/theme-active.gitconfig (included below), flipped by toggle_theme.sh.
 	minus-style = red
 	minus-emph-style = red
 	plus-style = green
@@ -51,6 +45,10 @@
 	file-style = blue
 	; drop the "Δ" modified-file symbol -- show just the path
 	file-modified-label = ""
+; Absolute because git resolves a relative include from ~/.gitconfig, not the
+; repo it links to. Missing (clone outside ~/.rc, unseeded) keeps the fallback.
+[include]
+	path = ~/.rc/delta/theme-active.gitconfig
 [merge]
 	conflictStyle = diff3
 [diff]
