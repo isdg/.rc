@@ -1,0 +1,95 @@
+
+ZSH KEY BINDINGS
+================
+
+Everything bound on the zsh command line by ~/.rc/zsh: vi mode (vimode.zsh),
+the fzf pickers behind the <Space> leader (fzf.zsh), and the few keys set in
+.zshrc. Authoritative source is zsh itself: `bindkey -M vicmd` / `bindkey -M
+viins` list every binding, `bindkey -M vicmd ' '` shows one.
+
+
+-------------------------------------------------------------------------------
+1. Modes
+--------
+
+The line editor runs in vi mode (`bindkey -v`). A new line starts in insert
+mode; Esc goes to normal mode. The prompt caret and cursor show which:
+
+    ›  bar cursor      insert mode   (root: @)
+    »  block cursor    normal mode   (root: #)
+
+KEYTIMEOUT is 100 ms: Esc lands fast, and multi-byte sequences (arrows,
+bracketed paste) still have time to arrive whole.
+
+
+-------------------------------------------------------------------------------
+2. Insert mode
+--------------
+
+    Backspace / C-h   delete any character on the line (stock vi mode stops
+                      at the point where insert mode was last entered)
+
+Plus fzf's own widgets, from its key-bindings.zsh:
+
+    C-r      history picker, replaces the line
+    C-t      file picker, inserts the paths
+    Alt-c    cd into a picked subdirectory
+
+
+-------------------------------------------------------------------------------
+3. Normal mode
+--------------
+
+    y        yank (with a motion, e.g. yiw) AND copy to the system clipboard
+    p        put the last yank (zsh's own buffer, not the clipboard)
+    n        open the command line in $EDITOR; save and quit to run it
+    K        unbound (run-help could leave the line editor garbled)
+    Space    unbound on its own: it is the leader (section 4)
+
+
+-------------------------------------------------------------------------------
+4. The <Space> leader (normal mode)
+-----------------------------------
+
+The letters follow nvim's <leader> maps. Space does nothing on its own and no
+leader key is also the start of a longer one, so there is no time limit
+between the keys: type Space, pause, then the rest.
+
+Pickers insert what you pick AFTER the cursor, like p, shell-quoted and spaced
+off from the word before. Esc in a picker inserts nothing.
+
+  Pickers (fzf)
+
+    Space f    files under the cwd (fzf's C-t picker)
+    Space ;    command history (fzf's C-r picker; replaces the line)
+    Space a    live ripgrep, re-run on each keystroke -> inserts file:line
+    Space A    ripgrep once, then fuzzy-filter        -> inserts file:line
+    Space gd   changed + untracked files -> paths relative to the cwd
+               (renames give the new path)
+    Space gm   a commit from any ref (git log --all) -> its short hash
+    Space b    a local or remote branch -> its name
+    Space J    cd into a directory from the pushd stack (every cd pushes);
+               runs as a command, so it lands in history, and whatever was
+               half-typed comes back after
+
+  Clipboard
+
+    Space p    put the system clipboard after the cursor; p keeps the yank
+    Space yy   copy the whole command line
+    Space yp   copy the cwd, absolute
+    Space yP   copy the cwd relative to the repo root (outside a repo: ~/...)
+
+  Line
+
+    Space x    clear the command line
+
+The ripgrep pickers are the same ones behind the fa / fA commands, which open
+the pick in nvim instead of inserting it.
+
+
+-------------------------------------------------------------------------------
+5. Both modes
+-------------
+
+    Up / Down    history search by what is already typed
+    Shift-Tab    step back through the completion menu
