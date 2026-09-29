@@ -20,11 +20,15 @@ autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd 'n' edit-command-line
 
+function _clip_copy() {
+   printf "%s" "$1" | pbcopy 2>/dev/null \
+      || printf "%s" "$1" | xclip -selection clipboard 2>/dev/null
+}
+
 # In normal mode: y yanks to ZLE CUTBUFFER AND copies to the system clipboard
 function vi-yank-clipboard() {
    zle vi-yank
-   printf "%s" "$CUTBUFFER" | pbcopy 2>/dev/null \
-      || printf "%s" "$CUTBUFFER" | xclip -selection clipboard 2>/dev/null
+   _clip_copy "$CUTBUFFER"
 }
 zle -N vi-yank-clipboard
 bindkey -M vicmd 'y' vi-yank-clipboard
@@ -42,6 +46,39 @@ bindkey -M vicmd ' p' vi-put-clipboard
 # Lone Space (vi-forward-char, same as l) unbound so Space acts as a pure leader:
 # ZLE waits for the next key untimed instead of cutting off at KEYTIMEOUT.
 bindkey -M vicmd -r ' '
+
+# The rest of the <Space> leader, on nvim's letters. No leader key is both bound
+# and a prefix (hence yy, not y), so every one of them waits untimed.
+function vi-yank-line-clipboard() { _clip_copy "$BUFFER"; zle -M "copied command line" }
+function vi-yank-cwd-clipboard() { _clip_copy "$PWD"; zle -M "copied $PWD" }
+# Relative to the repo root; outside a repo, ~-relative.
+function vi-yank-cwd-rel-clipboard() {
+   local rel
+   if rel=$(git rev-parse --show-prefix 2>/dev/null); then
+      rel=${${rel%/}:-.}
+   else
+      rel=${(D)PWD}
+   fi
+   _clip_copy "$rel"
+   zle -M "copied $rel"
+}
+zle -N vi-yank-line-clipboard
+zle -N vi-yank-cwd-clipboard
+zle -N vi-yank-cwd-rel-clipboard
+
+bindkey -M vicmd ' yy' vi-yank-line-clipboard
+bindkey -M vicmd ' yp' vi-yank-cwd-clipboard
+bindkey -M vicmd ' yP' vi-yank-cwd-rel-clipboard
+bindkey -M vicmd ' x'  kill-whole-line
+bindkey -M vicmd ' a'  fzf-rg-live-widget
+bindkey -M vicmd ' A'  fzf-rg-filter-widget
+bindkey -M vicmd ' gd' fzf-git-changed-widget
+bindkey -M vicmd ' gm' fzf-git-commit-widget
+bindkey -M vicmd ' b'  fzf-git-branch-widget
+bindkey -M vicmd ' J'  fzf-dirstack-widget
+# fzf's own widgets, from its key-bindings.zsh (loaded before this file).
+(( $+widgets[fzf-file-widget] ))    && bindkey -M vicmd ' f' fzf-file-after-widget
+(( $+widgets[fzf-history-widget] )) && bindkey -M vicmd ' ;' fzf-history-widget
 
 # Unbind K (default = run-help → opens man page; sometimes leaves ZLE in a
 # broken redraw state on return)
