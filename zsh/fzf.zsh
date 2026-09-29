@@ -4,6 +4,7 @@
 #   fa  — :RG     live ripgrep (re-runs on each keystroke)
 #   hrb — hr reading list: fuzzy-pick an unread article, open it in nvim
 #   hrv — hr reading list: open the nvim sidebar, scoped by `hr list` flags
+# plus the ZLE pickers behind the vicmd <Space> leader (see the end of the file).
 
 if command -v bat >/dev/null 2>&1; then
    _fzf_preview='bat --color=always --style=numbers --highlight-line {2} {1}'
@@ -23,28 +24,36 @@ fp() {
    [[ -n $files[1] ]] && "${EDITOR:-nvim}" "${files[@]}"
 }
 
-fA() {
-   local out
-   out=$(rg --column --line-number --no-heading --color=always --smart-case '' 2>/dev/null \
+# The fA / fa pickers, shared with the <Space>A / <Space>a widgets below. Each
+# prints the picked `file:line:col:text` rg line.
+_fzf_rg_filter() {
+   rg --column --line-number --no-heading --color=always --smart-case '' 2>/dev/null \
       | fzf --ansi --delimiter=: \
             --query "${1:-}" \
             --preview "$_fzf_preview" \
-            --preview-window 'down:55%:+{2}-/2') || return
-   local file line
+            --preview-window 'down:55%:+{2}-/2'
+}
+
+_fzf_rg_live() {
+   local rg_cmd='rg --column --line-number --no-heading --color=always --smart-case'
+   FZF_DEFAULT_COMMAND="$rg_cmd ''" \
+      fzf --ansi --disabled --delimiter=: \
+          --query "${1:-}" \
+          --bind "change:reload:sleep 0.1; $rg_cmd -- {q} || true" \
+          --preview "$_fzf_preview" \
+          --preview-window 'down:55%:+{2}-/2'
+}
+
+fA() {
+   local out file line
+   out=$(_fzf_rg_filter "$1") || return
    IFS=: read -r file line _ <<< "$out"
    [[ -n $file ]] && "${EDITOR:-nvim}" "+${line}" "$file"
 }
 
 fa() {
-   local rg_cmd='rg --column --line-number --no-heading --color=always --smart-case'
-   local out
-   out=$(FZF_DEFAULT_COMMAND="$rg_cmd ''" \
-      fzf --ansi --disabled --delimiter=: \
-          --query "${1:-}" \
-          --bind "change:reload:sleep 0.1; $rg_cmd -- {q} || true" \
-          --preview "$_fzf_preview" \
-          --preview-window 'down:55%:+{2}-/2') || return
-   local file line
+   local out file line
+   out=$(_fzf_rg_live "$1") || return
    IFS=: read -r file line _ <<< "$out"
    [[ -n $file ]] && "${EDITOR:-nvim}" "+${line}" "$file"
 }
@@ -98,3 +107,102 @@ hrv() {
    fi
    "${EDITOR:-nvim}" -c "HrStart $*"
 }
+
+# ----------------------------------------------------------------------------
+# ZLE pickers for the vicmd <Space> leader (bound in vimode.zsh). Each inserts
+# its pick at the cursor, shell-quoted.
+# ----------------------------------------------------------------------------
+
+# vicmd's cursor sits ON a character, so insert after it (like p), spaced off.
+_fzf_insert_point() {
+   (( CURSOR < $#BUFFER )) && (( CURSOR++ ))
+   [[ -n $LBUFFER && $LBUFFER != *' ' ]] && LBUFFER+=' '
+}
+
+_fzf_insert() {
+   if (( $# )); then
+      _fzf_insert_point
+      LBUFFER+="${(j: :)${(@q)@}} "
+   fi
+   zle reset-prompt
+}
+
+# <Space>f: fzf's own ^T file picker, at the same insert point.
+fzf-file-after-widget() {
+   _fzf_insert_point
+   zle fzf-file-widget
+}
+zle -N fzf-file-after-widget
+
+# <Space>a / <Space>A: ripgrep, inserting `file:line`.
+_fzf_rg_insert() {
+   local out file line
+   out=$("$1") && IFS=: read -r file line _ <<< "$out"
+   _fzf_insert ${file:+"$file:$line"}
+}
+fzf-rg-live-widget()   { _fzf_rg_insert _fzf_rg_live }
+fzf-rg-filter-widget() { _fzf_rg_insert _fzf_rg_filter }
+zle -N fzf-rg-live-widget
+zle -N fzf-rg-filter-widget
+
+# <Space>gd: changed and untracked files, as paths relative to the cwd.
+# Porcelain paths are repo-relative; a rename's old path is a separate -z field.
+fzf-git-changed-widget() {
+   local cdup prefix top e p skip=0
+   local -a entries picked paths
+   cdup=$(git rev-parse --show-cdup 2>/dev/null) || { zle reset-prompt; return }
+   prefix=$(git rev-parse --show-prefix)
+   top=$(git rev-parse --show-toplevel)
+   for e in "${(@0)$(git status --porcelain -z --untracked-files=all)}"; do
+      (( skip )) && { skip=0; continue }
+      [[ $e == [RC]* ]] && skip=1
+      [[ -n $e ]] && entries+=("$e")
+   done
+   picked=(${(f)"$(print -rl -- $entries | fzf --multi --nth=2.. \
+      --preview "p=\$(printf %s {} | cut -c4-); cd ${(q)top} && { git diff --color=always HEAD -- \"\$p\" | grep -q . && git diff --color=always HEAD -- \"\$p\" || cat -- \"\$p\"; }" \
+      --preview-window 'down:55%')"})
+   for p in "${(@)picked#???}"; do
+      [[ -n $prefix && $p == "$prefix"* ]] && paths+=("${p#$prefix}") || paths+=("$cdup$p")
+   done
+   _fzf_insert "${(@)paths}"
+}
+zle -N fzf-git-changed-widget
+
+# <Space>gm: a commit from all refs, inserting its hash.
+fzf-git-commit-widget() {
+   local -a picked
+   picked=(${(f)"$(git log --all --oneline --decorate --color=always 2>/dev/null \
+      | fzf --ansi --multi --no-sort \
+            --preview 'git show --color=always --stat --patch {1}' \
+            --preview-window 'down:55%')"})
+   _fzf_insert "${(@)picked%% *}"
+}
+zle -N fzf-git-commit-widget
+
+# <Space>b: a local or remote branch.
+fzf-git-branch-widget() {
+   local -a picked
+   picked=(${(f)"$(git for-each-ref --format='%(refname)' refs/heads refs/remotes 2>/dev/null \
+      | grep -v '/HEAD$' | sed -e 's#^refs/heads/##' -e 's#^refs/remotes/##' \
+      | fzf --multi \
+            --preview 'git log --oneline --decorate --color=always -30 {}' \
+            --preview-window 'down:55%')"})
+   _fzf_insert "${(@)picked}"
+}
+zle -N fzf-git-branch-widget
+
+# <Space>J: cd into a directory from the pushd stack (auto_pushd fills it).
+# Runs as a command line, as fzf's own cd widget does, so it lands in history.
+fzf-dirstack-widget() {
+   local dir
+   dir=$(dirs -pl | tail -n +2 | awk '!seen[$0]++' | fzf \
+      --preview 'ls -la {}' --preview-window 'down:40%')
+   if [[ -z $dir ]]; then
+      zle reset-prompt
+      return
+   fi
+   zle push-line
+   BUFFER="builtin cd -- ${(q)dir}"
+   zle accept-line
+}
+zle -N fzf-dirstack-widget
