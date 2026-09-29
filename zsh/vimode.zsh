@@ -39,6 +39,9 @@ function vi-put-clipboard() {
 }
 zle -N vi-put-clipboard
 bindkey -M vicmd ' p' vi-put-clipboard
+# Lone Space (vi-forward-char, same as l) unbound so Space acts as a pure leader:
+# ZLE waits for the next key untimed instead of cutting off at KEYTIMEOUT.
+bindkey -M vicmd -r ' '
 
 # Unbind K (default = run-help → opens man page; sometimes leaves ZLE in a
 # broken redraw state on return)
