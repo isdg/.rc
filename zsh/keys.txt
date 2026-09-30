@@ -51,8 +51,7 @@ Plus fzf's own widgets, from its key-bindings.zsh:
 4. The <Space> leader (normal mode)
 -----------------------------------
 
-The letters follow nvim's <leader> maps, except Space l (history; nvim has it on
-<leader>; and <leader>r, and its <leader>l searches lines). Space does nothing on its own and no
+The letters follow nvim's <leader> maps. Space does nothing on its own and no
 leader key is also the start of a longer one, so there is no time limit
 between the keys: type Space, pause, then the rest.
 
@@ -62,8 +61,8 @@ off from the word before. Esc in a picker inserts nothing.
   Pickers (fzf)
 
     Space f    files under the cwd (fzf's C-t picker)
-    Space l    command history (fzf's C-r picker; replaces the line)
-    Space r    the same, on nvim's <leader>r
+    Space ;    command history (fzf's C-r picker; replaces the line)
+    Space r    the same, as in nvim
     Space a    live ripgrep, re-run on each keystroke -> inserts file:line
     Space A    ripgrep once, then fuzzy-filter        -> inserts file:line
     Space gd   changed + untracked files -> paths relative to the cwd
