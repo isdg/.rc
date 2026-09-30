@@ -79,6 +79,7 @@ bindkey -M vicmd ' J'  fzf-dirstack-widget
 # fzf's own widgets, from its key-bindings.zsh (loaded before this file).
 (( $+widgets[fzf-file-widget] ))    && bindkey -M vicmd ' f' fzf-file-after-widget
 (( $+widgets[fzf-history-widget] )) && bindkey -M vicmd ' l' fzf-history-widget
+(( $+widgets[fzf-history-widget] )) && bindkey -M vicmd ' r' fzf-history-widget
 
 # Unbind K (default = run-help → opens man page; sometimes leaves ZLE in a
 # broken redraw state on return)
