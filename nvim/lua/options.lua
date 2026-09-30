@@ -10,6 +10,9 @@ vim.g.maplocalleader = " "
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- No Python remote plugins here; probing for pynvim costs ~45ms per .py file
+vim.g.loaded_python3_provider = 0
+
 -- Git messenger: autofocus popup
 vim.g.git_messenger_always_into_popup = true
 
