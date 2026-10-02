@@ -25,13 +25,14 @@ function _clip_copy() {
       || printf "%s" "$1" | xclip -selection clipboard 2>/dev/null
 }
 
-# In normal mode: y yanks to ZLE CUTBUFFER AND copies to the system clipboard
+# Plain y is zsh's own yank, as in nvim; the clipboard is <Space>y in visual mode
+# (the `visual` keymap, nvim's x mode), so it never collides with <Space>y*.
 function vi-yank-clipboard() {
    zle vi-yank
    _clip_copy "$CUTBUFFER"
 }
 zle -N vi-yank-clipboard
-bindkey -M vicmd 'y' vi-yank-clipboard
+bindkey -M visual ' y' vi-yank-clipboard
 
 # In normal mode: <Space>p puts the system clipboard after the cursor, like vim's
 # "+p. CUTBUFFER is restored so plain p still puts the last yank.
@@ -51,6 +52,7 @@ bindkey -M vicmd -r ' '
 # and a prefix (hence yy, not y), so every one of them waits untimed.
 function vi-yank-line-clipboard() { _clip_copy "$BUFFER"; zle -M "copied command line" }
 function vi-yank-cwd-clipboard() { _clip_copy "$PWD"; zle -M "copied $PWD" }
+function vi-yank-cwd-name-clipboard() { _clip_copy "${PWD:t}"; zle -M "copied ${PWD:t}" }
 # Relative to the repo root; outside a repo, ~-relative.
 function vi-yank-cwd-rel-clipboard() {
    local rel
@@ -64,9 +66,11 @@ function vi-yank-cwd-rel-clipboard() {
 }
 zle -N vi-yank-line-clipboard
 zle -N vi-yank-cwd-clipboard
+zle -N vi-yank-cwd-name-clipboard
 zle -N vi-yank-cwd-rel-clipboard
 
 bindkey -M vicmd ' yy' vi-yank-line-clipboard
+bindkey -M vicmd ' yf' vi-yank-cwd-name-clipboard
 bindkey -M vicmd ' yp' vi-yank-cwd-clipboard
 bindkey -M vicmd ' yP' vi-yank-cwd-rel-clipboard
 bindkey -M vicmd ' x'  kill-whole-line

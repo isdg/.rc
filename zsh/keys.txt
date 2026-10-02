@@ -40,8 +40,10 @@ Plus fzf's own widgets, from its key-bindings.zsh:
 3. Normal mode
 --------------
 
-    y        yank (with a motion, e.g. yiw) AND copy to the system clipboard
+    y        yank (with a motion, e.g. yiw) into zsh's own buffer, as in nvim;
+             the clipboard is Space y (section 4)
     p        put the last yank (zsh's own buffer, not the clipboard)
+    v        visual mode: select with motions, then y / Space y / d / c
     n        open the command line in $EDITOR; save and quit to run it
     K        unbound (run-help could leave the line editor garbled)
     Space    unbound on its own: it is the leader (section 4)
@@ -75,8 +77,10 @@ off from the word before. Esc in a picker inserts nothing.
 
   Clipboard
 
+    Space y    (visual mode) copy the selection, like nvim's visual <leader>y
     Space p    put the system clipboard after the cursor; p keeps the yank
     Space yy   copy the whole command line
+    Space yf   copy the cwd's name
     Space yp   copy the cwd, absolute
     Space yP   copy the cwd relative to the repo root (outside a repo: ~/...)
 
