@@ -1,5 +1,5 @@
 -- ============================================================
---      slots — window per hotkey, focus + maximize, cycle
+--  slots — window per hotkey, focus + maximize, cycle, last
 -- ============================================================
 -- Windows stay maximized on one Space instead of native fullscreen, whose
 -- per-window Spaces force macOS's slide animation on every switch.
@@ -129,6 +129,26 @@ local function pin(key)
     hs.alert.show("slot " .. key .. " → " .. w:application():name())
 end
 
+local current, previous -- { win = windowID, app = bundleID } of the last two focused
+local focusWatch -- held so the subscription isn't garbage-collected
+
+local function track(win)
+    if not win or (current and current.win == win:id()) then return end
+    local app = win:application()
+    previous = current
+    current = { win = win:id(), app = app and app:bundleID() }
+end
+
+local function last()
+    if not previous then return end
+    local win = hs.window.get(previous.win)
+    if win then
+        show(win)
+    elseif previous.app then
+        reopen(previous.app)
+    end
+end
+
 -- defaults: { ["1"] = "com.mitchellh.ghostty", ... } seeds slots never pinned
 function M.bind(mods, pinMods, defaults)
     for key, bundleID in pairs(defaults) do
@@ -137,7 +157,10 @@ function M.bind(mods, pinMods, defaults)
     for key, s in pairs(hs.settings.get(STORE) or {}) do
         slots[key] = s
     end
-    for n = 1, 9 do
+    focusWatch = hs.window.filter.new():subscribe(hs.window.filter.windowFocused, track)
+    track(hs.window.focusedWindow())
+    hs.hotkey.bind(mods, "9", last)
+    for n = 1, 8 do
         local key = tostring(n)
         hs.hotkey.bind(mods, key, function() jump(key) end)
         hs.hotkey.bind(pinMods, key, function() pin(key) end)
