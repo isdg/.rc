@@ -28,11 +28,13 @@ local scroll = require("scroll")
 scroll.bind({ "ctrl", "shift" }, "j")
 
 -- Window slots: ⌥1-9 focus (again = cycle that app), ⌥⇧1-9 pin focused window.
--- Unpinned, 1-3 start as Ghostty · Safari · Finder.
+-- Unpinned, 1-5 start as Ghostty · Safari · Spotify · Finder · Slack.
 require("slots").bind({ "alt" }, { "alt", "shift" }, {
     ["1"] = "com.mitchellh.ghostty",
     ["2"] = "com.apple.Safari",
-    ["3"] = "com.apple.finder",
+    ["3"] = "com.spotify.client",
+    ["4"] = "com.apple.finder",
+    ["5"] = "com.tinyspeck.slackmacgap",
 })
 
 -- ⌥0 toggles the menu bar between pinned and auto-hidden. Synthetic ⌃F2 can't do
