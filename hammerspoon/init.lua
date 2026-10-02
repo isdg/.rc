@@ -29,13 +29,14 @@ scroll.bind({ "ctrl", "shift" }, "j")
 
 -- Window slots: ⌥1-8 focus (again = cycle that app), ⌥⇧1-8 pin focused window,
 -- ⌥9 jumps to the previously focused window (again = back).
--- Unpinned, 1-5 start as Ghostty · Safari · Spotify · Finder · Slack.
+-- Unpinned, 1-6 start as Ghostty · Safari · Spotify · Telegram · Finder · Slack.
 require("slots").bind({ "alt" }, { "alt", "shift" }, {
     ["1"] = "com.mitchellh.ghostty",
     ["2"] = "com.apple.Safari",
     ["3"] = "com.spotify.client",
-    ["4"] = "com.apple.finder",
-    ["5"] = "com.tinyspeck.slackmacgap",
+    ["4"] = "ru.keepcoder.Telegram",
+    ["5"] = "com.apple.finder",
+    ["6"] = "com.tinyspeck.slackmacgap",
 })
 
 -- ⌥0 toggles the menu bar between pinned and auto-hidden. Synthetic ⌃F2 can't do
