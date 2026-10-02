@@ -35,6 +35,16 @@ require("slots").bind({ "alt" }, { "alt", "shift" }, {
     ["3"] = "com.apple.finder",
 })
 
+-- ⌥0 toggles the menu bar between pinned and auto-hidden. Synthetic ⌃F2 can't do
+-- it (macOS ignores posted events for its shortcuts), so flip the setting itself.
+hs.hotkey.bind({ "alt" }, "0", function()
+    local s = hs.screen.mainScreen()
+    local hidden = s:frame().y == s:fullFrame().y
+    hs.task.new("/usr/bin/defaults", function()
+        hs.distributednotifications.post("AppleInterfaceMenuBarHidingChangedNotification")
+    end, { "write", "NSGlobalDomain", "_HIHideMenuBar", "-bool", tostring(not hidden) }):start()
+end)
+
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher
     .new(hs.configdir, function(files)
@@ -47,4 +57,4 @@ hs.pathwatcher
     end)
     :start()
 
-hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll · ⌥1-9 slots · 📋 screenshots)")
+hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll · ⌥1-9 slots · ⌥0 menu bar · 📋 screenshots)")
