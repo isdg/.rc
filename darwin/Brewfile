@@ -86,6 +86,8 @@ brew "minikube"
 brew "k9s"      # k8s TUI; this repo carries its skins, plugins.yaml and a
                 # tmux TERM wrapper (zsh/aliases.zsh), so it has to be here
 brew "argocd"   # GitOps CD for k8s; Linux gets it from bootstrap/components
+brew "grafanactl"  # Grafana resources (dashboards, folders) as code
+brew "logcli"      # Loki log queries (LogQL) from the shell
 brew "mysql"
 brew "postgresql@17"   # psql + a local server. Every postgresql formula is
                        # versioned and therefore keg-only, so unlike mysql it
