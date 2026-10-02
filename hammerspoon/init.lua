@@ -27,6 +27,14 @@ require("screenshot_clip").start()
 local scroll = require("scroll")
 scroll.bind({ "ctrl", "shift" }, "j")
 
+-- Window slots: ⌥1-9 focus (again = cycle that app), ⌥⇧1-9 pin focused window.
+-- Unpinned, 1-3 start as Ghostty · Safari · Finder.
+require("slots").bind({ "alt" }, { "alt", "shift" }, {
+    ["1"] = "com.mitchellh.ghostty",
+    ["2"] = "com.apple.Safari",
+    ["3"] = "com.apple.finder",
+})
+
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher
     .new(hs.configdir, function(files)
@@ -39,4 +47,4 @@ hs.pathwatcher
     end)
     :start()
 
-hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll · 📋 screenshots)")
+hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll · ⌥1-9 slots · 📋 screenshots)")
