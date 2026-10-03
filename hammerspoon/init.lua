@@ -28,7 +28,8 @@ local scroll = require("scroll")
 scroll.bind({ "ctrl", "shift" }, "j")
 
 -- Window slots: ⌥1-8 focus (again = cycle that app), ⌥⇧1-8 pin focused window,
--- ⌥9 jumps to the previously focused window (again = back).
+-- ⌥9 jumps to the previously focused window (again = back), ⌥- maximizes the
+-- focused one (out of native fullscreen too).
 -- Unpinned, 1-6 start as Ghostty · Safari · Spotify · Telegram · Finder · Slack.
 require("slots").bind({ "alt" }, { "alt", "shift" }, {
     ["1"] = "com.mitchellh.ghostty",
@@ -55,4 +56,4 @@ hs.pathwatcher
     end)
     :start()
 
-hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll · ⌥1-8 slots · ⌥9 last · ⌥0 menu bar · 📋 screenshots)")
+hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll · ⌥1-8 slots · ⌥9 last · ⌥- max · ⌥0 menu bar · 📋 screenshots)")

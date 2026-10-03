@@ -160,6 +160,10 @@ function M.bind(mods, pinMods, defaults)
     focusWatch = hs.window.filter.new():subscribe(hs.window.filter.windowFocused, track)
     track(hs.window.focusedWindow())
     hs.hotkey.bind(mods, "9", last)
+    hs.hotkey.bind(mods, "-", function()
+        local w = hs.window.focusedWindow()
+        if w then show(w) end
+    end)
     for n = 1, 8 do
         local key = tostring(n)
         hs.hotkey.bind(mods, key, function() jump(key) end)
