@@ -36,9 +36,11 @@ _fzf_rg_filter() {
 
 _fzf_rg_live() {
    local rg_cmd='rg --column --line-number --no-heading --color=always --smart-case'
-   FZF_DEFAULT_COMMAND="$rg_cmd ''" \
-      fzf --ansi --disabled --delimiter=: \
+   # Not FZF_DEFAULT_COMMAND: fzf skips it unless stdin is a tty, and a ZLE
+   # widget's stdin is /dev/null, so <Space>a would open empty.
+   : | fzf --ansi --disabled --delimiter=: \
           --query "${1:-}" \
+          --bind "start:reload:$rg_cmd -- {q} || true" \
           --bind "change:reload:sleep 0.1; $rg_cmd -- {q} || true" \
           --preview "$_fzf_preview" \
           --preview-window 'down:55%:+{2}-/2'
