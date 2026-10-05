@@ -82,6 +82,7 @@ bindkey -M vicmd ' b'  fzf-git-branch-widget
 bindkey -M vicmd ' J'  fzf-dirstack-widget
 # fzf's own widgets, from its key-bindings.zsh (loaded before this file).
 (( $+widgets[fzf-file-widget] ))    && bindkey -M vicmd ' f' fzf-file-after-widget
+(( $+widgets[fzf-cd-widget] ))      && bindkey -M vicmd ' j' fzf-cd-widget
 (( $+widgets[fzf-history-widget] )) && bindkey -M vicmd ' ;' fzf-history-widget
 (( $+widgets[fzf-history-widget] )) && bindkey -M vicmd ' r' fzf-history-widget
 

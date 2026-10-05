@@ -71,6 +71,7 @@ off from the word before. Esc in a picker inserts nothing.
                (renames give the new path)
     Space gm   a commit from any ref (git log --all) -> its short hash
     Space b    a local or remote branch -> its name
+    Space j    cd into a picked subdirectory (fzf's Alt-c picker)
     Space J    cd into a directory from the pushd stack (every cd pushes);
                runs as a command, so it lands in history, and whatever was
                half-typed comes back after
