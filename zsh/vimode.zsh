@@ -9,19 +9,81 @@ bindkey -v
 # letter on paste).
 export KEYTIMEOUT=10
 
+# Backspace deletes anything on the line, not just what this insert session typed.
+# zsh binds viins ^? to vi-backward-delete-char, which "won't delete past the point
+# where insert mode was last entered" — and a lost paste race plants that mid-paste.
+bindkey -M viins '^?' backward-delete-char
+bindkey -M viins '^H' backward-delete-char
+
 # In normal mode: v or n opens $EDITOR on the current command line
 autoload -Uz edit-command-line
 zle -N edit-command-line
 bindkey -M vicmd 'n' edit-command-line
 
-# In normal mode: y yanks to ZLE CUTBUFFER AND copies to the system clipboard
+function _clip_copy() {
+   printf "%s" "$1" | pbcopy 2>/dev/null \
+      || printf "%s" "$1" | xclip -selection clipboard 2>/dev/null
+}
+
+# Plain y is zsh's own yank, as in nvim; the clipboard is <Space>y in visual mode
+# (the `visual` keymap, nvim's x mode), so it never collides with <Space>y*.
 function vi-yank-clipboard() {
    zle vi-yank
-   printf "%s" "$CUTBUFFER" | pbcopy 2>/dev/null \
-      || printf "%s" "$CUTBUFFER" | xclip -selection clipboard 2>/dev/null
+   _clip_copy "$CUTBUFFER"
 }
 zle -N vi-yank-clipboard
-bindkey -M vicmd 'y' vi-yank-clipboard
+bindkey -M visual ' y' vi-yank-clipboard
+
+# In normal mode: <Space>p puts the system clipboard after the cursor, like vim's
+# "+p. CUTBUFFER is restored so plain p still puts the last yank.
+function vi-put-clipboard() {
+   local saved="$CUTBUFFER"
+   CUTBUFFER="$(pbpaste 2>/dev/null || xclip -selection clipboard -o 2>/dev/null)"
+   zle vi-put-after
+   CUTBUFFER="$saved"
+}
+zle -N vi-put-clipboard
+bindkey -M vicmd ' p' vi-put-clipboard
+# Lone Space (vi-forward-char, same as l) unbound so Space acts as a pure leader:
+# ZLE waits for the next key untimed instead of cutting off at KEYTIMEOUT.
+bindkey -M vicmd -r ' '
+
+# The rest of the <Space> leader, on nvim's letters. No leader key is both bound
+# and a prefix (hence yy, not y), so every one of them waits untimed.
+function vi-yank-line-clipboard() { _clip_copy "$BUFFER"; zle -M "copied command line" }
+function vi-yank-cwd-clipboard() { _clip_copy "$PWD"; zle -M "copied $PWD" }
+function vi-yank-cwd-name-clipboard() { _clip_copy "${PWD:t}"; zle -M "copied ${PWD:t}" }
+# Relative to the repo root; outside a repo, ~-relative.
+function vi-yank-cwd-rel-clipboard() {
+   local rel
+   if rel=$(git rev-parse --show-prefix 2>/dev/null); then
+      rel=${${rel%/}:-.}
+   else
+      rel=${(D)PWD}
+   fi
+   _clip_copy "$rel"
+   zle -M "copied $rel"
+}
+zle -N vi-yank-line-clipboard
+zle -N vi-yank-cwd-clipboard
+zle -N vi-yank-cwd-name-clipboard
+zle -N vi-yank-cwd-rel-clipboard
+
+bindkey -M vicmd ' yy' vi-yank-line-clipboard
+bindkey -M vicmd ' yf' vi-yank-cwd-name-clipboard
+bindkey -M vicmd ' yp' vi-yank-cwd-clipboard
+bindkey -M vicmd ' yP' vi-yank-cwd-rel-clipboard
+bindkey -M vicmd ' x'  kill-whole-line
+bindkey -M vicmd ' a'  fzf-rg-live-widget
+bindkey -M vicmd ' A'  fzf-rg-filter-widget
+bindkey -M vicmd ' gd' fzf-git-changed-widget
+bindkey -M vicmd ' gm' fzf-git-commit-widget
+bindkey -M vicmd ' b'  fzf-git-branch-widget
+bindkey -M vicmd ' J'  fzf-dirstack-widget
+# fzf's own widgets, from its key-bindings.zsh (loaded before this file).
+(( $+widgets[fzf-file-widget] ))    && bindkey -M vicmd ' f' fzf-file-after-widget
+(( $+widgets[fzf-history-widget] )) && bindkey -M vicmd ' ;' fzf-history-widget
+(( $+widgets[fzf-history-widget] )) && bindkey -M vicmd ' r' fzf-history-widget
 
 # Unbind K (default = run-help → opens man page; sometimes leaves ZLE in a
 # broken redraw state on return)

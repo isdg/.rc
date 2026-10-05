@@ -9,9 +9,15 @@
 # status line reads as part of the pane instead of a band painted over it. Don't
 # give these a background — it is what keeps the layout seamless.
 set -g status-style "bg=default,fg=${ISG_UI_FG}"
-set -g status-left "[#S]#{?client_prefix,#[fg=${ISG_UI_FG_STRONG}#,bold]*#[default] ,  }"
+set -g status-left "[#S]#{?#{||:#{==:#{client_key_table},plugins},#{==:#{client_key_table},splits}},#[fg=${ISG_UI_FG_STRONG}#,bold]+#[default] ,#{?client_prefix,#[fg=${ISG_UI_FG_STRONG}#,bold]*#[default] ,  }}"
 set -g window-status-style "bg=default,fg=${ISG_UI_FG_DIM}"
 set -g window-status-current-style "bg=default,fg=${ISG_UI_FG_STRONG},bold"
+# Alert flag (monitor-silence / -activity / -bell). tmux defaults this to
+# `reverse`, which on a bg=default bar paints a filled block and reads as a
+# rendering fault. Underscore instead: the palette here is greyscale, bold is
+# already spoken for by the current window, and an underline is the one
+# attribute left that draws the eye without inventing a colour.
+set -g window-status-activity-style "bg=default,fg=${ISG_UI_FG_STRONG},underscore"
 set -g status-left-style "bg=default,fg=${ISG_UI_FG}"
 set -g status-right-style "bg=default,fg=${ISG_UI_FG}"
 set -g message-style "bg=default,fg=${ISG_UI_MSG}"

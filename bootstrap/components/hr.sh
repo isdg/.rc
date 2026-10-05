@@ -36,6 +36,8 @@ install_hr() {
         git -C "$HR_SRC" pull --ff-only || echo "[WARN] git pull hr failed — building existing checkout as-is."
     fi
 
+    _export_buildable_sdk
+
     echo "[INFO] go install (in $HR_SRC)..."
     if (cd "$HR_SRC" && go install .); then
         echo "[OK] hr installed to ~/go/bin/hr"

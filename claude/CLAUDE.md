@@ -24,9 +24,10 @@ Three properties apply to every change (features, fixes, refactors):
 - **Complete** — implement every relevant case and conform to the full
   semantics of what you're touching. No quiet edge-case breakage; a fix that
   only covers the reported input isn't done.
-- **Idiomatic** — model the work with the language and its standard library,
-  and repeat the idioms of the surrounding code and similar domains rather than
-  inventing new ones.
+- **Best practices** — follow the settled practice of the language, its
+  standard library, and the surrounding code: its idioms, structure, and
+  tooling defaults, rather than inventing a local variant. Where the ecosystem
+  has a known answer, use it instead of a hand-rolled one.
 - **Robust** — the code must be well tested and reliable, and must keep the
   things that depend on it easy to test.
 
@@ -39,14 +40,40 @@ Two more apply when designing an API, interface, or abstraction:
   the other four: prefer the smallest surface that stays complete, and expose
   seams rather than features.
 
-And one rule on how the code explains itself:
+And two rules on how the work explains itself:
 
-- **Comments stay short** — 3 lines or fewer per comment block, whether
-  inline, block, or docstring-style. Write longer only when I ask for it in
-  that specific case. An explanation that won't fit is usually a signal to
-  restructure the code or name things better, not to write more prose.
+- **Comments earn their place** — default to none; most code needs no
+  commentary, and matching the surrounding density is no licence to add it.
+  Write one only for what the code can't say itself: a non-obvious *why*, an
+  invariant, a workaround, a deliberate deviation. Never restate the line,
+  narrate the change, or mark sections. Where one is warranted, 3 lines is the
+  ceiling and one the norm, whether inline, block, or docstring-style — an
+  explanation that won't fit is usually a signal to restructure the code or
+  name things better, not to write more prose. Don't strip existing comments
+  unless I ask.
+- **Commit titles stay at 50 characters** — the subject line, `type(scope):`
+  prefix included, is a hard budget. A summary that won't fit is usually a
+  signal the commit does two things: split it, or name things tighter. Never
+  stretch the title; detail belongs in the body, wrapped at 72.
 
 # Global preferences (apply in every project / folder)
+
+## Database access
+
+- **Read-only by default.** Any database CLI or tool — `psql`, `supabase`,
+  `mysql`, `mongosh`, `redis-cli`, a cloud provider's CLI, an MCP database
+  tool — is for reading unless I say otherwise. `SELECT`, `EXPLAIN`, `\d`,
+  and list/describe/inspect commands need no permission; just run them.
+- **Writes need my explicit go-ahead.** `INSERT`/`UPDATE`/`DELETE`/
+  `TRUNCATE`, DDL (`CREATE`/`ALTER`/`DROP`), migrations (`supabase db push`,
+  `supabase migration up`, framework migrate commands), seeds, resets, and
+  role/permission grants: ask first, naming the exact statement and the
+  target database, then wait. Never run it and tell me afterwards.
+- **Authoring isn't applying.** Writing a migration or seed *file* is
+  ordinary work — just don't run it against a database.
+- **Permission is per-task and per-database.** Approving one write doesn't
+  open the rest of the session, and approval against a local throwaway
+  database never extends to a shared or production one.
 
 ## Commit conventions
 

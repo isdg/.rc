@@ -153,7 +153,7 @@ C-b C-b p s                  PUSH: send this pane at a picked target —
                              join-pane into a pane, break-pane -d -a into a
                              window or a session
 C-b C-b w                    write this pane's scrollback to a file
-prefix s  /  prefix w        session / window choosers, M-<letter> to jump
+prefix s  /  prefix W        session / window choosers, M-<letter> to jump
 
 Panes are also reachable by their contents rather than their position: omni's
 prefix a / prefix A search window text and land the cursor on the matched line

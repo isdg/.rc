@@ -10,6 +10,9 @@ vim.g.maplocalleader = " "
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
+-- No Python remote plugins here; probing for pynvim costs ~45ms per .py file
+vim.g.loaded_python3_provider = 0
+
 -- Git messenger: autofocus popup
 vim.g.git_messenger_always_into_popup = true
 
@@ -86,15 +89,6 @@ vim.opt.exrc = true
 -- when another nvim already has the file open.
 vim.api.nvim_create_autocmd("SwapExists", {
     callback = function() vim.v.swapchoice = "" end,
-})
-
--- The buffer bootstrap opens to describe a run (see bootstrap/components/
--- journal.sh) is a commit message in everything but name: message on top, the
--- files it is about to modify as '#' comments below. It lives in $TMPDIR under
--- a mktemp suffix, so nothing infers the filetype without this.
-vim.api.nvim_create_autocmd({ "BufRead", "BufNewFile" }, {
-    pattern = "BOOTSTRAP_EDITMSG*",
-    callback = function() vim.bo.filetype = "gitcommit" end,
 })
 
 -- Clipboard provider, chosen by context:

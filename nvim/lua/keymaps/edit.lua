@@ -17,8 +17,8 @@ lmap("n", "z", "<cmd>ZenMode<CR>", { desc = "Toggle zen mode" })
 
 
 -- ─── Format ────────────────────────────────────────────────────
--- Moved from <leader>ff to <leader>F so the f prefix is free for flash jump
--- (<leader>f, see plugins/nav.lua's flash.nvim spec).
+-- Moved off <leader>ff long ago; <leader>f is the file finder (keymaps/find.lua),
+-- so format keeps the capital.
 map("n", "<leader>F", function()
     require("conform").format({ async = true, lsp_fallback = true })
 end, { desc = "Format buffer" })

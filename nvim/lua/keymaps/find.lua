@@ -4,7 +4,10 @@
 local leader = require("keymaps.leader")
 local lmap = leader.lmap
 
-lmap("n", "p", "<cmd>Files<CR>", { desc = "Find files" })
+-- f, not p: <leader>f is the letter every distro spends on finding (Telescope's
+-- own <leader>ff, and the file/find group in LazyVim, NvChad, AstroNvim). p only
+-- ever meant "the leader spelling of <C-p>" — a mnemonic, not a name.
+lmap("n", "f", "<cmd>Files<CR>", { desc = "Find files" })
 lmap("n", "b", "<cmd>Buffers<CR>", { desc = "Find buffers" })
 -- Lowercase = this buffer, uppercase = wider scope, for both pairs:
 --   e / E   symbols in this file / across the workspace   (LSP)
@@ -26,13 +29,16 @@ lmap("n", "E", "<cmd>Telescope lsp_dynamic_workspace_symbols<CR>", { desc = "Wor
 lmap("n", "e", function() require("telescope.builtin").lsp_document_symbols() end,
     { desc = "Document symbols" })
 lmap("n", "i", function() require("breadcrumb").show() end, { desc = "Show breadcrumb" })
-lmap("n", "B", "<cmd>History<CR>", { desc = "Recent files (fzf)" })
+-- H for history, free since the tool keys moved into <leader><leader>
+-- (keymaps/plugins.lua). B only ever meant "the uppercase of b", naming this
+-- after a neighbouring key instead of after the thing it opens.
+lmap("n", "H", "<cmd>History<CR>", { desc = "File history (fzf)" })
 
 -- -- Search across open buffers (equivalent to :Lines)
 -- lmap("n", "e", function()
 --    require("telescope.builtin").live_grep({ grep_open_files = true })
 -- end, { desc = "Search open buffers" })
 
--- <C-p> deliberately unmapped: file finding lives on <leader>p only, and
+-- <C-p> deliberately unmapped: file finding lives on <leader>f only, and
 -- leaving <C-p> alone restores its builtin meaning (previous line / insert-mode
 -- keyword completion).

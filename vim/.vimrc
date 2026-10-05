@@ -15,9 +15,9 @@
 "                      HOTKEYS
 " ============================================================
 " GENERAL
-"   <leader>s        Save file
-"   <leader>w        Quit file
-"   <leader>W        Quit without saving
+"   <leader>w        Save file
+"   <leader>x        Quit file
+"   <leader>X        Quit without saving
 "   <leader>Q        Quit all
 "   <leader>;        Command history (fzf)
 "   <leader>/        Search history (fzf)
@@ -34,7 +34,6 @@
 " SPLITS
 "   <leader>e        Vertical split
 "   <leader>r        Horizontal split
-"   <leader>f        Keep only current split
 "   <C-h/j/k/l>      Move between splits
 "   <leader>+/-         Resize split vertically
 "   <leader>< / >       Resize split horizontally
@@ -57,7 +56,7 @@
 "   za/zA/zo/zc      Folding commands
 
 " FUZZY FIND
-"   <leader>p        Search files
+"   <leader>f        Search files
 "   <C-b>            Search buffers
 "   :History         Open file history
 "   :BLines          Search inside current buffer
@@ -122,7 +121,7 @@
 
 " SPLITS (related)
 "   <C-h/j/k/l>       Move between splits
-"   <leader>H/J/K/L   Move split window to left/bottom/top/right
+"   <C-w>H/J/K/L      Move split window to left/bottom/top/right
 "   <leader>+/-/< />  Resize splits (height/width)
 "   <leader>=         Equalize all split sizes
 
@@ -167,7 +166,7 @@
 "   ; / ,             Repeat last f/F/t/T forward / backward
 
 " FUZZY & SYMBOL SEARCH (via plugins)
-"   <leader>p         Fuzzy find files (:Files)
+"   <leader>f         Fuzzy find files (:Files)
 "   <leader>e / E     LSP symbols: this file / workspace
 "   <leader>c / C     Lines: this buffer / all open buffers
 "   <C-b>             Fuzzy find buffers (:Buffers)
@@ -221,8 +220,6 @@
 "                    ADVANCED (POWER) HOTKEYS (NOT IMPLEMENTED YET) #TODO
 " ============================================================
 "   <leader>R        Reload vimrc (source ~/.vimrc)
-"   <leader>x        Close current buffer (:bd)
-"   <leader>X        Force close buffer (:bd!)
 "   <leader>o        Close all other buffers
 "   <leader>n        Open new empty buffer
 "   <leader><leader> Switch between last two buffers
@@ -277,6 +274,10 @@ set ruler             " Show cursor position
 set incsearch         " Incremental search
 set scrolloff=4       " Set space when scrolloff
 set hidden            " Allow switching buffers without saving
+" Vi-compatible default is empty: backspace stops dead at autoindent, a line
+" break, or wherever insert mode began. nvim defaults to this value and
+" .vimrc.core already sets it; plain vim was the one left with the 1976 rule.
+set backspace=indent,eol,start
 
 
 " ----------------------------
@@ -469,11 +470,6 @@ let g:NERDTreeWinSize=40
 let NERDTreeQuitOnOpen=1
 autocmd FileType nerdtree setlocal number
 
-" The buffer bootstrap opens to describe a run (bootstrap/components/journal.sh)
-" is a commit message in everything but name. It lives in $TMPDIR under a mktemp
-" suffix, so nothing infers the filetype without this.
-autocmd BufRead,BufNewFile BOOTSTRAP_EDITMSG* setfiletype gitcommit
-
 " ============================================================
 "                  HR (READING LIST)
 " ============================================================
@@ -490,14 +486,14 @@ execute 'source ' . s:script_dir . '/fzf-layout.vim'
 "                      FUZZY FIND
 " ============================================================
 
-" Search files (file palette)
-nnoremap <leader>p :Files<CR>   
+" Search files (file palette). Same key as nvim (keymaps/find.lua).
+nnoremap <leader>f :Files<CR>
 
 " Search buffers (buffer palette)
 nnoremap <leader>b :Buffers<CR>
 
-" Recent files (fzf v:oldfiles)
-nnoremap <leader>B :History<CR>
+" File history (fzf v:oldfiles). H for history; B was just the uppercase of b.
+nnoremap <leader>H :History<CR>
 
 " Lowercase = this buffer, uppercase = wider scope, for both pairs (same as
 " nvim, see nvim/lua/keymaps/find.lua):
@@ -568,10 +564,10 @@ xmap gc  <Plug>NERDCommenterToggle
 " ============================================================
 "                   FILE MANAGEMENT
 " ============================================================
-nnoremap <leader>s :w<CR>    " Save file
-nnoremap <leader>w :q<CR>    " Quit file
-nnoremap <leader>W :q!<CR>   " Quit without saving
-nnoremap <leader>Q :qa<CR>   " Quit all
+nnoremap <leader>w :w<CR>
+nnoremap <leader>x :q<CR>
+nnoremap <leader>X :q!<CR>
+nnoremap <leader>Q :qa<CR>
 
 
 

@@ -5,7 +5,7 @@ local leader = require("keymaps.leader")
 local map, lmap = leader.map, leader.lmap
 
 -- ─── File management ────────────────────────────────────────────
-lmap("n", "s", "<cmd>w<CR>", { desc = "Save file" })
+lmap("n", "w", "<cmd>w<CR>", { desc = "Save file" })
 -- Toggle the whole number column on/off (both number + relativenumber).
 lmap("n", "N", function()
     local show = not (vim.wo.number or vim.wo.relativenumber)
@@ -18,8 +18,8 @@ lmap("n", "n", function()
     vim.wo.number = true
     vim.wo.relativenumber = not vim.wo.relativenumber
 end, { desc = "Toggle relative numbers (hybrid)" })
-lmap("n", "w", "<cmd>q<CR>", { desc = "Quit file" })
-lmap("n", "W", "<cmd>q!<CR>", { desc = "Quit without saving" })
+lmap("n", "x", "<cmd>q<CR>", { desc = "Quit file" })
+lmap("n", "X", "<cmd>q!<CR>", { desc = "Quit without saving" })
 lmap("n", "Q", "<cmd>qa!<CR>", { desc = "Quit all without saving" })
 
 
@@ -84,10 +84,10 @@ end
 -- letter is the whole binding — so nvim moves to meet it rather than the other
 -- way round, and the pair below ends up reading identically in both.
 --
---   HJKL  resize        v / h  split         ;  last split      o  cycle
+--   HJKL  resize     v / h  split     ;  last split     o  cycle     1-9  jump
 --
 -- Each entry displaces a <C-w> default, and each is a default already reachable
--- another way, which is the whole reason these four were the ones to spend:
+-- another way, which is the whole reason these five were the ones to spend:
 --   HJKL  moved a window to the far edge at full height/width. That verb is
 --         gone, not relocated — <C-w><C-hjkl> above covers rearranging, and it
 --         does it without flattening the layout, which is what HJKL was
@@ -96,6 +96,9 @@ end
 --   o     was `only`. Still one word away as :only, and unlike the others it
 --         has no keyed replacement, so it is the one real loss here.
 --   ;     was unmapped.
+--   1-9   were a count typed after <C-w> (<C-w>5+ raises by five). A count
+--         before the key means the same thing and is the spelling everything
+--         here already uses — the resize maps above read theirs that way.
 -- <C-w>s (split) and <C-w>p (last split) are deliberately left alone, so every
 -- displaced verb except `only` keeps its vim-native key too.
 
@@ -136,6 +139,15 @@ map("n", "<C-w>sh", "<cmd>split<CR>", { desc = "Split stacked" })
 
 map("n", "<C-w>;", "<C-w>p", { desc = "Last split" })
 map("n", "<C-w>o", "<C-w>w", { desc = "Cycle splits" })
+
+-- Straight to a split by number, the digits tmux's layer spends on panes —
+-- though vim numbers positionally (winnr(), top-left down) where tmux's
+-- pane_index is creation order. Clamped: :9wincmd w with four open is an E16.
+for i = 1, 9 do
+    map("n", "<C-w>" .. i, function()
+        vim.cmd(math.min(i, vim.fn.winnr("$")) .. "wincmd w")
+    end, { desc = "Go to split " .. i })
+end
 
 -- Equalize, on tmux's letter as well as vim's. <C-w>= is the builtin and stays
 -- the primary — it is documented, universal, and the symbol says the thing —
@@ -190,6 +202,7 @@ local function command_history()
 end
 
 lmap("n", ";", command_history, { desc = "Command history → cmdline (fzf)" })
+lmap("n", "r", command_history, { desc = "Command history → cmdline (fzf)" })
 lmap("n", "/", "<cmd>History/<CR>", { desc = "Search history (fzf)" })
 -- Jumplist as a list instead of stepping through it with <C-i>/<C-o>
 lmap("n", "J", "<cmd>Jumps<CR>", { desc = "Jump list (fzf)" })
@@ -205,6 +218,45 @@ map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlights" })
 
 -- Terminal: Esc exits terminal mode
 map("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
+-- fzf pickers are terminals too, and every key, click or scroll must stay with
+-- fzf: Esc aborts it, and anything else that leaves terminal mode or the window
+-- (mouse, <C-\><C-n>) is undone while fzf runs. Once it exits, hands off.
+local function fzf_running(buf)
+    local job = vim.api.nvim_buf_is_valid(buf) and vim.b[buf].terminal_job_id
+    return job and vim.fn.jobwait({ job }, 0)[1] == -1
+end
+
+vim.api.nvim_create_autocmd("FileType", {
+    pattern = "fzf",
+    callback = function(ev)
+        local buf = ev.buf
+        vim.keymap.set("t", "<Esc>", "<Esc>", { buffer = buf, desc = "Abort fzf" })
+        vim.api.nvim_create_autocmd("ModeChanged", {
+            buffer = buf,
+            callback = function()
+                if vim.v.event.old_mode ~= "t" then return end
+                vim.schedule(function()
+                    if vim.api.nvim_get_current_buf() == buf and fzf_running(buf) then
+                        vim.cmd.startinsert()
+                    end
+                end)
+            end,
+        })
+        vim.api.nvim_create_autocmd("WinLeave", {
+            buffer = buf,
+            callback = function()
+                local win = vim.api.nvim_get_current_win()
+                vim.schedule(function()
+                    if vim.api.nvim_win_is_valid(win) and vim.api.nvim_win_get_buf(win) == buf
+                        and fzf_running(buf) then
+                        vim.api.nvim_set_current_win(win)
+                        vim.cmd.startinsert()
+                    end
+                end)
+            end,
+        })
+    end,
+})
 
 -- Swap jump list navigation (Ctrl+I = back, Ctrl+O = forward)
 map("n", "<C-i>", "<C-o>", { noremap = true, desc = "Jump back" })
@@ -212,6 +264,32 @@ map("n", "<C-o>", "<C-i>", { noremap = true, desc = "Jump forward" })
 
 -- Yank to system clipboard (visual mode)
 lmap("v", "y", '"+y', { desc = "Yank to clipboard" })
+
+-- Paste the system clipboard, the counterpart to <leader>y. p freed up when
+-- file finding moved to <leader>f. Visual uses "+P, not "+p, so a paste over a
+-- selection leaves the unnamed register alone and stays repeatable — which also
+-- matters over SSH, where "+ reads back the unnamed register (see options.lua).
+lmap("n", "p", '"+p', { desc = "Paste from clipboard" })
+lmap("v", "p", '"+P', { desc = "Paste from clipboard" })
+
+-- <leader>y{f,p,P}: put this buffer's name, absolute path or cwd-relative path
+-- on the clipboard. Same "+ as the yank above, so it reaches pbcopy locally and
+-- the local terminal over SSH; :. falls back to the full path outside cwd.
+local function yank_path(modifier)
+    return function()
+        local path = vim.fn.expand("%" .. modifier)
+        if path == "" then
+            vim.notify("Buffer has no file name", vim.log.levels.WARN)
+            return
+        end
+        vim.fn.setreg("+", path)
+        vim.notify("Copied " .. path)
+    end
+end
+
+lmap("n", "yf", yank_path(":t"), { desc = "Yank file name to clipboard" })
+lmap("n", "yp", yank_path(":p"), { desc = "Yank absolute path to clipboard" })
+lmap("n", "yP", yank_path(":."), { desc = "Yank relative path to clipboard" })
 
 -- Reselect last visual selection
 lmap("n", "v", "gv", { desc = "Reselect visual" })

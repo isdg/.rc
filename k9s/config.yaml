@@ -1,0 +1,13 @@
+# k9s global config — SEED ONLY, deliberately not symlinked.
+#
+# k9s owns the live copy and rewrites it from its defaults whenever it cannot
+# parse one, which is exactly how ui.skin got lost once already. It also bakes
+# in absolute paths (screenDumpDir), so a symlink would commit one machine's
+# layout and break the other platform's bootstrap.
+#
+# bootstrap copies this in when k9s has no config at all, and otherwise re-adds
+# just the ui.skin key. Everything else is left to k9s' own defaults on purpose:
+# the fewer keys here, the less there is to drift when k9s changes its schema.
+k9s:
+  ui:
+    skin: skin-active

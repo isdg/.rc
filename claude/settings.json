@@ -54,9 +54,9 @@
   },
   "syntaxHighlightingDisabled": false,
   "alwaysThinkingEnabled": true,
-  "effortLevel": "xhigh",
+  "effortLevel": "auto",
   "autoUpdatesChannel": "stable",
-  "tui": "default",
+  "tui": "fullscreen",
   "voice": {
     "enabled": true,
     "mode": "hold"

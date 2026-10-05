@@ -7,13 +7,23 @@
 # resolution: $HOME, the Darwin-vs-XDG split for nom, and the guards that drop
 # an entry whose source this checkout does not carry.
 #
-# link_dotfiles, ensure_dotfiles and the bootstrap journal all read this one
-# list, so they cannot drift apart — which they had: ensure_dotfiles used to
-# verify a strict subset of what link_dotfiles wrote.
+# link_dotfiles and ensure_dotfiles both read this one list, so they cannot
+# drift apart — which they had: ensure_dotfiles used to verify a strict subset
+# of what link_dotfiles wrote.
 #
 # Deliberately not here, because they are not a straight a->b link: the vim
 # colors directory with its per-file fallback, the theme mode file, and the
 # generated *-active files inside the repo. Those stay hand-written below.
+# k9s keeps its config under Application Support on macOS and XDG elsewhere.
+# _dotfile_links and the config.yaml helpers below all resolve it through here.
+_k9s_dir() {
+    if [ "$(uname)" = "Darwin" ]; then
+        echo "$HOME/Library/Application Support/k9s"
+    else
+        echo "${XDG_CONFIG_HOME:-$HOME/.config}/k9s"
+    fi
+}
+
 _dotfile_links() {
     local d="${DOTFILES_DIR:-$HOME/.rc}"
 
@@ -50,15 +60,28 @@ _dotfile_links() {
     # line; going through _relink is what fixed that.
     if [ -d "$d/k9s/skins" ]; then
         local k9s
-        if [ "$(uname)" = "Darwin" ]; then
-            k9s="$HOME/Library/Application Support/k9s"
-        else
-            k9s="${XDG_CONFIG_HOME:-$HOME/.config}/k9s"
-        fi
+        k9s="$(_k9s_dir)"
         echo "k9s skins|dir|$d/k9s/skins|$k9s/skins"
         if [ -f "$d/k9s/plugins.yaml" ]; then
             echo "k9s plugins.yaml|file|$d/k9s/plugins.yaml|$k9s/plugins.yaml"
         fi
+    fi
+
+    # ssh client config. Unlike the gpg one below this is not Darwin-guarded:
+    # the only macOS-only keyword in it, UseKeychain, is wrapped in
+    # IgnoreUnknown so a Linux ssh skips it rather than dying on it. The file
+    # only -- keys, known_hosts and authorized_keys stay out of the repo.
+    if [ -f "$d/ssh/config" ]; then
+        echo "ssh config|file|$d/ssh/config|$HOME/.ssh/config"
+    fi
+
+    # gpg-agent. Darwin only: the pinentry-program line in it is an absolute
+    # /opt/homebrew path, which is meaningless on Linux and would wedge the
+    # agent there rather than configure it. Only this one file is linked, never
+    # the directory -- ~/.gnupg is where the keyring, the trustdb and the agent
+    # sockets live, none of which belong in a repo.
+    if [ -f "$d/gpg/gpg-agent.conf" ] && [ "$(uname)" = "Darwin" ]; then
+        echo "gpg-agent.conf|file|$d/gpg/gpg-agent.conf|$HOME/.gnupg/gpg-agent.conf"
     fi
 
     # nom (RSS reader): macOS uses Library/Application Support, Linux XDG.
@@ -108,6 +131,77 @@ _check_theme_generated() {
     return 1
 }
 
+# The skin only loads if config.yaml names it, and k9s regenerates that file
+# from its defaults whenever it cannot parse one — dropping ui.skin with it.
+# So: copy the seed when there is no config at all, otherwise re-add the key.
+_ensure_k9s_skin() {
+    local dotfiles_dir="$1"
+    local seed="$dotfiles_dir/k9s/config.yaml"
+    local k9s_dir live tmp
+    k9s_dir="$(_k9s_dir)"
+    live="$k9s_dir/config.yaml"
+
+    [ -f "$seed" ] || return 0          # older checkout, nothing to seed
+
+    if [ ! -f "$live" ]; then
+        mkdir -p "$k9s_dir" && cp "$seed" "$live" || {
+            echo "[FAIL] Could not seed $live"
+            return 1
+        }
+        echo "[OK] Seeded k9s config.yaml (ui.skin: skin-active)"
+        return 0
+    fi
+
+    if grep -qE '^[[:space:]]*skin:' "$live"; then
+        echo "[SKIP] k9s config.yaml already sets ui.skin"
+        return 0
+    fi
+
+    # Indent is taken from the ui: line rather than hardcoded, so this still
+    # lands correctly if k9s ever restyles the file it writes.
+    tmp="$(mktemp)" || return 1
+    if awk '
+        /^[[:space:]]*ui:[[:space:]]*$/ && !seen {
+            print
+            indent = $0; sub(/ui:.*/, "", indent)
+            print indent "  skin: skin-active"
+            seen = 1
+            next
+        }
+        { print }
+        END { exit !seen }
+    ' "$live" > "$tmp"; then
+        # cat, not mv: keeps the live file's inode and its 0600 mode.
+        cat "$tmp" > "$live"
+        rm -f "$tmp"
+        echo "[OK] Restored ui.skin: skin-active in k9s config.yaml"
+    else
+        rm -f "$tmp"
+        echo "[FAIL] k9s config.yaml has no ui: block; add 'skin: skin-active' under one"
+        return 1
+    fi
+}
+
+# Verify only — _ensure_k9s_skin is what repairs it.
+_check_k9s_skin() {
+    local dotfiles_dir="$1"
+    local live
+    live="$(_k9s_dir)/config.yaml"
+
+    [ -f "$dotfiles_dir/k9s/config.yaml" ] || return 0
+
+    if [ ! -f "$live" ]; then
+        echo "[FAIL] k9s config.yaml missing — the skin will not load"
+        return 1
+    fi
+    if grep -qE '^[[:space:]]*skin:' "$live"; then
+        echo "[OK] k9s config.yaml sets ui.skin"
+        return 0
+    fi
+    echo "[FAIL] k9s config.yaml has no ui.skin — the skin will not load"
+    return 1
+}
+
 ensure_dotfiles() {
     local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
     echo "[STEP] Verifying dotfiles..."
@@ -119,6 +213,7 @@ ensure_dotfiles() {
     done < <(_dotfile_links)
 
     _check_theme_generated "$dotfiles_dir" || failed=1
+    _check_k9s_skin "$dotfiles_dir" || failed=1
 
     if [ -d "$HOME/.tmux/plugins/tpm" ]; then
         echo "[OK] TPM installed"
@@ -171,6 +266,21 @@ link_dotfiles() {
         fi
         _relink "$label" "$kind" "$src" "$dst" || true
     done < <(_dotfile_links)
+
+    # _relink's `mkdir -p` makes a missing parent at the umask, i.e. 0755. For
+    # every other target that is fine; for ~/.gnupg it is not. gpg checks the
+    # mode of its own homedir and prints "unsafe permissions on homedir" on
+    # every single invocation until it is 0700, so tighten it here rather than
+    # leaving a fresh machine to that warning.
+    if [ -d "$HOME/.gnupg" ]; then
+        chmod 700 "$HOME/.gnupg"
+    fi
+    # Same for ~/.ssh, and for the same reason: ssh refuses to use a private key
+    # whose directory is group- or world-readable, so a 0755 ~/.ssh created by
+    # that mkdir would break every key put in it later.
+    if [ -d "$HOME/.ssh" ]; then
+        chmod 700 "$HOME/.ssh"
+    fi
 
     # Apply to any already-running tmux server. Unlike ghostty/k9s, tmux's
     # config reads the theme mode file directly at parse time (see the
@@ -254,14 +364,22 @@ link_dotfiles() {
         echo "[OK] Seeded fzf/opts-active.conf -> opts-$(cat "$theme_file").conf"
     fi
 
+    if [ -d "$dotfiles_dir/delta" ]; then
+        ln -sf "theme-$(cat "$theme_file").gitconfig" "$dotfiles_dir/delta/theme-active.gitconfig"
+        echo "[OK] Seeded delta/theme-active.gitconfig -> theme-$(cat "$theme_file").gitconfig"
+    fi
+
     # The k9s skins/ and plugins.yaml links themselves come from the table; what
     # is left here is the active-skin symlink *inside* the repo, which the table
-    # cannot express. toggle_theme.sh flips it afterwards; config.yaml points
-    # ui.skin at it, which is the one bit of manual setup k9s needs.
+    # cannot express. toggle_theme.sh flips it afterwards.
     if [ -d "$dotfiles_dir/k9s/skins" ]; then
         ln -sf "vs_$(cat "$theme_file").yaml" "$dotfiles_dir/k9s/skins/skin-active.yaml"
-        echo "[INFO] k9s: set ui.skin: skin-active in its config.yaml"
+        echo "[OK] Seeded k9s/skin-active.yaml -> vs_$(cat "$theme_file").yaml"
     fi
+
+    # Pointing ui.skin at that symlink used to be manual, and k9s silently
+    # dropped the key when it rewrote its config. Now the bootstrap owns it.
+    _ensure_k9s_skin "$dotfiles_dir" || true
 
     # bat reads its themes out of ~/.config/bat (linked from the table above),
     # but only after its cache is rebuilt — without this BAT_THEME=vs_dark /

@@ -36,6 +36,8 @@ install_plc() {
         git -C "$PLC_SRC" pull --ff-only || echo "[WARN] git pull plc failed — building existing checkout as-is."
     fi
 
+    _export_buildable_sdk
+
     echo "[INFO] cargo install --path $PLC_SRC/plc..."
     if cargo install --path "$PLC_SRC/plc"; then
         echo "[OK] plc installed to ~/.cargo/bin/plc"

@@ -65,7 +65,7 @@ blame / refs views
 generic — every view
     Y    copy %(file)                    file path; overridden in the 3 above
     g    move-first-line                 top of view
-    G    move-last-line                  bottom of view — but see §4
+    G    move-last-line                  bottom of view, main included
     ^F   move-page-down
     ^B   move-page-up
     <Space>  enter                       same as <Enter>, open selection
@@ -137,16 +137,12 @@ another.
     status R    loses generic `R refresh` — use <F5> in the status view
     status S    loses generic `S view-status` — `s` still gets you there
     main O      loses generic `O maximize`
+    main G      loses main `G :toggle commit-title-graph` — o g still toggles
 
 All of those toggles remain reachable through the options menu: press o,
 then the toggle's own key (o d for dates, o A for author, and so on).
 
-Two things that are not our doing but read like bugs:
-
-    G in main   toggles the revision graph, it does not jump to the last
-                line. tig binds `G :toggle commit-title-graph` in the main
-                keymap, and a view keymap outranks our generic G. Use <End>
-                to reach the bottom of the log.
+One thing that is not our doing but reads like a bug:
 
     R in main   is refresh again. It used to be `git rebase -i` here; that
                 binding was removed because shadowing refresh on the view

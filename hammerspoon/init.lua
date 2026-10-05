@@ -20,12 +20,29 @@ translate.bind({ "cmd", "ctrl" }, "t")
 -- Auto-copy new screenshots (⌘⇧4 etc.) to the clipboard, keeping the file.
 require("screenshot_clip").start()
 
--- Keyboard scrolling: ⌘⇧J enters scroll mode; then jk (up/down), du (half-page),
+-- Keyboard scrolling: ⌃⇧J enters scroll mode; then jk (up/down), du (half-page),
 -- hl (left/right), hold to scroll smoothly, ⇧ for fast, esc/q/i to exit. Any app.
 -- Entering warps the pointer onto the focused window (in Ghostty, onto the
 -- focused tmux pane) so the keys scroll what you are looking at — see scroll.lua.
 local scroll = require("scroll")
-scroll.bind({ "cmd", "shift" }, "j")
+scroll.bind({ "ctrl", "shift" }, "j")
+
+-- Window slots: ⌥1-8 focus (again = cycle that app), ⌥⇧1-8 pin focused window,
+-- ⌥9 jumps to the previously focused window (again = back), ⌥- maximizes the
+-- focused one (out of native fullscreen too).
+-- Unpinned, 1-6 start as Ghostty · Safari · Spotify · Telegram · Finder · Slack.
+require("slots").bind({ "alt" }, { "alt", "shift" }, {
+    ["1"] = "com.mitchellh.ghostty",
+    ["2"] = "com.apple.Safari",
+    ["3"] = "com.spotify.client",
+    ["4"] = "ru.keepcoder.Telegram",
+    ["5"] = "com.apple.finder",
+    ["6"] = "com.tinyspeck.slackmacgap",
+})
+
+-- ⌥0 toggles the menu bar between pinned and auto-hidden. Synthetic ⌃F2 can't do
+-- it (macOS ignores posted events for its shortcuts), so flip the setting itself.
+require("menubar").bind({ "alt" }, "0")
 
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher
@@ -39,4 +56,4 @@ hs.pathwatcher
     end)
     :start()
 
-hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌘⇧J scroll · 📋 screenshots)")
+hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll · ⌥1-8 slots · ⌥9 last · ⌥- max · ⌥0 menu bar · 📋 screenshots)")

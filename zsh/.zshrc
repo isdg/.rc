@@ -197,14 +197,22 @@ fi
 # zoxide — frecency directory jumping. `z foo` jumps to the best match, `zi foo`
 # picks via fzf. Builtin `cd` is left intact (no surprise remap).
 #
-# Deprecated (Aug 2026): the bootstraps no longer install it. This init stays
-# because it is already guarded — machines that still have zoxide keep `z`, and
-# a fresh box simply skips the line.
+# Back in both Brewfiles since Sep 2026, after a month deprecated. The Linux
+# bootstrap still does not install it, which the guard below covers: a box
+# without the binary skips the line rather than erroring at every shell start.
 command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 
 export PATH="/usr/local/opt/llvm@17/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"   # cargo-installed binaries (plc)
+
+# postgresql@17 (Brewfile). Homebrew ships Postgres only as versioned formulae,
+# and versioned formulae are keg-only: the install is complete under
+# /opt/homebrew/opt/postgresql@17 but nothing is symlinked into the brew prefix,
+# so psql/pg_dump/createdb exist and are still "command not found". Guarded like
+# the fzf and Homebrew lines below, so a box without it skips the line.
+[[ -d /opt/homebrew/opt/postgresql@17/bin ]] && \
+    export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
 
 # Homebrew. Same failure as ~/.local/bin above, one level up. /opt/homebrew/bin
 # reaches PATH on this Mac only through /etc/paths.d/homebrew, and macOS's
@@ -233,6 +241,17 @@ export VISUAL='nvim'
 # (git_signing.sh leaves it on whenever the key is present) hangs silently
 # instead of asking for the passphrase.
 export GPG_TTY=$(tty)
+
+# Ghostty only auto-sources its shell integration (the `ssh` wrapper behind
+# shell-integration-features = ssh-env,ssh-terminfo in ghostty/config) in
+# shells it spawns directly. tmux panes are not that — GHOSTTY_RESOURCES_DIR
+# reaches them by plain env inheritance, but the integration script itself
+# never runs, so `ssh` stays the real binary and remotes fail with "missing
+# or unsuitable terminal: xterm-ghostty". This is the guard Ghostty's own
+# ghostty-integration script recommends for exactly this case.
+if [[ -n $GHOSTTY_RESOURCES_DIR ]]; then
+    source "$GHOSTTY_RESOURCES_DIR/shell-integration/zsh/ghostty-integration"
+fi
 
 source "$ISGRC/zsh/git.zsh"      # both before aliases.zsh, so personal
 source "$ISGRC/zsh/dirs.zsh"     # aliases keep precedence
