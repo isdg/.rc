@@ -1,13 +1,10 @@
 {
-  "env": {
-    "CLAUDE_CODE_DISABLE_NONESSENTIAL_TRAFFIC": "1"
-  },
   "attribution": {
     "commit": "",
     "pr": ""
   },
   "permissions": {
-    "defaultMode": "default"
+    "defaultMode": "auto"
   },
   "hooks": {
     "PreToolUse": [
@@ -64,5 +61,46 @@
   "editorMode": "vim",
   "verbose": true,
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "autoMode": {
+    "environment": [
+      "### Org-wide",
+      "**Organization**: Delos Intelligence (github.com/Delos-Intelligence org; repo `Delos-Intelligence/cosmos-saas`)",
+      "**Cloud provider(s)**: None configured",
+      "**Repository visibility**: internal (Delos-Intelligence/cosmos-saas — per gh API; treat as private-equivalent, not public)",
+      "**Internal sharing / snippet hosting**: None configured — treat public paste/gist services as outside the trust boundary",
+      "**Secrets management**: CI secrets referenced by name only (e.g. ANTHROPIC_API_KEY, APPLE_APP_SPECIFIC_PASSWORD, APPLE_ID, APPLE_TEAM_ID, ASC_API_*, BLOB_READ_WRITE_TOKEN, CONTENT_MIGRATION_DATABASE_URL, CONTENT_READ_DATABASE_URL, COSMOS_SLACK_TOKEN, CSC_KEY_PASSWORD*, CSC_LINK*, CWS_CLIENT_ID/SECRET/REFRESH_TOKEN, DEPLOYER_APP_ID/PRIVATE_KEY) — values not accessible; many per-app `.env`/`.env.production*` files are gitignored and should be treated as sensitive, never printed or committed",
+      "**Default / protected branches**: default branch `main`; rulesets active (`Branch naming`, `No force on main`, `Status Check`, +1 redacted) plus a long explicit protected-branches list (100+ entries, truncated) — treat `main` and all listed branches as protected regardless of the rulesets/branch-protection split",
+      "**CI/CD deploy targets**: `.github/workflows/release-prod-eu.yml` and k8s prod value files (`values-az-ae-cosmos-prod.yaml`, `values-az-bouygues-cosmos-prod.yaml`, `values-az-us-cosmos-prod.yaml`, `values-scw-cosmos-prod.yaml`, `kube-prometheus-stack/values-scw-cosmos-prod.yaml`, `kubenurse/values-scw-cosmos-prod.yaml`) indicate prod deploy targets in `kubernetes/`; treat these namespaces/configs as deploy targets requiring care",
+      "**Network posture**: None configured",
+      "**Host containment**: None configured — assume Claude Code runs on an ordinary developer machine with open internet",
+      "**Source control**: the trusted repo (Delos-Intelligence/cosmos-saas) and its `origin` remote only",
+      "**Trusted internal domains**: None configured",
+      "**Trusted cloud buckets**: None configured",
+      "**Key internal services**: npm.pkg.github.com, registry.tiptap.dev (package registry hosts referenced in config)",
+      "**Internal package registry**: npm.pkg.github.com, registry.tiptap.dev",
+      "**Sensitive data locations & audiences**: gitignored `.env`/`.env.*` files across `apps/*`, `backend/`, `collab/`, `cvn*/`, `mail-forward/`, `monitor/`, `packages/cms/shared/`, `tools/**`, `infrastructure/supabase/**`, plus mobile signing keys (`apps/mobile/*.key`, `apps/delos-mobile/*.key`, `apps/workers-mobile/eas-asc-key.p8`) and `totem/.env.pi` — share only with audiences cleared at the named Delos engineering bar; never commit or print contents",
+      "**Data retention / declassification**: None configured",
+      "**Sensitive remote targets**: any host/namespace/file containing `prod` or `production` as a whole segment — e.g. k8s prod value files under `kubernetes/charts/*`, `apps/*/.env.production*`, `release-prod-eu.yml`; also the production Supabase/skill-marketplace database described in CLAUDE.md (\"production database is the source of truth\" for `skill_library`, replicated nightly to beta/us/ae/bouygues)",
+      "**Protected deployment namespaces / environments**: k8s namespace prefixes/files carrying `prod` (per Sensitive remote targets heuristic) — e.g. `*-cosmos-prod` value files; skill-marketplace prod DB (writes there must be authored in prod directly, never via migration, per CLAUDE.md)",
+      "**Protected IaC scopes**: IAM, RBAC, networking, quota, node-pool resources, and anything in `kubernetes/` tagged or named with `prod`/`production` (e.g. `cert-manager-webhook-ovh-rbac.yaml`, `network-policies.yaml`, `certificates.yaml` under prod contexts)",
+      "### User-specific",
+      "**Primary use of Claude Code**: software development (Cosmos SaaS monorepo — Next.js/React Native/FastAPI/Supabase)",
+      "**Trusted repo**: `/Users/isg/cosmos-main` (Delos-Intelligence/cosmos-saas, internal visibility) and its `origin` remote; sibling worktrees `~/cosmos-poema`, `~/cosmos-skazka`, `~/cosmos-sonet`, `~/cosmos-oda` share the same remote and may be treated as the same trusted repo for routine work",
+      "**Org-specific CLIs**: `gh` (PR/issue management per CLAUDE.md workflow), `uv` (Python dependency management), `supabase` CLI (migrations — authoring only, never apply/push per CLAUDE.md), `kubectl`/`k9s`/`argocd` (cluster operations, frequent in shell history)",
+      "**routine under /Users/isg/cosmos-main/ prefix**: routine dev commands (pnpm/uv/git/gh) scoped to this repo's worktrees are expected and frequent"
+    ],
+    "allow": [
+      "$defaults",
+      "Bash(gh pr create:*) in Delos-Intelligence/cosmos-saas",
+      "Bash(gh pr view:*)",
+      "Bash(supabase migration new:*) in apps/web/"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Bash(supabase db push:*)",
+      "Bash(supabase migration up:*)",
+      "Bash(kubectl delete:* -n *prod*)"
+    ]
+  }
 }
