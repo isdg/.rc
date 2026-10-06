@@ -34,16 +34,19 @@ function vi-yank-clipboard() {
 zle -N vi-yank-clipboard
 bindkey -M visual ' y' vi-yank-clipboard
 
-# In normal mode: <Space>p puts the system clipboard after the cursor, like vim's
-# "+p. CUTBUFFER is restored so plain p still puts the last yank.
+# In normal mode: <Space>p / <Space>P put the system clipboard after / before
+# the cursor, like vim's "+p / "+P. CUTBUFFER is restored so plain p still puts
+# the last yank.
 function vi-put-clipboard() {
    local saved="$CUTBUFFER"
    CUTBUFFER="$(pbpaste 2>/dev/null || xclip -selection clipboard -o 2>/dev/null)"
-   zle vi-put-after
+   [[ $WIDGET == *-before ]] && zle vi-put-before || zle vi-put-after
    CUTBUFFER="$saved"
 }
 zle -N vi-put-clipboard
+zle -N vi-put-clipboard-before vi-put-clipboard
 bindkey -M vicmd ' p' vi-put-clipboard
+bindkey -M vicmd ' P' vi-put-clipboard-before
 # Lone Space (vi-forward-char, same as l) unbound so Space acts as a pure leader:
 # ZLE waits for the next key untimed instead of cutting off at KEYTIMEOUT.
 bindkey -M vicmd -r ' '

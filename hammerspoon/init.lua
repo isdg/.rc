@@ -30,12 +30,12 @@ scroll.bind({ "ctrl", "shift" }, "j")
 -- Window slots: ⌥1-8 focus (again = cycle that app), ⌥⇧1-8 pin focused window,
 -- ⌥9 jumps to the previously focused window (again = back), ⌥- maximizes the
 -- focused one (out of native fullscreen too).
--- Unpinned, 1-6 start as Ghostty · Safari · Spotify · Telegram · Finder · Slack.
+-- Unpinned, 1-6 start as Ghostty · Safari · Telegram · Spotify · Finder · Slack.
 require("slots").bind({ "alt" }, { "alt", "shift" }, {
     ["1"] = "com.mitchellh.ghostty",
     ["2"] = "com.apple.Safari",
-    ["3"] = "com.spotify.client",
-    ["4"] = "ru.keepcoder.Telegram",
+    ["3"] = "ru.keepcoder.Telegram",
+    ["4"] = "com.spotify.client",
     ["5"] = "com.apple.finder",
     ["6"] = "com.tinyspeck.slackmacgap",
 })
