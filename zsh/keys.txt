@@ -80,6 +80,7 @@ off from the word before. Esc in a picker inserts nothing.
 
     Space y    (visual mode) copy the selection, like nvim's visual <leader>y
     Space p    put the system clipboard after the cursor; p keeps the yank
+    Space P    the same, before the cursor
     Space yy   copy the whole command line
     Space yf   copy the cwd's name
     Space yp   copy the cwd, absolute
