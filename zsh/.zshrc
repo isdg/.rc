@@ -237,7 +237,7 @@ fi
 # Back in both Brewfiles since Sep 2026, after a month deprecated. The Linux
 # bootstrap still does not install it, which the guard below covers: a box
 # without the binary skips the line rather than erroring at every shell start.
-command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+_zsh_cached zoxide "$commands[zoxide]" -- zoxide init zsh && source $REPLY
 
 export PATH="/usr/local/opt/llvm@17/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
