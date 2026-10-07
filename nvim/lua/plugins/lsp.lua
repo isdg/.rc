@@ -142,6 +142,14 @@ return {
         end,
     },
 
+    -- Lean 4: infoview + leanls. The server comes from the project's elan
+    -- toolchain, not mason, and lean.nvim enables it itself. Its suggested
+    -- <LocalLeader> maps stay off; keys live in the plugins layer (<leader><leader>l).
+    {
+        "Julian/lean.nvim",
+        event = { "BufReadPre *.lean", "BufNewFile *.lean" },
+    },
+
     -- Completion (replaces CoC completion)
     {
         "hrsh7th/nvim-cmp",
