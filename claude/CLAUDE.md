@@ -84,9 +84,9 @@ And two rules on how the work explains itself:
 
 ## Delivery workflow
 
-- **One commit per branch, one branch per PR.** Land each change on its own
-  branch as a single commit, then open a pull request (ready for review, not
-  draft) using the `gh` CLI. Use `gh` for all PR management — creating,
+- **One branch per PR.** Land each change on its own branch, then open a pull
+  request (ready for review, not draft) using the `gh` CLI. A branch may hold
+  several commits; follow-up work doesn't need to be amended into one. Use `gh` for all PR management — creating,
   updating, checking status. Reviewing the PR (comments, a summary) is fine.
 - **I do the merge.** Leave the merge to me — I review and merge PRs myself on
   GitHub. Never merge, squash, or force-merge a PR on my behalf, and never push
