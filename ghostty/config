@@ -9,6 +9,10 @@ adjust-cell-height = 20%
 adjust-cell-width = -10%
 font-feature = -liga
 font-feature = -calt
+# zoom in half-point steps (default is 1)
+keybind = super+==increase_font_size:0.5
+keybind = super++=increase_font_size:0.5
+keybind = super+-=decrease_font_size:0.5
 
 # --- theme (light/dark) ---
 # theme + bg/fg/cursor colors live in theme-dark.conf / theme-light.conf and
