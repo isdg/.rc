@@ -136,6 +136,24 @@ function M.document_symbols()
     })
 end
 
+-- A live list runs fzf --disabled, which highlights nothing; mark the query's
+-- fuzzy match in the name ourselves, in fzf/opts-*.conf's hl colour.
+local function highlight_match(text, query)
+    local kind, name = text:match("^(%[.-%] )(.*)$")
+    if not name or query == "" then return text end
+    -- Servers match case-insensitively; matchfuzzypos is smart-case.
+    local pos = vim.fn.matchfuzzypos({ name }, query)[2][1]
+        or vim.fn.matchfuzzypos({ name:lower() }, query:lower())[2][1]
+    if not pos then return text end
+    local marked, out = {}, {}
+    for _, p in ipairs(pos) do marked[p] = true end
+    for i = 0, vim.fn.strchars(name) - 1 do
+        local c = vim.fn.strcharpart(name, i, 1)
+        out[#out + 1] = marked[i] and ansi("94", c) or c
+    end
+    return kind .. table.concat(out)
+end
+
 -- Re-queried on every keystroke: servers cap workspace/symbol results, so
 -- filtering one up-front list would miss most of the workspace.
 function M.workspace_symbols()
@@ -147,7 +165,8 @@ function M.workspace_symbols()
     end
     local contents = function(args)
         return function(cb)
-            vim.lsp.buf_request_all(bufnr, method, { query = args[1] or "" }, function(results)
+            local query = args[1] or ""
+            vim.lsp.buf_request_all(bufnr, method, { query = query }, function(results)
                 local items = {}
                 for client_id, res in pairs(results) do
                     local client = vim.lsp.get_client_by_id(client_id)
@@ -157,6 +176,7 @@ function M.workspace_symbols()
                     end
                 end
                 items = vim.tbl_filter(function(i) return i.filename and i.filename ~= "" end, items)
+                for _, item in ipairs(items) do item.text = highlight_match(item.text, query) end
                 for _, line in ipairs(M.format(items)) do cb(line) end
                 cb(nil)
             end)
