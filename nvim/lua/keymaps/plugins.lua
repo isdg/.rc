@@ -1,5 +1,5 @@
 -- ============================================================
---     PLUGINS LAYER: palace/plc stamps, hr reading list
+--  PLUGINS LAYER: palace/plc stamps, hr reading list, lean
 -- ============================================================
 -- <leader><leader> opens a layer whose bare letters are tools, each handing off
 -- to a sub-layer of that tool's verbs — the shape of tmux's `plugins` table
@@ -30,8 +30,21 @@ local PALACE = {
     T = { desc = "stamp bare", run = stamp("%Y-%m-%d %H:%M:%S %z") },
 }
 
+-- lean.nvim (lua/plugins/lsp.lua). Its commands exist once a .lean buffer
+-- has loaded it, so the verbs error harmlessly anywhere else.
+local LEAN = {
+    i = { desc = "infoview", run = "LeanInfoviewToggle" },
+    g = { desc = "go to infoview", run = "LeanGotoInfoview" },
+    a = { desc = "accept suggestion", run = "LeanInfoviewAcceptSuggestion" },
+    s = { desc = "fill sorry", run = "LeanSorryFill" },
+    r = { desc = "restart file", run = "LeanRestartFile" },
+    R = { desc = "refresh deps", run = "LeanRefreshFileDependencies" },
+    ["\\"] = { desc = "how to type", run = "LeanAbbreviationsReverseLookup" },
+}
+
 local PLUGINS = {
     h = { desc = "hr reading list", name = "HR", keys = HR },
+    l = { desc = "lean", name = "LEAN", keys = LEAN },
     p = { desc = "palace/plc", name = "PALACE", keys = PALACE },
 }
 

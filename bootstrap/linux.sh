@@ -18,7 +18,7 @@ export DOTFILES_DIR
 # This script runs under bash, so without this line both the install steps and
 # every --ensure check measure the older /usr/bin copy and report a failure on
 # a machine that is actually fine.
-export PATH="$HOME/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$HOME/.elan/bin:$PATH"
 
 # Load components
 source "$SCRIPT_DIR/components/helpers.sh"
@@ -38,6 +38,7 @@ source "$SCRIPT_DIR/components/plc.sh"
 source "$SCRIPT_DIR/components/tmux_plugins.sh"
 source "$SCRIPT_DIR/components/hr.sh"
 source "$SCRIPT_DIR/components/ewl.sh"
+source "$SCRIPT_DIR/components/lean.sh"
 source "$SCRIPT_DIR/components/fzf.sh"
 source "$SCRIPT_DIR/components/shell.sh"
 
@@ -67,6 +68,7 @@ if [[ "${1:-}" == "--ensure" ]]; then
     ensure_tmux_plugins        || FAILURES=$((FAILURES + 1)); echo ""
     ensure_hr                  || FAILURES=$((FAILURES + 1)); echo ""
     ensure_ewl                 || FAILURES=$((FAILURES + 1)); echo ""
+    ensure_lean                || FAILURES=$((FAILURES + 1)); echo ""
     ensure_fzf_linux           || FAILURES=$((FAILURES + 1)); echo ""
     ensure_default_shell_linux || FAILURES=$((FAILURES + 1)); echo ""
 
@@ -119,6 +121,8 @@ echo ""
 install_hr
 echo ""
 install_ewl
+echo ""
+install_lean
 echo ""
 install_fzf_linux
 echo ""

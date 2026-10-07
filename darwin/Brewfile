@@ -59,6 +59,7 @@ brew "zig"
 brew "zls"   # Zig language server
 brew "rust"  # cargo — builds the plc, omni and orchbus binaries
 brew "go"    # builds the hr binary
+brew "elan-init"  # Lean 4 toolchain manager; links lean/lake proxies
 
 # Graphics / media libs
 brew "cairo"

@@ -205,6 +205,7 @@ command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
 export PATH="/usr/local/opt/llvm@17/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"   # cargo-installed binaries (plc)
+export PATH="$HOME/.elan/bin:$PATH"    # Lean via elan on Linux (Brewfile covers Darwin)
 
 # postgresql@17 (Brewfile). Homebrew ships Postgres only as versioned formulae,
 # and versioned formulae are keg-only: the install is complete under
