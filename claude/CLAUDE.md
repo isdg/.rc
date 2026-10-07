@@ -40,7 +40,7 @@ Two more apply when designing an API, interface, or abstraction:
   the other four: prefer the smallest surface that stays complete, and expose
   seams rather than features.
 
-And two rules on how the work explains itself:
+And three rules on how the work reads:
 
 - **Comments earn their place** — default to none; most code needs no
   commentary, and matching the surrounding density is no licence to add it.
@@ -55,6 +55,15 @@ And two rules on how the work explains itself:
   prefix included, is a hard budget. A summary that won't fit is usually a
   signal the commit does two things: split it, or name things tighter. Never
   stretch the title; detail belongs in the body, wrapped at 72.
+- **Lines stay within 80 columns** — in every language, for code, comments,
+  strings and config alike; any language can break a line, so none is exempt.
+  Break the way the language's formatter or style guide does, and split long
+  strings with the language's own concatenation. A line that won't fit is
+  usually a signal to extract a variable or name things tighter. A limit the
+  project's formatter enforces (ruff/black `line-length`, rustfmt
+  `max_width`, prettier `printWidth`) wins, or it would just re-join the
+  lines; only what can't be broken — URLs, external identifiers, generated
+  files, lockfiles — may overflow. Don't reflow lines you aren't touching.
 
 # Global preferences (apply in every project / folder)
 
