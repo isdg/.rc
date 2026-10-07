@@ -25,7 +25,7 @@ end, { desc = "Diagnostic under cursor" })
 -- Lowercase is this buffer, uppercase widens it, the same split <leader>l/L and
 -- <leader>e/E use in keymaps/find.lua.
 lmap("n", "dl", function()
-    require("fzf-lua").diagnostics_document()
+    require("lsp_picker").diagnostics({ bufnr = 0 })
 end, { desc = "List diagnostics (buffer)" })
 
 -- The repo root rather than the cwd, because nvim is as often started a few
@@ -36,7 +36,7 @@ end, { desc = "List diagnostics (buffer)" })
 -- crate or package. Nothing here opens files to make them report more.
 lmap("n", "dL", function()
     local root = vim.fs.root(0, ".git") or vim.uv.cwd()
-    require("fzf-lua").diagnostics_workspace({ cwd = root })
+    require("lsp_picker").diagnostics({ root = root })
 end, { desc = "List diagnostics (repo)" })
 
 -- Global toggle: the auto-popping completion menu on/off.
@@ -64,10 +64,11 @@ end, { desc = "Toggle auto-suggestions" })
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(ev)
         local opts = { buffer = ev.buf, silent = true }
-        map("n", "gd", "<cmd>FzfLua lsp_definitions<CR>", opts)
-        map("n", "gy", "<cmd>FzfLua lsp_typedefs<CR>", opts)
-        map("n", "gi", "<cmd>FzfLua lsp_implementations<CR>", opts)
-        map("n", "gr", "<cmd>FzfLua lsp_references<CR>", opts)
+        local picker = require("lsp_picker")
+        map("n", "gd", picker.locations("definition", "Definitions"), opts)
+        map("n", "gy", picker.locations("type_definition", "Type Definitions"), opts)
+        map("n", "gi", picker.locations("implementation", "Implementations"), opts)
+        map("n", "gr", picker.locations("references", "References"), opts)
         map("n", "K", vim.lsp.buf.hover, opts)
         map("n", "]d", vim.diagnostic.goto_next, opts)
         map("n", "[d", vim.diagnostic.goto_prev, opts)

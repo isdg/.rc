@@ -19,8 +19,8 @@ lmap("n", "l", "<cmd>call FzfBLinesPreview()<CR>", { desc = "Search lines in buf
 lmap("n", "L", "<cmd>call FzfLinesPreview()<CR>", { desc = "Search lines in open buffers" })
 lmap("n", "a", "<cmd>RG<CR>", { desc = "Live ripgrep" })
 lmap("n", "A", "<cmd>Rg<CR>", { desc = "Ripgrep (fzf filter)" })
-lmap("n", "E", "<cmd>FzfLua lsp_live_workspace_symbols<CR>", { desc = "Workspace symbols" })
-lmap("n", "e", "<cmd>FzfLua lsp_document_symbols<CR>", { desc = "Document symbols" })
+lmap("n", "E", function() require("lsp_picker").workspace_symbols() end, { desc = "Workspace symbols" })
+lmap("n", "e", function() require("lsp_picker").document_symbols() end, { desc = "Document symbols" })
 lmap("n", "i", function() require("breadcrumb").show() end, { desc = "Show breadcrumb" })
 -- H for history, free since the tool keys moved into <leader><leader>
 -- (keymaps/plugins.lua). B only ever meant "the uppercase of b", naming this
