@@ -245,7 +245,7 @@ export VISUAL='nvim'
 # gpg-agent's pinentry needs a tty to prompt on. Without this, commit signing
 # (git_signing.sh leaves it on whenever the key is present) hangs silently
 # instead of asking for the passphrase.
-export GPG_TTY=$(tty)
+export GPG_TTY=$TTY   # zsh sets $TTY; same answer as $(tty), no fork
 
 # Ghostty only auto-sources its shell integration (the `ssh` wrapper behind
 # shell-integration-features = ssh-env,ssh-terminfo in ghostty/config) in
