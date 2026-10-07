@@ -120,3 +120,76 @@
   2. How many? (*, +, ?, {n})
   3. Where? (^, $, \b)
 
+
+  Same Regex, Three Tools (rg / less / fzf)
+
+  Only rg speaks real regex. macOS /usr/bin/less is POSIX ERE, and fzf's
+  search bar isn't regex at all.
+
+  ┌──────────────────┬───────────┬─────────────────────┬──────────────────┐
+  │       Want       │    rg     │    less (macOS)     │       fzf        │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ digit            │ \d        │ [0-9], [[:digit:]]  │ n/a              │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ whitespace       │ \s        │ [[:space:]]         │ n/a              │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ word boundary    │ \b        │ [[:<:]]foo[[:>:]]   │ n/a              │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ OR               │ a|b       │ a|b                 │ a | b            │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ AND              │ n/a       │ n/a                 │ a b              │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ NOT              │ -v        │ /!pat  or  &!pat    │ !term            │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ literal          │ -F        │ / then Ctrl-R       │ 'term            │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ ignore case      │ -i  (-S)  │ -I  (-i smart)      │ smart by default │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ lookaround, \1   │ -P        │ no                  │ no               │
+  └──────────────────┴───────────┴─────────────────────┴──────────────────┘
+
+  rg  (Rust regex; -P switches to PCRE2)
+
+  rg 'TODO|FIXME'                 alternation
+  rg '\bfoo\b'                    word boundary (or: rg -w foo)
+  rg '^\s*#'                      lines starting with a comment
+  rg '\d{3}-\d{4}'                \d \w \s all work
+  rg '(?i)error'                  inline flag, same as rg -i error
+  rg 'fn \w+\('                   escape ( to match it literally
+  rg -F 'a.b(c)'                  fixed string, no regex
+  rg -U 'foo\nbar'                multiline
+  rg -P 'foo(?=bar)'              lookahead needs -P
+  rg -P '(\w+) \1'                backreference needs -P
+  rg -oP 'id=\K\d+'               print only what follows \K
+
+  Single-quote patterns so zsh leaves \ $ ! alone.
+
+  less  (/pat forward, ?pat backward, n / N next / prev)
+
+  /TODO|FIXME                     alternation works
+  /[0-9]{3}-[0-9]{4}              use classes, not \d
+  /[[:digit:]]+                   POSIX class ([[:space:]], [[:alnum:]] too)
+  /[[:<:]]foo[[:>:]]              word boundary
+  /^[[:space:]]*#                 leading whitespace
+  /a\.b                           escaped dot works
+  /!pat                           lines NOT matching
+  &pat                            show only matching lines (& alone clears)
+  / Ctrl-R pat                    literal search, regex off
+
+  TRAP: \d \w \s don't error, they silently match the letters d, w, s.
+  \b and \< \> don't work; (?i) and lookarounds are errors; \1 never matches.
+  brew install less gets a PCRE2 build (check: less --version).
+
+  fzf  (fuzzy + extended search syntax, never regex)
+
+  abc                             fuzzy: a…b…c in order
+  'abc                            exact substring
+  ^src                            starts with
+  .rs$                            ends with
+  !test                           does not contain
+  !^vendor                        does not start with
+  foo bar                         AND (space separates terms)
+  rs$ | go$                       OR
+
+  fzf -e makes every term exact. For real regex, let rg do the matching:
+  fzf --disabled --bind 'change:reload:rg --line-number {q} || true'

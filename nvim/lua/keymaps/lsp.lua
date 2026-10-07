@@ -25,19 +25,18 @@ end, { desc = "Diagnostic under cursor" })
 -- Lowercase is this buffer, uppercase widens it, the same split <leader>l/L and
 -- <leader>e/E use in keymaps/find.lua.
 lmap("n", "dl", function()
-    require("telescope.builtin").diagnostics({ bufnr = 0 })
+    require("fzf-lua").diagnostics_document()
 end, { desc = "List diagnostics (buffer)" })
 
 -- The repo root rather than the cwd, because nvim is as often started a few
--- directories inside it. Trailing slash: telescope's root_dir filter is a raw
--- prefix match on the filename, so ".../.rc" without it also keeps ".../.rc-main".
+-- directories inside it.
 --
 -- Scope is what the servers have already published — clangd and ts_ls only
 -- diagnose files you have opened, rust_analyzer and gopls report the whole
 -- crate or package. Nothing here opens files to make them report more.
 lmap("n", "dL", function()
     local root = vim.fs.root(0, ".git") or vim.uv.cwd()
-    require("telescope.builtin").diagnostics({ root_dir = root .. "/" })
+    require("fzf-lua").diagnostics_workspace({ cwd = root })
 end, { desc = "List diagnostics (repo)" })
 
 -- Global toggle: the auto-popping completion menu on/off.
@@ -65,10 +64,10 @@ end, { desc = "Toggle auto-suggestions" })
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(ev)
         local opts = { buffer = ev.buf, silent = true }
-        map("n", "gd", "<cmd>Telescope lsp_definitions<CR>", opts)
-        map("n", "gy", "<cmd>Telescope lsp_type_definitions<CR>", opts)
-        map("n", "gi", "<cmd>Telescope lsp_implementations<CR>", opts)
-        map("n", "gr", "<cmd>Telescope lsp_references<CR>", opts)
+        map("n", "gd", "<cmd>FzfLua lsp_definitions<CR>", opts)
+        map("n", "gy", "<cmd>FzfLua lsp_typedefs<CR>", opts)
+        map("n", "gi", "<cmd>FzfLua lsp_implementations<CR>", opts)
+        map("n", "gr", "<cmd>FzfLua lsp_references<CR>", opts)
         map("n", "K", vim.lsp.buf.hover, opts)
         map("n", "]d", vim.diagnostic.goto_next, opts)
         map("n", "[d", vim.diagnostic.goto_prev, opts)
@@ -90,7 +89,7 @@ vim.api.nvim_create_autocmd("LspAttach", {
         -- reliably the fix you want — "add import" and "ignore this rule" sit
         -- side by side in the same list — and silently applying an edit you did
         -- not choose is worse than one extra keypress.
-        lmap("n", "df", vim.lsp.buf.code_action,
+        lmap("n", "df", "<cmd>FzfLua lsp_code_actions<CR>",
             vim.tbl_extend("force", opts, { desc = "Fix diagnostic (code action)" }))
     end,
 })
