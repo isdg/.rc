@@ -176,7 +176,13 @@ function M.workspace_symbols()
         end
     end
     require("fzf-lua").fzf_live(contents, picker_opts("Workspace Symbols", {
-        opts = { exec_empty_query = true, fzf_args = "--bind=start:+enable-search" },
+        -- Debounced in fzf's reload shell: a keystroke within query_delay kills
+        -- the pending query before it reaches nvim, so typing never waits on it.
+        opts = {
+            exec_empty_query = true,
+            query_delay = 120,
+            fzf_args = "--bind=start:+enable-search",
+        },
     }))
 end
 
