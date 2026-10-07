@@ -81,8 +81,12 @@ k9s() {
 # already set and only falls back to ~/.plcrc when it is not. Without it this
 # line re-affirms whatever it inherited instead of re-deriving, so one stale
 # value (a tmux global env snapshot, a long-lived parent process) launders
-# itself through every new shell indefinitely.
-export PALACE_DIR="$(env -u PALACE_DIR plc config 2>/dev/null)"
+# itself through every new shell indefinitely. The answer is cached (.zshrc's
+# _zsh_cached) until plc or ~/.plcrc changes.
+PALACE_DIR=
+_zsh_cached palace-dir "$commands[plc]" ~/.plcrc -- env -u PALACE_DIR plc config \
+    && PALACE_DIR="$(<$REPLY)"
+export PALACE_DIR
 source "${ISGRC:-$HOME/.rc}/zsh/palace.zsh"
 
 # Machine-local, gitignored aliases/functions (work-specific helpers, private
