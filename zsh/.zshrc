@@ -15,7 +15,11 @@ export ISGRC="${${(%):-%x}:A:h:h}"
 # Theme mode (dark|light) read from the single source of truth written by
 # toggle_theme.sh. New shells always reflect the current theme and no tracked
 # file is rewritten on toggle. Falls back to light if the file is missing.
-ISG_THEME_MODE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev/null || echo light)"
+# $(<file) is read by zsh itself, no cat fork.
+_isg_theme_file="${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme"
+ISG_THEME_MODE=light
+[[ -r $_isg_theme_file ]] && ISG_THEME_MODE="$(<$_isg_theme_file)"
+unset _isg_theme_file
 ISG_DEFAULT_USER=true # show user name
 
 # ── init ──
@@ -182,7 +186,40 @@ export PATH="$HOME/.local/bin:$PATH"
 # is precisely the bug.
 [[ -d $HOME/.fzf/bin ]] && export PATH="$HOME/.fzf/bin:$PATH"
 
-if [[ -f ~/.fzf.zsh ]]; then
+# _zsh_cached <name> <file>... -- <cmd>...
+# Keeps cmd's stdout in a cache file, REPLY, rerunning cmd only when a <file>
+# moves, changes mtime or appears; an empty <file> (unresolved binary) fails.
+zmodload -F zsh/stat b:zstat
+_zsh_cached() {
+    local name=$1 key=
+    local -a mtime
+    shift
+    while (( $# )) && [[ $1 != -- ]]; do
+        [[ -n $1 ]] || return 1
+        if zstat -A mtime +mtime -- $1 2>/dev/null; then
+            key+="${1:A} $mtime[1];"
+        else
+            key+="$1 -;"
+        fi
+        shift
+    done
+    shift
+    REPLY=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/$name
+    [[ -r $REPLY.key && "$(<$REPLY.key)" == $key ]] && return 0
+    [[ -d ${REPLY:h} ]] || mkdir -p ${REPLY:h}
+    if "$@" >| $REPLY.$$ 2>/dev/null; then
+        mv -f $REPLY.$$ $REPLY && print -r -- $key >| $REPLY.key
+    else
+        rm -f $REPLY.$$
+        return 1
+    fi
+}
+
+# `fzf --zsh` is cached; ~/.fzf.zsh (which runs it, after fixing PATH) is the
+# fallback for an fzf off PATH or too old for --zsh.
+if _zsh_cached fzf "$commands[fzf]" -- fzf --zsh; then
+    source $REPLY
+elif [[ -f ~/.fzf.zsh ]]; then
     source ~/.fzf.zsh
 else
     # No clone: fall back to the snippets a distro package installs, so ^R and
@@ -200,7 +237,7 @@ fi
 # Back in both Brewfiles since Sep 2026, after a month deprecated. The Linux
 # bootstrap still does not install it, which the guard below covers: a box
 # without the binary skips the line rather than erroring at every shell start.
-command -v zoxide >/dev/null 2>&1 && eval "$(zoxide init zsh)"
+_zsh_cached zoxide "$commands[zoxide]" -- zoxide init zsh && source $REPLY
 
 export PATH="/usr/local/opt/llvm@17/bin:$PATH"
 export PATH="$HOME/go/bin:$PATH"
@@ -241,7 +278,7 @@ export VISUAL='nvim'
 # gpg-agent's pinentry needs a tty to prompt on. Without this, commit signing
 # (git_signing.sh leaves it on whenever the key is present) hangs silently
 # instead of asking for the passphrase.
-export GPG_TTY=$(tty)
+export GPG_TTY=$TTY   # zsh sets $TTY; same answer as $(tty), no fork
 
 # Ghostty only auto-sources its shell integration (the `ssh` wrapper behind
 # shell-integration-features = ssh-env,ssh-terminfo in ghostty/config) in
