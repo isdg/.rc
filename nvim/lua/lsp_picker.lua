@@ -18,43 +18,55 @@ local function display_path(file)
     return vim.fn.fnamemodify(file, ":~:.")
 end
 
--- Cut from the left so the file name and line number survive.
-local function fit(s, width)
-    local w = vim.api.nvim_strwidth(s)
-    if w <= width then return s .. (" "):rep(width - w) end
-    local chars = vim.fn.strchars(s)
-    local cut = vim.fn.strcharpart(s, chars - (width - 1))
+-- The tail of s that fits in width columns, behind an ellipsis.
+local function cut_left(s, width)
+    local cut = vim.fn.strcharpart(s, vim.fn.strchars(s) - (width - 1))
     while vim.api.nvim_strwidth(cut) > width - 1 do
         cut = vim.fn.strcharpart(cut, 1)
     end
-    return "…" .. cut .. (" "):rep(width - 1 - vim.api.nvim_strwidth(cut))
+    return "…" .. cut
 end
 
--- items: quickfix entries ({ filename, lnum, col, text }).
+-- items: quickfix entries ({ filename, lnum, col, text }). vim.fn calls are
+-- per distinct file, not per item: a live symbol query can return thousands.
 function M.format(items)
     local one_file = true
     for _, item in ipairs(items) do
         if item.filename ~= items[1].filename then one_file = false break end
     end
 
-    local locs, width = {}, 0
-    for i, item in ipairs(items) do
-        locs[i] = one_file and tostring(item.lnum)
-            or display_path(item.filename) .. ":" .. item.lnum
-        width = math.max(width, vim.api.nvim_strwidth(locs[i]))
+    local prefixes = {}
+    local function prefix(file)
+        local p = prefixes[file]
+        if not p then
+            local s = one_file and "" or display_path(file) .. ":"
+            p = { s = s, w = vim.api.nvim_strwidth(s), cut = {} }
+            prefixes[file] = p
+        end
+        return p
+    end
+
+    local width = 0
+    for _, item in ipairs(items) do
+        width = math.max(width, prefix(item.filename).w + #tostring(item.lnum))
     end
     width = math.min(width, math.max(math.floor(vim.o.columns * MAX_LOC_RATIO), 10))
     local num_width = #tostring(#items)
 
     local lines = {}
     for i, item in ipairs(items) do
-        local loc = fit(locs[i], width)
-        local path = loc:match("^(.-)%d+%s*$")
-        loc = path and (ansi("34", path) .. ansi("32", loc:sub(#path + 1))) or loc
+        local p, lnum = prefix(item.filename), tostring(item.lnum)
+        local s, w = p.s, p.w + #lnum
+        if w > width then
+            local avail = width - #lnum
+            p.cut[avail] = p.cut[avail] or cut_left(p.s, avail)
+            s, w = p.cut[avail], width
+        end
         local text = vim.trim(((item.text or ""):gsub("%s*\n%s*", " ")))
-        lines[i] = ("%s  %s  %s%s%s:%d:%d:"):format(
-            ansi("90", ("%" .. num_width .. "d"):format(i)), loc, text,
-            SEP, item.filename, item.lnum, math.max(item.col or 1, 1))
+        lines[i] = ("%s  %s%s%s  %s%s%s:%d:%d:"):format(
+            ansi("90", ("%" .. num_width .. "d"):format(i)),
+            s == "" and "" or ansi("34", s), ansi("32", lnum), (" "):rep(width - w),
+            text, SEP, item.filename, item.lnum, math.max(item.col or 1, 1))
     end
     return lines
 end
@@ -176,7 +188,13 @@ function M.workspace_symbols()
         end
     end
     require("fzf-lua").fzf_live(contents, picker_opts("Workspace Symbols", {
-        opts = { exec_empty_query = true, fzf_args = "--bind=start:+enable-search" },
+        -- Debounced in fzf's reload shell: a keystroke within query_delay kills
+        -- the pending query before it reaches nvim, so typing never waits on it.
+        opts = {
+            exec_empty_query = true,
+            query_delay = 120,
+            fzf_args = "--bind=start:+enable-search",
+        },
     }))
 end
 
