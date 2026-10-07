@@ -68,6 +68,33 @@ return {
         end,
     },
 
+    -- LSP, diagnostics and vim.ui.select pickers on the same fzf binary as
+    -- fzf.vim, so they inherit $FZF_DEFAULT_OPTS_FILE's colours and binds.
+    {
+        "ibhagwan/fzf-lua",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
+        config = function()
+            local fzf_lua = require("fzf-lua")
+            fzf_lua.setup({
+                -- Mirrors vim/fzf-layout.vim: full screen, preview below at 60%.
+                winopts = {
+                    fullscreen = true,
+                    preview = { layout = "vertical", vertical = "down:60%" },
+                },
+                -- fzf.vim leaves layout and info to fzf, and our binds live in
+                -- the opts file, so drop fzf-lua's overrides of both.
+                fzf_opts = { ["--layout"] = "default", ["--info"] = false },
+                keymap = {
+                    fzf = {},
+                    -- The builtin previewer is an nvim window fzf can't see, so
+                    -- fzf.vim's ctrl-/ toggle has to be an nvim map here.
+                    builtin = { true, ["<C-/>"] = "toggle-preview", ["<C-_>"] = "toggle-preview" },
+                },
+            })
+            fzf_lua.register_ui_select()
+        end,
+    },
+
     -- Fuzzy finder (replaces fzf.vim)
     {
         "nvim-telescope/telescope.nvim",
