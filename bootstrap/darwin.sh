@@ -30,6 +30,7 @@ source "$SCRIPT_DIR/components/plc.sh"
 source "$SCRIPT_DIR/components/tmux_plugins.sh"
 source "$SCRIPT_DIR/components/hr.sh"
 source "$SCRIPT_DIR/components/ewl.sh"
+source "$SCRIPT_DIR/components/lean.sh"
 source "$SCRIPT_DIR/components/fzf.sh"
 source "$SCRIPT_DIR/components/shell.sh"
 source "$SCRIPT_DIR/components/keyremap.sh"
@@ -44,8 +45,8 @@ source "$SCRIPT_DIR/components/darwin_defaults.sh"
 #         The keyboard remap lives here rather than with the other macOS tweaks:
 #         it changes what every keystroke does, so a --minimal box without it is
 #         not usable in the way the rest of this config assumes.
-# EXTRA — GUI apps, the Rust-built side tools (plc, hr, omni, orchbus) and
-#         macOS system defaults. Skipped by --minimal.
+# EXTRA — GUI apps, the Rust-built side tools (plc, hr, omni, orchbus), the
+#         Lean toolchain and macOS system defaults. Skipped by --minimal.
 BOOTSTRAP_CORE_FUNCS=(
     "install_homebrew|ensure_homebrew"
     "install_packages_darwin|ensure_packages_darwin"
@@ -65,6 +66,7 @@ BOOTSTRAP_EXTRA_FUNCS=(
     "install_tmux_plugins|ensure_tmux_plugins"
     "install_hr|ensure_hr"
     "install_ewl|ensure_ewl"
+    "install_lean|ensure_lean"
     "apply_darwin_defaults|ensure_darwin_defaults"
 )
 
