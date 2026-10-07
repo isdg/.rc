@@ -68,8 +68,8 @@ return {
         end,
     },
 
-    -- LSP, diagnostics and vim.ui.select pickers on the same fzf binary as
-    -- fzf.vim, so they inherit $FZF_DEFAULT_OPTS_FILE's colours and binds.
+    -- Window, previewer and actions behind lua/lsp_picker.lua, plus code actions
+    -- and vim.ui.select, on fzf.vim's fzf binary and $FZF_DEFAULT_OPTS_FILE.
     {
         "ibhagwan/fzf-lua",
         dependencies = { "nvim-tree/nvim-web-devicons" },
