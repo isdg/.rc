@@ -186,7 +186,40 @@ export PATH="$HOME/.local/bin:$PATH"
 # is precisely the bug.
 [[ -d $HOME/.fzf/bin ]] && export PATH="$HOME/.fzf/bin:$PATH"
 
-if [[ -f ~/.fzf.zsh ]]; then
+# _zsh_cached <name> <file>... -- <cmd>...
+# Keeps cmd's stdout in a cache file, REPLY, rerunning cmd only when a <file>
+# moves, changes mtime or appears; an empty <file> (unresolved binary) fails.
+zmodload -F zsh/stat b:zstat
+_zsh_cached() {
+    local name=$1 key=
+    local -a mtime
+    shift
+    while (( $# )) && [[ $1 != -- ]]; do
+        [[ -n $1 ]] || return 1
+        if zstat -A mtime +mtime -- $1 2>/dev/null; then
+            key+="${1:A} $mtime[1];"
+        else
+            key+="$1 -;"
+        fi
+        shift
+    done
+    shift
+    REPLY=${XDG_CACHE_HOME:-$HOME/.cache}/zsh/$name
+    [[ -r $REPLY.key && "$(<$REPLY.key)" == $key ]] && return 0
+    [[ -d ${REPLY:h} ]] || mkdir -p ${REPLY:h}
+    if "$@" >| $REPLY.$$ 2>/dev/null; then
+        mv -f $REPLY.$$ $REPLY && print -r -- $key >| $REPLY.key
+    else
+        rm -f $REPLY.$$
+        return 1
+    fi
+}
+
+# `fzf --zsh` is cached; ~/.fzf.zsh (which runs it, after fixing PATH) is the
+# fallback for an fzf off PATH or too old for --zsh.
+if _zsh_cached fzf "$commands[fzf]" -- fzf --zsh; then
+    source $REPLY
+elif [[ -f ~/.fzf.zsh ]]; then
     source ~/.fzf.zsh
 else
     # No clone: fall back to the snippets a distro package installs, so ^R and
