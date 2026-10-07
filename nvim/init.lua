@@ -6,7 +6,7 @@
 -- Plugins (neovim-native equivalents):
 --   CoC           → nvim-lspconfig + mason + nvim-cmp
 --   NERDTree      → nvim-tree.lua
---   fzf.vim       → telescope.nvim
+--   CocList       → fzf-lua
 --   NERDCommenter → Comment.nvim
 --   goyo.vim      → zen-mode.nvim
 --   rainbow       → rainbow-delimiters.nvim
