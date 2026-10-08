@@ -11,7 +11,7 @@
 # Defaults: font-family unset = Ghostty's built-in JetBrains Mono (+ Nerd Font
 # symbols), font-style = default (Regular), font-size = 13, no cell adjust.
 font-family = JetBrains Mono
-font-style = Regular
+font-style = Light
 font-style-bold = false
 font-size = 15
 adjust-cell-height = 20%
