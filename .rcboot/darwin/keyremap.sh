@@ -3,7 +3,7 @@
 #   Right Command -> Return
 #   Caps Lock     <-> Backspace  (swap)
 #   Left Control  -> Command, Left Option -> Control, Left Command -> Option
-#   The plist lists that cycle reversed: macOS applies modifier-to-modifier
+#   The plist lists that cycle reversed: Darwin applies modifier-to-modifier
 #   mappings twice, and the reverse of a 3-cycle applied twice is the cycle.
 # Requires: DOTFILES_DIR to be set
 

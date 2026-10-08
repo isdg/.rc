@@ -13,7 +13,7 @@ _cc_links() {
     return $rc
 }
 
-# macOS only: confirm cc can link before handing a Rust or Go build to it, and
+# Darwin only: confirm cc can link before handing a Rust or Go build to it, and
 # pin SDKROOT to an SDK that works if it cannot.
 #
 # xcrun selects the highest-numbered SDK under the Command Line Tools, not the

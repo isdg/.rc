@@ -1,7 +1,7 @@
 curl — transfer one URL (or several) and write the response body to stdout.
 It speaks HTTP(S), FTP, SFTP, SMTP, WebSocket and twenty more, but in
 practice it's the shell's HTTP client: hit an API, download a file, look at
-headers. Notes are curl 8.x (/usr/bin/curl on macOS).
+headers. Notes are curl 8.x (/usr/bin/curl on Darwin).
 
 -------------------------------------------------------------------------------
 DEFAULTS THAT SURPRISE

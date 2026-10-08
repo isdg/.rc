@@ -1,4 +1,4 @@
-top(1) on macOS — live process/system sampler. Apple's top is NOT GNU/Linux top:
+top(1) on Darwin — live process/system sampler. Apple's top isn't GNU/Linux top:
 different columns, different keys, different flags. Notes below are Darwin.
 For one-shot text output use `ps aux` (see psaux.txt); for real numbers use the
 instrumentation at the bottom of this file.
@@ -8,7 +8,7 @@ HEADER BLOCK — global state
 -------------------------------------------------------------------------------
   Processes: 537 total, 5 running, 532 sleeping, 3780 threads
       Process count by state, then system-wide thread count. Thousands of
-      threads is normal on macOS (XPC + workqueues), not a leak signal.
+      threads is normal on Darwin (XPC + workqueues), not a leak signal.
 
   Load Avg: 25.63, 16.45, 8.92
       Average number of jobs in the run queue over 1 / 5 / 15 min. Rising
@@ -36,7 +36,7 @@ HEADER BLOCK — global state
       wired     kernel-locked, never pageable — the true floor
       compressor size of the compressed-memory pool (RAM holding squeezed pages)
       unused    genuinely free
-      A large compressor value means macOS is compressing to avoid swapping —
+      A large compressor value means Darwin is compressing to avoid swapping —
       the last stop before disk. Cross-check with `memory_pressure`.
 
   VM: 238T vsize, 6144M framework vsize, 106646317(8778) swapins, 132158337(8701) swapouts
@@ -137,15 +137,15 @@ GOTCHAS
 - Sorting keys are typed WITHOUT a prefix (`ocpu`, not `o cpu`), and are Darwin
   names — `mem`, `th`, `prt`, `pstate` — not Linux ones.
 - No per-CPU-core breakdown, no tree view, no color, no mouse. If you want those,
-  install htop or btop; they are not shipped with macOS.
+  install htop or btop; they are not shipped with Darwin.
 
 -------------------------------------------------------------------------------
 WHEN top ISN'T PRECISE ENOUGH
 -------------------------------------------------------------------------------
 top is a 1-second-resolution sampler with no attribution: it tells you WHICH
-process, never WHY. All of these ship with macOS.
+process, never WHY. All of these ship with Darwin.
 
-  powermetrics    THE macOS answer for CPU/energy. Per-core residency, P/E-core
+  powermetrics    THE Darwin answer for CPU/energy. Per-core residency, P/E-core
                   split, frequency, GPU, interrupts, and a per-process energy
                   impact ranking. Needs sudo:
                     sudo powermetrics -i 1000 --samplers cpu_power,tasks \

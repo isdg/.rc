@@ -2,7 +2,7 @@
 #
 # omni's pane-capture (prefix j/J/P in ~/omni) opens the captured scrollback in
 # a fresh tmux window. tmux runs that binding with the *server's* environment,
-# and on macOS `ps -E` can't read vars exported after the shell started, so a
+# and on Darwin `ps -E` can't read vars exported after the shell started, so a
 # venv / direnv / exported project vars activated interactively would be lost.
 # To preserve them, the shell records its own exported environment on every
 # prompt; pane-capture reads it back and re-applies it (minus a denylist of

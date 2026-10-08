@@ -1,7 +1,7 @@
 -- ============================================================
 --                 HAMMERSPOON CONFIGURATION (isg)
 -- ============================================================
--- Open source (MIT) macOS automation in Lua. Config is tracked in
+-- Open source (MIT) Darwin automation in Lua. Config is tracked in
 -- ~/.rc/hammerspoon and symlinked to ~/.hammerspoon (see bootstrap).
 --
 -- Feature: a Spotlight-style translation / dictionary popup on a hotkey.
@@ -41,7 +41,7 @@ require("slots").bind({ "alt" }, { "alt", "shift" }, {
 })
 
 -- ⌥0 toggles the menu bar between pinned and auto-hidden. Synthetic ⌃F2 can't do
--- it (macOS ignores posted events for its shortcuts), so flip the setting itself.
+-- it (Darwin ignores posted events for its shortcuts), so flip the setting.
 require("menubar").bind({ "alt" }, "0")
 
 -- Auto-reload this config when any file in it changes (so editing is live).

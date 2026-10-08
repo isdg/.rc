@@ -26,7 +26,7 @@
 26  VTALRM  Virtual alarm
 27  PROF    Profiling timer
 28  WINCH   Window size change
-29  INFO    Status request (BSD/macOS — Ctrl-T)
+29  INFO    Status request (BSD/Darwin — Ctrl-T)
 30  USR1    User-defined 1
 31  USR2    User-defined 2
 
@@ -34,7 +34,7 @@ Notes:
 - KILL (9) and STOP (17) are the only signals that cannot be caught, blocked, or ignored.
 - TERM (15) is the polite default — let the process clean up. Reach for KILL only if it doesn't respond.
 - HUP (1) is conventionally repurposed by daemons to reload config (nginx, sshd).
-- Numbers above are macOS/BSD. Linux differs for some (e.g., USR1=10, USR2=12, CHLD=17). Use `kill -l` on the target system to be sure.
+- Numbers above are Darwin/BSD. Linux differs for some (e.g., USR1=10, USR2=12, CHLD=17). Use `kill -l` on the target system to be sure.
 
 Finding processes:
   pgrep -fl name           List PIDs + command lines matching "name" (regex on full cmdline with -f)
@@ -53,10 +53,10 @@ Finding processes:
 
 Killing matching processes:
   pkill -f name            Send TERM to anything matching (use -SIGNAL to override, e.g. pkill -9 -f foo)
-  killall name             Kill by exact name (macOS/BSD signal-by-name: killall -TERM foo)
+  killall name             Kill by exact name (Darwin/BSD signal-by-name: killall -TERM foo)
   kill -<sig> <pid>        Signal by number or name: kill -9 1234, kill -HUP 1234
 
 Quick patterns:
   kill $(pgrep -f mycmd)               Kill all matches
   pgrep -f mycmd | xargs -r kill -9    Force-kill all matches (xargs -r skips empty input on GNU)
-  pwait $(pgrep -f mycmd)              Wait for a process to exit (procps; on macOS: `lsof -p PID +r 1`)
+  pwait $(pgrep -f mycmd)              Wait for a process to exit (procps; on Darwin: `lsof -p PID +r 1`)

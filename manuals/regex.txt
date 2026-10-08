@@ -123,11 +123,11 @@
 
   Same Regex, Three Tools (rg / less / fzf)
 
-  Only rg speaks real regex. macOS /usr/bin/less is POSIX ERE, and fzf's
+  Only rg speaks real regex. Darwin /usr/bin/less is POSIX ERE, and fzf's
   search bar isn't regex at all.
 
   ┌──────────────────┬───────────┬─────────────────────┬──────────────────┐
-  │       Want       │    rg     │    less (macOS)     │       fzf        │
+  │       Want       │    rg     │    less (Darwin)     │       fzf        │
   ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
   │ digit            │ \d        │ [0-9], [[:digit:]]  │ n/a              │
   ├──────────────────┼───────────┼─────────────────────┼──────────────────┤

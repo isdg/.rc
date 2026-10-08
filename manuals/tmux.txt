@@ -122,7 +122,7 @@ Tmux Cheat Sheet
   Two flows are configured (~/.tmux.conf):
 
   A) Mouse drag — drag with the trackpad/wheel to select; release
-     auto-copies to the macOS clipboard and exits copy mode.
+     auto-copies to the Darwin clipboard and exits copy mode.
      Paste with cmd+V anywhere outside tmux, or Ctrl+B ] inside tmux.
 
   B) Vi-style copy mode (mode-keys vi):

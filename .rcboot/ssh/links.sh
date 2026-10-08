@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Links: ssh client config.
 
-# Unlike the gpg one this is not Darwin-guarded: the only macOS-only keyword in
+# Unlike the gpg one this is not Darwin-guarded: the only Darwin-only keyword in
 # it, UseKeychain, is wrapped in IgnoreUnknown so a Linux ssh skips it rather
 # than dying on it. The file only -- keys and known_hosts stay out of the repo.
 _links_ssh() {

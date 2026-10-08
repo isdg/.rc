@@ -79,7 +79,7 @@ bind main ! !git revert %(commit)
 # q exits the pager and returns to tig.
 bind main D !sh -c "git show %(commit) | delta --paging=always"
 
-# Copy bindings — dispatch to pbcopy (macOS) or xclip (Linux).
+# Copy bindings — dispatch to pbcopy (Darwin) or xclip (Linux).
 # Generic Y copies file path; per-view overrides copy commit/branch instead.
 bind generic Y !@sh -c "printf %s %(file)   | { command -v pbcopy >/dev/null && pbcopy || xclip -selection clipboard; }"
 bind main    Y !@sh -c "printf %s %(commit) | { command -v pbcopy >/dev/null && pbcopy || xclip -selection clipboard; }"

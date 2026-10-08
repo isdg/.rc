@@ -1,5 +1,5 @@
 #!/bin/bash
-# Toggle light/dark for Vim/Neovim, Zsh, Ghostty, and tmux (macOS)
+# Toggle light/dark for Vim/Neovim, Zsh, Ghostty, and tmux (Darwin)
 
 GHOSTTY="$HOME/.config/ghostty/config"
 TMUX_CONF="$HOME/.tmux.conf"

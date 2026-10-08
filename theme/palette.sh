@@ -6,7 +6,7 @@
 #
 # Call `isg_palette dark` or `isg_palette light` to set the ISG_* variables.
 # Nothing is `readonly` on purpose — generate.sh calls it once per mode in one
-# process. Must stay bash-3.2 clean: /bin/bash on macOS is 3.2.57.
+# process. Must stay bash-3.2 clean: /bin/bash on Darwin is 3.2.57.
 #
 # Two kinds of slot:
 #
