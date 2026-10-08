@@ -15,6 +15,8 @@
 
 SPLASH_WIDTH=23
 SPLASH_CELL=19
+SPLASH_DARK=$'\e[90m'    # grey, like the banner's dark-mode logs
+SPLASH_LIGHT=$'\e[33m'   # yellow, the banner accent
 
 # s left-aligned (pad=-1: centred) in a field of width columns; ${#s} counts
 # characters, and every glyph used here is one cell wide.
@@ -24,17 +26,17 @@ splash_field() {
     printf '%*s%s%*s' "$pad" '' "$s" $(( width - pad - ${#s} )) ''
 }
 
-# The first word of s (a status line's app name) in cyan, padding kept.
+# The first word of s (a status line's app name) in ls's directory blue.
 splash_app() {
     local s="$1" name="${1%% *}"
-    printf '\e[36m%s\e[0m%s' "$name" "${s#"$name"}"
+    printf '\e[34m%s\e[0m%s' "$name" "${s#"$name"}"
 }
 
-# Mode names in the title in their own colour: light yellow, dark blue.
+# Mode names in the title in their mascot's colour.
 splash_title() {
     local s="$1"
-    s="${s//light/$'\e[33m'light$'\e[0m'}"
-    printf '%s' "${s//dark/$'\e[34m'dark$'\e[0m'}"
+    s="${s//light/${SPLASH_LIGHT}light$'\e[0m'}"
+    printf '%s' "${s//dark/${SPLASH_DARK}dark$'\e[0m'}"
 }
 
 splash_render() {
@@ -45,7 +47,7 @@ splash_render() {
     local -i i half rows right_top art_top pad art_w=0
 
     if [ "$mode" = "dark" ]; then
-        accent=$'\e[90m'   # grey, like the banner's dark-mode logs
+        accent=$SPLASH_DARK
         law='k = ½(1 + cos ψ)'
         art=(
             '      ░'
@@ -57,7 +59,7 @@ splash_render() {
             '░▓'
         )
     else
-        accent=$'\e[33m'   # yellow, the banner accent
+        accent=$SPLASH_LIGHT
         law='4p → ⁴He + 2e⁺ + 2ν + γ'
         art=(
             ' ▗▄▄▓▓▓▄▄▖'
