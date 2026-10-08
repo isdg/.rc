@@ -16,12 +16,13 @@ DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
 export DOTFILES_DIR
 
 # Load components
-source "$SCRIPT_DIR/core/helpers.sh"
+source "$SCRIPT_DIR/lib.sh"
 source "$SCRIPT_DIR/darwin/homebrew.sh"
 source "$SCRIPT_DIR/darwin/packages.sh"
 source "$SCRIPT_DIR/darwin/gui_apps.sh"
-source "$SCRIPT_DIR/core/directories.sh"
-source "$SCRIPT_DIR/core/dotfiles.sh"
+for links in "$SCRIPT_DIR"/*/links.sh; do
+    source "$links"
+done
 source "$SCRIPT_DIR/git/signing.sh"
 source "$SCRIPT_DIR/fonts/fonts.sh"
 source "$SCRIPT_DIR/tig/tig.sh"
@@ -50,7 +51,7 @@ source "$SCRIPT_DIR/darwin/defaults.sh"
 BOOTSTRAP_CORE_FUNCS=(
     "install_homebrew|ensure_homebrew"
     "install_packages_darwin|ensure_packages_darwin"
-    "create_directories|ensure_directories"
+    "create_vim_dirs|ensure_vim_dirs"
     "link_dotfiles|ensure_dotfiles"
     "configure_git_signing|ensure_git_signing"
     "install_fonts_darwin|ensure_fonts_darwin"

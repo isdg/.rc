@@ -1,6 +1,23 @@
 #!/usr/bin/env bash
 # Component: Vim plugins (shared)
 
+ensure_vim_dirs() {
+    echo "[STEP] Verifying Vim directories..."
+    if [ -d "$HOME/.vim/colors" ]; then
+        echo "[OK] $HOME/.vim/colors"
+    else
+        echo "[FAIL] $HOME/.vim/colors missing"
+        return 1
+    fi
+}
+
+# A real directory, so the color schemes get linked into it one file at a time.
+create_vim_dirs() {
+    echo "[STEP] Creating Vim directories..."
+    mkdir -p "$HOME/.vim/colors"
+    echo "[OK] Directories created"
+}
+
 ensure_vim_plugins() {
     echo "[STEP] Verifying Vim & Neovim plugins..."
     local failed=0
