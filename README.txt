@@ -74,7 +74,7 @@ LAYOUT
 
     .rcboot/        install scripts (darwin.sh, linux.sh + one folder per tool)
     zsh/            .zshrc loader + rc.d/ fragments (NN-name.zsh), isg theme
-    vim/            .vimrc, plugins, color schemes, coc extensions
+    vim/            .vimrc loader + rc.d/ fragments, color schemes, coc
     nvim/           init.lua + lazy.nvim setup
     tmux/           .tmux.conf loader + rc.d/ fragments (NN-name.conf)
     ghostty/        terminal config

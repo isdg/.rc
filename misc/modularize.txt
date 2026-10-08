@@ -73,3 +73,5 @@ Done:
                    7 sourced modules           prefix order by a 4-line loader
    tmux config     one 606-line .tmux.conf    tmux/rc.d/NN-name.conf, one
                                               source-file glob tpm can follow
+   vim config      one 743-line .vimrc        vim/rc.d/NN-name.vim; .vimrc
+                                              keeps the hotkey header + loader

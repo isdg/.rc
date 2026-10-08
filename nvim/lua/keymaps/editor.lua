@@ -165,8 +165,9 @@ map("n", "<C-w>E", "<C-w>=", { desc = "Equalize splits" })
 -- key alone: the second is a thing to maintain, a thing to read past, and a
 -- coin flip for the fingers at the moment of use. The <C-w> set is the one
 -- kept because it is the one that matches tmux.
--- The identical maps in vim/.vimrc stay — that config has no <C-w> parity
--- layer, so there they are not a duplicate but the only way to resize.
+-- The identical maps in vim/rc.d/11-splits.vim stay — that config has no
+-- <C-w> parity layer, so there they are not a duplicate but the only way to
+-- resize.
 
 
 -- ─── History & clipboard ────────────────────────────────────────

@@ -20,7 +20,7 @@ return {
                 filters = { dotfiles = false, git_ignored = false },
                 -- Close the tree once a file is opened: the explorer is for picking
                 -- a file, not for living next to the buffer. Same as NERDTreeQuitOnOpen
-                -- in vim/.vimrc. Reopen with <leader>t.
+                -- in vim/rc.d/05-nerdtree.vim. Reopen with <leader>t.
                 actions = { open_file = { quit_on_open = true } },
                 on_attach = function(bufnr)
                     local api = require("nvim-tree.api")
