@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Links: k9s — skins/ and plugins.yaml, the active skin, and ui.skin.
 
-# k9s keeps its config under Application Support on macOS and XDG elsewhere.
+# k9s keeps its config under Application Support on Darwin and XDG elsewhere.
 _k9s_dir() {
     if [ "$(uname)" = "Darwin" ]; then
         echo "$HOME/Library/Application Support/k9s"

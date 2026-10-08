@@ -100,11 +100,11 @@ Ctrl-c aborts insert mode but does NOT trigger
 InsertLeave autocmds — use with care.
 
 Caps Lock → Esc (OS level):
-  macOS: System Settings → Keyboard → Modifier Keys
+  Darwin: System Settings → Keyboard → Modifier Keys
   Linux: setxkbmap -option caps:escape
 
 Best combo: Caps Lock = Esc on tap, Ctrl on hold
-(Karabiner-Elements on macOS, kmonad on Linux).
+(Karabiner-Elements on Darwin, kmonad on Linux).
 
 
 -- Ctrl-] alternatives (jump to tag) --------
@@ -124,7 +124,7 @@ With LSP, skip Ctrl-] entirely:
 
 
 -- Bracket access on non-US layouts ---------
-Karabiner (macOS):
+Karabiner (Darwin):
   Right Cmd + j → [
   Right Cmd + k → ]
 

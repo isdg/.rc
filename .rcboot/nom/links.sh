@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Links: nom (RSS reader). macOS uses Library/Application Support, Linux XDG.
+# Links: nom (RSS reader). Darwin uses Library/Application Support, Linux XDG.
 
 _links_nom() {
     local d="${DOTFILES_DIR:-$HOME/.rc}" dir

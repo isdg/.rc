@@ -92,7 +92,7 @@ vim.api.nvim_create_autocmd("SwapExists", {
 })
 
 -- Clipboard provider, chosen by context:
---   * Local: leave Neovim's default (pbcopy on macOS, xclip/wl on Linux). It
+--   * Local: leave Neovim's default (pbcopy on Darwin, xclip/wl on Linux). It
 --     writes the OS clipboard via a CLI call, so it works in EVERY terminal --
 --     including ones with no OSC 52 support (Terminal.app, Hyper).
 --   * Over SSH: pbcopy would target the remote box, so push to the *local*

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Links: hammerspoon. macOS only; carries the translation popup.
+# Links: hammerspoon. Darwin only; carries the translation popup.
 
 _links_hammerspoon() {
     local d="${DOTFILES_DIR:-$HOME/.rc}"

@@ -27,7 +27,7 @@ _gui_apps_darwin() {
     echo "Spotify|spotify|"
 
     # The `telegram` cask, not `telegram-desktop`: the former is the native
-    # macOS client (12.x) and installs /Applications/Telegram.app, which is the
+    # Darwin client (12.x) and installs /Applications/Telegram.app, which is the
     # name _app_installed checks. `telegram-desktop` is the Qt build, still on
     # 7.x, and lands as "Telegram Desktop.app" instead.
     echo "Telegram|telegram|"

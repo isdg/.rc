@@ -191,7 +191,7 @@ return {
                     -- makes <leader>S (toggle auto-suggestions) usable: it goes
                     -- through cmp.complete(), which ignores
                     -- completion.autocomplete entirely.
-                    -- <C-l>, not <C-Space>: macOS binds Ctrl+Space to the input
+                    -- <C-l>, not <C-Space>: Darwin maps Ctrl+Space to the input
                     -- source switcher, so the terminal never sees it. Insert-mode
                     -- CTRL-L has no Neovim default (:h i_CTRL-L does not exist —
                     -- CTRL-L is only meaningful inside |i_CTRL-X| completion

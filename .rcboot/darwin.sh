@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# Bootstrap script for Darwin (macOS) systems
+# Bootstrap script for Darwin systems
 # Assembles modular components for dotfiles setup
 #
 # Usage:
@@ -43,11 +43,11 @@ source "$SCRIPT_DIR/darwin/defaults.sh"
 #
 # CORE  — the terminal experience: brew, the package set for the active profile,
 #         shell, dotfile symlinks, fonts, vim/tmux/fzf/tig wiring. Always runs.
-#         The keyboard remap lives here rather than with the other macOS tweaks:
+#         The keyboard remap lives here rather than with other Darwin tweaks:
 #         it changes what every keystroke does, so a --minimal box without it is
 #         not usable in the way the rest of this config assumes.
 # EXTRA — GUI apps, the Rust-built side tools (plc, hr, omni, orchbus), the
-#         Lean toolchain and macOS system defaults. Skipped by --minimal.
+#         Lean toolchain and Darwin system defaults. Skipped by --minimal.
 BOOTSTRAP_CORE_FUNCS=(
     "install_homebrew|ensure_homebrew"
     "install_packages_darwin|ensure_packages_darwin"
@@ -140,7 +140,7 @@ echo ""
 # that reads from it consumes the rest of the list and the loop quietly ends --
 # which is exactly what `vim +PlugInstall +qall` inside install_vim_plugins was
 # doing. Everything after component 8 (fzf, the shell, the keyboard remap, and
-# every EXTRA component: the GUI apps, plc, omni, orchbus, hr, ewl and the macOS
+# every EXTRA component: the GUI apps, plc, omni, orchbus, hr, ewl and Darwin
 # defaults) was skipped, and the script still printed "Installation Complete!"
 # because the loop had ended normally rather than failed.
 #

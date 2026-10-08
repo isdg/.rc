@@ -216,6 +216,8 @@ lmap("n", ":", "<cmd>Commands<CR>", { desc = "Ex commands (fzf)" })
 -- Clear search highlights
 map("n", "<Esc>", "<cmd>nohlsearch<CR>", { desc = "Clear search highlights" })
 
+map("i", "jJ", "<Esc>", { desc = "Leave insert mode" })
+
 -- Terminal: Esc exits terminal mode
 map("t", "<Esc>", "<C-\\><C-n>", { desc = "Exit terminal mode" })
 -- fzf pickers are terminals too, and every key, click or scroll must stay with

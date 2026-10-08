@@ -15,7 +15,7 @@ brew "pinentry-mac" # the passphrase prompt gpg/gpg-agent.conf names by absolute
                     # does not fall back, it fails to start, and every gpg call
                     # then reports "No secret key" for keys that are right there.
 brew "ripgrep"
-brew "rsync"   # /usr/bin/rsync is openrsync since macOS 15.4 — it answers
+brew "rsync"   # /usr/bin/rsync is openrsync since Darwin 24.4 — it answers
                # `--version` with "protocol version 29 / rsync 2.6.9
                # compatible", i.e. a 2006 protocol, and rejects --info=progress2,
                # --fuzzy and friends. Not keg-only, so /opt/homebrew/bin (put

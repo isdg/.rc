@@ -83,7 +83,7 @@ Pattern:  <range>normal <motion><insert-cmd><text><Esc>
 Like :s but on files, outside vim.
 
 -- in-place edits (mac BSD vs GNU) ----------
-sed -i '' 's/foo/bar/g' file    macOS BSD sed (note '' after -i)
+sed -i '' 's/foo/bar/g' file    Darwin BSD sed (note '' after -i)
 sed -i 's/foo/bar/g' file       Linux GNU sed
 
 -- line ranges ------------------------------

@@ -1,5 +1,5 @@
 ps aux — one-shot snapshot of every process. `top` is a live sampler; `ps` is a
-still frame you can grep, sort, and pipe. Notes are macOS/BSD ps.
+still frame you can grep, sort, and pipe. Notes are Darwin/BSD ps.
 
 The flags are BSD-style, no dashes, and each does one thing:
   a   processes of ALL users (not just yours)
@@ -32,7 +32,7 @@ COLUMNS
 
   VSZ      Virtual size in KB: total address space MAPPED, including file
            mappings, guard pages, and reservations never touched. On 64-bit
-           macOS this is routinely 400+ GB and carries essentially NO
+           Darwin this is routinely 400+ GB and carries essentially NO
            information. Ignore it. (445908720 KB ≈ 425 GB above.)
 
   RSS      Resident set size in KB — physical pages currently held. Closer to
@@ -106,7 +106,7 @@ INVOCATIONS WORTH KNOWING
   ps -A -o pid,ppid,comm          All processes, parent-child pairs
   ps -U isg                       By real user;  -u isg = by effective user
   ps -t s048                      Everything on one terminal
-  ps -M -p 1234                   Per-THREAD breakdown of a process (macOS)
+  ps -M -p 1234                   Per-THREAD breakdown of a process (Darwin)
   ps -o pid,wq -p 1234            Workqueue thread count (ps has NO thread-count
                                   keyword — use `ps -M` or top's #TH)
   ps -o pid,nice,pri -p 1234      Scheduling priority
@@ -123,7 +123,7 @@ GOTCHAS
 -------------------------------------------------------------------------------
 - BSD flags take NO dash (`ps aux`); keyword/SysV flags DO (`ps -eo`). Mixing
   styles in one invocation is where "illegal option" comes from. `ps -aux` is
-  accepted on macOS but means something subtly different on Linux — write `aux`.
+  accepted on Darwin but means something subtly else on Linux — write `aux`.
 - %CPU is a decaying average, so `ps aux | sort -k3` ranks "recently busy", not
   "busy now". Use top for instantaneous load.
 - VSZ is noise on 64-bit; RSS undercounts (no compressed/swapped pages) and
@@ -141,6 +141,6 @@ GOTCHAS
   the PID. PIDs get reused — never cache them.
 
 SEE ALSO
-  top.txt (live view + the precise macOS profilers), signals.txt (kill/pgrep,
+  top.txt (live view + the precise Darwin profilers), signals.txt (kill/pgrep,
   signal numbers), jobs.txt (STAT `T`, `+`, job control)
   ps(1), pgrep(1), lsof(1), footprint(1)

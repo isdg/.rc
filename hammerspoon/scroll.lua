@@ -1,5 +1,5 @@
 -- ============================================================
---  scroll.lua — Homerow-style keyboard scrolling, any macOS GUI app
+--  scroll.lua — Homerow-style keyboard scrolling, any Darwin GUI app
 -- ============================================================
 -- Enter "scroll mode" with a hotkey, then use bare vim keys to scroll; esc/q/i
 -- exits. Scrolling uses synthetic scroll-wheel events (hs.eventtap), which the

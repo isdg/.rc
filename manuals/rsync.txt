@@ -91,7 +91,7 @@ FLAGS
 
 -- not in -a ---------------------------------------------------------------
   -H               preserve hard links (costs memory on big trees)
-  -A               ACLs              -X   extended attributes (macOS
+  -A               ACLs              -X   extended attributes (Darwin
                                           metadata, quarantine flags)
   -S               sparse files stay sparse
   --numeric-ids    keep uid/gid numbers instead of mapping by name (backups

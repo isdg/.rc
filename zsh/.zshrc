@@ -133,7 +133,7 @@ git_prompt_info() {
 
 source "$ISGRC/zsh/isg.zsh-theme"
 
-# oh-my-zsh's ls/grep colour aliases. -G is BSD/macOS; GNU ls wants --color,
+# oh-my-zsh's ls/grep colour aliases. -G is BSD/Darwin; GNU ls wants --color,
 # where -G means "hide group" instead — pick by OSTYPE rather than probing, so
 # this costs no subprocess (oh-my-zsh ran `ls --color=tty` to decide).
 if [[ $OSTYPE == darwin* || $OSTYPE == *bsd* ]]; then
@@ -172,7 +172,7 @@ SAVEHIST=50000
 #alias python=/usr/local/bin/python3
 # export PATH="$HOME/nvim/bin:$PATH"
 
-# ~/.local/bin — pipx (which added this line in 2024, hardcoded to the macOS
+# ~/.local/bin — pipx (which added this line in 2024, hardcoded to the Darwin
 # $HOME and so dead on every Linux box), and the newer Neovim the Linux
 # bootstrap drops there when the distro's package is too old. Prepended, not
 # appended: the whole point is to beat an older /usr/bin copy.
@@ -253,7 +253,7 @@ export PATH="$HOME/.elan/bin:$PATH"    # Lean via elan on Linux (Brewfile covers
     export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
 
 # Homebrew. Same failure as ~/.local/bin above, one level up. /opt/homebrew/bin
-# reaches PATH on this Mac only through /etc/paths.d/homebrew, and macOS's
+# reaches PATH on this Mac only through /etc/paths.d/homebrew, and Darwin's
 # /usr/libexec/path_helper — run from /etc/zprofile — expands every line of
 # /etc/paths *before* it touches /etc/paths.d. /etc/paths line 3 is /usr/bin, so
 # the brew prefix is structurally guaranteed to lose; no edit under /etc/paths.d

@@ -20,7 +20,7 @@ ripgrep output modes (pick the shape you need):
 Open the matching file(s):
   nvim $(rg -l pattern)              Args via command substitution — cleanest, keeps the tty
   nvim -- $(rg -l pattern)           `--` guards paths that could look like flags
-  rg -l pattern | xargs -o nvim      Pipe form. BSD/macOS `xargs -o` reopens /dev/tty so nvim
+  rg -l pattern | xargs -o nvim      Pipe form. BSD/Darwin `xargs -o` reopens /dev/tty so nvim
                                      stays interactive (plain xargs leaves a dead stdin)
   rg -l0 pattern | xargs -0 -o nvim  NUL-safe pipe form (spaces in names)
   GNU xargs (no -o):
