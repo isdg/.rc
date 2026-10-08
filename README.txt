@@ -62,6 +62,7 @@ LAYOUT
     tmux/           .tmux.conf
     ghostty/        terminal config
     zed/            settings
+    git/            .gitconfig
     tig/            git TUI config
     fonts/          JetBrains Mono + Computer Modern
     darwin/         macOS system defaults + Brewfile
