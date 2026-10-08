@@ -1,5 +1,5 @@
 -- ============================================================
---  PLUGINS LAYER: palace/plc stamps, hr reading list, lean
+--  PLUGINS LAYER: palace/plc stamps, hr reading list, lean, dap
 -- ============================================================
 -- <leader><leader> opens a layer whose bare letters are tools, each handing off
 -- to a sub-layer of that tool's verbs — the shape of tmux's `plugins` table
@@ -42,7 +42,53 @@ local LEAN = {
     ["\\"] = { desc = "how to type", run = "LeanAbbreviationsReverseLookup" },
 }
 
+-- nvim-dap (lua/plugins/debug.lua), verbs named as in gdb. Motion verbs stay,
+-- so the layer doubles as a stepping mode until Esc; b leaves it, since
+-- placing a breakpoint means moving the cursor first.
+local function dap(verb)
+    return function() require("dap")[verb]() end
+end
+
+-- dap-view's commands exist once nvim-dap has pulled it in.
+local function view(cmd)
+    return function()
+        require("dap")
+        vim.cmd(cmd)
+    end
+end
+
+local function condition()
+    vim.ui.input({ prompt = "Condition: " }, function(expr)
+        if expr and expr ~= "" then require("dap").set_breakpoint(expr) end
+    end)
+end
+
+local DEBUG = {
+    b = { desc = "break", run = dap("toggle_breakpoint") },
+    B = { desc = "if", run = condition },
+    c = { desc = "cont", run = dap("continue"), stay = true },
+    C = { desc = "here", run = dap("run_to_cursor"), stay = true },
+    n = { desc = "next", run = dap("step_over"), stay = true },
+    s = { desc = "step", run = dap("step_into"), stay = true },
+    f = { desc = "finish", run = dap("step_out"), stay = true },
+    w = { desc = "watch", run = view("DapViewWatch") },
+    v = { desc = "view", run = view("DapViewToggle") },
+    r = {
+        desc = "repl",
+        run = function() require("dap").repl.toggle() end,
+    },
+    t = {
+        desc = "test",
+        run = function()
+            require("dap")
+            require("dap-python").test_method()
+        end,
+    },
+    q = { desc = "quit", run = dap("terminate") },
+}
+
 local PLUGINS = {
+    d = { desc = "debug", name = "DEBUG", keys = DEBUG },
     h = { desc = "hr reading list", name = "HR", keys = HR },
     l = { desc = "lean", name = "LEAN", keys = LEAN },
     p = { desc = "palace/plc", name = "PALACE", keys = PALACE },

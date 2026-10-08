@@ -18,8 +18,4 @@ return {
         "isdg/hr.vim",
         cmd = { "Hr", "HrToggle", "HrOpen", "HrClose", "HrStart", "HrRefresh", "HrSync", "HrLocate" },
     },
-
-    -- TODO: nvim-dap (Debug Adapter Protocol) - enable after learning raw GDB
-    -- Plugins: mfussenegger/nvim-dap, rcarriga/nvim-dap-ui, theHamsta/nvim-dap-virtual-text
-    -- Install codelldb via Mason: :MasonInstall codelldb
 }
