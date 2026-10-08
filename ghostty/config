@@ -1,6 +1,15 @@
 # Ghostty config — light theme, JetBrains Mono ExtraLight
 
 # --- font ---
+# Families and styles available (`ghostty +list-fonts`):
+#   JetBrains Mono  ExtraLight, Light, Regular, Medium (no bold/italic files)
+#   Menlo           Regular, Bold, Italic, Bold Italic
+#   Courier New     Regular, Bold, Italic, Bold Italic
+#   PT Mono         Regular, Bold
+#   Andale Mono, Monaco   Regular only
+# Missing bold/italic is synthesized (font-synthetic-style, on by default).
+# Defaults: font-family unset = Ghostty's built-in JetBrains Mono (+ Nerd Font
+# symbols), font-style = default (Regular), font-size = 13, no cell adjust.
 font-family = JetBrains Mono
 font-style = ExtraLight
 font-style-bold = false
