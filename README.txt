@@ -59,7 +59,7 @@ darwin/Brewfile.minimal:
 Minimal gets the editors, tmux, zsh, the fzf/rg/fd/bat picker stack, git
 + gh + tig + delta, Ghostty, dotfile symlinks and fonts. It leaves out
 language toolchains (llvm, openjdk, zig, rust, node), media/graphics
-libs, docker/minikube/mysql, and the Rust-built side tools (plc, hr,
+libs, docker/minikube/mysql/qemu, and the Rust-built side tools (plc, hr,
 omni, orchbus) — so there are no LSP servers for mason to install.
 
 Either profile can be verified without changing anything:
