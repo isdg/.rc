@@ -8,10 +8,11 @@
 #   LUMA: 4p → ⁴He + 2e⁺ + 2ν + γ  pp-chain, why it shines
 #
 # Interface
-#   splash_render mode title status
+#   splash_render mode [title status]
 #     mode: dark|light; title: first line on the right; status:
 #     \n-separated lines, laid out in two columns below it. The
-#     mascot is followed by the date, with the law beside it.
+#     mascot is followed by the date, with the law beside it. Without
+#     a title, the mascot stands alone.
 
 SPLASH_WIDTH=23
 SPLASH_CELL=19
@@ -69,7 +70,8 @@ splash_render() {
     done <<< "$(echo -e "$status")"
 
     # right block: title, gap, status filled down the first column first
-    right=("$title" '')
+    right=()
+    [ -n "$title" ] && right=("$title" '')
     half=$(( (${#st[@]} + 1) / 2 ))
     for (( i = 0; i < half; i++ )); do
         line="$(splash_app "$(splash_field "${st[$i]}" 0 $SPLASH_CELL)")"
@@ -98,8 +100,8 @@ splash_render() {
         printf '  %s%s%s   %s\n' "$accent" \
             "$(splash_field "$m" $pad $SPLASH_WIDTH)" "$reset" "$line"
     done
-    printf '  %s%s   %s%s\n' "$accent" \
+    printf '  %s%s%s   %s\n' "$accent" \
         "$(splash_field "$(date '+%a %d %b %Y · %H:%M')" -1 $SPLASH_WIDTH)" \
-        "$law" "$reset"
+        "$reset" "$law"
     echo
 }

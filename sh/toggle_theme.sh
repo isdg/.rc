@@ -1,5 +1,6 @@
 #!/bin/bash
 # Toggle light/dark for Vim/Neovim, Zsh, Ghostty, and tmux (Darwin)
+# Usage: toggle_theme.sh [--details]   --details lists each app's switch
 
 GHOSTTY="$HOME/.config/ghostty/config"
 TMUX_CONF="$HOME/.tmux.conf"
@@ -90,4 +91,8 @@ for line in "tmux:$TMUX_WHEN" "gtty:$GTTY" "nvim:next start" \
     [ -n "${line#*:}" ] && STATUS+="$(printf '%-4s  %s' "${line%%:*}" \
         "${line#*:}")\n"
 done
-splash_render "$MODE" "$cur → $MODE" "$STATUS"
+if [ "$1" = --details ]; then
+    splash_render "$MODE" "$cur → $MODE" "$STATUS"
+else
+    splash_render "$MODE"
+fi
