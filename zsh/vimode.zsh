@@ -15,8 +15,29 @@ export KEYTIMEOUT=10
 bindkey -M viins '^?' backward-delete-char
 bindkey -M viins '^H' backward-delete-char
 
-# jJ leaves insert mode, as in vim; J must follow j within KEYTIMEOUT.
-bindkey -M viins 'jJ' vi-cmd-mode
+# jJ leaves insert mode. A plain 'jJ' bindkey holds j back for KEYTIMEOUT
+# (100ms, too short), so j is typed at once and J within 1s takes it back.
+zmodload zsh/datetime
+typeset -gF _vi_j_at
+typeset -gi _vi_j_cursor=-1
+function vi-insert-j() {
+   zle self-insert
+   _vi_j_at=$EPOCHREALTIME _vi_j_cursor=$CURSOR
+}
+function vi-escape-jJ() {
+   if (( CURSOR == _vi_j_cursor && EPOCHREALTIME - _vi_j_at < 1 )) \
+      && [[ $LBUFFER == *j ]]; then
+      LBUFFER=${LBUFFER%j}
+      _vi_j_cursor=-1
+      zle vi-cmd-mode
+   else
+      zle self-insert
+   fi
+}
+zle -N vi-insert-j
+zle -N vi-escape-jJ
+bindkey -M viins 'j' vi-insert-j
+bindkey -M viins 'J' vi-escape-jJ
 
 # In normal mode: v or n opens $EDITOR on the current command line
 autoload -Uz edit-command-line
