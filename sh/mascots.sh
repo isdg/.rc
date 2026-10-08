@@ -24,6 +24,19 @@ splash_field() {
     printf '%*s%s%*s' "$pad" '' "$s" $(( width - pad - ${#s} )) ''
 }
 
+# The first word of s (a status line's app name) in cyan, padding kept.
+splash_app() {
+    local s="$1" name="${1%% *}"
+    printf '\e[36m%s\e[0m%s' "$name" "${s#"$name"}"
+}
+
+# Mode names in the title in their own colour: light yellow, dark blue.
+splash_title() {
+    local s="$1"
+    s="${s//light/$'\e[33m'light$'\e[0m'}"
+    printf '%s' "${s//dark/$'\e[34m'dark$'\e[0m'}"
+}
+
 splash_render() {
     local mode="$1" title="$2" status="$3"
     local accent law reset=$'\e[0m'
@@ -61,11 +74,13 @@ splash_render() {
     done <<< "$(echo -e "$status")"
 
     # right block: title, gap, status filled down the first column first
-    right=("$title" '')
+    right=("$(splash_title "$title")" '')
     half=$(( (${#st[@]} + 1) / 2 ))
     for (( i = 0; i < half; i++ )); do
-        line="$(splash_field "${st[$i]}" 0 $SPLASH_CELL)"
-        right+=("$line${st[$((i + half))]}")
+        line="$(splash_app "$(splash_field "${st[$i]}" 0 $SPLASH_CELL)")"
+        [ -n "${st[$((i + half))]}" ] &&
+            line+="$(splash_app "${st[$((i + half))]}")"
+        right+=("$line")
     done
 
     # an empty row above the date; the right block ends on the row before it,
@@ -88,8 +103,8 @@ splash_render() {
         printf '  %s%s%s   %s\n' "$accent" \
             "$(splash_field "$m" $pad $SPLASH_WIDTH)" "$reset" "$line"
     done
-    printf '  %s%s%s   %s\n' "$accent" \
+    printf '  %s%s   %s%s\n' "$accent" \
         "$(splash_field "$(date '+%a %d %b %Y · %H:%M')" -1 $SPLASH_WIDTH)" \
-        "$reset" "$law"
+        "$law" "$reset"
     echo
 }
