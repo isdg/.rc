@@ -10,44 +10,41 @@
 # Interface
 #   splash_render mode title status
 #     mode: dark|light; title: first line on the right; status:
-#     \n-separated lines below it, then the mascot's law. The mascot's
-#     name and the date close the left column.
+#     \n-separated lines, laid out in two columns below it. The
+#     mascot is followed by the date, with the law beside it.
 
 SPLASH_WIDTH=23
+SPLASH_CELL=19
 
-# s centred in SPLASH_WIDTH columns; ${#s} counts characters, and every
-# glyph used here is one cell wide.
-splash_center() {
-    local s="$1"
-    local -i left=$(( (SPLASH_WIDTH - ${#s}) / 2 ))
-    printf '%*s%s%*s' $left '' "$s" $(( SPLASH_WIDTH - left - ${#s} )) ''
+# s left-aligned (pad=-1: centred) in a field of width columns; ${#s} counts
+# characters, and every glyph used here is one cell wide.
+splash_field() {
+    local s="$1" pad="$2" width="$3"
+    (( pad < 0 )) && pad=$(( (width - ${#s}) / 2 ))
+    printf '%*s%s%*s' "$pad" '' "$s" $(( width - pad - ${#s} )) ''
 }
 
 splash_render() {
     local mode="$1" title="$2" status="$3"
-    local accent name law reset=$'\e[0m'
+    local accent law reset=$'\e[0m'
     local m line
-    local -a art info left
-    local -i i top pad rows body_w=0
+    local -a art st right
+    local -i i half rows right_top art_top pad art_w=0
 
     if [ "$mode" = "dark" ]; then
         accent=$'\e[90m'   # grey, like the banner's dark-mode logs
-        name='M U R K'
         law='k = ½(1 + cos ψ)'
         art=(
-            '        ░'
-            '       ░▓'
-            '      ░▓▓'
-            '     ░▓▓▓'
+            '      ░'
+            '     ░▓▓'
             '    ░▓▓▓▓'
-            '   ░▓▓▓'
-            '  ░▓▓'
-            ' ░▓'
-            '░'
+            '   ░▓▓▓▓▓'
+            '  ░▓▓▓▓'
+            ' ░▓▓'
+            '░▓'
         )
     else
         accent=$'\e[33m'   # yellow, the banner accent
-        name='L U M A'
         law='4p → ⁴He + 2e⁺ + 2ν + γ'
         art=(
             ' ▗▄▄▓▓▓▄▄▖'
@@ -58,31 +55,41 @@ splash_render() {
         )
     fi
 
-    # right column: title, gap, status, gap, law
-    info=("$title" '')
+    st=()
     while IFS= read -r line; do
-        [ -n "$line" ] && info+=("$line")
+        [ -n "$line" ] && st+=("$line")
     done <<< "$(echo -e "$status")"
-    info+=('' "$law")
 
-    # left column: the art centred as one block above a gap, name, date
-    rows=$(( ${#info[@]} - 3 ))
-    for m in "${art[@]}"; do (( ${#m} > body_w )) && body_w=${#m}; done
-    top=$(( (rows - ${#art[@]}) / 2 ))
-    pad=$(( (SPLASH_WIDTH - body_w) / 2 ))
-    left=()
-    for (( i = 0; i < rows; i++ )); do
-        m=''
-        (( i >= top && i - top < ${#art[@]} )) && m="${art[$((i - top))]}"
-        left+=("$(printf '%*s%s%*s' $pad '' "$m" \
-            $(( SPLASH_WIDTH - pad - ${#m} )) '')")
+    # right block: title, gap, status filled down the first column first
+    right=("$title" '')
+    half=$(( (${#st[@]} + 1) / 2 ))
+    for (( i = 0; i < half; i++ )); do
+        line="$(splash_field "${st[$i]}" 0 $SPLASH_CELL)"
+        right+=("$line${st[$((i + half))]}")
     done
-    left+=("$(splash_center '')" "$(splash_center "$name")")
-    left+=("$(splash_center "$(date '+%a %d %b %Y · %H:%M')")")
+
+    # an empty row above the date; the right block ends on the row before it,
+    # the art centred beside it
+    rows=${#right[@]}
+    (( ${#art[@]} > rows )) && rows=${#art[@]}
+    rows+=1
+    right_top=$(( rows - ${#right[@]} - 1 ))
+    art_top=$(( (rows - 1 - ${#art[@]}) / 2 ))
+    for m in "${art[@]}"; do (( ${#m} > art_w )) && art_w=${#m}; done
+    pad=$(( (SPLASH_WIDTH - art_w) / 2 ))
 
     echo
-    for (( i = 0; i < ${#info[@]}; i++ )); do
-        printf '  %s%s%s   %s\n' "$accent" "${left[$i]}" "$reset" "${info[$i]}"
+    for (( i = 0; i < rows; i++ )); do
+        m='' line=''
+        (( i >= art_top && i - art_top < ${#art[@]} )) &&
+            m="${art[$((i - art_top))]}"
+        (( i >= right_top && i - right_top < ${#right[@]} )) &&
+            line="${right[$((i - right_top))]}"
+        printf '  %s%s%s   %s\n' "$accent" \
+            "$(splash_field "$m" $pad $SPLASH_WIDTH)" "$reset" "$line"
     done
+    printf '  %s%s%s   %s\n' "$accent" \
+        "$(splash_field "$(date '+%a %d %b %Y · %H:%M')" -1 $SPLASH_WIDTH)" \
+        "$reset" "$law"
     echo
 }
