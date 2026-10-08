@@ -5,11 +5,11 @@ by one vault directory (`$PALACE_DIR`, `~/backup/palace`) and one binary
 (`plc`). The vault path is persisted in `~/.plcrc` (`PALACE_DIR = …`); `plc`
 reads it, and `zsh/aliases.zsh` exports it via `plc config`. Documented here as
 a single named module so the pieces don't get rediscovered from scratch later —
-see `modularize.txt`.
+see `misc/modularize.txt`.
 
 ## Pieces
 
-1. **`plc` binary** — installed by `bootstrap/components/plc.sh` (clones
+1. **`plc` binary** — installed by `.rcboot/plc/plc.sh` (clones
    `github.com/isdg/plc`, `cargo install`s it). Creates/resolves note
    files and prints their path; it never opens an editor itself.
 
@@ -42,6 +42,6 @@ see `modularize.txt`.
 ## Why it's spread out
 
 Each piece lives with its own kind (zsh commands in `zsh/`, a Vimscript
-plugin in `vim/`, an installer in `bootstrap/`) rather than under one
+plugin in `vim/`, an installer in `.rcboot/`) rather than under one
 `palace/` directory, so it follows the rest of the repo's per-concern
 layout. This file is the map between them.

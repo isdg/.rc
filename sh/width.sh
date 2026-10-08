@@ -17,8 +17,8 @@ set -u
 
 PRESETS=(400 600)
 
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ACTIVE="$SCRIPT_DIR/ghostty/width-active.conf"
+RC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+ACTIVE="$RC_DIR/ghostty/width-active.conf"
 
 # Current value, read back from the file we write. Absent or unparseable counts
 # as "unset", which the toggle treats as "go to the first preset".

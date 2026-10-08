@@ -7,7 +7,7 @@ brew "git"
 brew "git-delta"   # .gitconfig sets `pager = delta`
 brew "gh"
 brew "gnupg"        # .gitconfig sets commit.gpgsign = true against key E32BE35A
-                    # and bootstrap/components/git_signing.sh gates on `gpg`
+                    # and .rcboot/git/signing.sh gates on `gpg`
                     # being on PATH, but nothing here ever installed it: a fresh
                     # machine silently got signing switched off instead.
 brew "pinentry-mac" # the passphrase prompt gpg/gpg-agent.conf names by absolute
@@ -86,7 +86,7 @@ brew "dive"
 brew "minikube"
 brew "k9s"      # k8s TUI; this repo carries its skins, plugins.yaml and a
                 # tmux TERM wrapper (zsh/aliases.zsh), so it has to be here
-brew "argocd"   # GitOps CD for k8s; Linux gets it from bootstrap/components
+brew "argocd"   # GitOps CD for k8s; Linux gets it from .rcboot/argocd
 brew "grafanactl"  # Grafana resources (dashboards, folders) as code
 brew "logcli"      # Loki log queries (LogQL) from the shell
 brew "mysql"

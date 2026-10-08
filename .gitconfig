@@ -140,7 +140,7 @@
 ; fine, git ignores an include path that does not exist. Untracked, so nothing
 ; here follows the repo to another machine.
 ;
-; bootstrap/components/git_signing.sh writes `commit.gpgsign = false` here on a
+; .rcboot/git/signing.sh writes `commit.gpgsign = false` here on a
 ; machine without the signing key above -- otherwise every commit dies with
 ; "error: gpg failed to sign the data / fatal: failed to write commit object",
 ; which is what a fresh Linux box hits.
