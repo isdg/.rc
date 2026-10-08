@@ -21,14 +21,13 @@ export DOTFILES_DIR
 export PATH="$HOME/.local/bin:$HOME/.elan/bin:$PATH"
 
 # Load components
-source "$SCRIPT_DIR/core/helpers.sh"
+source "$SCRIPT_DIR/lib.sh"
 source "$SCRIPT_DIR/linux/packages.sh"
 source "$SCRIPT_DIR/nvim/neovim_linux.sh"
 source "$SCRIPT_DIR/bat/pagers_linux.sh"
 source "$SCRIPT_DIR/zsh/syntax_linux.sh"
 source "$SCRIPT_DIR/argocd/argocd_linux.sh"
 source "$SCRIPT_DIR/k9s/k9s_linux.sh"
-source "$SCRIPT_DIR/core/directories.sh"
 source "$SCRIPT_DIR/core/dotfiles.sh"
 source "$SCRIPT_DIR/git/signing.sh"
 source "$SCRIPT_DIR/fonts/fonts.sh"
@@ -58,7 +57,7 @@ if [[ "${1:-}" == "--ensure" ]]; then
     ensure_zsh_syntax_linux    || FAILURES=$((FAILURES + 1)); echo ""
     ensure_argocd_linux        || FAILURES=$((FAILURES + 1)); echo ""
     ensure_k9s_linux           || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_directories         || FAILURES=$((FAILURES + 1)); echo ""
+    ensure_vim_dirs            || FAILURES=$((FAILURES + 1)); echo ""
     ensure_dotfiles            || FAILURES=$((FAILURES + 1)); echo ""
     ensure_git_signing         || FAILURES=$((FAILURES + 1)); echo ""
     ensure_fonts_linux         || FAILURES=$((FAILURES + 1)); echo ""
@@ -99,7 +98,7 @@ install_argocd_linux
 echo ""
 install_k9s_linux
 echo ""
-create_directories
+create_vim_dirs
 echo ""
 link_dotfiles
 echo ""

@@ -137,7 +137,7 @@ _relink() {
     fi
 
     # A missing parent is why this used to print [OK] over a failed ln: the exit
-    # status went unchecked, so a run before create_directories claimed success
+    # status went unchecked, so a run before create_vim_dirs claimed success
     # and linked nothing.
     mkdir -p "$(dirname "$dst")"
 
