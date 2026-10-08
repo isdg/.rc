@@ -5,7 +5,7 @@
 # not package at all, and both failed silently:
 #
 #   bat   — zsh/fzf.zsh and zsh/palace.zsh use it for previews, isg.zsh-theme
-#           exports $BAT_THEME, and dotfiles.sh links ~/.config/bat and runs
+#           exports $BAT_THEME, and bat/links.sh links ~/.config/bat and runs
 #           `bat cache --build` to register the repo's vs_dark/vs_light themes.
 #           Debian installs the binary as `batcat` (the name `bat` is taken by
 #           bacula-console-qt), so every `command -v bat` guard is false: the

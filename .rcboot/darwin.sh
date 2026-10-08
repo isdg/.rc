@@ -20,7 +20,9 @@ source "$SCRIPT_DIR/lib.sh"
 source "$SCRIPT_DIR/darwin/homebrew.sh"
 source "$SCRIPT_DIR/darwin/packages.sh"
 source "$SCRIPT_DIR/darwin/gui_apps.sh"
-source "$SCRIPT_DIR/core/dotfiles.sh"
+for links in "$SCRIPT_DIR"/*/links.sh; do
+    source "$links"
+done
 source "$SCRIPT_DIR/git/signing.sh"
 source "$SCRIPT_DIR/fonts/fonts.sh"
 source "$SCRIPT_DIR/tig/tig.sh"

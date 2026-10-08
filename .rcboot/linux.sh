@@ -28,7 +28,9 @@ source "$SCRIPT_DIR/bat/pagers_linux.sh"
 source "$SCRIPT_DIR/zsh/syntax_linux.sh"
 source "$SCRIPT_DIR/argocd/argocd_linux.sh"
 source "$SCRIPT_DIR/k9s/k9s_linux.sh"
-source "$SCRIPT_DIR/core/dotfiles.sh"
+for links in "$SCRIPT_DIR"/*/links.sh; do
+    source "$links"
+done
 source "$SCRIPT_DIR/git/signing.sh"
 source "$SCRIPT_DIR/fonts/fonts.sh"
 source "$SCRIPT_DIR/tig/tig.sh"
