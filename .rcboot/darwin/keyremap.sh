@@ -114,7 +114,7 @@ install_keyremap_darwin() {
         echo "[WARN] Key mapping not active yet — log out and back in, or run:"
         echo "       launchctl kickstart -k $domain/com.local.KeyRemap"
     else
-        echo "[WARN] Active key mapping differs from the plist; run ./bootstrap/darwin.sh --ensure"
+        echo "[WARN] Active key mapping differs from the plist; run ./.rcboot/darwin.sh --ensure"
     fi
 
     return 0

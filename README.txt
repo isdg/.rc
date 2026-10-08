@@ -25,10 +25,10 @@ Clone into ~/.rc:
 
 Run the bootstrap for your OS:
 
-    > ./bootstrap/darwin.sh        # macOS
-    > ./bootstrap/linux.sh         # Linux
+    > ./.rcboot/darwin.sh        # macOS
+    > ./.rcboot/linux.sh         # Linux
 
-The bootstrap is modular (see bootstrap/components/) and handles:
+The bootstrap is modular (see .rcboot/) and handles:
 Homebrew, packages, dotfile symlinks, vim-plug + plugins, fzf, fonts,
 tig, key remapping, and macOS defaults.
 
@@ -36,8 +36,8 @@ Profiles (macOS). darwin.sh reads two component registries at the top of
 the file — CORE and EXTRA — and --minimal runs only CORE with the smaller
 darwin/Brewfile.minimal:
 
-    > ./bootstrap/darwin.sh --minimal    # tmux + nvim + zsh core, ~0.8 GB
-    > ./bootstrap/darwin.sh              # everything, ~14-15 GB
+    > ./.rcboot/darwin.sh --minimal    # tmux + nvim + zsh core, ~0.8 GB
+    > ./.rcboot/darwin.sh              # everything, ~14-15 GB
 
 Minimal gets the editors, tmux, zsh, the fzf/rg/fd/bat picker stack, git
 + gh + tig + delta, Ghostty, dotfile symlinks and fonts. It leaves out
@@ -47,7 +47,7 @@ omni, orchbus) — so there are no LSP servers for mason to install.
 
 Either profile can be verified without changing anything:
 
-    > ./bootstrap/darwin.sh --ensure [--minimal]
+    > ./.rcboot/darwin.sh --ensure [--minimal]
 
 Restart your terminal (or `exec zsh`) when it finishes.
 
@@ -55,7 +55,7 @@ Restart your terminal (or `exec zsh`) when it finishes.
 LAYOUT
 -------------------------------------------------------------------------------
 
-    bootstrap/      install scripts (darwin.sh, linux.sh + components/)
+    .rcboot/        install scripts (darwin.sh, linux.sh + one folder per tool)
     zsh/            .zshrc, aliases, fzf integration, isg theme
     vim/            .vimrc, plugins, color schemes, coc extensions
     nvim/           init.lua + lazy.nvim setup

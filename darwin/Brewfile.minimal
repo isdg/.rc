@@ -1,4 +1,4 @@
-# Minimal profile — used by `./bootstrap/darwin.sh --minimal`.
+# Minimal profile — used by `./.rcboot/darwin.sh --minimal`.
 #
 # The tmux + nvim + zsh experience and the tools those configs actually invoke,
 # nothing else. Deliberately absent: language toolchains (llvm, llvm@17,
