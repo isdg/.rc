@@ -35,7 +35,7 @@ brew "bat"
 brew "git"
 brew "gh"
 brew "tig"     # tui git; tig/ config is symlinked by the tig component
-brew "git-delta"  # .gitconfig sets `pager = delta` — git paging breaks without it
+brew "git-delta"  # delta/delta.gitconfig sets `pager = delta`
 
 # Terminal emulator. Kept even in the minimal profile: it is the terminal these
 # configs are written for (ghostty/config, theme-{dark,light}.conf).

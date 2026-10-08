@@ -4,7 +4,7 @@ brew "curl"
 brew "fd"
 brew "fzf"
 brew "git"
-brew "git-delta"   # .gitconfig sets `pager = delta`
+brew "git-delta"   # delta/delta.gitconfig sets `pager = delta`
 brew "gh"
 brew "gnupg"        # .gitconfig sets commit.gpgsign = true against key E32BE35A
                     # and .rcboot/git/signing.sh gates on `gpg`

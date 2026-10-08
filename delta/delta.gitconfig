@@ -1,0 +1,45 @@
+; delta as git's pager. Included from git/.gitconfig through the
+; ~/.config/git/delta.gitconfig link .rcboot/delta makes; unlinked, git pages
+; with plain less.
+[core]
+	pager = delta
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	light = true
+	; Plain red/green fallback. The GitHub-style syntax + tint styles come from
+	; delta/theme-active.gitconfig (included below), flipped by toggle_theme.sh.
+	minus-style = red
+	minus-emph-style = red
+	plus-style = green
+	plus-emph-style = green
+	zero-style = normal
+	; line-number gutter without the dotted/solid vertical bars -- just the
+	; numbers and a ":" separator, like jj.
+	line-numbers = true
+	line-numbers-left-format = "{nm:>4} "
+	line-numbers-right-format = "{np:>4} : "
+	line-numbers-left-style = blue
+	line-numbers-right-style = blue
+	; `white` is ANSI 7, so the terminal supplies the colour and it follows the
+	; theme -- theme/palette.sh ISG_ANSI_7, #a6adc8 dark / #acb0be light. A hex
+	; here would be baked as 24-bit and identical in both modes, which is what
+	; "#cccccc" was. Every other style in this section is already a name; this was
+	; the last literal colour in the file.
+	line-numbers-zero-style = white
+	; Page with quit-if-one-screen: short diffs auto-quit and stay in the
+	; terminal (feels like stdout), long diffs open in less (wrapped +
+	; navigable), -X keeps content in scrollback on quit.
+	paging = auto
+	pager = less -RFX
+	; jj-like minimalism: drop the box/rule "boarding lines".
+	hunk-header-style = omit
+	file-decoration-style = none
+	file-style = blue
+	; drop the "Δ" modified-file symbol -- show just the path
+	file-modified-label = ""
+; Absolute because git resolves a relative include from ~/.gitconfig, not the
+; repo it links to. Missing (clone outside ~/.rc, unseeded) keeps the fallback.
+[include]
+	path = ~/.rc/delta/theme-active.gitconfig
