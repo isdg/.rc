@@ -66,6 +66,9 @@ LAYOUT
     fonts/          JetBrains Mono + Computer Modern
     darwin/         macOS system defaults + Brewfile
     prompt/         shell prompt definitions
+    plc/            palace notes system (README.md)
+    manuals/        command and tool reference sheets (*.txt)
+    misc/           task log, worktree manifest, inventories
 
 -------------------------------------------------------------------------------
 MANUAL SETUP (if you'd rather not run bootstrap)
@@ -113,10 +116,10 @@ NOTES
 
   - tmux prefix bindings: see tmux/.tmux.conf (new windows open to the
     right of current; & kills window and moves focus left).
-  - splits.txt is the split/pane reference: nvim's <C-w> layer and tmux's
-    C-b C-b layer share one set of keys, and it says where they differ.
+  - manuals/splits.txt is the split/pane reference: nvim's <C-w> layer and
+    tmux's C-b C-b layer share one set of keys, and it says where they differ.
   - zsh/keys.txt is the command-line key reference: vi mode and the
     nvim-style <Space> leader.
   - toggle_theme.sh switches macOS light/dark mode and adjacent terminal
     themes in one shot.
-  - manifest.txt lists the git worktrees used alongside main.
+  - misc/manifest.txt lists the git worktrees used alongside main.

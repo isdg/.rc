@@ -67,4 +67,4 @@ Done:
                    inside keymaps.lua          module
    tmux shells     prefix W big inline        tmux/window-picker.sh, like
                    string in .tmux.conf        fzf-content.sh / pane-capture.sh
-   palace          spread zsh/vim/nvim/bin    documented in palace.md
+   palace          spread zsh/vim/nvim/bin    documented in plc/README.md
