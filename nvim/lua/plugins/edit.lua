@@ -130,4 +130,15 @@ return {
             })
         end,
     },
+
+    -- jJ leaves insert mode. Unlike `inoremap jJ`, j shows at once instead of
+    -- sitting under the cursor until J or 'timeoutlen' decides the mapping.
+    {
+        "max397574/better-escape.nvim",
+        event = "InsertEnter",
+        opts = {
+            default_mappings = false,
+            mappings = { i = { j = { J = "<Esc>" } } },
+        },
+    },
 }
