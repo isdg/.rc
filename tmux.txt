@@ -69,7 +69,7 @@ Tmux Cheat Sheet
   Note: 'tmux a' is shorthand for 'tmux attach'. Without -L, connects
   to the default server. Use -L <name> for named servers.
 
-  Key Shortcuts (Prefix = Ctrl+B)
+  Key Shortcuts (Prefix = Ctrl+B or Ctrl+A)
 
   Detach/Manage
 
