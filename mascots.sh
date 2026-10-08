@@ -20,20 +20,20 @@ splash_render() {
 
     if [ "$mode" = "dark" ]; then
         accent=$'\e[90m'   # grey, like the banner's dark-mode logs
-        width=16
+        width=23
         mascot=(
-            '           ░'
-            '          ░▓'
+            '               ░'
+            '              ░▓'
+            '             ░▓▓'
+            '            ░▓▓▓'
+            '           ░▓▓▓▓'
+            '          ░▓▓▓'
             '         ░▓▓'
-            '        ░▓▓▓'
-            '       ░▓▓▓▓'
-            '      ░▓▓▓'
-            '     ░▓▓'
-            '    ░▓'
-            '   ░'
+            '        ░▓'
+            '       ░'
             ''
-            '     M U R K'
-            'k = ½(1 + cos ψ)'
+            '        M U R K'
+            '    k = ½(1 + cos ψ)'
         )
     else
         accent=$'\e[33m'   # yellow, the banner accent

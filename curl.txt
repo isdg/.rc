@@ -1,0 +1,154 @@
+curl — transfer one URL (or several) and write the response body to stdout.
+It speaks HTTP(S), FTP, SFTP, SMTP, WebSocket and twenty more, but in
+practice it's the shell's HTTP client: hit an API, download a file, look at
+headers. Notes are curl 8.x (/usr/bin/curl on macOS).
+
+-------------------------------------------------------------------------------
+DEFAULTS THAT SURPRISE
+-------------------------------------------------------------------------------
+  - Body goes to STDOUT, progress meter to STDERR. Piped, curl shows a
+    progress table; -s silences it (and errors with it — add -S back).
+  - HTTP 404/500 is a SUCCESS: exit code 0, error page printed. Add -f.
+  - Redirects are NOT followed: you get the 301 and an empty body. Add -L.
+  - Headers are not shown. -i shows them with the body, -I alone (HEAD).
+
+  Hence the standard script incantation:
+    curl -fsSL https://example.com/install.sh
+      -f  fail on HTTP >= 400 (exit 22, no body)
+      -s  silent           -S  ...but still print errors
+      -L  follow redirects
+
+-------------------------------------------------------------------------------
+OUTPUT
+-------------------------------------------------------------------------------
+  -o FILE          write the body to FILE
+  -O               write to a file named after the URL's last segment
+  -OJ              ...or after the server's Content-Disposition name
+  --output-dir D   where -o/-O land
+  --create-dirs    make missing directories for -o
+  -C -             resume a partial download where the file ends
+  -#               a progress bar instead of the table
+  -w FMT           print after the transfer (to stdout). Variables:
+                     %{http_code}        status, e.g. 200
+                     %{url_effective}    final URL after -L
+                     %{content_type}     %{size_download}   %{num_redirects}
+                     %{time_namelookup}  %{time_connect}    %{time_appconnect}
+                     %{time_starttransfer} (TTFB)           %{time_total}
+                     %{json}             all of the above as JSON
+                     %{stderr}           send what follows to stderr
+                   e.g.  curl -so /dev/null -w '%{http_code}\n' URL
+
+-------------------------------------------------------------------------------
+SEEING WHAT HAPPENED
+-------------------------------------------------------------------------------
+  -i               response headers, then the body
+  -I               HEAD request: headers only. Some servers answer HEAD
+                   differently from GET; use -s -D - -o /dev/null for the
+                   real GET's headers.
+  -D FILE          dump response headers to FILE (- for stdout)
+  -v               everything: DNS, TLS handshake, request headers (> lines),
+                   response headers (< lines), to stderr
+  --trace-ascii -  -v plus the full bytes sent and received
+  --trace-time     timestamps on -v/--trace lines
+
+-------------------------------------------------------------------------------
+REQUESTS
+-------------------------------------------------------------------------------
+-- method and headers ------------------------------------------------------
+  -X METHOD        set the method word. Don't use -X POST with -d (implied),
+                   and never -X with -L: the method sticks through redirects.
+  -H 'K: V'        add a header; repeatable. 'K:' removes a default one.
+  -A STR           User-Agent           -e URL   Referer
+  -u user:pass     basic auth (-u user alone prompts for the password)
+  --oauth2-bearer TOKEN   Authorization: Bearer TOKEN
+  -n               read credentials from ~/.netrc
+
+-- bodies ------------------------------------------------------------------
+  -d DATA          POST, Content-Type application/x-www-form-urlencoded.
+                   STRIPS newlines and treats a leading @ as a file name.
+  -d @file         body from file          -d @-   from stdin
+  --data-raw DATA  like -d but @ is literal
+  --data-binary @f send the file byte-for-byte (keeps newlines)
+  --data-urlencode 'q=a b&c'   URL-encodes the value: q=a%20b%26c
+  --json DATA      POST JSON: sets Content-Type and Accept to
+                   application/json. Repeatable — the pieces concatenate.
+                     curl --json '{"name":"x"}' URL
+                     jq -n '{name:"x"}' | curl --json @- URL
+  -F name=value    multipart/form-data (HTML forms with file inputs)
+  -F file=@a.png   upload a file as a form field
+  -F 'f=@a.png;type=image/png'   with an explicit type
+  -T FILE          PUT the file to the URL (upload)
+  -G               send the -d data as a GET query string instead
+                     curl -G --data-urlencode 'q=hello world' URL
+  --url-query 'k=v'  append to the query string, whatever the method
+
+-------------------------------------------------------------------------------
+CONNECTIONS
+-------------------------------------------------------------------------------
+-- TLS ---------------------------------------------------------------------
+  -k               skip certificate verification. Debugging only.
+  --cacert FILE    trust this CA (self-signed internal services)
+  -E cert.pem --key key.pem   client certificate (mTLS)
+
+-- where it connects -------------------------------------------------------
+  --resolve host:443:1.2.3.4      use that IP for host, keep SNI and Host
+                                  header — test a backend before DNS points
+                                  to it
+  --connect-to host:443:other:8443  reroute the connection entirely
+  -x http://proxy:3128   use a proxy (also honours $https_proxy)
+  --noproxy '*'          ignore proxy env vars
+  --unix-socket PATH     talk HTTP over a socket:
+                           curl --unix-socket /var/run/docker.sock \
+                                http://localhost/containers/json
+  -4 / -6                force IPv4 / IPv6
+  --http1.1 / --http2    pin the protocol version
+
+-- timeouts and retries ----------------------------------------------------
+  --connect-timeout 5   give up connecting after 5 s
+  -m 30                 whole operation capped at 30 s (default: forever)
+  --retry 3             retry transient failures: timeouts, HTTP 408, 429,
+                        500, 502, 503, 504
+  --retry-all-errors    ...and any error at all
+  --retry-delay 2       fixed wait instead of exponential backoff
+
+-- cookies and sessions ----------------------------------------------------
+  -c jar.txt       save cookies the server sets
+  -b jar.txt       send cookies from the jar (or -b 'k=v' literally)
+  --compressed     ask for gzip/br and decompress transparently
+
+-------------------------------------------------------------------------------
+MANY URLS
+-------------------------------------------------------------------------------
+  curl -O URL1 -O URL2         each -O pairs with one URL, in order
+  curl -Z -O URL1 -O URL2      -Z: in parallel
+  curl -O 'https://x/img[1-20].png'      ranges; quote for zsh
+  curl -o '#1.html' 'https://x/{a,b}'    #1 = the matched piece
+  -K FILE          read options from FILE; ~/.curlrc is read by default
+                   unless -q is the FIRST argument
+
+-------------------------------------------------------------------------------
+RECIPES
+-------------------------------------------------------------------------------
+  curl -fsSL URL | sh                     installers (read it first)
+  curl -fLO URL                           download, keep the name
+  curl -fL -C - -O URL                    resume an interrupted download
+  curl -sI URL                            headers only
+  curl -s URL | jq .                      pretty-print a JSON API
+  curl -fsS -H "Authorization: Bearer $TOKEN" https://api.x/v1/me | jq
+  curl -fsS --json '{"a":1}' https://api.x/v1/items
+  curl -X DELETE -fsS https://api.x/v1/items/42
+  curl -so /dev/null -w '%{http_code} %{time_total}s\n' URL
+                                          status and latency
+  curl -so /dev/null -w '%{json}' URL | jq   the full timing breakdown
+  curl -v --resolve api.x:443:10.0.0.5 https://api.x/health
+                                          hit one specific backend
+  curl -N URL                             stream (SSE): no output buffering
+  curl ifconfig.me                        your public IP
+  curl wttr.in                            the weather, as text
+
+-------------------------------------------------------------------------------
+EXIT CODES  (when -f or the network fails)
+-------------------------------------------------------------------------------
+  0  ok               6  couldn't resolve host    7  couldn't connect
+  22 HTTP >= 400 (-f) 28 timed out                35 TLS handshake failed
+  52 empty reply      56 connection reset         60 bad certificate
