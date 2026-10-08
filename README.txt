@@ -22,12 +22,13 @@ Includes configs for:
   - darwin defaults & key remapping
 
 
-My personal feeling is that I don't like the concept of IDE in the whole. Why there is
-some piece of software should lead your way of working, especially seeing three
-"when" facts, when almost all the technologies are modular enough, when
-you responsibly know what to do, and when you can responsibly build your own way
-of working. Also here we use only keyboard, because I feel the mouse is only for
-learning how to use computer first and for poor user-centric OS context switch designs.
+My personal feeling is that I don't like the concept of an IDE as a whole.
+Why should some piece of software lead your way of working, especially
+given three "when" facts: when almost all technologies are modular enough,
+when you know what to do, and when you can responsibly build your own way
+of working? Also, here we use only the keyboard, because I feel the mouse is
+only for learning how to use a computer first and for poor user-centric OS
+context switch designs.
 
 
 -------------------------------------------------------------------------------
