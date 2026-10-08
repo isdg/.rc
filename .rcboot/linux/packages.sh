@@ -8,7 +8,7 @@ ensure_packages_linux() {
     # distros and prettier needs npm, so a single flat list reported [FAIL]
     # forever on a box that was in fact fine.
     local required=(zsh git curl wget tmux vim nvim fzf rg tig)
-    local optional=(gh jq tree htop w3m sd prettier nom glow go cargo)
+    local optional=(gh jq tree htop w3m sd prettier nom glow go cargo qemu-img)
 
     for cmd in "${required[@]}"; do
         if command -v "$cmd" > /dev/null 2>&1; then
@@ -102,6 +102,8 @@ install_packages_linux() {
             # Zig (compiler from apt; zls usually not packaged — install manually
             # from https://github.com/zigtools/zls/releases or via `zigup`)
             _apt_install "zig" zig
+            # VMs: every system emulator plus qemu-img
+            _apt_install "qemu" qemu-system qemu-utils
             ;;
         dnf)
             sudo dnf install -y zsh git gh tig curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
@@ -154,6 +156,18 @@ install_packages_linux() {
             || { command -v cargo > /dev/null 2>&1 && cargo install sd; } \
             || echo "[WARN] sd install failed (install via 'cargo install sd' or see https://github.com/chmln/sd)"
     fi
+
+    # qemu names differ per distro and one unknown name aborts the whole
+    # transaction, so it stays off the base lines (apt handles it above).
+    local qemu_ok=0
+    case "$pkg_manager" in
+        dnf)    sudo dnf install -y qemu qemu-img && qemu_ok=1 ;;
+        yum)    sudo yum install -y qemu-kvm qemu-img && qemu_ok=1 ;;
+        pacman) sudo pacman -S --noconfirm qemu-full && qemu_ok=1 ;;
+        zypper) sudo zypper install -y qemu qemu-tools && qemu_ok=1 ;;
+        *)      qemu_ok=1 ;;
+    esac
+    [ "$qemu_ok" = 1 ] || echo "[WARN] qemu install failed"
 
     echo "[OK] Packages installed"
 }

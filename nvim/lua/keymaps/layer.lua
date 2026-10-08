@@ -35,6 +35,18 @@ local function hint(name, keys)
     return chunks
 end
 
+-- An echo wider than the command line raises a hit-enter prompt, so a hint
+-- that does not fit loses its tail instead.
+local function fit(chunks)
+    local room, out = vim.v.echospace, {}
+    for _, chunk in ipairs(chunks) do
+        room = room - vim.fn.strdisplaywidth(chunk[1])
+        if room < 0 then break end
+        out[#out + 1] = chunk
+    end
+    return out
+end
+
 --- Open a layer and run keys until one of them ends it.
 --- keys: { [char] = { desc = "shown in the hint", run = cmd|fn, stay = bool } }
 ---       or { desc = ..., name = "SUB", keys = {...} } to hand off to a sub-layer
@@ -45,7 +57,7 @@ end
 function M.open(name, keys)
     local chunks = hint(name, keys)
     while true do
-        vim.api.nvim_echo(chunks, false, {})
+        vim.api.nvim_echo(fit(chunks), false, {})
         local typed, ch = pcall(vim.fn.getcharstr)
         vim.api.nvim_echo({ { "" } }, false, {}) -- clear before the action draws
         if not typed then return end             -- <C-c>

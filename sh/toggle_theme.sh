@@ -9,8 +9,6 @@ REAL_GHOSTTY="$(readlink "$GHOSTTY" || echo "$GHOSTTY")"
 # config is itself in a symlinked dir; resolve fully
 [ -L "$REAL_GHOSTTY" ] || REAL_GHOSTTY="$(cd "$(dirname "$GHOSTTY")" && pwd -P)/$(basename "$GHOSTTY")"
 
-STATUS=""
-
 # --- Source of truth: flip the mode file ---
 # Everything derives from this one untracked file. zsh (-> bat/less/ls), ghostty,
 # vim and nvim all READ it at startup, so toggling rewrites no tracked file for
@@ -20,9 +18,6 @@ cur="$(cat "$THEME_FILE" 2>/dev/null || echo light)"
 [ "$cur" = dark ] && MODE=light || MODE=dark
 mkdir -p "$(dirname "$THEME_FILE")"
 echo "$MODE" > "$THEME_FILE"
-STATUS+="mode: $cur -> $MODE\n"
-STATUS+="vim/nvim: vs_$MODE (on new session)\n"
-STATUS+="zsh/bat: $MODE (on new zsh)\n"
 
 # --- Ghostty: select theme via the theme-active.conf include symlink ---
 # One symlink swap replaces five seds on the tracked config; theme-active.conf
@@ -30,9 +25,9 @@ STATUS+="zsh/bat: $MODE (on new zsh)\n"
 if [ -f "$REAL_GHOSTTY" ]; then
     GHOSTTY_DIR="$(dirname "$REAL_GHOSTTY")"
     ln -sf "theme-$MODE.conf" "$GHOSTTY_DIR/theme-active.conf"
-    STATUS+="ghostty: $MODE (on new reload)\n"
+    GTTY="on reload"
 else
-    STATUS+="ghostty: config not found\n"
+    GTTY="config not found"
 fi
 
 # --- k9s: swap the skin-active.yaml symlink (config.yaml points ui.skin at it) ---
@@ -42,7 +37,7 @@ RC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 K9S_SKINS="$RC_DIR/k9s/skins"
 if [ -d "$K9S_SKINS" ]; then
     ln -sf "vs_$MODE.yaml" "$K9S_SKINS/skin-active.yaml"
-    STATUS+="k9s: $MODE (on new session)\n"
+    K9S="next start"
 fi
 
 # --- tig: swap the theme-active.tigrc symlink (.tigrc sources it with -q) ---
@@ -51,7 +46,7 @@ fi
 TIG_DIR="$RC_DIR/tig"
 if [ -d "$TIG_DIR" ]; then
     ln -sf "theme-$MODE.tigrc" "$TIG_DIR/theme-active.tigrc"
-    STATUS+="tig: $MODE (on new tig)\n"
+    TIG="next start"
 fi
 
 # --- fzf: swap the opts-active.conf symlink ($FZF_DEFAULT_OPTS_FILE points at
@@ -61,22 +56,22 @@ fi
 FZF_DIR="$RC_DIR/fzf"
 if [ -d "$FZF_DIR" ]; then
     ln -sf "opts-$MODE.conf" "$FZF_DIR/opts-active.conf"
-    STATUS+="fzf: $MODE (on new fzf)\n"
+    FZF="next run"
 fi
 
 # --- delta: swap the theme-active.gitconfig symlink (.gitconfig includes it) ---
 DELTA_DIR="$RC_DIR/delta"
 if [ -d "$DELTA_DIR" ]; then
     ln -sf "theme-$MODE.gitconfig" "$DELTA_DIR/theme-active.gitconfig"
-    STATUS+="delta: $MODE (on next diff)\n"
+    DLTA="next diff"
 fi
 
 # --- Tmux: re-source so the if-shell re-reads the mode file and repaints ---
 # The styles live in tmux/theme-{dark,light}.conf; nothing is sed'd here.
 if tmux source-file "$TMUX_CONF" 2>/dev/null; then
-    STATUS+="tmux: $MODE (reloaded)\n"
+    TMUX_WHEN="now"
 else
-    STATUS+="tmux: $MODE (on new session)\n"
+    TMUX_WHEN="new session"
 fi
 
 # --- Splash: mascot + status, banner-style (mascots.sh) ---
@@ -88,4 +83,11 @@ fi
 # prints lines, so it appends cleanly wherever it lands.
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/mascots.sh"
-splash_render "$MODE" "$STATUS"
+STATUS=""
+for line in "tmux:$TMUX_WHEN" "gtty:$GTTY" "nvim:next start" \
+    "vim:next start" "zsh:new shell" "bat:new shell" "k9s:$K9S" \
+    "tig:$TIG" "fzf:$FZF" "dlta:$DLTA"; do
+    [ -n "${line#*:}" ] && STATUS+="$(printf '%-4s  %s' "${line%%:*}" \
+        "${line#*:}")\n"
+done
+splash_render "$MODE" "$cur → $MODE" "$STATUS"
