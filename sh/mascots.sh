@@ -32,13 +32,6 @@ splash_app() {
     printf '\e[34m%s\e[0m%s' "$name" "${s#"$name"}"
 }
 
-# Mode names in the title in their mascot's colour.
-splash_title() {
-    local s="$1"
-    s="${s//light/${SPLASH_LIGHT}light$'\e[0m'}"
-    printf '%s' "${s//dark/${SPLASH_DARK}dark$'\e[0m'}"
-}
-
 splash_render() {
     local mode="$1" title="$2" status="$3"
     local accent law reset=$'\e[0m'
@@ -76,7 +69,7 @@ splash_render() {
     done <<< "$(echo -e "$status")"
 
     # right block: title, gap, status filled down the first column first
-    right=("$(splash_title "$title")" '')
+    right=("$title" '')
     half=$(( (${#st[@]} + 1) / 2 ))
     for (( i = 0; i < half; i++ )); do
         line="$(splash_app "$(splash_field "${st[$i]}" 0 $SPLASH_CELL)")"
