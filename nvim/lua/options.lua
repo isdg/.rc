@@ -45,8 +45,9 @@ vim.opt.guicursor = table.concat({
 }, ",")
 
 -- Window/terminal title = current file name. tmux captures this as #{pane_title}
--- so it can name the window "nvim:<file>" instead of the cwd (see .tmux.conf
--- automatic-rename-format). %t = filename tail (empty for a [No Name] buffer).
+-- so it can name the window "nvim:<file>" instead of the cwd (see
+-- tmux/rc.d/00-options.conf automatic-rename-format). %t = filename tail
+-- (empty for a [No Name] buffer).
 vim.opt.title = true
 vim.opt.titlestring = "%t"
 

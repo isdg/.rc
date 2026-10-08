@@ -76,7 +76,7 @@ LAYOUT
     zsh/            .zshrc loader + rc.d/ fragments (NN-name.zsh), isg theme
     vim/            .vimrc, plugins, color schemes, coc extensions
     nvim/           init.lua + lazy.nvim setup
-    tmux/           .tmux.conf
+    tmux/           .tmux.conf loader + rc.d/ fragments (NN-name.conf)
     ghostty/        terminal config
     git/            .gitconfig
     tig/            git TUI config
@@ -97,6 +97,7 @@ MANUAL SETUP (if you'd rather not run bootstrap)
     > ln -fs "$HOME/.rc/zsh/.zshrc"      "$HOME/.zshrc"
     > ln -fs "$HOME/.rc/vim/.vimrc"      "$HOME/.vimrc"
     > ln -fs "$HOME/.rc/tmux/.tmux.conf" "$HOME/.tmux.conf"
+    > ln -fns "$HOME/.rc/tmux/rc.d"      "$HOME/.config/tmux/rc.d"
     > ln -fs "$HOME/.rc/nvim"            "$HOME/.config/nvim"
 
    There is no framework to install and no theme link to make — .zshrc is
@@ -132,7 +133,7 @@ MANUAL SETUP (if you'd rather not run bootstrap)
 NOTES
 -------------------------------------------------------------------------------
 
-  - tmux prefix bindings: see tmux/.tmux.conf (new windows open to the
+  - tmux prefix bindings: see tmux/rc.d/ (new windows open to the
     right of current; & kills window and moves focus left).
   - manuals/splits.txt is the split/pane reference: nvim's <C-w> layer and
     tmux's C-b C-b layer share one set of keys, and it says where they differ.

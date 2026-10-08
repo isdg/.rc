@@ -3,7 +3,8 @@
 -- ============================================================
 -- nvim has no key tables, so a layer is a read-key loop rather than a set of
 -- mappings: each key dispatches itself and says whether the layer stays open,
--- which is what tmux gets from `switch-client -T <table>` (see .tmux.conf).
+-- which is what tmux gets from `switch-client -T <table>` (see
+-- tmux/rc.d/10-layer.conf).
 --
 -- Being a loop rather than a prefix is what buys the two things a prefix map
 -- cannot have: a hint on screen for as long as the layer is up, and no

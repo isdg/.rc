@@ -63,10 +63,10 @@ export GLAMOUR_STYLE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev
 #
 # Scoped on purpose. Only k9s is affected, because only k9s uses tcell — nvim,
 # bat, tig and fzf are all correct in tmux already. In particular do NOT "fix"
-# this by changing default-terminal in tmux/.tmux.conf: that would change TERM for
-# every program to fix one, and tmux wants a tmux-*/screen-* entry inside, which
-# together with `terminal-features ',*:RGB'` is what gives everything else its
-# truecolor.
+# this by changing default-terminal in tmux/rc.d/00-options.conf: that would
+# change TERM for every program to fix one, and tmux wants a tmux-*/screen-*
+# entry inside, which together with `terminal-features ',*:RGB'` is what gives
+# everything else its truecolor.
 k9s() {
   if [[ -n $TMUX ]]; then
     TERM=xterm-256color command k9s "$@"

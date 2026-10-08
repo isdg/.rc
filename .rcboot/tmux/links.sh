@@ -1,9 +1,13 @@
 #!/usr/bin/env bash
-# Links: tmux — .tmux.conf, then TPM and a reload of any running server.
+# Links: tmux — .tmux.conf and its rc.d/, then TPM and a reload of any
+# running server.
 
 _links_tmux() {
     local d="${DOTFILES_DIR:-$HOME/.rc}"
     echo ".tmux.conf|file|$d/tmux/.tmux.conf|$HOME/.tmux.conf"
+    # Literal ~/.config, not $XDG_CONFIG_HOME: .tmux.conf and tpm both expand
+    # only ~ in the source-file path.
+    echo "tmux rc.d|dir|$d/tmux/rc.d|$HOME/.config/tmux/rc.d"
 }
 RC_LINK_SOURCES+=(_links_tmux)
 
@@ -19,9 +23,9 @@ ensure_tpm() {
 setup_tmux() {
     # Apply to any already-running tmux server. Unlike ghostty/k9s, tmux's
     # config reads the theme mode file directly at parse time (see the
-    # run-shell block in tmux/.tmux.conf), so there's no "active" symlink to
-    # seed here — just re-source so an existing session reflects it now
-    # instead of only on the next `tmux new`.
+    # run-shell block in tmux/rc.d/05-theme.conf), so there's no "active"
+    # symlink to seed here — just re-source so an existing session reflects it
+    # now instead of only on the next `tmux new`.
     if command -v tmux >/dev/null 2>&1 && tmux info >/dev/null 2>&1; then
         tmux source-file "$HOME/.tmux.conf" && echo "[OK] Reloaded tmux config for running server"
     fi

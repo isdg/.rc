@@ -19,8 +19,8 @@
 # meta combinations from the physical key, so those already fire under either
 # layout, while punctuation does not sit on matching keys across the two.
 #
-# Run from .tmux.conf AFTER tpm, so the plugins' own keys (omni b/a/j/P/A/J,
-# orchbus o/O, resurrect C-s/C-r) are twinned too. Sweeping what is actually
+# Run from rc.d/15-russian.conf AFTER tpm, so the plugins' own keys (omni
+# b/a/j/P/A/J, orchbus o/O, resurrect C-s/C-r) are twinned too. Sweeping what is actually
 # bound, rather than listing keys here, is the whole point — a hand-written list
 # would go stale the moment a plugin or a bind line changes.
 #

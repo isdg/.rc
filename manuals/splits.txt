@@ -162,8 +162,8 @@ prefix a / prefix A search window text and land the cursor on the matched line
 
 -- Source ----------------------------------------------------------------
 nvim   nvim/lua/keymaps/editor.lua    "Split management" section
-tmux   tmux/.tmux.conf                the `plugins` table, plus the `splits`
-                                      and `moves` sub-tables below it
+tmux   tmux/rc.d/10-layer.conf        the `plugins` table and its `moves`
+                                      sub-table; `splits` is 13-splits.conf
 vim    vim/.vimrc                     plain vim has no <C-w> parity layer, so
                                       resize stays on <leader>+ - < > = there
 
