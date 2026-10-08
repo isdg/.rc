@@ -86,7 +86,8 @@ brew "dive"
 brew "minikube"
 brew "qemu"     # boots VMs; aarch64 guests run natively under HVF
 brew "k9s"      # k8s TUI; this repo carries its skins, plugins.yaml and a
-                # tmux TERM wrapper (zsh/aliases.zsh), so it has to be here
+                # tmux TERM wrapper (zsh/rc.d/15-aliases.zsh), so it has to
+                # be here
 brew "argocd"   # GitOps CD for k8s; Linux gets it from .rcboot/argocd
 brew "grafanactl"  # Grafana resources (dashboards, folders) as code
 brew "logcli"      # Loki log queries (LogQL) from the shell

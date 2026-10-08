@@ -50,8 +50,9 @@ Already well-modularized (done right):
    - .rcboot/<tool>/*.sh         one script per concern, orchestrated by
                                  darwin.sh / linux.sh. Textbook.
    - theme system                per-app files behind one toggle.
-   - *_FUNCS registry convention e.g. BANNER_LOG_FUNCS in zsh/startup.zsh —
-                                 "add a function, append it to the array".
+   - *_FUNCS registry convention e.g. BANNER_LOG_FUNCS in
+                                 zsh/rc.d/21-startup.zsh — "add a function,
+                                 append it to the array".
 
 Done:
 
@@ -68,3 +69,5 @@ Done:
    tmux shells     prefix W big inline        tmux/window-picker.sh, like
                    string in .tmux.conf        fzf-content.sh / pane-capture.sh
    palace          spread zsh/vim/nvim/bin    documented in plc/README.md
+   zsh startup     one 377-line .zshrc +      zsh/rc.d/NN-name.zsh, sourced in
+                   7 sourced modules           prefix order by a 4-line loader

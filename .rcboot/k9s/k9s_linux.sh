@@ -3,9 +3,9 @@
 #
 # This repo configures k9s but never installed it: the skins directory and
 # plugins.yaml are symlinked by k9s/links.sh, toggle_theme.sh flips the active
-# skin, and zsh/aliases.zsh wraps the binary to fix TERM inside tmux -- while
-# k9s itself was in no package list on either platform. All of that config
-# verified [OK] against a command that was not there.
+# skin, and zsh/rc.d/15-aliases.zsh wraps the binary to fix TERM inside tmux
+# -- while k9s itself was in no package list on either platform. All of that
+# config verified [OK] against a command that was not there.
 #
 # No distro ships a current k9s, so this pulls the official release, same idea
 # as argocd_linux.sh. Unlike argocd's bare binary it arrives as a tarball, so

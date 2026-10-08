@@ -1,4 +1,4 @@
-# startup.zsh — shell startup functions, run once at login from .zshrc
+# 21-startup.zsh — shell startup functions, run once at login from .zshrc
 #
 # Most register a dim log line below the banner: banner_render walks
 # BANNER_LOG_FUNCS top-to-bottom and each listed func calls banner_log "text"

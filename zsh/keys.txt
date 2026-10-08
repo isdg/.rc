@@ -2,9 +2,9 @@
 ZSH KEY BINDINGS
 ================
 
-Everything bound on the zsh command line by ~/.rc/zsh: vi mode (vimode.zsh),
-the fzf pickers behind the <Space> leader (fzf.zsh), and the few keys set in
-.zshrc. Authoritative source is zsh itself: `bindkey -M vicmd` / `bindkey -M
+Everything bound on the zsh command line by ~/.rc/zsh: vi mode
+(rc.d/17-vimode.zsh), the fzf pickers behind the <Space> leader
+(rc.d/16-fzf.zsh), and the few keys set in rc.d/19-keys.zsh. Authoritative source is zsh itself: `bindkey -M vicmd` / `bindkey -M
 viins` list every binding, `bindkey -M vicmd ' '` shows one.
 
 

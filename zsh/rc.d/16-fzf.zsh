@@ -111,8 +111,8 @@ hrv() {
 }
 
 # ----------------------------------------------------------------------------
-# ZLE pickers for the vicmd <Space> leader (bound in vimode.zsh). Each inserts
-# its pick at the cursor, shell-quoted.
+# ZLE pickers for the vicmd <Space> leader (bound in 17-vimode.zsh). Each
+# inserts its pick at the cursor, shell-quoted.
 # ----------------------------------------------------------------------------
 
 # vicmd's cursor sits ON a character, so insert after it (like p), spaced off.

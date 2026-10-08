@@ -29,5 +29,5 @@ fzf/opts-active.conf
 delta/theme-active.gitconfig
 
 # Machine-local zsh aliases/functions (work-specific, private repo names, etc.)
-# sourced by aliases.zsh if present. Never published.
+# sourced by 15-aliases.zsh if present. Never published.
 zsh/aliases.ignored.zsh

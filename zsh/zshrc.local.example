@@ -2,10 +2,10 @@
 #
 #     cp "$ISGRC/zsh/zshrc.local.example" ~/.zshrc.local
 #
-# ~/.zshrc sources ~/.zshrc.local after zsh/startup.zsh, so anything set here
-# overrides the defaults that file declares, and before banner_render, so
-# log_ssh and the other banner log functions see the final values. Missing file
-# is fine — the source is guarded.
+# ~/.zshrc sources ~/.zshrc.local after zsh/rc.d/21-startup.zsh, so anything
+# set here overrides the defaults that file declares, and before banner_render,
+# so log_ssh and the other banner log functions see the final values. Missing
+# file is fine — the source is guarded.
 #
 # Why $HOME and not the repo: ~/.zshrc is a symlink into the ~/.rc working tree,
 # so a value kept on a setup/<machine> branch follows HEAD and empties itself
@@ -15,8 +15,8 @@
 # loaded no key at all. $HOME is not a checkout, so this file survives.
 #
 # Sibling convention: zsh/aliases.ignored.zsh is the same idea for aliases and
-# functions — gitignored, in-repo, sourced by aliases.zsh when present. Use that
-# one for shell sugar; use this one for what the box *is*.
+# functions — gitignored, in-repo, sourced by 15-aliases.zsh when present. Use
+# that one for shell sugar; use this one for what the box *is*.
 #
 # Machine-local means true of this box, not of the config: keys it holds, tools
 # only it has, escape hatches only it needs. Preferences belong in the tracked

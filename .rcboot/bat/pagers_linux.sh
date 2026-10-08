@@ -4,9 +4,10 @@
 # The dotfiles hard-wire two pager helpers that Debian either renames or does
 # not package at all, and both failed silently:
 #
-#   bat   — zsh/fzf.zsh and zsh/palace.zsh use it for previews, isg.zsh-theme
-#           exports $BAT_THEME, and bat/links.sh links ~/.config/bat and runs
-#           `bat cache --build` to register the repo's vs_dark/vs_light themes.
+#   bat   — zsh/rc.d/16-fzf.zsh and zsh/palace.zsh use it for previews,
+#           isg.zsh-theme exports $BAT_THEME, and bat/links.sh links
+#           ~/.config/bat and runs `bat cache --build` to register the
+#           repo's vs_dark/vs_light themes.
 #           Debian installs the binary as `batcat` (the name `bat` is taken by
 #           bacula-console-qt), so every `command -v bat` guard is false: the
 #           previews quietly fall back to awk, $BAT_THEME goes unread and the
@@ -140,8 +141,9 @@ _install_bat_linux() {
     fi
 
     # `bat` is bacula-console-qt on Debian, so the package installs /usr/bin/
-    # batcat. Without this shim every `command -v bat` guard in zsh/fzf.zsh and
-    # zsh/palace.zsh is false and the previews drop to their awk fallback.
+    # batcat. Without this shim every `command -v bat` guard in
+    # zsh/rc.d/16-fzf.zsh and zsh/palace.zsh is false and the previews drop to
+    # their awk fallback.
     if ! _have bat && _have batcat; then
         mkdir -p "$HOME/.local/bin"
         ln -sf "$(command -v batcat)" "$HOME/.local/bin/bat"

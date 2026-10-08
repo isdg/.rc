@@ -39,7 +39,7 @@ endif
 " fzf#vim#buffer_lines() builds its own --options list and never routes through
 " fzf#vim#with_preview(), so g:fzf_vim.preview_window above never reaches it.
 " This calls the same function with a bat preview bolted on, matching the
-" `bat --style=numbers --highlight-line` previews in zsh/fzf.zsh.
+" `bat --style=numbers --highlight-line` previews in zsh/rc.d/16-fzf.zsh.
 "
 " A function rather than a `command! BLines` override, so it can't lose a race
 " with fzf.vim defining its own commands at plugin-load time.

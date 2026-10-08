@@ -2,7 +2,8 @@
 # Component: hr — text reading manager binary (shared)
 #
 # Clones the hr repo if needed and installs the binary via go install into
-# ~/go/bin. The zsh reading-list wrapper (zsh/fzf.zsh: hrb) calls this binary.
+# ~/go/bin. The zsh reading-list wrapper (zsh/rc.d/16-fzf.zsh: hrb) calls this
+# binary.
 
 HR_REPO="https://github.com/isdg/hr.git"
 HR_SRC="$HOME/hr"

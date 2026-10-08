@@ -73,7 +73,7 @@ LAYOUT
 -------------------------------------------------------------------------------
 
     .rcboot/        install scripts (darwin.sh, linux.sh + one folder per tool)
-    zsh/            .zshrc, aliases, fzf integration, isg theme
+    zsh/            .zshrc loader + rc.d/ fragments (NN-name.zsh), isg theme
     vim/            .vimrc, plugins, color schemes, coc extensions
     nvim/           init.lua + lazy.nvim setup
     tmux/           .tmux.conf

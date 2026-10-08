@@ -1,3 +1,4 @@
+# After 13-git and 14-dirs, so the aliases here win over theirs.
 alias n='nvim'
 alias n.='nvim .'
 np() { local f; f=$(fzf) && nvim "$f"; }

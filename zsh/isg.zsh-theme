@@ -259,7 +259,7 @@ add-zsh-hook precmd __isg::precmd
 #   banner_info "text"        add a status line, shown right of the mascot
 #                             (prompt escapes allowed: %B %F{..} %~ %D{..} ...)
 #   BANNER_LOG_FUNCS=( ... )  registry of log funcs, run in order by render —
-#                             each func holds one log message (startup.zsh)
+#                             each func holds one log message (21-startup.zsh)
 #   banner_log  "text"        add a dim log line, shown below the banner
 #   banner_run  cmd ...       run a noisy command, demoting its output to logs
 #   banner_render             consume the registry and draw — call once, last
