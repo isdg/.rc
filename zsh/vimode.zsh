@@ -15,6 +15,9 @@ export KEYTIMEOUT=10
 bindkey -M viins '^?' backward-delete-char
 bindkey -M viins '^H' backward-delete-char
 
+# jJ leaves insert mode, as in vim; J must follow j within KEYTIMEOUT.
+bindkey -M viins 'jJ' vi-cmd-mode
+
 # In normal mode: v or n opens $EDITOR on the current command line
 autoload -Uz edit-command-line
 zle -N edit-command-line

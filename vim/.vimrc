@@ -591,6 +591,9 @@ nnoremap <C-j> <C-w>j
 nnoremap <C-k> <C-w>k
 nnoremap <C-l> <C-w>l
 
+" jJ leaves insert mode, as in nvim, zsh and Claude Code.
+inoremap jJ <Esc>
+
 " Resize splits
 nnoremap <leader>+ :resize +5<CR>     " Increase height
 nnoremap <leader>- :resize -5<CR>     " Decrease height

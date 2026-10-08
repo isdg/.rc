@@ -63,6 +63,7 @@
   },
   "theme": "auto",
   "editorMode": "vim",
+  "vimInsertModeRemaps": { "jJ": "<Esc>" },
   "verbose": true,
   "skipAutoPermissionPrompt": true,
   "voiceEnabled": true
