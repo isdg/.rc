@@ -11,7 +11,7 @@
 #   splash_render mode [title status]
 #     mode: dark|light; title: first line on the right; status:
 #     \n-separated lines, laid out in two columns below it. The
-#     mascot is followed by the date, with the law beside it. Without
+#     mascot is followed by its law, then the date. Without
 #     a title, the mascot stands alone.
 
 SPLASH_WIDTH=23
@@ -80,13 +80,13 @@ splash_render() {
         right+=("$line")
     done
 
-    # an empty row above the date; the right block ends on the row before it,
-    # the art centred beside it
+    # an empty row above the law; the art and the right block both end on the
+    # row before it
     rows=${#right[@]}
     (( ${#art[@]} > rows )) && rows=${#art[@]}
     rows+=1
     right_top=$(( rows - ${#right[@]} - 1 ))
-    art_top=$(( (rows - 1 - ${#art[@]}) / 2 ))
+    art_top=$(( rows - 1 - ${#art[@]} ))
     for m in "${art[@]}"; do (( ${#m} > art_w )) && art_w=${#m}; done
     pad=$(( (SPLASH_WIDTH - art_w) / 2 ))
 
@@ -100,8 +100,9 @@ splash_render() {
         printf '  %s%s%s   %s\n' "$accent" \
             "$(splash_field "$m" $pad $SPLASH_WIDTH)" "$reset" "$line"
     done
-    printf '  %s%s%s   %s\n' "$accent" \
+    printf '  %s%s\n' "$accent" "$(splash_field "$law" -1 $SPLASH_WIDTH)"
+    printf '  %s%s\n' \
         "$(splash_field "$(date '+%a %d %b %Y · %H:%M')" -1 $SPLASH_WIDTH)" \
-        "$reset" "$law"
+        "$reset"
     echo
 }
