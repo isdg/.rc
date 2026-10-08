@@ -31,7 +31,7 @@ _dotfile_links() {
     echo ".zshenv|file|$d/zsh/.zshenv|$HOME/.zshenv"
     echo ".vimrc|file|$d/vim/.vimrc|$HOME/.vimrc"
     echo ".tmux.conf|file|$d/tmux/.tmux.conf|$HOME/.tmux.conf"
-    echo ".gitconfig|file|$d/.gitconfig|$HOME/.gitconfig"
+    echo ".gitconfig|file|$d/git/.gitconfig|$HOME/.gitconfig"
     echo "nvim config|dir|$d/nvim|$HOME/.config/nvim"
     echo "ghostty config|dir|$d/ghostty|$HOME/.config/ghostty"
 

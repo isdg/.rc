@@ -24,7 +24,7 @@ GIT_LOCAL_CONFIG="$HOME/.gitconfig.local"
 # The signing key named by the tracked .gitconfig, so this stays in step with it.
 _git_signing_key() {
     local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
-    git config --file "$dotfiles_dir/.gitconfig" user.signingkey 2>/dev/null
+    git config --file "$dotfiles_dir/git/.gitconfig" user.signingkey 2>/dev/null
 }
 
 # Is that key actually usable for signing on this machine?
