@@ -8,8 +8,8 @@ alias v.='vim .'
 alias c='claude'
 alias tm='tmux'
 alias os='orchbus'   # cockpit for triaging Claude Code sessions
-alias tt='bash "${ISGRC:-$HOME/.rc}/toggle_theme.sh"'   # toggle light/dark
-alias ww='bash "${ISGRC:-$HOME/.rc}/width.sh"'          # cycle ghostty padding-x
+alias tt='bash "${ISGRC:-$HOME/.rc}/sh/toggle_theme.sh"'  # toggle light/dark
+alias ww='bash "${ISGRC:-$HOME/.rc}/sh/width.sh"'  # cycle ghostty padding-x
 
 # gjobs — cross-terminal "jobs". The `jobs` builtin only sees the current
 # shell's job table, so this shows every terminal-attached process grouped by

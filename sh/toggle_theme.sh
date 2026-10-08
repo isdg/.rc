@@ -38,8 +38,8 @@ fi
 # --- k9s: swap the skin-active.yaml symlink (config.yaml points ui.skin at it) ---
 # Same idiom as Ghostty: one symlink swap, no tracked file rewritten. k9s picks
 # it up on next launch (or live if k9s.ui.reactive is true).
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-K9S_SKINS="$SCRIPT_DIR/k9s/skins"
+RC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+K9S_SKINS="$RC_DIR/k9s/skins"
 if [ -d "$K9S_SKINS" ]; then
     ln -sf "vs_$MODE.yaml" "$K9S_SKINS/skin-active.yaml"
     STATUS+="k9s: $MODE (on new session)\n"
@@ -48,7 +48,7 @@ fi
 # --- tig: swap the theme-active.tigrc symlink (.tigrc sources it with -q) ---
 # Same idiom again. Only the cursor line differs per mode — ANSI blue is pale
 # under the dark palette, so white-on-blue is unreadable there.
-TIG_DIR="$SCRIPT_DIR/tig"
+TIG_DIR="$RC_DIR/tig"
 if [ -d "$TIG_DIR" ]; then
     ln -sf "theme-$MODE.tigrc" "$TIG_DIR/theme-active.tigrc"
     STATUS+="tig: $MODE (on new tig)\n"
@@ -58,14 +58,14 @@ fi
 # it; see zsh/.zshenv). Same idiom once more, and the reason every fzf on the
 # machine — our pickers, fzf-tab, nvim's fzf.vim, the ~/omni tmux popups —
 # follows the toggle without being told about it individually. ---
-FZF_DIR="$SCRIPT_DIR/fzf"
+FZF_DIR="$RC_DIR/fzf"
 if [ -d "$FZF_DIR" ]; then
     ln -sf "opts-$MODE.conf" "$FZF_DIR/opts-active.conf"
     STATUS+="fzf: $MODE (on new fzf)\n"
 fi
 
 # --- delta: swap the theme-active.gitconfig symlink (.gitconfig includes it) ---
-DELTA_DIR="$SCRIPT_DIR/delta"
+DELTA_DIR="$RC_DIR/delta"
 if [ -d "$DELTA_DIR" ]; then
     ln -sf "theme-$MODE.gitconfig" "$DELTA_DIR/theme-active.gitconfig"
     STATUS+="delta: $MODE (on next diff)\n"

@@ -67,6 +67,7 @@ LAYOUT
     darwin/         macOS system defaults + Brewfile
     prompt/         shell prompt definitions
     plc/            palace notes system (README.md)
+    sh/             standalone scripts (theme toggle, ghostty width)
     manuals/        command and tool reference sheets (*.txt)
     misc/           task log, worktree manifest, inventories
 
@@ -120,6 +121,6 @@ NOTES
     tmux's C-b C-b layer share one set of keys, and it says where they differ.
   - zsh/keys.txt is the command-line key reference: vi mode and the
     nvim-style <Space> leader.
-  - toggle_theme.sh switches macOS light/dark mode and adjacent terminal
+  - sh/toggle_theme.sh switches macOS light/dark mode and adjacent terminal
     themes in one shot.
   - misc/manifest.txt lists the git worktrees used alongside main.
