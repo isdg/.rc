@@ -6,6 +6,7 @@
   "permissions": {
     "defaultMode": "auto"
   },
+  "model": "opus",
   "hooks": {
     "PreToolUse": [
       {
@@ -61,8 +62,19 @@
   "editorMode": "vim",
   "verbose": true,
   "skipAutoPermissionPrompt": true,
-  "voiceEnabled": true,
   "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(gh pr create:*) in Delos-Intelligence/cosmos-saas",
+      "Bash(gh pr view:*)",
+      "Bash(supabase migration new:*) in apps/web/"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Bash(supabase db push:*)",
+      "Bash(supabase migration up:*)",
+      "Bash(kubectl delete:* -n *prod*)"
+    ],
     "environment": [
       "### Org-wide",
       "**Organization**: Delos Intelligence (github.com/Delos-Intelligence org; repo `Delos-Intelligence/cosmos-saas`)",
@@ -89,18 +101,7 @@
       "**Trusted repo**: `/Users/isg/cosmos-main` (Delos-Intelligence/cosmos-saas, internal visibility) and its `origin` remote; sibling worktrees `~/cosmos-poema`, `~/cosmos-skazka`, `~/cosmos-sonet`, `~/cosmos-oda` share the same remote and may be treated as the same trusted repo for routine work",
       "**Org-specific CLIs**: `gh` (PR/issue management per CLAUDE.md workflow), `uv` (Python dependency management), `supabase` CLI (migrations — authoring only, never apply/push per CLAUDE.md), `kubectl`/`k9s`/`argocd` (cluster operations, frequent in shell history)",
       "**routine under /Users/isg/cosmos-main/ prefix**: routine dev commands (pnpm/uv/git/gh) scoped to this repo's worktrees are expected and frequent"
-    ],
-    "allow": [
-      "$defaults",
-      "Bash(gh pr create:*) in Delos-Intelligence/cosmos-saas",
-      "Bash(gh pr view:*)",
-      "Bash(supabase migration new:*) in apps/web/"
-    ],
-    "soft_deny": [
-      "$defaults",
-      "Bash(supabase db push:*)",
-      "Bash(supabase migration up:*)",
-      "Bash(kubectl delete:* -n *prod*)"
     ]
-  }
+  },
+  "voiceEnabled": true
 }
