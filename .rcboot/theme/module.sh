@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Links: theme — no links of its own; checks the generated per-tool files.
+# Module: theme — no links of its own; checks the generated per-tool files.
 
 # Every per-tool theme file is generated from theme/palette.sh and committed, so
 # a stale one means somebody edited the output instead of the palette — and the
@@ -21,4 +21,4 @@ _check_theme_generated() {
     echo "       Fix: bash $gen   (then commit the result)"
     return 1
 }
-RC_LINK_HOOKS+=("_check_theme_generated|_check_theme_generated")
+hook _check_theme_generated _check_theme_generated

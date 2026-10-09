@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Links: fzf's active options file, inside the repo.
+# Module: fzf — its active options file, inside the repo, and the shell
+# integration.
 
 # Seeded unconditionally (-e is false for a dangling link, and a dangling
 # $FZF_DEFAULT_OPTS_FILE is worse than none: fzf exits 2 on a missing file
@@ -11,4 +12,7 @@ seed_fzf_opts() {
     ln -sf "opts-$mode.conf" "$dotfiles_dir/fzf/opts-active.conf"
     echo "[OK] Seeded fzf/opts-active.conf -> opts-$mode.conf"
 }
-RC_LINK_HOOKS+=("seed_fzf_opts|")
+hook seed_fzf_opts
+
+source "$RC_BOOT/fzf/fzf.sh"
+step "install_fzf_$RC_OS" "ensure_fzf_$RC_OS"

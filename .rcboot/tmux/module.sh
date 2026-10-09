@@ -1,15 +1,11 @@
 #!/usr/bin/env bash
-# Links: tmux — .tmux.conf and its rc.d/, then TPM and a reload of any
+# Module: tmux — .tmux.conf and its rc.d/, then TPM and a reload of any
 # running server.
 
-_links_tmux() {
-    local d="${DOTFILES_DIR:-$HOME/.rc}"
-    echo ".tmux.conf|file|$d/tmux/.tmux.conf|$HOME/.tmux.conf"
-    # Literal ~/.config, not $XDG_CONFIG_HOME: .tmux.conf and tpm both expand
-    # only ~ in the source-file path.
-    echo "tmux rc.d|dir|$d/tmux/rc.d|$HOME/.config/tmux/rc.d"
-}
-RC_LINK_SOURCES+=(_links_tmux)
+link tmux/.tmux.conf "$HOME/.tmux.conf"
+# Literal ~/.config, not $XDG_CONFIG_HOME: .tmux.conf and tpm both expand
+# only ~ in the source-file path.
+link tmux/rc.d "$HOME/.config/tmux/rc.d"
 
 ensure_tpm() {
     if [ -d "$HOME/.tmux/plugins/tpm" ]; then
@@ -39,4 +35,4 @@ setup_tmux() {
         echo "[SKIP] TPM already installed"
     fi
 }
-RC_LINK_HOOKS+=("setup_tmux|ensure_tpm")
+hook setup_tmux ensure_tpm

@@ -161,34 +161,80 @@ _relink() {
     fi
 }
 
-# ── Link registry ─────────────────────────────────────────────────────────────
-# Each <tool>/links.sh registers what it puts in place, so link_dotfiles and
-# ensure_dotfiles read one list and cannot drift apart. A tool adds to:
-#
-#   RC_LINK_SOURCES  a function printing one `label|kind|src|dst` row per
-#                    plain a->b link. A function rather than an array because
-#                    rows need runtime resolution ($HOME, Darwin vs XDG) and
-#                    guards that drop a row whose source this checkout lacks.
-#   RC_LINK_HOOKS    "install_func|ensure_func" for what a row cannot express
-#                    (seeding the *-active files, permissions, caches). Either
-#                    half may be empty. Hooks run after every row is linked.
-RC_LINK_SOURCES=()
-RC_LINK_HOOKS=()
+# ── Modules ───────────────────────────────────────────────────────────────────
+# A module is .rcboot/<name>/module.sh, run top to bottom by run_modules. Its
+# link, step and hook calls install when $RC_MODE is install, and only verify,
+# counting failures in $RC_FAILURES, when it is ensure.
+RC_BOOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+RC_MODE=install
+RC_FAILURES=0
+if [ "$(uname)" = Darwin ]; then RC_OS=darwin; else RC_OS=linux; fi
 
-# Labels whose link changed during this link_dotfiles run, one per line, so a
-# hook can redo expensive work (bat's cache) only when its link moved.
+# Repo paths whose link changed in this run, one per line, so a hook can redo
+# expensive work (bat's cache) only when its link moved.
 RC_LINKS_CHANGED=""
-
-_dotfile_links() {
-    local fn
-    for fn in "${RC_LINK_SOURCES[@]}"; do
-        "$fn"
-    done
-    return 0
-}
 
 _link_changed() {
     printf '%s\n' "$RC_LINKS_CHANGED" | grep -qxF "$1"
+}
+
+# link <repo path> <destination>. A [FAIL] does not stop the run; --ensure is
+# the net that catches it afterwards.
+link() {
+    local src="$DOTFILES_DIR/$1" dst="$2" kind=file
+    [ -d "$src" ] && kind=dir
+    if [ "$RC_MODE" = ensure ]; then
+        _check_link "$1" "$dst" "$src" || RC_FAILURES=$((RC_FAILURES + 1))
+        return 0
+    fi
+    if [ "$(_link_state "$src" "$dst")" != ok ]; then
+        RC_LINKS_CHANGED+="$1"$'\n'
+    fi
+    _relink "$1" "$kind" "$src" "$dst" || true
+}
+
+# step <install function> [ensure function]: a failed install stops the run
+# (set -e), since later modules build on earlier ones. Either name may be -.
+step() {
+    if [ "$RC_MODE" = ensure ]; then
+        [ -n "${2:-}" ] && [ "$2" != - ] || return 0
+        "$2" || RC_FAILURES=$((RC_FAILURES + 1))
+    elif [ "$1" != - ]; then
+        "$1"
+    fi
+}
+
+# hook: like step, for upkeep around links (seeding, permissions, caches),
+# whose failure is reported but does not stop the run.
+hook() {
+    if [ "$RC_MODE" = ensure ]; then
+        step - "${2:-}"
+    elif [ "$1" != - ]; then
+        "$1" || true
+    fi
+}
+
+# Module names up to level $1 from the registry, in file order.
+_registry() {
+    local level name
+    while read -r level name; do
+        case "$level" in ''|'#'*) continue ;; esac
+        if [ "$level" -le "$1" ]; then
+            echo "$name"
+        fi
+    done < "$RC_BOOT/modules"
+}
+
+# The list is on fd 3: on stdin, the first module that reads it (vim
+# +PlugInstall) swallows the rest. Not < /dev/null either, so modules keep the
+# real stdin for sudo, chsh and passphrase prompts.
+run_modules() {
+    local name
+    while read -r name <&3; do
+        echo "[MODULE] $name"
+        source "$RC_BOOT/$name/module.sh"
+        echo ""
+    done 3< <(_registry "$1")
 }
 
 # The light/dark mode every *-active file is seeded from, created as `light`
@@ -201,43 +247,4 @@ _theme_mode() {
         echo "[OK] Seeded theme mode file ($theme_file = light)" >&2
     fi
     cat "$theme_file"
-}
-
-ensure_dotfiles() {
-    echo "[STEP] Verifying dotfiles..."
-    local failed=0 label _kind src dst hook
-
-    # Process substitution, not a pipe, so $failed survives the loop.
-    while IFS='|' read -r label _kind src dst; do
-        _check_link "$label" "$dst" "$src" || failed=1
-    done < <(_dotfile_links)
-
-    for hook in "${RC_LINK_HOOKS[@]}"; do
-        hook="${hook#*|}"
-        [ -n "$hook" ] || continue
-        "$hook" || failed=1
-    done
-
-    return $failed
-}
-
-# A [FAIL] from one row or hook does not stop the others; --ensure is the net
-# that catches it afterwards.
-link_dotfiles() {
-    echo "[STEP] Linking dotfiles..."
-    local label kind src dst hook
-
-    RC_LINKS_CHANGED=""
-    while IFS='|' read -r label kind src dst; do
-        if [ "$(_link_state "$src" "$dst")" != ok ]; then
-            RC_LINKS_CHANGED+="$label"$'\n'
-        fi
-        _relink "$label" "$kind" "$src" "$dst" || true
-    done < <(_dotfile_links)
-
-    for hook in "${RC_LINK_HOOKS[@]}"; do
-        hook="${hook%%|*}"
-        [ -n "$hook" ] || continue
-        "$hook" || true
-    done
 }

@@ -1,0 +1,31 @@
+# level name — .rcboot/<name>/module.sh, run in this order up to the chosen
+# level. 2 is --minimal: the terminal experience. keyremap is in it because
+# it changes what every keystroke does. 3 adds GUI apps and side tools.
+2 homebrew
+2 packages
+2 nvim
+2 zsh
+2 tmux
+2 gpg
+2 git
+2 delta
+2 bat
+2 fzf
+2 ghostty
+2 ssh
+2 claude
+2 hammerspoon
+2 k9s
+2 theme
+2 tig
+2 fonts
+2 vim
+2 keyremap
+3 apps
+3 plc
+3 tpm
+3 hr
+3 ewl
+3 lean
+3 argocd
+3 macos

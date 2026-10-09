@@ -1,11 +1,7 @@
 #!/usr/bin/env bash
-# Links: ghostty — the config dir, plus the two includes it needs seeded.
+# Module: ghostty — the config dir, plus the two includes it needs seeded.
 
-_links_ghostty() {
-    local d="${DOTFILES_DIR:-$HOME/.rc}"
-    echo "ghostty config|dir|$d/ghostty|$HOME/.config/ghostty"
-}
-RC_LINK_SOURCES+=(_links_ghostty)
+link ghostty "$HOME/.config/ghostty"
 
 seed_ghostty() {
     local dotfiles_dir="${DOTFILES_DIR:-$HOME/.rc}"
@@ -32,4 +28,4 @@ seed_ghostty() {
         echo "[OK] Seeded ghostty/width-active.conf (window-padding-x = 400)"
     fi
 }
-RC_LINK_HOOKS+=("seed_ghostty|")
+hook seed_ghostty

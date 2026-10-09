@@ -49,9 +49,9 @@ The bootstrap is modular (see .rcboot/) and handles:
 Homebrew, packages, dotfile symlinks, vim-plug + plugins, fzf, fonts,
 tig, key remapping, and Darwin defaults.
 
-Profiles (Darwin). darwin.sh reads two component registries at the top of
-the file — CORE and EXTRA — and --minimal runs only CORE with the smaller
-darwin/Brewfile.minimal:
+Each .rcboot/<name>/module.sh links and installs one tool; .rcboot/modules
+lists them by level, in run order. --minimal (Darwin) stops at level 2 and
+uses the smaller darwin/Brewfile.minimal:
 
     > ./.rcboot/darwin.sh --minimal    # tmux + nvim + zsh core, ~0.8 GB
     > ./.rcboot/darwin.sh              # everything, ~14-15 GB
@@ -72,7 +72,8 @@ Restart your terminal (or `exec zsh`) when it finishes.
 LAYOUT
 -------------------------------------------------------------------------------
 
-    .rcboot/        install scripts (darwin.sh, linux.sh + one folder per tool)
+    .rcboot/        install scripts (darwin.sh, linux.sh, modules registry
+                    + one folder with a module.sh per tool)
     zsh/            .zshrc loader + rc.d/ fragments (NN-name.zsh), isg theme
     vim/            .vimrc loader + rc.d/ fragments, color schemes, coc
     nvim/           init.lua + lazy.nvim setup

@@ -47,8 +47,8 @@ Real tools hiding in here, not just config:
 B. MODULARIZATION
 ------------------------------------------------------------
 Already well-modularized (done right):
-   - .rcboot/<tool>/*.sh         one script per concern, orchestrated by
-                                 darwin.sh / linux.sh. Textbook.
+   - .rcboot/<tool>/module.sh    one module per tool, run in the order
+                                 and up to the level .rcboot/modules gives.
    - theme system                per-app files behind one toggle.
    - *_FUNCS registry convention e.g. BANNER_LOG_FUNCS in
                                  zsh/rc.d/21-startup.zsh — "add a function,

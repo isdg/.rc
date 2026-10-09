@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Links: delta's git config into ~/.config/git, and its active theme inside
+# Module: delta's git config into ~/.config/git, and its active theme inside
 # the repo. .gitconfig includes the first, which includes the second.
 
 seed_delta_theme() {
@@ -10,11 +10,5 @@ seed_delta_theme() {
     echo "[OK] Seeded delta/theme-active.gitconfig -> theme-$mode.gitconfig"
 }
 
-_links_delta() {
-    local d="${DOTFILES_DIR:-$HOME/.rc}"
-    local dst="$HOME/.config/git/delta.gitconfig"
-    echo "delta.gitconfig|file|$d/delta/delta.gitconfig|$dst"
-}
-RC_LINK_SOURCES+=(_links_delta)
-
-RC_LINK_HOOKS+=("seed_delta_theme|")
+link delta/delta.gitconfig "$HOME/.config/git/delta.gitconfig"
+hook seed_delta_theme

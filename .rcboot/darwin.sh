@@ -15,61 +15,7 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
 export DOTFILES_DIR
 
-# Load components
 source "$SCRIPT_DIR/lib.sh"
-source "$SCRIPT_DIR/darwin/homebrew.sh"
-source "$SCRIPT_DIR/darwin/packages.sh"
-source "$SCRIPT_DIR/darwin/gui_apps.sh"
-for links in "$SCRIPT_DIR"/*/links.sh; do
-    source "$links"
-done
-source "$SCRIPT_DIR/git/signing.sh"
-source "$SCRIPT_DIR/fonts/fonts.sh"
-source "$SCRIPT_DIR/tig/tig.sh"
-source "$SCRIPT_DIR/vim/vim.sh"
-source "$SCRIPT_DIR/plc/plc.sh"
-source "$SCRIPT_DIR/tmux/plugins.sh"
-source "$SCRIPT_DIR/hr/hr.sh"
-source "$SCRIPT_DIR/ewl/ewl.sh"
-source "$SCRIPT_DIR/lean/lean.sh"
-source "$SCRIPT_DIR/fzf/fzf.sh"
-source "$SCRIPT_DIR/zsh/shell.sh"
-source "$SCRIPT_DIR/darwin/keyremap.sh"
-source "$SCRIPT_DIR/darwin/defaults.sh"
-
-# ── Component registry ─────────────────────────────────────────────────────────
-# One "install_func|ensure_func" per component, in run order. Add a line to ship
-# another component; both modes pick it up.
-#
-# CORE  — the terminal experience: brew, the package set for the active profile,
-#         shell, dotfile symlinks, fonts, vim/tmux/fzf/tig wiring. Always runs.
-#         The keyboard remap lives here rather than with other Darwin tweaks:
-#         it changes what every keystroke does, so a --minimal box without it is
-#         not usable in the way the rest of this config assumes.
-# EXTRA — GUI apps, the Rust-built side tools (plc, hr, omni, orchbus), the
-#         Lean toolchain and Darwin system defaults. Skipped by --minimal.
-BOOTSTRAP_CORE_FUNCS=(
-    "install_homebrew|ensure_homebrew"
-    "install_packages_darwin|ensure_packages_darwin"
-    "create_vim_dirs|ensure_vim_dirs"
-    "link_dotfiles|ensure_dotfiles"
-    "configure_git_signing|ensure_git_signing"
-    "install_fonts_darwin|ensure_fonts_darwin"
-    "link_tig|ensure_tig"
-    "install_vim_plugins|ensure_vim_plugins"
-    "install_fzf_darwin|ensure_fzf_darwin"
-    "set_default_shell_darwin|ensure_default_shell_darwin"
-    "install_keyremap_darwin|ensure_keyremap_darwin"
-)
-BOOTSTRAP_EXTRA_FUNCS=(
-    "install_gui_apps_darwin|ensure_gui_apps_darwin"
-    "install_plc|ensure_plc"
-    "install_tmux_plugins|ensure_tmux_plugins"
-    "install_hr|ensure_hr"
-    "install_ewl|ensure_ewl"
-    "install_lean|ensure_lean"
-    "apply_darwin_defaults|ensure_darwin_defaults"
-)
 
 # ── Arguments ──────────────────────────────────────────────────────────────────
 MODE=install
@@ -89,14 +35,8 @@ for arg in "$@"; do
     esac
 done
 export BOOTSTRAP_MINIMAL
-
-# Components for the selected profile, as "install|ensure" pairs on stdout.
-_profile_components() {
-    printf '%s\n' "${BOOTSTRAP_CORE_FUNCS[@]}"
-    if [ "$BOOTSTRAP_MINIMAL" != "1" ]; then
-        printf '%s\n' "${BOOTSTRAP_EXTRA_FUNCS[@]}"
-    fi
-}
+RC_MODE=$MODE
+if [ "$BOOTSTRAP_MINIMAL" = "1" ]; then LEVEL=2; else LEVEL=3; fi
 
 _profile_name() {
     if [ "$BOOTSTRAP_MINIMAL" = "1" ]; then echo "minimal (core only)"; else echo "full"; fi
@@ -110,14 +50,9 @@ if [ "$MODE" = ensure ]; then
     echo "=========================================="
     echo ""
 
-    FAILURES=0
     set +e  # collect all failures instead of stopping at first
-
-    while IFS='|' read -r _install _ensure <&3; do
-        [ -z "$_ensure" ] && continue
-        "$_ensure" || FAILURES=$((FAILURES + 1))
-        echo ""
-    done 3< <(_profile_components)
+    run_modules "$LEVEL"
+    FAILURES=$RC_FAILURES
 
     echo "=========================================="
     if [ "$FAILURES" -eq 0 ]; then
@@ -136,22 +71,7 @@ echo "  Profile: $(_profile_name)"
 echo "=========================================="
 echo ""
 
-# The component list is read on fd 3, not stdin. On stdin, the first component
-# that reads from it consumes the rest of the list and the loop quietly ends --
-# which is exactly what `vim +PlugInstall +qall` inside install_vim_plugins was
-# doing. Everything after component 8 (fzf, the shell, the keyboard remap, and
-# every EXTRA component: the GUI apps, plc, omni, orchbus, hr, ewl and Darwin
-# defaults) was skipped, and the script still printed "Installation Complete!"
-# because the loop had ended normally rather than failed.
-#
-# fd 3 rather than `"$_install" < /dev/null`, so components keep the real stdin
-# and an interactive prompt -- sudo for /etc/shells, chsh, an SSH passphrase --
-# can still be answered.
-while IFS='|' read -r _install _ensure <&3; do
-    [ -z "$_install" ] && continue
-    "$_install"
-    echo ""
-done 3< <(_profile_components)
+run_modules "$LEVEL"
 
 echo "=========================================="
 echo "  Installation Complete!"

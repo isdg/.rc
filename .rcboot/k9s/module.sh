@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Links: k9s — skins/ and plugins.yaml, the active skin, and ui.skin.
+# Module: k9s — skins/ and plugins.yaml, the active skin, and ui.skin.
 
 # k9s keeps its config under Application Support on Darwin and XDG elsewhere.
 _k9s_dir() {
@@ -13,16 +13,8 @@ _k9s_dir() {
 # k9s never writes into skins/, so symlinking just that subdir keeps its
 # runtime state (logs, clusters/) out of the repo. plugins.yaml is the
 # log-helper pair (snapshot→nvim, stream→tmux); k9s only reads it.
-_links_k9s() {
-    local d="${DOTFILES_DIR:-$HOME/.rc}" k9s
-    [ -d "$d/k9s/skins" ] || return 0
-    k9s="$(_k9s_dir)"
-    echo "k9s skins|dir|$d/k9s/skins|$k9s/skins"
-    if [ -f "$d/k9s/plugins.yaml" ]; then
-        echo "k9s plugins.yaml|file|$d/k9s/plugins.yaml|$k9s/plugins.yaml"
-    fi
-}
-RC_LINK_SOURCES+=(_links_k9s)
+link k9s/skins "$(_k9s_dir)/skins"
+link k9s/plugins.yaml "$(_k9s_dir)/plugins.yaml"
 
 # The skin only loads if config.yaml names it, and k9s regenerates that file
 # from its defaults whenever it cannot parse one — dropping ui.skin with it.
@@ -107,4 +99,10 @@ seed_k9s_skin() {
     fi
     _ensure_k9s_skin "$dotfiles_dir"
 }
-RC_LINK_HOOKS+=("seed_k9s_skin|_check_k9s_skin")
+hook seed_k9s_skin _check_k9s_skin
+
+# Linux: the official release binary; Darwin takes it from the Brewfile.
+if [ "$RC_OS" = linux ]; then
+    source "$RC_BOOT/k9s/k9s_linux.sh"
+    step install_k9s_linux ensure_k9s_linux
+fi
