@@ -44,5 +44,5 @@ nnoremap <leader>gf :BCommits<CR>
 nnoremap <leader>gl :.BCommits<CR>
 xnoremap <leader>gl :BCommits<CR>
 " Changed files (git status), the two-column prefix tells staged vs working
-" tree. Distinct from plain `gd` in 03-coc.vim, which is coc's go-to-definition.
+" tree. Distinct from plain `gd` in 11-coc.vim, which is coc's go-to-definition.
 nnoremap <leader>gd :GFiles?<CR>

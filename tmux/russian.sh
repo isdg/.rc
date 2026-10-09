@@ -1,7 +1,7 @@
 #!/bin/sh
 # Russian-layout twins for tmux bindings — the tmux half of what the editors
 # already do: nvim/lua/keymaps/leader.lua duplicates every <leader> mapping onto
-# its Cyrillic key, nvim/lua/russian.lua and vim/rc.d/15-ru-leader.vim do the
+# its Cyrillic key, nvim/lua/russian.lua and vim/rc.d/08-ru-leader.vim do the
 # same for normal mode. Without this, switching the layout to Russian silently
 # disarms tmux: prefix-s stops opening the session tree, hjkl stops moving in
 # copy mode.

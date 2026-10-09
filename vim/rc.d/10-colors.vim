@@ -2,6 +2,12 @@
 "             VSCODE STUDIO LIGHT-LIKE COLOR SCHEME
 " ============================================================
 
+" Enable termgui colors (required for colorscheme)
+set termguicolors
+
+" Light background for better colors
+set background=light
+
 " Theme mode (dark|light) from the single source of truth (~/.config/isg/theme,
 " written by toggle_theme.sh). Read at startup so new vim instances always match
 " the current theme — no sed of this file. Falls back to light.

@@ -31,8 +31,9 @@ nnoremap <C-l> <C-w>l
 inoremap jJ <Esc>
 
 " Resize splits
-nnoremap <leader>+ :resize +5<CR>     " Increase height
-nnoremap <leader>- :resize -5<CR>     " Decrease height
-nnoremap <leader>< :vertical resize -5<CR>  " Decrease width
-nnoremap <leader>> :vertical resize +5<CR>  " Increase width
-nnoremap <leader>= <C-w>=             " Equalize all split sizes
+" Height, width, and equalize all
+nnoremap <leader>+ :resize +5<CR>
+nnoremap <leader>- :resize -5<CR>
+nnoremap <leader>< :vertical resize -5<CR>
+nnoremap <leader>> :vertical resize +5<CR>
+nnoremap <leader>= <C-w>=

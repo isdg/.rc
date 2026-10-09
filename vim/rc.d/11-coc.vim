@@ -25,8 +25,8 @@ nnoremap <silent> <leader>F :call CocActionAsync('format')<CR>
 " immediately, whereas a mapping there would have to sit out 'timeoutlen' first.
 "
 " The Russian twins are spelled out because DuplicateLeaderRu
-" (15-ru-leader.vim) walks the single-letter table and so never sees a two-key
-" sequence.
+" (08-ru-leader.vim) walks the single-letter table and so never sees a
+" two-key sequence.
 nnoremap <silent> <leader>dl :CocList diagnostics<CR>
 nnoremap <silent> <leader>вд :CocList diagnostics<CR>
 nnoremap <silent> <leader>D :call CocAction('diagnosticToggle')<CR>

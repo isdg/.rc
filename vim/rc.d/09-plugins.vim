@@ -1,6 +1,9 @@
 " ============================================================
 "                        PLUGINS
 " ============================================================
+" Fix Node 25 localStorage incompatibility with CoC
+let g:coc_node_args = ['--localstorage-file=/tmp/coc-localstorage']
+
 call plug#begin('~/.vim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'} " LSP

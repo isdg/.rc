@@ -75,3 +75,5 @@ Done:
                                               source-file glob tpm can follow
    vim config      one 743-line .vimrc        vim/rc.d/NN-name.vim; .vimrc
                                               keeps the hotkey header + loader
+   vim core        separate .vimrc.core       the rc.d/ prefix before
+                   with its own keys          09-plugins.vim

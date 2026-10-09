@@ -1,5 +1,5 @@
 " ============================================================
-"                HISTORY & CLIPBOARD
+"                       HISTORY
 " ============================================================
 " Fuzzy history and pickers on the same keys as nvim (keymaps/editor.lua):
 " ";" command history, "/" search history, "J" the jumplist, ":" every ex
@@ -16,11 +16,3 @@ nnoremap <leader>; :History:<CR>
 nnoremap <leader>/ :History/<CR>
 nnoremap <leader>J :Jumps<CR>
 nnoremap <leader>: :Commands<CR>
-
-" Swap jump list navigation (Ctrl+I = back, Ctrl+O = forward)
-nnoremap <C-i> <C-o>
-nnoremap <C-o> <C-i>
-
-vnoremap <leader>y "+y   " Yank to system clipboard
-
-nnoremap <leader>v gv    " Reselect last visual selection
