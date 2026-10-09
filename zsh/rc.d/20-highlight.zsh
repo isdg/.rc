@@ -4,7 +4,7 @@
 
 # Syntax highlighting — Homebrew on darwin (prefix derived from brew's own path,
 # /usr/local/bin/brew → /usr/local, instead of the slow `brew --prefix`), or the
-# git clone that .rcboot/zsh/syntax_linux.sh makes on Linux.
+# git clone that .rcboot/highlight/syntax_linux.sh makes on Linux.
 _brew_prefix="${HOMEBREW_PREFIX:-${commands[brew]:h:h}}"
 for _hl in "$_brew_prefix/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh" \
            "$HOME/.local/share/zsh/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh"; do

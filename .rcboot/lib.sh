@@ -253,6 +253,35 @@ hook() {
     fi
 }
 
+# finally <function>: run once every module is done and the fragments are in
+# sync, for work that must see the final set (reloading a running server).
+RC_FINALLY=()
+finally() {
+    [ "$RC_MODE" = ensure ] || RC_FINALLY+=("$1")
+}
+
+# Sets RC_MODE and RC_LEVEL (default 3) from the command line; --help prints
+# the calling script's header comment.
+parse_args() {
+    local arg
+    RC_LEVEL=3
+    for arg in "$@"; do
+        case "$arg" in
+            --ensure)          RC_MODE=ensure ;;
+            --level=[0-3])     RC_LEVEL="${arg#--level=}" ;;
+            --minimal)         RC_LEVEL=2 ;;
+            -h|--help)
+                sed -n '2,/^[^#]/p' "$0" | sed '$d; s/^# \{0,1\}//'
+                exit 0
+                ;;
+            *)
+                echo "[ERROR] unknown option: $arg (try --help)" >&2
+                exit 2
+                ;;
+        esac
+    done
+}
+
 # Module names up to level $1 from the registry, in file order.
 _registry() {
     local level name
@@ -277,6 +306,10 @@ run_modules() {
     echo "[MODULE] enabled fragments"
     _sync_fragments "$1"
     echo ""
+    local fn
+    for fn in ${RC_FINALLY[@]+"${RC_FINALLY[@]}"}; do
+        "$fn" || true
+    done
 }
 
 # The light/dark mode every *-active file is seeded from, created as `light`

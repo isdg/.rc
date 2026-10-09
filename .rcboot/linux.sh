@@ -4,8 +4,13 @@
 # Assembles modular components for dotfiles setup
 #
 # Usage:
-#   ./linux.sh           — install / configure everything
-#   ./linux.sh --ensure  — verify everything is in place (no changes made)
+#   ./linux.sh             — install / configure everything (level 3)
+#   ./linux.sh --level=N   — up to level N; fragments above it are switched off
+#   ./linux.sh --minimal   — the same as --level=2
+#   ./linux.sh --ensure    — verify, with or without --level (no changes)
+#
+# Levels (.rcboot/modules): 0 bare, 1 core (zsh, tmux, vim, git), 2 tools
+# (fzf, zoxide, delta, bat, tig), 3 full (nvim, plugins, GUI apps, toolchains).
 #
 set -e
 
@@ -21,17 +26,18 @@ export DOTFILES_DIR
 export PATH="$HOME/.local/bin:$HOME/.elan/bin:$PATH"
 
 source "$SCRIPT_DIR/lib.sh"
+parse_args "$@"
 
 # ── Ensure mode ────────────────────────────────────────────────────────────────
-if [[ "${1:-}" == "--ensure" ]]; then
+if [ "$RC_MODE" = ensure ]; then
     echo "=========================================="
     echo "  Dotfiles Verify for Linux"
+    echo "  Level: $RC_LEVEL"
     echo "=========================================="
     echo ""
 
     set +e  # collect all failures instead of stopping at first
-    RC_MODE=ensure
-    run_modules 3
+    run_modules "$RC_LEVEL"
     FAILURES=$RC_FAILURES
 
     echo "=========================================="
@@ -47,10 +53,11 @@ fi
 # ── Install mode ───────────────────────────────────────────────────────────────
 echo "=========================================="
 echo "  Dotfiles Bootstrap for Linux"
+echo "  Level: $RC_LEVEL"
 echo "=========================================="
 echo ""
 
-run_modules 3
+run_modules "$RC_LEVEL"
 
 echo "=========================================="
 echo "  Installation Complete!"

@@ -14,5 +14,9 @@ seed_fzf_opts() {
 }
 hook seed_fzf_opts
 
+fragment zsh/rc.d/09-fzf-init.zsh
+fragment zsh/rc.d/16-fzf.zsh
+fragment tmux/rc.d/06-fzf-env.conf
+
 source "$RC_BOOT/fzf/fzf.sh"
 step "install_fzf_$RC_OS" "ensure_fzf_$RC_OS"

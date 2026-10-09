@@ -49,22 +49,26 @@ The bootstrap is modular (see .rcboot/) and handles:
 Homebrew, packages, dotfile symlinks, vim-plug + plugins, fzf, fonts,
 tig, key remapping, and Darwin defaults.
 
-Each .rcboot/<name>/module.sh links and installs one tool; .rcboot/modules
-lists them by level, in run order. --minimal (Darwin) stops at level 2 and
-uses the smaller darwin/Brewfile.minimal:
+Each .rcboot/<name>/module.sh links and installs one tool and enables its
+rc.d/ fragments (links in ~/.config/rc/<tool>/). .rcboot/modules lists the
+modules by level, in run order; --level=N runs those up to N:
 
-    > ./.rcboot/darwin.sh --minimal    # tmux + nvim + zsh core, ~0.8 GB
-    > ./.rcboot/darwin.sh              # everything, ~14-15 GB
+    0  bare   nothing yet (reserved for a POSIX sh/vi setup)
+    1  core   zsh, tmux, vim (.vimrc.core's fragments), git, ssh, gpg
+    2  tools  + fzf, zoxide, syntax highlighting, delta, bat, tig
+    3  full   + nvim and lazy.nvim, vim-plug + coc, tpm with omni/orchbus,
+              Ghostty, fonts, Claude, k9s, GUI apps, toolchains (default)
 
-Minimal gets the editors, tmux, zsh, the fzf/rg/fd/bat picker stack, git
-+ gh + tig + delta, Ghostty, dotfile symlinks and fonts. It leaves out
-language toolchains (llvm, openjdk, zig, rust, node), media/graphics
-libs, docker/minikube/mysql/qemu, and the Rust-built side tools (plc, hr,
-omni, orchbus) — so there are no LSP servers for mason to install.
+    > ./.rcboot/linux.sh --level=2
+    > ./.rcboot/darwin.sh --minimal     # the same as --level=2
 
-Either profile can be verified without changing anything:
+Going down a level switches off the fragments above it; packages stay
+installed. Packages are not per level yet: below 3, Darwin installs
+darwin/Brewfile.minimal and Linux its whole list.
 
-    > ./.rcboot/darwin.sh --ensure [--minimal]
+Any level can be verified without changing anything:
+
+    > ./.rcboot/darwin.sh --ensure [--level=N]
 
 Restart your terminal (or `exec zsh`) when it finishes.
 

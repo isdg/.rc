@@ -1,11 +1,8 @@
--- Bootstrap lazy.nvim
+-- lazy.nvim and the plugins are installed by .rcboot's nvim module. Without
+-- them nvim starts plain: a config loads plugins, it does not fetch them.
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.loop.fs_stat(lazypath) then
-    vim.fn.system({
-        "git", "clone", "--filter=blob:none",
-        "https://github.com/folke/lazy.nvim.git",
-        "--branch=stable", lazypath,
-    })
+    return
 end
 vim.opt.rtp:prepend(lazypath)
 
