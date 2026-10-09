@@ -49,12 +49,14 @@ local function fit(chunks)
 end
 
 --- Open a layer and run keys until one of them ends it.
---- keys: { [char] = { desc = "shown in the hint", run = cmd|fn, stay = bool } }
+--- keys: { [char] = { desc = "shown in the hint", run = cmd|fn, stay = ... } }
 ---       or { desc = ..., name = "SUB", keys = {...} } to hand off to a sub-layer
 --- Esc, <C-c> and any unbound key leave, matching how the tmux tables behave;
---- `stay` is the per-key opt-in that makes a verb repeat. A sub-layer replaces
---- its parent rather than nesting inside it, so leaving one leaves them all --
---- which is what `switch-client -T splits` does to the plugins table.
+--- `stay` is the per-key opt-in that makes a verb repeat: true, or a function
+--- asked before the verb runs, for a verb that only sometimes may keep keys.
+--- A sub-layer replaces its parent rather than nesting inside it, so leaving
+--- one leaves them all -- which is what `switch-client -T splits` does to the
+--- plugins table.
 function M.open(name, keys)
     local chunks = hint(name, keys)
     while true do
@@ -65,6 +67,8 @@ function M.open(name, keys)
         local entry = resolve(keys, ch)
         if not entry then return end
         if entry.keys then return M.open(entry.name, entry.keys) end
+        local stay = entry.stay
+        if type(stay) == "function" then stay = stay() end
         local ok, err = pcall(function()
             if type(entry.run) == "function" then entry.run() else vim.cmd(entry.run) end
         end)
@@ -72,7 +76,7 @@ function M.open(name, keys)
             vim.notify(err, vim.log.levels.ERROR)
             return -- a layer that keeps going after an error hides the error
         end
-        if not entry.stay then return end
+        if not stay then return end
     end
 end
 

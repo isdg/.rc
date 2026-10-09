@@ -63,10 +63,14 @@ local function condition()
     end)
 end
 
+-- Starting a session opens the configuration picker, which needs the keys
+-- the layer would take; only continuing a running session stays.
+local function in_session() return require("dap").session() ~= nil end
+
 local DEBUG = {
     b = { desc = "break", run = dap("toggle_breakpoint") },
     B = { desc = "if", run = condition },
-    c = { desc = "cont", run = dap("continue"), stay = true },
+    c = { desc = "cont", run = dap("continue"), stay = in_session },
     C = { desc = "here", run = dap("run_to_cursor"), stay = true },
     n = { desc = "next", run = dap("step_over"), stay = true },
     s = { desc = "step", run = dap("step_into"), stay = true },
