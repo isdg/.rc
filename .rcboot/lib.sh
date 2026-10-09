@@ -193,6 +193,45 @@ link() {
     _relink "$1" "$kind" "$src" "$dst" || true
 }
 
+# Fragments a module enables: one link in ~/.config/rc/<tool>/ per file of
+# <tool>/rc.d/. The loaders read only that directory, so linking a fragment
+# is what turns it on. Literal ~/.config: tmux expands nothing else.
+RC_ENABLED="$HOME/.config/rc"
+RC_FRAGMENTS=""
+
+# fragment <repo path>, e.g. fragment zsh/rc.d/16-fzf.zsh
+fragment() {
+    local tool="${1%%/*}" name="${1##*/}"
+    RC_FRAGMENTS+="$tool/$name"$'\n'
+    link "$1" "$RC_ENABLED/$tool/$name"
+}
+
+# Fragment links no module of this run enabled are removed, or reported under
+# --ensure; that is what makes a lower level take effect. At level $1 >= 3
+# every rc.d/ file should be enabled, so one that is not was never registered.
+_sync_fragments() {
+    local f rel
+    for f in "$RC_ENABLED"/*/*; do
+        [ -L "$f" ] || continue
+        rel="${f#"$RC_ENABLED"/}"
+        printf '%s' "$RC_FRAGMENTS" | grep -qxF "$rel" && continue
+        if [ "$RC_MODE" = ensure ]; then
+            echo "[FAIL] Enabled by no module: $f"
+            RC_FAILURES=$((RC_FAILURES + 1))
+        else
+            rm "$f" && echo "[OK] Disabled $rel"
+        fi
+    done
+    [ "$1" -ge 3 ] || return 0
+    for f in "$DOTFILES_DIR"/*/rc.d/[0-9][0-9]-*; do
+        rel="${f#"$DOTFILES_DIR"/}"
+        printf '%s' "$RC_FRAGMENTS" | grep -qxF "${rel%%/*}/${f##*/}" \
+            && continue
+        echo "[FAIL] $rel belongs to no module"
+        [ "$RC_MODE" != ensure ] || RC_FAILURES=$((RC_FAILURES + 1))
+    done
+}
+
 # step <install function> [ensure function]: a failed install stops the run
 # (set -e), since later modules build on earlier ones. Either name may be -.
 step() {
@@ -235,6 +274,9 @@ run_modules() {
         source "$RC_BOOT/$name/module.sh"
         echo ""
     done 3< <(_registry "$1")
+    echo "[MODULE] enabled fragments"
+    _sync_fragments "$1"
+    echo ""
 }
 
 # The light/dark mode every *-active file is seeded from, created as `light`

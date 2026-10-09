@@ -228,9 +228,13 @@
 
 " ============================================================
 
-" Everything else lives in rc.d/, sourced in prefix order. The directory is
-" found through this file's own symlink, so it works under any repo path.
-let s:rc_d = fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/rc.d'
+" Everything else lives in rc.d/, sourced in prefix order from ~/.config/rc/vim,
+" where .rcboot links the ones its level enables. A checkout never bootstrapped
+" loads all of rc.d/, found through this file's own symlink.
+let s:rc_d = expand('~/.config/rc/vim')
+if !isdirectory(s:rc_d)
+  let s:rc_d = fnamemodify(resolve(expand('<sfile>:p')), ':h') . '/rc.d'
+endif
 for s:frag in sort(glob(s:rc_d . '/[0-9][0-9]-*.vim', 0, 1))
   execute 'source' fnameescape(s:frag)
 endfor

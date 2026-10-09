@@ -99,8 +99,14 @@ MANUAL SETUP (if you'd rather not run bootstrap)
     > ln -fs "$HOME/.rc/zsh/.zshrc"      "$HOME/.zshrc"
     > ln -fs "$HOME/.rc/vim/.vimrc"      "$HOME/.vimrc"
     > ln -fs "$HOME/.rc/tmux/.tmux.conf" "$HOME/.tmux.conf"
-    > ln -fns "$HOME/.rc/tmux/rc.d"      "$HOME/.config/tmux/rc.d"
     > ln -fs "$HOME/.rc/nvim"            "$HOME/.config/nvim"
+
+   Then enable the rc.d/ fragments you want: a fragment is on when it is
+   linked into ~/.config/rc/<tool>/. tmux loads nothing until it is; zsh,
+   vim and nvim load all of rc.d/ while that directory does not exist.
+
+    > mkdir -p "$HOME/.config/rc/tmux"
+    > ln -fs "$HOME"/.rc/tmux/rc.d/*.conf "$HOME/.config/rc/tmux/"
 
    There is no framework to install and no theme link to make — .zshrc is
    plain zsh and sources zsh/isg.zsh-theme from the repo directly.

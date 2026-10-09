@@ -3,9 +3,22 @@
 # running server.
 
 link tmux/.tmux.conf "$HOME/.tmux.conf"
-# Literal ~/.config, not $XDG_CONFIG_HOME: .tmux.conf and tpm both expand
-# only ~ in the source-file path.
-link tmux/rc.d "$HOME/.config/tmux/rc.d"
+fragment tmux/rc.d/00-options.conf
+fragment tmux/rc.d/01-aliases.conf
+fragment tmux/rc.d/02-keys.conf
+fragment tmux/rc.d/03-copy-mode.conf
+fragment tmux/rc.d/04-status.conf
+fragment tmux/rc.d/05-theme.conf
+fragment tmux/rc.d/06-fzf-env.conf
+fragment tmux/rc.d/07-plugins.conf
+fragment tmux/rc.d/08-tpm.conf
+fragment tmux/rc.d/09-omni.conf
+fragment tmux/rc.d/10-layer.conf
+fragment tmux/rc.d/11-pane-save.conf
+fragment tmux/rc.d/12-alerts.conf
+fragment tmux/rc.d/13-splits.conf
+fragment tmux/rc.d/14-orchbus.conf
+fragment tmux/rc.d/15-russian.conf
 
 ensure_tpm() {
     if [ -d "$HOME/.tmux/plugins/tpm" ]; then

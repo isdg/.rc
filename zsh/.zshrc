@@ -13,8 +13,12 @@ typeset -gF _BANNER_T0=$EPOCHREALTIME
 export ISGRC="${${(%):-%x}:A:h:h}"
 
 # Everything else lives in rc.d/, one concern per file, sourced in the order
-# of the two-digit prefix. (n) sorts numerically; <-> matches any number.
-for _rc_frag in $ISGRC/zsh/rc.d/<->-*.zsh(n); do
+# of the two-digit prefix from ~/.config/rc/zsh, where .rcboot links the ones
+# its level enables. A checkout never bootstrapped loads all of rc.d/.
+_rc_d=~/.config/rc/zsh
+[[ -d $_rc_d ]] || _rc_d=$ISGRC/zsh/rc.d
+# (n) sorts numerically, <-> matches any number, N allows an empty directory.
+for _rc_frag in $_rc_d/<->-*.zsh(Nn); do
     source $_rc_frag
 done
-unset _rc_frag
+unset _rc_d _rc_frag
