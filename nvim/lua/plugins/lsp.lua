@@ -196,7 +196,7 @@ return {
                     -- CTRL-L has no Neovim default (:h i_CTRL-L does not exist —
                     -- CTRL-L is only meaningful inside |i_CTRL-X| completion
                     -- mode), and this is a different mode from the normal-mode
-                    -- <C-l> window motion in keymaps/editor.lua.
+                    -- <C-l> window motion in rc.d/04-keys-editor.lua.
                     --
                     -- One key, three states, because what you want from it
                     -- depends on what is on screen:

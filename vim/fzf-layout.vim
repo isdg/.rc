@@ -6,7 +6,7 @@
 " :Commits, …) — they inherit these via fzf#wrap(), which falls back to
 " g:fzf_layout/g:fzf_vim whenever a call doesn't set its own options.
 "
-" Sourced from both vim/rc.d/14-fzf-layout.vim and nvim/init.lua.
+" Sourced from both vim/rc.d/14-fzf-layout.vim and nvim/rc.d/02-fzf-layout.lua.
 " 1.0 is the whole screen: fzf.vim floors height at &lines - 1, so the popup
 " takes everything but the command line. Matches omni's and orchbus's tmux
 " popups, which run -w 100% -h 100%.

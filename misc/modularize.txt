@@ -77,3 +77,5 @@ Done:
                                               keeps the hotkey header + loader
    vim core        separate .vimrc.core       the rc.d/ prefix before
                    with its own keys          09-plugins.vim
+   nvim startup    init.lua requiring         nvim/rc.d/NN-name.lua, run by
+                   options, keymaps/init      init.lua; lua/ keeps libraries

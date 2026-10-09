@@ -269,7 +269,8 @@ lmap("v", "y", '"+y', { desc = "Yank to clipboard" })
 -- Paste the system clipboard, the counterpart to <leader>y. p freed up when
 -- file finding moved to <leader>f. Visual uses "+P, not "+p, so a paste over a
 -- selection leaves the unnamed register alone and stays repeatable — which also
--- matters over SSH, where "+ reads back the unnamed register (see options.lua).
+-- matters over SSH, where "+ reads back the unnamed register (see
+-- 00-options.lua).
 lmap("n", "p", '"+p', { desc = "Paste from clipboard" })
 lmap("v", "p", '"+P', { desc = "Paste from clipboard" })
 

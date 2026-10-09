@@ -23,8 +23,8 @@ lmap("n", "E", function() require("lsp_picker").workspace_symbols() end, { desc 
 lmap("n", "e", function() require("lsp_picker").document_symbols() end, { desc = "Document symbols" })
 lmap("n", "i", function() require("breadcrumb").show() end, { desc = "Show breadcrumb" })
 -- H for history, free since the tool keys moved into <leader><leader>
--- (keymaps/plugins.lua). B only ever meant "the uppercase of b", naming this
--- after a neighbouring key instead of after the thing it opens.
+-- (rc.d/10-keys-plugins.lua). B only ever meant "the uppercase of b", naming
+-- this after a neighbouring key instead of after the thing it opens.
 lmap("n", "H", "<cmd>History<CR>", { desc = "File history (fzf)" })
 
 -- <C-p> deliberately unmapped: file finding lives on <leader>f only, and

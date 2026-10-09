@@ -2,7 +2,7 @@
 "                       NERD TREE
 " ============================================================
 " Tree on <leader>t, freed by dropping the (unused, long commented-out) tab
-" mappings. Same key in nvim, see nvim/lua/keymaps/tree.lua.
+" mappings. Same key in nvim, see nvim/rc.d/06-keys-tree.lua.
 " Comments go above the mapping, never after it: :map has no trailing-comment
 " syntax, so `" Toggle NERDTree` used to be part of the mapped keys.
 nnoremap <leader>t :NERDTreeToggle<CR>

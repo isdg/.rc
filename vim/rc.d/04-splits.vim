@@ -15,9 +15,9 @@
 " inoremap <C-k> <Up>
 
 " Move between splits
-" Ctrl rather than <leader> (same as nvim, keymaps/editor.lua): one keystroke
-" shorter for a constant motion, and Ctrl+letter is keyed off the physical key,
-" so it needs no Russian-layout twin the way <leader>hjkl did.
+" Ctrl rather than <leader> (same as nvim, nvim/rc.d/04-keys-editor.lua): one
+" keystroke shorter for a constant motion, and Ctrl+letter is keyed off the
+" physical key, so it needs no Russian-layout twin the way <leader>hjkl did.
 " <C-l> gives up vim's redraw-screen default; :redraw! covers it.
 " <C-h> is distinct from <BS> here (Ghostty sends 0x7f for Backspace) — checked
 " with separate mappings: 0x08 fires <C-h>, 0x7f fires <BS>.

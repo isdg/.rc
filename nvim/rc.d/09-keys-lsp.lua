@@ -23,7 +23,7 @@ end, { desc = "Diagnostic under cursor" })
 
 -- Searchable list of diagnostics (pairs with ]d/[d jump, <leader>dk float).
 -- Lowercase is this buffer, uppercase widens it, the same split <leader>l/L and
--- <leader>e/E use in keymaps/find.lua.
+-- <leader>e/E use in rc.d/05-keys-find.lua.
 lmap("n", "dl", function()
     require("lsp_picker").diagnostics({ bufnr = 0 })
 end, { desc = "List diagnostics (buffer)" })

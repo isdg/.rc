@@ -2,7 +2,7 @@
 "                      FUZZY FIND
 " ============================================================
 
-" Search files (file palette). Same key as nvim (keymaps/find.lua).
+" Search files (file palette). Same key as nvim (nvim/rc.d/05-keys-find.lua).
 nnoremap <leader>f :Files<CR>
 
 " Search buffers (buffer palette)
@@ -12,7 +12,7 @@ nnoremap <leader>b :Buffers<CR>
 nnoremap <leader>H :History<CR>
 
 " Lowercase = this buffer, uppercase = wider scope, for both pairs (same as
-" nvim, see nvim/lua/keymaps/find.lua):
+" nvim, see nvim/rc.d/05-keys-find.lua):
 "   e / E   symbols in this file / across the workspace   (coc)
 "   l / L   lines in this buffer / across open buffers    (fzf)
 nnoremap <leader>e :CocList outline<CR>
@@ -36,7 +36,7 @@ nnoremap <leader>A :Rg<CR>
 
 " Git commits (fzf) — include author in log so fzf can filter by it
 let g:fzf_commits_log_options = '--color=always --format="%C(auto)%h%d %s %C(blue)[%an]%C(reset) %C(black)%C(bold)%cr"'
-" Same keys as nvim (nvim/lua/keymaps/git.lua): gm repo log, gf this buffer's
+" Same keys as nvim (nvim/rc.d/08-keys-git.lua): gm repo log, gf this buffer's
 " history, gl line history. A range on :BCommits becomes `git log -L a,b:file`,
 " which is how gl works — `.` for the cursor line, '<,'> for a selection.
 nnoremap <leader>gm :Commits<CR>

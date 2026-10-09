@@ -161,7 +161,7 @@ prefix a / prefix A search window text and land the cursor on the matched line
 
 
 -- Source ----------------------------------------------------------------
-nvim   nvim/lua/keymaps/editor.lua    "Split management" section
+nvim   nvim/rc.d/04-keys-editor.lua    "Split management" section
 tmux   tmux/rc.d/10-layer.conf        the `plugins` table and its `moves`
                                       sub-table; `splits` is 13-splits.conf
 vim    vim/rc.d/04-splits.vim         plain vim has no <C-w> parity layer, so

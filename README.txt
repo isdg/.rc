@@ -76,7 +76,8 @@ LAYOUT
                     + one folder with a module.sh per tool)
     zsh/            .zshrc loader + rc.d/ fragments (NN-name.zsh), isg theme
     vim/            .vimrc loader + rc.d/ fragments, color schemes, coc
-    nvim/           init.lua + lazy.nvim setup
+    nvim/           init.lua loader + rc.d/ fragments (NN-name.lua), lua/
+                    libraries, lazy plugin specs
     tmux/           .tmux.conf loader + rc.d/ fragments (NN-name.conf)
     ghostty/        terminal config
     git/            .gitconfig

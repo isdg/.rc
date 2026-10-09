@@ -1,7 +1,8 @@
 " ============================================================
 "                       HISTORY
 " ============================================================
-" Fuzzy history and pickers on the same keys as nvim (keymaps/editor.lua):
+" Fuzzy history and pickers on the same keys as nvim
+" (nvim/rc.d/04-keys-editor.lua):
 " ";" command history, "/" search history, "J" the jumplist, ":" every ex
 " command. All four come from fzf.vim, which vim already loads — the plugin
 " ships Jumps/Commands/History just like the copy nvim uses.

@@ -2,7 +2,7 @@
 --                    DEBUGGER (DAP)
 -- ============================================================
 -- Loaded on the first require("dap"), which only the debug layer makes
--- (<leader><leader>d, keymaps/plugins.lua). Python only for now: further
+-- (<leader><leader>d, rc.d/10-keys-plugins.lua). Python only for now: further
 -- languages are an adapter + configurations each, beside dap-python's.
 return {
     {

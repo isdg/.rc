@@ -10,12 +10,13 @@ nmap <silent> gi <Plug>(coc-implementation)
 nmap <silent> gr <Plug>(coc-references)
 nnoremap <silent> K :call CocActionAsync('doHover')<CR>
 
-" Format on demand, never on save — matches nvim's <leader>F (keymaps/edit.lua).
+" Format on demand, never on save — matches nvim's <leader>F
+" (nvim/rc.d/07-keys-edit.lua).
 " coc.preferences.formatOnSaveFiletypes was removed from coc-settings.json so a
 " write only writes.
 nnoremap <silent> <leader>F :call CocActionAsync('format')<CR>
 
-" Diagnostics, same keys as nvim (nvim/lua/keymaps/lsp.lua):
+" Diagnostics, same keys as nvim (nvim/rc.d/09-keys-lsp.lua):
 "   <leader>dk message under the cursor  ]d / [d  next / previous
 "   <leader>dl searchable list           <leader>D  hide/show them
 " coc's own convention is [g/]g; these use nvim's [d/]d so the two editors
