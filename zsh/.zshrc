@@ -22,3 +22,8 @@ for _rc_frag in $_rc_d/<->-*.zsh(Nn); do
     source $_rc_frag
 done
 unset _rc_d _rc_frag
+
+# This box's own settings (zsh/zshrc.local.example), at every level and after
+# every fragment, so they win. Then the banner, which reports them (SSH_KEYS).
+[[ -r ~/.zshrc.local ]] && source ~/.zshrc.local
+(( $+functions[banner_render] )) && banner_render

@@ -4,6 +4,7 @@
 # .zshenv is read by non-interactive shells (tmux popups, nvim's :! …), which
 # is where $FZF_DEFAULT_OPTS_FILE has to come from. A pre-existing one is backed
 # up rather than clobbered: it usually carries a toolchain line worth reading.
+link zsh/.zshrc "$HOME/.zshrc"
 link zsh/.zshenv "$HOME/.zshenv"
 
 fragment zsh/rc.d/00-theme-mode.zsh
@@ -23,7 +24,7 @@ fragment zsh/rc.d/15-aliases.zsh
 fragment zsh/rc.d/17-vimode.zsh
 fragment zsh/rc.d/19-keys.zsh
 fragment zsh/rc.d/21-startup.zsh
-fragment zsh/rc.d/23-banner.zsh
+fragment zsh/rc.d/22-banner.zsh
 
 source "$RC_BOOT/zsh/shell.sh"
 step "set_default_shell_$RC_OS" "ensure_default_shell_$RC_OS"

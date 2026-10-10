@@ -2,10 +2,10 @@
 #
 #     cp "$ISGRC/zsh/zshrc.local.example" ~/.zshrc.local
 #
-# ~/.zshrc sources ~/.zshrc.local after zsh/rc.d/21-startup.zsh, so anything
-# set here overrides the defaults that file declares, and before banner_render,
-# so log_ssh and the other banner log functions see the final values. Missing
-# file is fine — the source is guarded.
+# ~/.zshrc sources ~/.zshrc.local after every zsh/rc.d/ fragment, at any
+# bootstrap level, so anything set here overrides them, and before
+# banner_render, so log_ssh and the other banner log functions see the final
+# values. Missing file is fine — the source is guarded.
 #
 # Why $HOME and not the repo: ~/.zshrc is a symlink into the ~/.rc working tree,
 # so a value kept on a setup/<machine> branch follows HEAD and empties itself
