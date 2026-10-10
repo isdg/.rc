@@ -272,6 +272,8 @@ add-zsh-hook precmd __isg::precmd
 #                              zsh has no `grey`/`gray` name — both fall back
 #                              to the default foreground — so greys need a
 #                              number.
+#   BANNER_INFO_OFFSET=n       rows the info lines start below the mascot's
+#                              top (default 1)
 # ----------------------------------------------------------------------------
 
 typeset -ga BANNER_LOG_FUNCS=()
@@ -434,19 +436,20 @@ fi
 
 banner_render() {
     [[ -n $BANNER_DISABLE ]] && return 0
-    local -i i rows
+    local -i i rows off=${BANNER_INFO_OFFSET:-1}
     local fn mascot info line
     # consume the log registry — funcs run in the current shell, so exports
     # they make (e.g. SSH_AUTH_SOCK) persist in the session
     for fn in "${BANNER_LOG_FUNCS[@]}"; do
         (( $+functions[$fn] )) && $fn
     done
-    rows=$(( ${#_banner_mascot} > ${#_banner_info_lines} \
-             ? ${#_banner_mascot} : ${#_banner_info_lines} ))
+    rows=$(( ${#_banner_mascot} > ${#_banner_info_lines} + off \
+             ? ${#_banner_mascot} : ${#_banner_info_lines} + off ))
     print
     for (( i = 1; i <= rows; i++ )); do
         mascot="${_banner_mascot[i]:-}"
-        info="${_banner_info_lines[i]:-}"
+        info=""
+        (( i > off )) && info="${_banner_info_lines[i - off]:-}"
         print -P -- "  %F{${BANNER_ACCENT:-244}}${(r:${_banner_mascot_width}:)mascot}%f   ${info}"
     done
     (( ${#_banner_log_lines} )) && print
