@@ -79,9 +79,28 @@ banner_host_info() {
     print -r -- "${HOST%%.*}${where:+ · $where}${SUDO_USER:+ · via $SUDO_USER}"
 }
 
-# the two addresses, e.g. "100.81.165.60 · ssh from 100.70.55.75" — this end of
-# the connection first, then the peer, so the line reads inward-out: at which
-# address, reached from where. Second info line, directly under the identity.
+# The peer's name, into REPLY: the one its zsh sent (LC_ISG_FROM, kept as
+# ISG_SSH_FROM by .zshenv) unless $2 is 0, else Tailscale's for a tailnet
+# address. No DNS: a slow resolver would stall the login. 1 when unnamed.
+_banner_peer_name() {
+    local -a names
+    REPLY=
+    if [[ $2 != 0 && -n $ISG_SSH_FROM ]]; then
+        REPLY=$ISG_SSH_FROM
+        return 0
+    fi
+    [[ $1 == (100.<64-127>.<->.<->|fd7a:115c:a1e0:*) ]] || return 1
+    (( $+commands[tailscale] )) || return 1
+    # The first Name: is the machine's (the second is the user's).
+    names=( ${(M)${(f)"$(command tailscale whois $1 2>/dev/null)"}:#*Name:*} )
+    REPLY=${${${names[1]#*Name:}// /}%%.*}
+    [[ -n $REPLY ]]
+}
+
+# this end's address and the peer, e.g. "100.81.165.60 · ssh from
+# isg-darwin-sigma" — inward-out: at which address, reached from where. The
+# peer is named when _banner_peer_name can, else its address. Second info
+# line, directly under the identity.
 #
 # Both come out of $SSH_CONNECTION, "<client-ip> <client-port> <server-ip>
 # <server-port>": field 3 is this end of the socket, i.e. the address the
@@ -93,14 +112,17 @@ banner_host_info() {
 # learn — too much for a number you did not ask for. Under sudo only the origin
 # survives (utmp records where the login came from, not which local address it
 # landed on), so the line degrades to "ssh from <origin>" rather than lying
-# about this end.
+# about this end. It names the peer from Tailscale only: sudo -E would carry a
+# forged ISG_SSH_FROM through.
 banner_net_info() {
-    local here there
+    local here there REPLY
     if [[ -n $SSH_CONNECTION ]]; then
         local -a conn=( ${=SSH_CONNECTION} )
         here=$conn[3] there=$conn[1]
+        _banner_peer_name $there && there=$REPLY
     elif [[ -n $SUDO_USER ]]; then
         there=$(_banner_sudo_origin)
+        [[ -n $there ]] && _banner_peer_name $there 0 && there=$REPLY
     fi
     [[ -z $here && -z $there ]] && return 0
     print -r -- "${here}${here:+${there:+ · }}${there:+ssh from $there}"

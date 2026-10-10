@@ -41,3 +41,12 @@ if [[ "$ISG_FZF_THEME" != 'false' ]]; then
   fi
   unset _isg_rc
 fi
+
+# This machine's short name, passed to whatever we ssh into (ssh/config
+# SendEnv; sshd accepts LC_* by default) so that box's banner can say where
+# the login came from. The name our own client sent is kept first, exported so
+# child shells and tmux panes don't mistake the one set below for it.
+if [[ -n $SSH_CONNECTION ]] && (( ! ${+ISG_SSH_FROM} )); then
+  export ISG_SSH_FROM="$LC_ISG_FROM"
+fi
+export LC_ISG_FROM="${HOST%%.*}"
