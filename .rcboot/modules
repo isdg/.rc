@@ -1,6 +1,7 @@
 # level name — .rcboot/<name>/module.sh, run in this order up to --level:
 # 0 bare (POSIX sh and vi; nothing yet), 1 core (zsh, tmux, vim, git, nothing
 # downloaded), 2 tools (static binaries), 3 full (runtimes, plugins, GUI).
+1 isg
 1 homebrew
 1 packages
 1 zsh

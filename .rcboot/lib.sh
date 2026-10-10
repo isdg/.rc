@@ -311,14 +311,8 @@ run_modules() {
     done
 }
 
-# The light/dark mode every *-active file is seeded from, created as `light`
-# on first use. toggle_theme.sh maintains it afterwards.
+# The light/dark mode every *-active file is seeded from. The isg module
+# creates the file; toggle_theme.sh maintains it afterwards.
 _theme_mode() {
-    local theme_file="${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme"
-    if [ ! -f "$theme_file" ]; then
-        mkdir -p "$(dirname "$theme_file")"
-        echo light > "$theme_file"
-        echo "[OK] Seeded theme mode file ($theme_file = light)" >&2
-    fi
-    cat "$theme_file"
+    cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev/null || echo light
 }
