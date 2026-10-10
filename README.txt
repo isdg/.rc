@@ -49,22 +49,25 @@ The bootstrap is modular (see .rcboot/) and handles:
 Homebrew, packages, dotfile symlinks, vim-plug + plugins, fzf, fonts,
 tig, key remapping, and Darwin defaults.
 
-Profiles (Darwin). darwin.sh reads two component registries at the top of
-the file — CORE and EXTRA — and --minimal runs only CORE with the smaller
-darwin/Brewfile.minimal:
+Each .rcboot/<name>/module.sh links and installs one tool and enables its
+rc.d/ fragments (links in ~/.config/rc/<tool>/). .rcboot/modules lists the
+modules by level, in run order; --level=N runs those up to N:
 
-    > ./.rcboot/darwin.sh --minimal    # tmux + nvim + zsh core, ~0.8 GB
-    > ./.rcboot/darwin.sh              # everything, ~14-15 GB
+    0  bare   ~/.zshrc.local, this machine's own settings, at every level
+    1  core   zsh, tmux, vim (.vimrc.core's fragments), git, ssh, gpg
+    2  tools  + fzf, zoxide, syntax highlighting, delta, bat, tig
+    3  full   + nvim and lazy.nvim, vim-plug + coc, tpm with omni/orchbus,
+              Ghostty, fonts, Claude, k9s, GUI apps, toolchains (default)
 
-Minimal gets the editors, tmux, zsh, the fzf/rg/fd/bat picker stack, git
-+ gh + tig + delta, Ghostty, dotfile symlinks and fonts. It leaves out
-language toolchains (llvm, openjdk, zig, rust, node), media/graphics
-libs, docker/minikube/mysql/qemu, and the Rust-built side tools (plc, hr,
-omni, orchbus) — so there are no LSP servers for mason to install.
+    > ./.rcboot/linux.sh --level=2
 
-Either profile can be verified without changing anything:
+Packages follow the level too: darwin/Brewfile and the Linux lists are cut
+by it. Going down a level switches off the fragments above it; packages
+stay installed.
 
-    > ./.rcboot/darwin.sh --ensure [--minimal]
+Any level can be verified without changing anything:
+
+    > ./.rcboot/darwin.sh --ensure [--level=N]
 
 Restart your terminal (or `exec zsh`) when it finishes.
 
@@ -72,11 +75,13 @@ Restart your terminal (or `exec zsh`) when it finishes.
 LAYOUT
 -------------------------------------------------------------------------------
 
-    .rcboot/        install scripts (darwin.sh, linux.sh + one folder per tool)
-    zsh/            .zshrc, aliases, fzf integration, isg theme
-    vim/            .vimrc, plugins, color schemes, coc extensions
-    nvim/           init.lua + lazy.nvim setup
-    tmux/           .tmux.conf
+    .rcboot/        install scripts (darwin.sh, linux.sh, modules registry
+                    + one folder with a module.sh per tool)
+    zsh/            .zshrc loader + rc.d/ fragments (NN-name.zsh), isg theme
+    vim/            .vimrc loader + rc.d/ fragments, color schemes, coc
+    nvim/           init.lua loader + rc.d/ fragments (NN-name.lua), lua/
+                    libraries, lazy plugin specs
+    tmux/           .tmux.conf loader + rc.d/ fragments (NN-name.conf)
     ghostty/        terminal config
     git/            .gitconfig
     tig/            git TUI config
@@ -98,6 +103,13 @@ MANUAL SETUP (if you'd rather not run bootstrap)
     > ln -fs "$HOME/.rc/vim/.vimrc"      "$HOME/.vimrc"
     > ln -fs "$HOME/.rc/tmux/.tmux.conf" "$HOME/.tmux.conf"
     > ln -fs "$HOME/.rc/nvim"            "$HOME/.config/nvim"
+
+   Then enable the rc.d/ fragments you want: a fragment is on when it is
+   linked into ~/.config/rc/<tool>/. tmux loads nothing until it is; zsh,
+   vim and nvim load all of rc.d/ while that directory does not exist.
+
+    > mkdir -p "$HOME/.config/rc/tmux"
+    > ln -fs "$HOME"/.rc/tmux/rc.d/*.conf "$HOME/.config/rc/tmux/"
 
    There is no framework to install and no theme link to make — .zshrc is
    plain zsh and sources zsh/isg.zsh-theme from the repo directly.
@@ -132,7 +144,7 @@ MANUAL SETUP (if you'd rather not run bootstrap)
 NOTES
 -------------------------------------------------------------------------------
 
-  - tmux prefix bindings: see tmux/.tmux.conf (new windows open to the
+  - tmux prefix bindings: see tmux/rc.d/ (new windows open to the
     right of current; & kills window and moves focus left).
   - manuals/splits.txt is the split/pane reference: nvim's <C-w> layer and
     tmux's C-b C-b layer share one set of keys, and it says where they differ.

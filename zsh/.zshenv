@@ -11,8 +11,8 @@
 # ----------------------------------------------------------------------------
 #
 # fzf reads $FZF_DEFAULT_OPTS_FILE itself, so one file themes every picker —
-# ours (zsh/fzf.zsh), fzf-tab, nvim's fzf.vim, the ~/omni tmux popups — with no
-# per-call-site flags and nothing to keep in sync.
+# ours (zsh/rc.d/16-fzf.zsh), fzf-tab, nvim's fzf.vim, the ~/omni tmux popups —
+# with no per-call-site flags and nothing to keep in sync.
 #
 # What matters is that the variable holds a *constant path* while the per-mode
 # colours live in the file it points at, behind the opts-active.conf symlink

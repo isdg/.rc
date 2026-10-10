@@ -4,18 +4,20 @@
 # The dotfiles hard-wire two pager helpers that Debian either renames or does
 # not package at all, and both failed silently:
 #
-#   bat   — zsh/fzf.zsh and zsh/palace.zsh use it for previews, isg.zsh-theme
-#           exports $BAT_THEME, and bat/links.sh links ~/.config/bat and runs
-#           `bat cache --build` to register the repo's vs_dark/vs_light themes.
+#   bat   — zsh/rc.d/16-fzf.zsh and zsh/palace.zsh use it for previews,
+#           isg.zsh-theme exports $BAT_THEME, and bat/module.sh links
+#           ~/.config/bat and runs `bat cache --build` to register the
+#           repo's vs_dark/vs_light themes.
 #           Debian installs the binary as `batcat` (the name `bat` is taken by
 #           bacula-console-qt), so every `command -v bat` guard is false: the
 #           previews quietly fall back to awk, $BAT_THEME goes unread and the
 #           theme cache is never built. A shim on PATH fixes all of it at once.
 #
-#   delta — .gitconfig sets `core.pager = delta` and `interactive.diffFilter =
-#           delta --color-only`, plus a whole [delta] style block. bookworm has
-#           no git-delta package (it arrives in trixie), so git silently falls
-#           back to unstyled output. Worse, bookworm DOES ship a package called
+#   delta — delta/delta.gitconfig sets `core.pager = delta` and
+#           `interactive.diffFilter = delta --color-only`, plus a whole
+#           [delta] style block. bookworm has no git-delta package (it
+#           arrives in trixie), so git silently falls back to unstyled
+#           output. Worse, bookworm DOES ship a package called
 #           `delta` — an unrelated 2006 "heuristic minimiser of interesting
 #           files" — so `apt install delta` would put a bogus /usr/bin/delta in
 #           front of git. Never install that one; fetch the real release.
@@ -71,7 +73,7 @@ ensure_pagers_linux() {
     if _have delta; then
         echo "[OK] delta ($(command -v delta))"
     else
-        echo "[FAIL] delta not found — .gitconfig sets core.pager = delta"
+        echo "[FAIL] delta not found — delta.gitconfig sets core.pager = delta"
         failed=1
     fi
 
@@ -140,8 +142,9 @@ _install_bat_linux() {
     fi
 
     # `bat` is bacula-console-qt on Debian, so the package installs /usr/bin/
-    # batcat. Without this shim every `command -v bat` guard in zsh/fzf.zsh and
-    # zsh/palace.zsh is false and the previews drop to their awk fallback.
+    # batcat. Without this shim every `command -v bat` guard in
+    # zsh/rc.d/16-fzf.zsh and zsh/palace.zsh is false and the previews drop to
+    # their awk fallback.
     if ! _have bat && _have batcat; then
         mkdir -p "$HOME/.local/bin"
         ln -sf "$(command -v batcat)" "$HOME/.local/bin/bat"

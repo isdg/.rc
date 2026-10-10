@@ -1,9 +1,10 @@
 #!/bin/sh
 # Russian-layout twins for tmux bindings — the tmux half of what the editors
 # already do: nvim/lua/keymaps/leader.lua duplicates every <leader> mapping onto
-# its Cyrillic key, nvim/lua/russian.lua and vim/.vimrc do the same for normal
-# mode. Without this, switching the layout to Russian silently disarms tmux:
-# prefix-s stops opening the session tree, hjkl stops moving in copy mode.
+# its Cyrillic key, nvim/lua/russian.lua and vim/rc.d/08-ru-leader.vim do the
+# same for normal mode. Without this, switching the layout to Russian silently
+# disarms tmux: prefix-s stops opening the session tree, hjkl stops moving in
+# copy mode.
 #
 # Five tables, matching the two halves of the editor story plus the layer:
 #   prefix        the <leader> equivalent — every prefix-<letter> binding
@@ -19,8 +20,8 @@
 # meta combinations from the physical key, so those already fire under either
 # layout, while punctuation does not sit on matching keys across the two.
 #
-# Run from .tmux.conf AFTER tpm, so the plugins' own keys (omni b/a/j/P/A/J,
-# orchbus o/O, resurrect C-s/C-r) are twinned too. Sweeping what is actually
+# Run from rc.d/15-russian.conf AFTER tpm, so the plugins' own keys (omni
+# b/a/j/P/A/J, orchbus o/O, resurrect C-s/C-r) are twinned too. Sweeping what is actually
 # bound, rather than listing keys here, is the whole point — a hand-written list
 # would go stale the moment a plugin or a bind line changes.
 #

@@ -1,0 +1,36 @@
+# level name — .rcboot/<name>/module.sh, run in this order up to --level:
+# 0 bare (this machine's ~/.zshrc.local), 1 core (zsh, tmux, vim, git, nothing
+# downloaded), 2 tools (static binaries), 3 full (runtimes, plugins, GUI).
+0 local
+1 homebrew
+1 packages
+1 zsh
+1 tmux
+1 vim
+1 gpg
+1 git
+1 ssh
+1 theme
+# Core because it changes what every keystroke does.
+1 keyremap
+2 fzf
+2 zoxide
+2 highlight
+2 delta
+2 bat
+2 tig
+3 nvim
+3 vimplug
+3 tpm
+3 ghostty
+3 fonts
+3 claude
+3 hammerspoon
+3 k9s
+3 apps
+3 plc
+3 hr
+3 ewl
+3 lean
+3 argocd
+3 macos

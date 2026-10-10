@@ -36,7 +36,7 @@ Real tools hiding in here, not just config:
 6. mascots.sh  — shade-block ASCII mascot/splash renderer for toggle_theme.sh,
    with physics-law captions (phase equation, pp-chain). Pure craft.
 
-7. TMUX CAPTURE / PICKER TOOLS  (tmux/.tmux.conf, tmux/fzf-content.sh)
+7. TMUX CAPTURE / PICKER TOOLS  (tmux/rc.d/, tmux/fzf-content.sh)
    - prefix N  scrollback -> nvim with ANSI rendered (baleia)
    - prefix P  scrollback -> less
    - prefix W  fuzzy window picker (name/pane-title/path + live preview)
@@ -47,11 +47,12 @@ Real tools hiding in here, not just config:
 B. MODULARIZATION
 ------------------------------------------------------------
 Already well-modularized (done right):
-   - .rcboot/<tool>/*.sh         one script per concern, orchestrated by
-                                 darwin.sh / linux.sh. Textbook.
+   - .rcboot/<tool>/module.sh    one module per tool, run in the order
+                                 and up to the level .rcboot/modules gives.
    - theme system                per-app files behind one toggle.
-   - *_FUNCS registry convention e.g. BANNER_LOG_FUNCS in zsh/startup.zsh —
-                                 "add a function, append it to the array".
+   - *_FUNCS registry convention e.g. BANNER_LOG_FUNCS in
+                                 zsh/rc.d/21-startup.zsh — "add a function,
+                                 append it to the array".
 
 Done:
 
@@ -68,3 +69,13 @@ Done:
    tmux shells     prefix W big inline        tmux/window-picker.sh, like
                    string in .tmux.conf        fzf-content.sh / pane-capture.sh
    palace          spread zsh/vim/nvim/bin    documented in plc/README.md
+   zsh startup     one 377-line .zshrc +      zsh/rc.d/NN-name.zsh, sourced in
+                   7 sourced modules           prefix order by a 4-line loader
+   tmux config     one 606-line .tmux.conf    tmux/rc.d/NN-name.conf, one
+                                              source-file glob tpm can follow
+   vim config      one 743-line .vimrc        vim/rc.d/NN-name.vim; .vimrc
+                                              keeps the hotkey header + loader
+   vim core        separate .vimrc.core       the rc.d/ prefix before
+                   with its own keys          09-plugins.vim
+   nvim startup    init.lua requiring         nvim/rc.d/NN-name.lua, run by
+                   options, keymaps/init      init.lua; lua/ keeps libraries

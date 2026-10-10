@@ -19,7 +19,7 @@ create_vim_dirs() {
 }
 
 ensure_vim_plugins() {
-    echo "[STEP] Verifying Vim & Neovim plugins..."
+    echo "[STEP] Verifying Vim plugins..."
     local failed=0
     local vim_plug_path="$HOME/.vim/autoload/plug.vim"
     if [ -f "$vim_plug_path" ]; then
@@ -28,18 +28,11 @@ ensure_vim_plugins() {
         echo "[FAIL] vim-plug not installed ($vim_plug_path missing)"
         failed=1
     fi
-    local lazy_path="$HOME/.local/share/nvim/lazy/lazy.nvim"
-    if [ -d "$lazy_path" ]; then
-        echo "[OK] lazy.nvim installed"
-    else
-        echo "[FAIL] lazy.nvim not found ($lazy_path missing)"
-        failed=1
-    fi
     return $failed
 }
 
 install_vim_plugins() {
-    echo "[STEP] Installing Vim & Neovim plugins..."
+    echo "[STEP] Installing Vim plugins..."
 
     # Install vim-plug if not already installed
     local vim_plug_path="$HOME/.vim/autoload/plug.vim"
@@ -60,13 +53,5 @@ install_vim_plugins() {
         echo "[OK] Vim plugins installed"
     else
         echo "[WARN] Vim plugin install failed — run 'vim +PlugInstall +qall' to see why"
-    fi
-
-    # Install Neovim plugins (lazy.nvim bootstraps itself on first run)
-    echo "[INFO] Installing Neovim plugins..."
-    if nvim --headless "+Lazy! sync" +qa; then
-        echo "[OK] Neovim plugins installed"
-    else
-        echo "[WARN] Neovim plugin install failed — run 'nvim --headless \"+Lazy! sync\" +qa' to see why"
     fi
 }

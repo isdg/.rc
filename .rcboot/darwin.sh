@@ -4,10 +4,13 @@
 # Assembles modular components for dotfiles setup
 #
 # Usage:
-#   ./darwin.sh                     — install / configure everything
-#   ./darwin.sh --minimal           — install the tmux + nvim + zsh core only
-#   ./darwin.sh --ensure            — verify everything is in place (no changes)
-#   ./darwin.sh --ensure --minimal  — verify just the core
+#   ./darwin.sh             — install / configure everything (level 3)
+#   ./darwin.sh --level=N   — up to level N; fragments above it are switched off
+#   ./darwin.sh --ensure    — verify, with or without --level (no changes)
+#
+# Levels (.rcboot/modules): 0 bare (~/.zshrc.local), 1 core (zsh, tmux, vim,
+# git), 2 tools (fzf, zoxide, delta, bat, tig), 3 full (nvim, plugins, GUI
+# apps, toolchains).
 #
 set -e
 
@@ -15,109 +18,21 @@ SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
 export DOTFILES_DIR
 
-# Load components
 source "$SCRIPT_DIR/lib.sh"
-source "$SCRIPT_DIR/darwin/homebrew.sh"
-source "$SCRIPT_DIR/darwin/packages.sh"
-source "$SCRIPT_DIR/darwin/gui_apps.sh"
-for links in "$SCRIPT_DIR"/*/links.sh; do
-    source "$links"
-done
-source "$SCRIPT_DIR/git/signing.sh"
-source "$SCRIPT_DIR/fonts/fonts.sh"
-source "$SCRIPT_DIR/tig/tig.sh"
-source "$SCRIPT_DIR/vim/vim.sh"
-source "$SCRIPT_DIR/plc/plc.sh"
-source "$SCRIPT_DIR/tmux/plugins.sh"
-source "$SCRIPT_DIR/hr/hr.sh"
-source "$SCRIPT_DIR/ewl/ewl.sh"
-source "$SCRIPT_DIR/lean/lean.sh"
-source "$SCRIPT_DIR/fzf/fzf.sh"
-source "$SCRIPT_DIR/zsh/shell.sh"
-source "$SCRIPT_DIR/darwin/keyremap.sh"
-source "$SCRIPT_DIR/darwin/defaults.sh"
 
-# ── Component registry ─────────────────────────────────────────────────────────
-# One "install_func|ensure_func" per component, in run order. Add a line to ship
-# another component; both modes pick it up.
-#
-# CORE  — the terminal experience: brew, the package set for the active profile,
-#         shell, dotfile symlinks, fonts, vim/tmux/fzf/tig wiring. Always runs.
-#         The keyboard remap lives here rather than with other Darwin tweaks:
-#         it changes what every keystroke does, so a --minimal box without it is
-#         not usable in the way the rest of this config assumes.
-# EXTRA — GUI apps, the Rust-built side tools (plc, hr, omni, orchbus), the
-#         Lean toolchain and Darwin system defaults. Skipped by --minimal.
-BOOTSTRAP_CORE_FUNCS=(
-    "install_homebrew|ensure_homebrew"
-    "install_packages_darwin|ensure_packages_darwin"
-    "create_vim_dirs|ensure_vim_dirs"
-    "link_dotfiles|ensure_dotfiles"
-    "configure_git_signing|ensure_git_signing"
-    "install_fonts_darwin|ensure_fonts_darwin"
-    "link_tig|ensure_tig"
-    "install_vim_plugins|ensure_vim_plugins"
-    "install_fzf_darwin|ensure_fzf_darwin"
-    "set_default_shell_darwin|ensure_default_shell_darwin"
-    "install_keyremap_darwin|ensure_keyremap_darwin"
-)
-BOOTSTRAP_EXTRA_FUNCS=(
-    "install_gui_apps_darwin|ensure_gui_apps_darwin"
-    "install_plc|ensure_plc"
-    "install_tmux_plugins|ensure_tmux_plugins"
-    "install_hr|ensure_hr"
-    "install_ewl|ensure_ewl"
-    "install_lean|ensure_lean"
-    "apply_darwin_defaults|ensure_darwin_defaults"
-)
-
-# ── Arguments ──────────────────────────────────────────────────────────────────
-MODE=install
-BOOTSTRAP_MINIMAL=0
-for arg in "$@"; do
-    case "$arg" in
-        --ensure)          MODE=ensure ;;
-        --minimal|--core)  BOOTSTRAP_MINIMAL=1 ;;
-        -h|--help)
-            sed -n '3,11p' "${BASH_SOURCE[0]}" | sed 's/^#\{1,\} \{0,1\}//'
-            exit 0
-            ;;
-        *)
-            echo "[ERROR] unknown option: $arg (try --help)" >&2
-            exit 2
-            ;;
-    esac
-done
-export BOOTSTRAP_MINIMAL
-
-# Components for the selected profile, as "install|ensure" pairs on stdout.
-_profile_components() {
-    printf '%s\n' "${BOOTSTRAP_CORE_FUNCS[@]}"
-    if [ "$BOOTSTRAP_MINIMAL" != "1" ]; then
-        printf '%s\n' "${BOOTSTRAP_EXTRA_FUNCS[@]}"
-    fi
-}
-
-_profile_name() {
-    if [ "$BOOTSTRAP_MINIMAL" = "1" ]; then echo "minimal (core only)"; else echo "full"; fi
-}
+parse_args "$@"
 
 # ── Ensure mode ────────────────────────────────────────────────────────────────
-if [ "$MODE" = ensure ]; then
+if [ "$RC_MODE" = ensure ]; then
     echo "=========================================="
     echo "  Dotfiles Verify for Darwin"
-    echo "  Profile: $(_profile_name)"
+    echo "  Level: $RC_LEVEL"
     echo "=========================================="
     echo ""
 
-    FAILURES=0
     set +e  # collect all failures instead of stopping at first
-
-    while IFS='|' read -r _install _ensure <&3; do
-        [ -z "$_ensure" ] && continue
-        "$_ensure" || FAILURES=$((FAILURES + 1))
-        echo ""
-    done 3< <(_profile_components)
+    run_modules "$RC_LEVEL"
+    FAILURES=$RC_FAILURES
 
     echo "=========================================="
     if [ "$FAILURES" -eq 0 ]; then
@@ -132,26 +47,11 @@ fi
 # ── Install mode ───────────────────────────────────────────────────────────────
 echo "=========================================="
 echo "  Dotfiles Bootstrap for Darwin"
-echo "  Profile: $(_profile_name)"
+echo "  Level: $RC_LEVEL"
 echo "=========================================="
 echo ""
 
-# The component list is read on fd 3, not stdin. On stdin, the first component
-# that reads from it consumes the rest of the list and the loop quietly ends --
-# which is exactly what `vim +PlugInstall +qall` inside install_vim_plugins was
-# doing. Everything after component 8 (fzf, the shell, the keyboard remap, and
-# every EXTRA component: the GUI apps, plc, omni, orchbus, hr, ewl and Darwin
-# defaults) was skipped, and the script still printed "Installation Complete!"
-# because the loop had ended normally rather than failed.
-#
-# fd 3 rather than `"$_install" < /dev/null`, so components keep the real stdin
-# and an interactive prompt -- sudo for /etc/shells, chsh, an SSH passphrase --
-# can still be answered.
-while IFS='|' read -r _install _ensure <&3; do
-    [ -z "$_install" ] && continue
-    "$_install"
-    echo ""
-done 3< <(_profile_components)
+run_modules "$RC_LEVEL"
 
 echo "=========================================="
 echo "  Installation Complete!"
@@ -160,10 +60,9 @@ echo ""
 echo "Next steps:"
 echo "  1. Restart your terminal (or run: exec zsh)"
 echo "  2. Open Vim and verify plugins loaded correctly"
-if [ "$BOOTSTRAP_MINIMAL" = "1" ]; then
+if [ "$RC_LEVEL" -lt 3 ]; then
     echo ""
-    echo "Minimal profile: no language toolchains, so mason has no LSP servers to"
-    echo "install, and plc/hr/omni/orchbus were skipped (they need cargo)."
-    echo "Run ./.rcboot/darwin.sh for the full set."
+    echo "Level $RC_LEVEL: no nvim plugins, vim plugins, tmux plugins, language"
+    echo "toolchains or side tools. Run ./.rcboot/darwin.sh for the full set."
 fi
 echo ""

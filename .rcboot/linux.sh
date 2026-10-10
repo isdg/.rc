@@ -4,8 +4,13 @@
 # Assembles modular components for dotfiles setup
 #
 # Usage:
-#   ./linux.sh           — install / configure everything
-#   ./linux.sh --ensure  — verify everything is in place (no changes made)
+#   ./linux.sh             — install / configure everything (level 3)
+#   ./linux.sh --level=N   — up to level N; fragments above it are switched off
+#   ./linux.sh --ensure    — verify, with or without --level (no changes)
+#
+# Levels (.rcboot/modules): 0 bare (~/.zshrc.local), 1 core (zsh, tmux, vim,
+# git), 2 tools (fzf, zoxide, delta, bat, tig), 3 full (nvim, plugins, GUI
+# apps, toolchains).
 #
 set -e
 
@@ -20,58 +25,20 @@ export DOTFILES_DIR
 # a machine that is actually fine.
 export PATH="$HOME/.local/bin:$HOME/.elan/bin:$PATH"
 
-# Load components
 source "$SCRIPT_DIR/lib.sh"
-source "$SCRIPT_DIR/linux/packages.sh"
-source "$SCRIPT_DIR/nvim/neovim_linux.sh"
-source "$SCRIPT_DIR/bat/pagers_linux.sh"
-source "$SCRIPT_DIR/zsh/syntax_linux.sh"
-source "$SCRIPT_DIR/argocd/argocd_linux.sh"
-source "$SCRIPT_DIR/k9s/k9s_linux.sh"
-for links in "$SCRIPT_DIR"/*/links.sh; do
-    source "$links"
-done
-source "$SCRIPT_DIR/git/signing.sh"
-source "$SCRIPT_DIR/fonts/fonts.sh"
-source "$SCRIPT_DIR/tig/tig.sh"
-source "$SCRIPT_DIR/vim/vim.sh"
-source "$SCRIPT_DIR/plc/plc.sh"
-source "$SCRIPT_DIR/tmux/plugins.sh"
-source "$SCRIPT_DIR/hr/hr.sh"
-source "$SCRIPT_DIR/ewl/ewl.sh"
-source "$SCRIPT_DIR/lean/lean.sh"
-source "$SCRIPT_DIR/fzf/fzf.sh"
-source "$SCRIPT_DIR/zsh/shell.sh"
+parse_args "$@"
 
 # ── Ensure mode ────────────────────────────────────────────────────────────────
-if [[ "${1:-}" == "--ensure" ]]; then
+if [ "$RC_MODE" = ensure ]; then
     echo "=========================================="
     echo "  Dotfiles Verify for Linux"
+    echo "  Level: $RC_LEVEL"
     echo "=========================================="
     echo ""
 
-    FAILURES=0
     set +e  # collect all failures instead of stopping at first
-
-    ensure_packages_linux      || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_neovim_linux        || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_pagers_linux        || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_zsh_syntax_linux    || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_argocd_linux        || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_k9s_linux           || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_vim_dirs            || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_dotfiles            || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_git_signing         || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_fonts_linux         || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_tig                 || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_vim_plugins         || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_plc                 || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_tmux_plugins        || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_hr                  || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_ewl                 || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_lean                || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_fzf_linux           || FAILURES=$((FAILURES + 1)); echo ""
-    ensure_default_shell_linux || FAILURES=$((FAILURES + 1)); echo ""
+    run_modules "$RC_LEVEL"
+    FAILURES=$RC_FAILURES
 
     echo "=========================================="
     if [ "$FAILURES" -eq 0 ]; then
@@ -86,49 +53,11 @@ fi
 # ── Install mode ───────────────────────────────────────────────────────────────
 echo "=========================================="
 echo "  Dotfiles Bootstrap for Linux"
+echo "  Level: $RC_LEVEL"
 echo "=========================================="
 echo ""
 
-# Run components
-install_packages_linux
-echo ""
-install_neovim_linux    # before vim.sh: its Lazy sync needs a usable nvim
-echo ""
-install_zsh_syntax_linux
-echo ""
-install_argocd_linux
-echo ""
-install_k9s_linux
-echo ""
-create_vim_dirs
-echo ""
-link_dotfiles
-echo ""
-configure_git_signing   # after link_dotfiles: ~/.gitconfig has to be in place
-echo ""
-install_pagers_linux    # after link_dotfiles: needs ~/.config/bat/themes to
-                        # exist before it can test and build the theme cache
-echo ""
-install_fonts_linux
-echo ""
-link_tig
-echo ""
-install_vim_plugins
-echo ""
-install_plc
-echo ""
-install_tmux_plugins
-echo ""
-install_hr
-echo ""
-install_ewl
-echo ""
-install_lean
-echo ""
-install_fzf_linux
-echo ""
-set_default_shell_linux
-echo ""
+run_modules "$RC_LEVEL"
 
 echo "=========================================="
 echo "  Installation Complete!"

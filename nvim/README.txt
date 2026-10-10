@@ -72,7 +72,7 @@ Default is vs_light. To switch:
     :colorscheme vs_light_def
     :colorscheme vs_dark_def
 
-To make it permanent, change the last line in init.lua.
+To make it permanent, change the last line in rc.d/11-colors.lua.
 
 -------------------------------------------------------------------------------
 DONE!

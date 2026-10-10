@@ -47,9 +47,9 @@ isg_palette() {
         ISG_FG='#d4d4d4'
         # The cursor wherever it is drawn: Ghostty's cursor-color at the prompt,
         # `hi Cursor` in nvim and vim (they paint it themselves, see
-        # nvim/lua/options.lua), bat's caret. One slot on purpose — split them
-        # and the difference shows as a colour jump on entering the editor, in
-        # the one glyph nothing else repaints.
+        # nvim/rc.d/00-options.lua), bat's caret. One slot on purpose — split
+        # them and the difference shows as a colour jump on entering the editor,
+        # in the one glyph nothing else repaints.
         #
         # Body text, not white. A block cursor fills the whole cell, so #ffffff
         # made it the brightest thing on a #2f2f2f screen by a wide margin and it

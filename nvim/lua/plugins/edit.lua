@@ -24,10 +24,11 @@ return {
     {
         "isdg/zen-mode.nvim",
         config = function()
-            -- Guard for the case where vim.g.zen_height is unset. options.lua sets
-            -- it at startup, so in practice this never decides the height — it is
-            -- named once anyway so the height function and :ZenHeight's readout
-            -- cannot report different numbers.
+            -- Guard for the case where vim.g.zen_height is unset.
+            -- 00-options.lua sets it at startup, so in practice this never
+            -- decides the height — it is named once anyway so the height
+            -- function and :ZenHeight's readout cannot report different
+            -- numbers.
             local DEFAULT_HEIGHT = 0.9
 
             -- The window options the zen float is opened with. Hoisted out of the
@@ -116,9 +117,10 @@ return {
     { "HiPhish/rainbow-delimiters.nvim" },
 
     -- Formatter (prettier for markdown). Formatting is on demand only —
-    -- <leader>F, see keymaps/edit.lua. No format_on_save here on purpose: a save
-    -- should write the file and nothing else. The per-filetype opt-outs this used
-    -- to need (TS/JS via a conform_on_save_disabled flag) went with it.
+    -- <leader>F, see rc.d/07-keys-edit.lua. No format_on_save here on purpose:
+    -- a save should write the file and nothing else. The per-filetype opt-outs
+    -- this used to need (TS/JS via a conform_on_save_disabled flag) went with
+    -- it.
     {
         "stevearc/conform.nvim",
         config = function()
