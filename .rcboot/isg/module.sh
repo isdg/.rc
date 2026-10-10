@@ -22,8 +22,21 @@ _isg_pick_postfix() {
     printf '%s\n' "$pool" | sed -n "$((i % n + 1))p"
 }
 
+# darwin, or the distribution's os-release ID (ubuntu, fedora, arch), with
+# the . and _ it may hold made hostname-safe; linux when there is none.
+_isg_os_word() {
+    local f id=""
+    if [ "$RC_OS" = darwin ]; then echo darwin; return; fi
+    for f in ${RC_OS_RELEASE:-/etc/os-release /usr/lib/os-release}; do
+        [ -r "$f" ] || continue
+        id="$(sed -n 's/^ID=//p' "$f" | tr -d "\"'" | tr '._' '--')"
+        break
+    done
+    echo "${id:-linux}"
+}
+
 _isg_hostname() {
-    echo "$(id -un)-$RC_OS-$(cat "$RC_ISG_DIR/postfix")"
+    echo "$(id -un)-$(_isg_os_word)-$(cat "$RC_ISG_DIR/postfix")"
 }
 
 install_isg_state() {
