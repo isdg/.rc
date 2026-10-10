@@ -193,6 +193,28 @@ link() {
     _relink "$1" "$kind" "$src" "$dst" || true
 }
 
+# seed <repo path> <destination>: copy once, for files their tool rewrites
+# (a link would send those writes into the repo). An existing one is kept.
+seed() {
+    local src="$DOTFILES_DIR/$1" dst="$2"
+    if [ "$RC_MODE" = ensure ]; then
+        if [ -e "$dst" ]; then
+            echo "[OK] Seeded $dst"
+        else
+            echo "[FAIL] Not seeded: $dst (from $1)"
+            RC_FAILURES=$((RC_FAILURES + 1))
+        fi
+        return 0
+    fi
+    [ ! -e "$dst" ] || return 0
+    mkdir -p "$(dirname "$dst")"
+    if cp "$src" "$dst"; then
+        echo "[OK] Seeded $dst from $1"
+    else
+        echo "[FAIL] Could not seed $dst from $1"
+    fi
+}
+
 # Fragments a module enables: one link in ~/.config/rc/<tool>/ per file of
 # <tool>/rc.d/. The loaders read only that directory, so linking a fragment
 # is what turns it on. Literal ~/.config: tmux expands nothing else.
