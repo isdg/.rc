@@ -53,32 +53,6 @@ _banner_sudo_origin() {
     print -r -- "$_banner_sudo_origin"
 }
 
-# host + session kind, e.g. "isg-darwin · local" / "isg-darwin · ssh"
-# — who and what kind of session, so it belongs on the identity line next to
-# the user name rather than buried in the logs. Printed, not registered:
-# .zshrc assembles the info lines itself, before banner_render walks the log
-# registry.
-#
-# The name is always THIS machine ($HOST), never the peer: on a box you sshed
-# into it names the box you landed on. Deliberately address-free — the numbers
-# live on the line below, so this one answers "who and what" and never makes
-# you read an IP to find out you are simply at home.
-#
-# SUDO_USER names who made the jump and rides along on every branch. Under sudo
-# on a local box the origin probe finds no parenthesis, so the line says only
-# "isg-darwin · via isg" — no session kind, because utmp cannot prove one.
-banner_host_info() {
-    local where
-    if [[ -n $SSH_CONNECTION || -n $SSH_TTY ]]; then
-        where="ssh"
-    elif [[ -n $SUDO_USER ]]; then
-        [[ -n $(_banner_sudo_origin) ]] && where="ssh"
-    else
-        where="local"
-    fi
-    print -r -- "${HOST%%.*}${where:+ · $where}${SUDO_USER:+ · via $SUDO_USER}"
-}
-
 # The peer's name, into REPLY: the one its zsh sent (LC_ISG_FROM, kept as
 # ISG_SSH_FROM by .zshenv) unless $2 is 0, else Tailscale's for a tailnet
 # address. No DNS: a slow resolver would stall the login. 1 when unnamed.
@@ -97,10 +71,44 @@ _banner_peer_name() {
     [[ -n $REPLY ]]
 }
 
-# this end's address and the peer, e.g. "100.81.165.60 · ssh from
-# isg-darwin-sigma" — inward-out: at which address, reached from where. The
-# peer is named when _banner_peer_name can, else its address. Second info
-# line, directly under the identity.
+# host + session kind, e.g. "isg-darwin · local" / "isg-darwin · ssh from
+# isg-darwin-sigma"
+# — who and what kind of session, so it belongs on the identity line next to
+# the user name rather than buried in the logs. Printed, not registered:
+# .zshrc assembles the info lines itself, before banner_render walks the log
+# registry.
+#
+# The leading name is always THIS machine ($HOST): on a box you sshed into it
+# names the box you landed on. The peer follows "ssh from" only when
+# _banner_peer_name knows its name. Deliberately address-free — the numbers
+# live on the line below, so this one answers "who and what" and never makes
+# you read an IP to find out you are simply at home.
+#
+# SUDO_USER names who made the jump and rides along on every branch. Under sudo
+# on a local box the origin probe finds no parenthesis, so the line says only
+# "isg-darwin · via isg" — no session kind, because utmp cannot prove one.
+# Under sudo only Tailscale names the peer: sudo -E would carry a forged
+# ISG_SSH_FROM through.
+banner_host_info() {
+    local where origin REPLY
+    if [[ -n $SSH_CONNECTION || -n $SSH_TTY ]]; then
+        where="ssh"
+        _banner_peer_name "${${=SSH_CONNECTION}[1]}" && where+=" from $REPLY"
+    elif [[ -n $SUDO_USER ]]; then
+        origin=$(_banner_sudo_origin)
+        if [[ -n $origin ]]; then
+            where="ssh"
+            _banner_peer_name $origin 0 && where+=" from $REPLY"
+        fi
+    else
+        where="local"
+    fi
+    print -r -- "${HOST%%.*}${where:+ · $where}${SUDO_USER:+ · via $SUDO_USER}"
+}
+
+# the two addresses, e.g. "100.81.165.60 · ssh from 100.70.55.75" — this end of
+# the connection first, then the peer, so the line reads inward-out: at which
+# address, reached from where. Second info line, directly under the identity.
 #
 # Both come out of $SSH_CONNECTION, "<client-ip> <client-port> <server-ip>
 # <server-port>": field 3 is this end of the socket, i.e. the address the
@@ -112,17 +120,14 @@ _banner_peer_name() {
 # learn — too much for a number you did not ask for. Under sudo only the origin
 # survives (utmp records where the login came from, not which local address it
 # landed on), so the line degrades to "ssh from <origin>" rather than lying
-# about this end. It names the peer from Tailscale only: sudo -E would carry a
-# forged ISG_SSH_FROM through.
+# about this end.
 banner_net_info() {
-    local here there REPLY
+    local here there
     if [[ -n $SSH_CONNECTION ]]; then
         local -a conn=( ${=SSH_CONNECTION} )
         here=$conn[3] there=$conn[1]
-        _banner_peer_name $there && there=$REPLY
     elif [[ -n $SUDO_USER ]]; then
         there=$(_banner_sudo_origin)
-        [[ -n $there ]] && _banner_peer_name $there 0 && there=$REPLY
     fi
     [[ -z $here && -z $there ]] && return 0
     print -r -- "${here}${here:+${there:+ · }}${there:+ssh from $there}"
