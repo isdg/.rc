@@ -1,6 +1,15 @@
 # Ghostty config — light theme, JetBrains Mono ExtraLight
 
 # --- font ---
+# Families and styles available (`ghostty +list-fonts`):
+#   JetBrains Mono  ExtraLight, Light, Regular, Medium (no bold/italic files)
+#   Menlo           Regular, Bold, Italic, Bold Italic
+#   Courier New     Regular, Bold, Italic, Bold Italic
+#   PT Mono         Regular, Bold
+#   Andale Mono, Monaco   Regular only
+# Missing bold/italic is synthesized (font-synthetic-style, on by default).
+# Defaults: font-family unset = Ghostty's built-in JetBrains Mono (+ Nerd Font
+# symbols), font-style = default (Regular), font-size = 13, no cell adjust.
 font-family = JetBrains Mono
 font-style = Light
 font-style-bold = false
@@ -9,6 +18,10 @@ adjust-cell-height = 25%
 adjust-cell-width = -5%
 font-feature = -liga
 font-feature = -calt
+# zoom in half-point steps (default is 1)
+keybind = super+==increase_font_size:0.5
+keybind = super++=increase_font_size:0.5
+keybind = super+-=decrease_font_size:0.5
 
 # --- theme (light/dark) ---
 # theme + bg/fg/cursor colors live in theme-dark.conf / theme-light.conf and

@@ -1,8 +1,8 @@
 -- ============================================================
 --             RUSSIAN LAYOUT REMAPPING
 -- ============================================================
--- Maps Cyrillic keys to their Latin equivalents so Vim commands
--- work on the Russian keyboard layout.
+-- Cyrillic keys and their Latin equivalents, mapped by rc.d/01-russian.lua
+-- so Vim commands work on the Russian keyboard layout.
 
 local ru_eng = {
     ["й"]="q", ["ц"]="w", ["у"]="e", ["к"]="r", ["е"]="t",
@@ -31,20 +31,6 @@ local all = {}
 for k, v in pairs(ru_eng) do all[k] = v end
 for k, v in pairs(ru_eng_upper) do all[k] = v end
 
--- Map in normal, visual, operator-pending modes
-for ru, en in pairs(all) do
-    vim.keymap.set({ "n", "v", "o" }, ru, en, { noremap = true })
-end
-
--- Double-key Russian mappings (dd, yy, cc, gg, zz equivalents)
-local ru_jumps = {
-    ["вв"]="dd", ["фф"]="yy", ["сс"]="cc", ["пп"]="gg", ["яя"]="zz",
-}
-
-for ru, en in pairs(ru_jumps) do
-    vim.keymap.set({ "n", "v" }, ru, en, { noremap = true })
-end
-
--- Handed out for keymaps/layer.lua, which reads keys rather than mapping them
--- and so has to do this translation itself, once per press.
+-- Also handed out for keymaps/layer.lua, which reads keys rather than mapping
+-- them and so has to do this translation itself, once per press.
 return { to_latin = all }

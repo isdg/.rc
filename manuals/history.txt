@@ -1,0 +1,40 @@
+History expansion — reuse earlier command lines with `!`. Inherited from csh.
+It works on the TEXT of past commands, not their output: `!!` re-runs the
+command and gets fresh output. zsh never stores what a command printed.
+
+hist_verify is set in .zshrc, so an expansion never runs straight away: Enter
+puts the expanded line back in the editor, and a second Enter runs it.
+
+Events (which past command):
+  !!            The previous command, whole line
+  !-2           Two commands back (!-1 is the same as !!)
+  !42           History entry 42 (number from `history`)
+  !git          Most recent command STARTING WITH "git"
+  !?config      Most recent command CONTAINING "config"
+
+Words (which part of it; previous command when the event is omitted):
+  !$            Last argument          vim !$
+  !^            First argument
+  !*            All arguments
+  !:2           Argument 2 (0 is the command name itself)
+  !git:$        Last argument of the most recent git command
+
+Modifiers (chain after a colon):
+  !$:h          Head: drop the last path component (dirname)
+  !$:t          Tail: keep only the last component (basename)
+  !$:r          Remove the extension
+  !$:e          Keep only the extension
+  !!:s/foo/bar/ Replace the first foo with bar (:gs/// for all of them)
+  !!:p          Print the expansion without running it
+
+Quick substitution:
+  ^foo^bar      Previous command with the first foo replaced by bar
+
+Everyday uses:
+  sudo !!               Rerun the last command as root
+  !! | tee $TMPDIR/out  Rerun, keeping a copy of the output
+  mkdir x  then  cd !$  Act on the last command's argument
+  vim !$:h/notes        A file next to the one you just used
+
+Pitfall: `!` expands even inside double quotes ("hi!" can fail with "event not
+found"). Use single quotes, or a backslash: echo 'hi!' / echo "hi\!".

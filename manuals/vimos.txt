@@ -1,0 +1,134 @@
+============================================
+  Terminal control characters (ASCII lore)
+============================================
+
+Ctrl-<letter> literally produces a control byte
+(letter - 64). Many of those bytes have terminal
+meaning, which is why some chords feel arbitrary
+— they're 1960s ASCII showing through.
+
+
+-- "Ctrl is the same as another key" --------
+Chord       Equals          ASCII   Note
+Ctrl-[      Esc             27      The big one.
+Ctrl-]      GS              29      Telnet/old escape;
+                                    in vim: jump to tag.
+Ctrl-i      Tab             9       <C-i> and <Tab> are
+                                    the same byte.
+Ctrl-m      Enter (CR)      13      <C-m> and <CR> are
+                                    indistinguishable.
+Ctrl-j      LF (newline)    10      Same as Enter on Unix
+                                    in many contexts.
+Ctrl-h      Backspace       8       Why some terminals
+                                    treat <C-h> as BS.
+Ctrl-@      NUL             0       Often shows up as
+                                    <C-Space>.
+Ctrl-?      Delete          127     The actual ASCII DEL.
+
+
+-- Kernel / shell signals -------------------
+Ctrl-c      SIGINT          interrupt foreground process
+Ctrl-z      SIGTSTP         suspend (resume with `fg`)
+Ctrl-\      SIGQUIT         interrupt + core dump
+Ctrl-d      EOF             close stdin; logs out shells
+Ctrl-s      XOFF            freeze terminal output
+Ctrl-q      XON             unfreeze (antidote to C-s)
+
+
+-- Readline / shell line editing ------------
+(bash, zsh in emacs mode)
+
+Ctrl-a       beginning of line
+Ctrl-e       end of line
+Ctrl-u       kill from cursor to start of line
+Ctrl-k       kill from cursor to end of line
+Ctrl-w       kill previous word
+Ctrl-y       yank what you just killed
+Ctrl-r       reverse history search
+Ctrl-l       clear screen (FF, form feed)
+Ctrl-t       transpose two characters
+Ctrl-_       undo
+Alt-. / Esc .   insert last argument of previous command
+
+
+-- Vim-specific consequences ----------------
+
+Cannot distinguish in a normal terminal:
+  <C-i>  ==  <Tab>
+  <C-m>  ==  <CR>
+  <C-[>  ==  <Esc>
+
+Modern terminals (kitty, wezterm, alacritty with
+xterm.modifyOtherKeys) + neovim ≥ 0.10 can emit
+"extended keys" — then you CAN bind them separately,
+but both terminal and nvim must support it.
+
+Any map on <Esc> also fires on <C-[> and vice versa.
+
+
+-- Mental model -----------------------------
+A terminal is fundamentally an ASCII byte stream.
+Ctrl-<letter> toggles bit 6 off, producing the
+control character with code letter - 64:
+
+    Ctrl-A = 1
+    Ctrl-B = 2
+    ...
+    Ctrl-Z = 26
+    Ctrl-[ = 27   (Esc)
+    Ctrl-\ = 28
+    Ctrl-] = 29
+    Ctrl-^ = 30
+    Ctrl-_ = 31
+
+Everything else (function keys, arrows, modifiers,
+mouse) is escape sequences layered on top of this.
+
+
+============================================
+  Replacements for awkward chords
+============================================
+
+-- Esc alternatives -------------------------
+jk → <Esc> in insert mode (most popular)
+   inoremap jk <Esc>
+   imap kj <Esc>      " some prefer this
+
+Ctrl-[ is built-in equivalent to Esc.
+
+Ctrl-c aborts insert mode but does NOT trigger
+InsertLeave autocmds — use with care.
+
+Caps Lock → Esc (OS level):
+  Darwin: System Settings → Keyboard → Modifier Keys
+  Linux: setxkbmap -option caps:escape
+
+Best combo: Caps Lock = Esc on tap, Ctrl on hold
+(Karabiner-Elements on Darwin, kmonad on Linux).
+
+
+-- Ctrl-] alternatives (jump to tag) --------
+Awkward on non-US layouts (Russian/AZERTY etc.)
+where [ ] need AltGr.
+
+  nnoremap <C-.> <C-]>          " period chord
+  nnoremap gd <C-]>             " override default gd
+  nnoremap <leader>d <C-]>
+
+With LSP, skip Ctrl-] entirely:
+  gd  → vim.lsp.buf.definition
+  gD  → vim.lsp.buf.declaration
+  gr  → vim.lsp.buf.references
+  gi  → vim.lsp.buf.implementation
+  K   → vim.lsp.buf.hover
+
+
+-- Bracket access on non-US layouts ---------
+Karabiner (Darwin):
+  Right Cmd + j → [
+  Right Cmd + k → ]
+
+Linux xkb:
+  AltGr or xmodmap remap to a third level.
+
+Fix at OS level — pays off everywhere, not just vim.

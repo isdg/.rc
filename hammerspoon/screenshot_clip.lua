@@ -1,7 +1,7 @@
 -- ============================================================
 --   screenshot_clip — auto-copy new screenshots to the clipboard
 -- ============================================================
--- macOS's default capture shortcuts (⌘⇧3 / ⌘⇧4) save a PNG to disk; only the
+-- Darwin's default capture shortcuts (⌘⇧3 / ⌘⇧4) save a PNG to disk; only the
 -- ⌃ variants copy to the clipboard. This watches the screenshot save folder and,
 -- whenever a fresh screenshot lands, also puts the image on the pasteboard — so
 -- you capture the normal way and can paste immediately. The file is kept on disk.

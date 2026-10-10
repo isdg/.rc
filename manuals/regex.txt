@@ -1,0 +1,195 @@
+⏺ Regex Symbols & Patterns
+
+  Character Classes
+
+  ┌────────┬───────────────────────────────────────┬───────────────────────────┐
+  │ Symbol │                Meaning                │          Example          │
+  ├────────┼───────────────────────────────────────┼───────────────────────────┤
+  │ .      │ Any single character (except newline) │ a.c matches abc, a1c, a-c │
+  ├────────┼───────────────────────────────────────┼───────────────────────────┤
+  │ \d     │ Any digit [0-9]                       │ \d\d matches 42, 99       │
+  ├────────┼───────────────────────────────────────┼───────────────────────────┤
+  │ \D     │ Any NON-digit                         │ \D matches a, !           │
+  ├────────┼───────────────────────────────────────┼───────────────────────────┤
+  │ \w     │ Word character [a-zA-Z0-9_]           │ \w+ matches hello_world   │
+  ├────────┼───────────────────────────────────────┼───────────────────────────┤
+  │ \W     │ NON-word character                    │ \W matches @,             │
+  ├────────┼───────────────────────────────────────┼───────────────────────────┤
+  │ \s     │ Whitespace (space, tab, newline)      │ \s+ matches               │
+  ├────────┼───────────────────────────────────────┼───────────────────────────┤
+  │ \S     │ NON-whitespace                        │ \S+ matches hello         │
+  └────────┴───────────────────────────────────────┴───────────────────────────┘
+
+  Quantifiers (how many times)
+
+  ┌────────┬───────────────────┬───────────────────────────────────┐
+  │ Symbol │      Meaning      │              Example              │
+  ├────────┼───────────────────┼───────────────────────────────────┤
+  │ *      │ 0 or more         │ ab*c matches ac, abc, abbc        │
+  ├────────┼───────────────────┼───────────────────────────────────┤
+  │ +      │ 1 or more         │ ab+c matches abc, abbc but NOT ac │
+  ├────────┼───────────────────┼───────────────────────────────────┤
+  │ ?      │ 0 or 1 (optional) │ colou?r matches color and colour  │
+  ├────────┼───────────────────┼───────────────────────────────────┤
+  │ {3}    │ Exactly 3         │ \d{3} matches 123                 │
+  ├────────┼───────────────────┼───────────────────────────────────┤
+  │ {2,5}  │ Between 2 and 5   │ \d{2,5} matches 12 to 12345       │
+  ├────────┼───────────────────┼───────────────────────────────────┤
+  │ {2,}   │ 2 or more         │ a{2,} matches aa, aaa, ...        │
+  └────────┴───────────────────┴───────────────────────────────────┘
+
+  Anchors (position, not characters)
+
+  ┌────────┬───────────────┬───────────────────────────────────┐
+  │ Symbol │    Meaning    │              Example              │
+  ├────────┼───────────────┼───────────────────────────────────┤
+  │ ^      │ Start of line │ ^fn matches fn only at line start │
+  ├────────┼───────────────┼───────────────────────────────────┤
+  │ $      │ End of line   │ ;$ matches ; at line end          │
+  ├────────┼───────────────┼───────────────────────────────────┤
+  │ \b     │ Word boundary │ \bfn\b matches fn but not pfn     │
+  └────────┴───────────────┴───────────────────────────────────┘
+
+  Groups & Alternation
+
+  ┌─────────┬───────────────────────────┬─────────────────────────────┐
+  │ Symbol  │          Meaning          │           Example           │
+  ├─────────┼───────────────────────────┼─────────────────────────────┤
+  │ (...)   │ Capture group             │ (ab)+ matches abab          │
+  ├─────────┼───────────────────────────┼─────────────────────────────┤
+  │ (?:...) │ Non-capturing group       │ (?:ab)+ same but no capture │
+  ├─────────┼───────────────────────────┼─────────────────────────────┤
+  │ |       │ OR                        │ cat|dog matches either      │
+  ├─────────┼───────────────────────────┼─────────────────────────────┤
+  │ $1      │ Back-reference to group 1 │ used in -r replacements     │
+  └─────────┴───────────────────────────┴─────────────────────────────┘
+
+  Character Sets
+
+  ┌────────┬────────────────────┬────────────────────────┐
+  │ Symbol │      Meaning       │        Example         │
+  ├────────┼────────────────────┼────────────────────────┤
+  │ [abc]  │ Any one of a, b, c │ [aeiou] matches vowels │
+  ├────────┼────────────────────┼────────────────────────┤
+  │ [a-z]  │ Range: a through z │ [0-9] same as \d       │
+  ├────────┼────────────────────┼────────────────────────┤
+  │ [^abc] │ NOT a, b, or c     │ [^0-9] same as \D      │
+  └────────┴────────────────────┴────────────────────────┘
+
+  Escaping
+
+  ┌─────────┬────────────────────────────────────────────┐
+  │ Symbol  │                  Meaning                   │
+  ├─────────┼────────────────────────────────────────────┤
+  │ \       │ Escape special character                   │
+  ├─────────┼────────────────────────────────────────────┤
+  │ \.      │ Literal dot (not "any char")               │
+  ├─────────┼────────────────────────────────────────────┤
+  │ \[      │ Literal bracket                            │
+  ├─────────┼────────────────────────────────────────────┤
+  │ -F flag │ Treat entire pattern as literal (no regex) │
+  └─────────┴────────────────────────────────────────────┘
+
+  Walking Through Your Examples
+
+  fn\s+\w+
+  │  │  └── \w+ = one or more word chars (the function name)
+  │  └───── \s+ = one or more whitespace
+  └──────── fn  = literal text "fn"
+  Matches: "fn main", "fn  hello_world"
+
+  v\d+\.\d+\.\d+
+  │ │   │  │   └── \d+ = patch number
+  │ │   │  └────── \.  = literal dot
+  │ │   └───────── \d+ = minor number
+  │ └───────────── \.  = literal dot
+  │ └───────────── \d+ = major number
+  └─────────────── v   = literal "v"
+  Matches: "v1.2.3", "v10.0.99"
+
+  ^\s*import
+  │ │  └──── import = literal text
+  │ └─────── \s*   = zero or more whitespace (handles indented imports)
+  └───────── ^     = must be at start of line
+  Matches: "import x", "  import y"
+
+  Quick Mental Model
+
+  Think of regex as three questions:
+  1. What character? (., \d, \w, [a-z], literal)
+  2. How many? (*, +, ?, {n})
+  3. Where? (^, $, \b)
+
+
+  Same Regex, Three Tools (rg / less / fzf)
+
+  Only rg speaks real regex. Darwin /usr/bin/less is POSIX ERE, and fzf's
+  search bar isn't regex at all.
+
+  ┌──────────────────┬───────────┬─────────────────────┬──────────────────┐
+  │       Want       │    rg     │    less (Darwin)     │       fzf        │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ digit            │ \d        │ [0-9], [[:digit:]]  │ n/a              │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ whitespace       │ \s        │ [[:space:]]         │ n/a              │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ word boundary    │ \b        │ [[:<:]]foo[[:>:]]   │ n/a              │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ OR               │ a|b       │ a|b                 │ a | b            │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ AND              │ n/a       │ n/a                 │ a b              │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ NOT              │ -v        │ /!pat  or  &!pat    │ !term            │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ literal          │ -F        │ / then Ctrl-R       │ 'term            │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ ignore case      │ -i  (-S)  │ -I  (-i smart)      │ smart by default │
+  ├──────────────────┼───────────┼─────────────────────┼──────────────────┤
+  │ lookaround, \1   │ -P        │ no                  │ no               │
+  └──────────────────┴───────────┴─────────────────────┴──────────────────┘
+
+  rg  (Rust regex; -P switches to PCRE2)
+
+  rg 'TODO|FIXME'                 alternation
+  rg '\bfoo\b'                    word boundary (or: rg -w foo)
+  rg '^\s*#'                      lines starting with a comment
+  rg '\d{3}-\d{4}'                \d \w \s all work
+  rg '(?i)error'                  inline flag, same as rg -i error
+  rg 'fn \w+\('                   escape ( to match it literally
+  rg -F 'a.b(c)'                  fixed string, no regex
+  rg -U 'foo\nbar'                multiline
+  rg -P 'foo(?=bar)'              lookahead needs -P
+  rg -P '(\w+) \1'                backreference needs -P
+  rg -oP 'id=\K\d+'               print only what follows \K
+
+  Single-quote patterns so zsh leaves \ $ ! alone.
+
+  less  (/pat forward, ?pat backward, n / N next / prev)
+
+  /TODO|FIXME                     alternation works
+  /[0-9]{3}-[0-9]{4}              use classes, not \d
+  /[[:digit:]]+                   POSIX class ([[:space:]], [[:alnum:]] too)
+  /[[:<:]]foo[[:>:]]              word boundary
+  /^[[:space:]]*#                 leading whitespace
+  /a\.b                           escaped dot works
+  /!pat                           lines NOT matching
+  &pat                            show only matching lines (& alone clears)
+  / Ctrl-R pat                    literal search, regex off
+
+  TRAP: \d \w \s don't error, they silently match the letters d, w, s.
+  \b and \< \> don't work; (?i) and lookarounds are errors; \1 never matches.
+  brew install less gets a PCRE2 build (check: less --version).
+
+  fzf  (fuzzy + extended search syntax, never regex)
+
+  abc                             fuzzy: a…b…c in order
+  'abc                            exact substring
+  ^src                            starts with
+  .rs$                            ends with
+  !test                           does not contain
+  !^vendor                        does not start with
+  foo bar                         AND (space separates terms)
+  rs$ | go$                       OR
+
+  fzf -e makes every term exact. For real regex, let rg do the matching:
+  fzf --disabled --bind 'change:reload:rg --line-number {q} || true'

@@ -142,6 +142,14 @@ return {
         end,
     },
 
+    -- Lean 4: infoview + leanls. The server comes from the project's elan
+    -- toolchain, not mason, and lean.nvim enables it itself. Its suggested
+    -- <LocalLeader> maps stay off; keys live in the plugins layer (<leader><leader>l).
+    {
+        "Julian/lean.nvim",
+        event = { "BufReadPre *.lean", "BufNewFile *.lean" },
+    },
+
     -- Completion (replaces CoC completion)
     {
         "hrsh7th/nvim-cmp",
@@ -183,12 +191,12 @@ return {
                     -- makes <leader>S (toggle auto-suggestions) usable: it goes
                     -- through cmp.complete(), which ignores
                     -- completion.autocomplete entirely.
-                    -- <C-l>, not <C-Space>: macOS binds Ctrl+Space to the input
+                    -- <C-l>, not <C-Space>: Darwin maps Ctrl+Space to the input
                     -- source switcher, so the terminal never sees it. Insert-mode
                     -- CTRL-L has no Neovim default (:h i_CTRL-L does not exist —
                     -- CTRL-L is only meaningful inside |i_CTRL-X| completion
                     -- mode), and this is a different mode from the normal-mode
-                    -- <C-l> window motion in keymaps/editor.lua.
+                    -- <C-l> window motion in rc.d/04-keys-editor.lua.
                     --
                     -- One key, three states, because what you want from it
                     -- depends on what is on screen:

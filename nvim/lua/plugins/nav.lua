@@ -20,7 +20,7 @@ return {
                 filters = { dotfiles = false, git_ignored = false },
                 -- Close the tree once a file is opened: the explorer is for picking
                 -- a file, not for living next to the buffer. Same as NERDTreeQuitOnOpen
-                -- in vim/.vimrc. Reopen with <leader>t.
+                -- in vim/rc.d/12-nerdtree.vim. Reopen with <leader>t.
                 actions = { open_file = { quit_on_open = true } },
                 on_attach = function(bufnr)
                     local api = require("nvim-tree.api")
@@ -59,7 +59,8 @@ return {
     -- fzf.vim (fast native fzf for file finding)
     {
         "junegunn/fzf",
-        build = "./install --all",
+        -- --bin: --all also writes ~/.fzf.* and appends to ~/.zshrc (the repo).
+        build = "./install --bin",
     },
     {
         "junegunn/fzf.vim",
@@ -68,80 +69,33 @@ return {
         end,
     },
 
-    -- Fuzzy finder (replaces fzf.vim)
+    -- Window, previewer and actions behind lua/lsp_picker.lua, plus code actions
+    -- and vim.ui.select, on fzf.vim's fzf binary and $FZF_DEFAULT_OPTS_FILE.
     {
-        "nvim-telescope/telescope.nvim",
-        dependencies = {
-            "nvim-lua/plenary.nvim",
-            { "nvim-telescope/telescope-fzf-native.nvim", build = "make" },
-        },
+        "ibhagwan/fzf-lua",
+        dependencies = { "nvim-tree/nvim-web-devicons" },
         config = function()
-            local telescope = require("telescope")
-            telescope.setup({
-                defaults = {
-                    vimgrep_arguments = {
-                        "rg", "--color=never", "--no-heading", "--with-filename",
-                        "--line-number", "--column", "--smart-case", "--hidden",
-                        "--glob", "!.git/",
-                    },
-                    -- Frame telescope like the fzf.vim commands, so the pickers that
-                    -- ARE telescope (lsp_*_symbols, diagnostics) look
-                    -- the same as <leader>f/a/A/C. Mirrors vim/fzf-layout.vim:
-                    -- full-screen window, preview stacked below the list at 60%.
-                    -- Telescope's own previewer does the work — real buffers with
-                    -- treesitter highlighting, and the match line centred and
-                    -- highlighted for free (bat via a termopen previewer would match
-                    -- fzf byte-for-byte but costs a subprocess per entry and has no
-                    -- clean equivalent of fzf's `+{2}-/2` centring).
-                    layout_strategy = "vertical",
-                    layout_config = {
-                        vertical = {
-                            -- Plain "vertical" puts the preview ABOVE the results;
-                            -- fzf's 'down,60%' is below it. mirror flips them.
-                            mirror = true,
-                            preview_height = 0.6,
-                            -- NOT 1.0: telescope reads `>= 1` as a fixed count,
-                            -- so 1.0 is a one-column picker. {padding = 0} is its
-                            -- documented full-screen form (max minus 2*0).
-                            width = { padding = 0 },
-                            height = { padding = 0 },
-                            -- Default cutoff (40 lines) silently drops the preview in
-                            -- a short window; fzf always shows it.
-                            preview_cutoff = 0,
-                        },
-                    },
+            local fzf_lua = require("fzf-lua")
+            fzf_lua.setup({
+                -- Mirrors vim/fzf-layout.vim: full screen, preview below at 60%.
+                winopts = {
+                    fullscreen = true,
+                    preview = { layout = "vertical", vertical = "down:60%" },
                 },
-                pickers = {
-                    find_files = {
-                        hidden = true,
-                        no_ignore = true,
-                        file_ignore_patterns = {
-                            "^%.git/", "node_modules/", "__pycache__/",
-                            "%.mypy_cache/", "%.ruff_cache/", "%.pytest_cache/",
-                        },
-                    },
+                -- fzf.vim leaves layout and info to fzf, and our binds live in
+                -- the opts file, so drop fzf-lua's overrides of both.
+                fzf_opts = { ["--layout"] = "default", ["--info"] = false },
+                keymap = {
+                    fzf = {},
+                    -- The builtin previewer is an nvim window fzf can't see, so
+                    -- fzf.vim's ctrl-/ toggle has to be an nvim map here.
+                    builtin = { true, ["<C-/>"] = "toggle-preview", ["<C-_>"] = "toggle-preview" },
                 },
             })
-            telescope.load_extension("fzf")
-
-            -- Make the results counter visible. Telescope already draws one by
-            -- default (config.values.get_status_text -> "12 / 340" right-aligned
-            -- on the prompt line, "*"-prefixed while the search is still running),
-            -- but TelescopePromptCounter links to NonText, which the vs_* themes
-            -- set to guifg=#2f2f2f guibg=#2f2f2f -- redrawn on every keystroke and
-            -- perfectly invisible. Borrow Comment's colour instead of hardcoding a
-            -- hex so it stays right in both vs_dark and vs_light, and re-apply on
-            -- ColorScheme so it survives the theme toggle. Same shape as the
-            -- FlashBackdrop fix below; italic is dropped for the same reason
-            -- (Comment is gui=italic in these themes).
-            local function fix_counter()
-                local c = vim.api.nvim_get_hl(0, { name = "Comment" })
-                vim.api.nvim_set_hl(0, "TelescopePromptCounter", { fg = c.fg, italic = false })
-            end
-            fix_counter()
-            vim.api.nvim_create_autocmd("ColorScheme", { callback = fix_counter })
+            fzf_lua.register_ui_select()
         end,
     },
+
 
     -- flash: label-based visual jump (the avy/EasyMotion equivalent). Trigger,
     -- type 1-2 chars of any on-screen target, then a label appears -- type it to

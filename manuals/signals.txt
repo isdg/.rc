@@ -1,0 +1,62 @@
+ 1  HUP     Hangup — terminal closed / reload config convention
+ 2  INT     Interrupt — Ctrl-C
+ 3  QUIT    Quit — Ctrl-\, dumps core
+ 4  ILL     Illegal instruction
+ 5  TRAP    Trace/breakpoint trap (debuggers)
+ 6  ABRT    Abort — from abort(3)
+ 7  EMT     Emulator trap
+ 8  FPE     Floating-point exception
+ 9  KILL    Kill — cannot be caught/ignored/blocked
+10  BUS     Bus error — bad memory access (alignment)
+11  SEGV    Segmentation fault
+12  SYS     Bad system call
+13  PIPE    Broken pipe — write to closed reader
+14  ALRM    Alarm clock — from alarm(2)
+15  TERM    Terminate — default for kill(1), catchable
+16  URG     Urgent socket condition (OOB data)
+17  STOP    Stop — cannot be caught/blocked
+18  TSTP    Terminal stop — Ctrl-Z
+19  CONT    Continue if stopped
+20  CHLD    Child status changed
+21  TTIN    Background read from tty
+22  TTOU    Background write to tty
+23  IO      I/O ready (async)
+24  XCPU    CPU time limit exceeded
+25  XFSZ    File size limit exceeded
+26  VTALRM  Virtual alarm
+27  PROF    Profiling timer
+28  WINCH   Window size change
+29  INFO    Status request (BSD/Darwin — Ctrl-T)
+30  USR1    User-defined 1
+31  USR2    User-defined 2
+
+Notes:
+- KILL (9) and STOP (17) are the only signals that cannot be caught, blocked, or ignored.
+- TERM (15) is the polite default — let the process clean up. Reach for KILL only if it doesn't respond.
+- HUP (1) is conventionally repurposed by daemons to reload config (nginx, sshd).
+- Numbers above are Darwin/BSD. Linux differs for some (e.g., USR1=10, USR2=12, CHLD=17). Use `kill -l` on the target system to be sure.
+
+Finding processes:
+  pgrep -fl name           List PIDs + command lines matching "name" (regex on full cmdline with -f)
+  pgrep -x name            Exact match on process name only
+  pgrep -u $USER name      Filter by owning user
+  pgrep -n name            Newest matching PID only (-o = oldest)
+  pgrep -P <ppid>          Children of a given parent PID
+  pidof name               Linux only — PIDs of an exact-name process
+  ps aux | grep name       Classic fallback (grep -v grep to drop the grep itself)
+  ps -ef | grep name       SysV-style; shows PPID
+  ps -o pid,ppid,user,etime,comm,args -p <pid>   Detailed info for one PID
+  lsof -i :<port>          What process is listening on a port
+  lsof -p <pid>            Files/sockets open by a PID
+  fuser <file>             What process holds a file (Linux)
+  htop / btop              Interactive — / to filter by name
+
+Killing matching processes:
+  pkill -f name            Send TERM to anything matching (use -SIGNAL to override, e.g. pkill -9 -f foo)
+  killall name             Kill by exact name (Darwin/BSD signal-by-name: killall -TERM foo)
+  kill -<sig> <pid>        Signal by number or name: kill -9 1234, kill -HUP 1234
+
+Quick patterns:
+  kill $(pgrep -f mycmd)               Kill all matches
+  pgrep -f mycmd | xargs -r kill -9    Force-kill all matches (xargs -r skips empty input on GNU)
+  pwait $(pgrep -f mycmd)              Wait for a process to exit (procps; on Darwin: `lsof -p PID +r 1`)

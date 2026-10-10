@@ -6,7 +6,7 @@
 " :Commits, …) — they inherit these via fzf#wrap(), which falls back to
 " g:fzf_layout/g:fzf_vim whenever a call doesn't set its own options.
 "
-" Sourced from both vim/.vimrc and nvim/init.lua.
+" Sourced from both vim/rc.d/14-fzf-layout.vim and nvim/rc.d/02-fzf-layout.lua.
 " 1.0 is the whole screen: fzf.vim floors height at &lines - 1, so the popup
 " takes everything but the command line. Matches omni's and orchbus's tmux
 " popups, which run -w 100% -h 100%.
@@ -39,7 +39,7 @@ endif
 " fzf#vim#buffer_lines() builds its own --options list and never routes through
 " fzf#vim#with_preview(), so g:fzf_vim.preview_window above never reaches it.
 " This calls the same function with a bat preview bolted on, matching the
-" `bat --style=numbers --highlight-line` previews in zsh/fzf.zsh.
+" `bat --style=numbers --highlight-line` previews in zsh/rc.d/16-fzf.zsh.
 "
 " A function rather than a `command! BLines` override, so it can't lose a race
 " with fzf.vim defining its own commands at plugin-load time.

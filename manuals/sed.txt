@@ -1,0 +1,144 @@
+============================================
+  Three tools, three places
+============================================
+
+  Tool              Where             What it does
+  ----              -----             ------------
+  :s/pat/repl/      Ex (in vim)       regex substitute, vim-flavored
+  :normal <keys>    Ex (in vim)       replay normal-mode keystrokes per line
+  sed 's/pat/repl'  shell             same as :s but outside vim, on files
+
+:s is closest to sed. :normal is unique to vim — it scripts
+normal-mode commands across many lines, the closest built-in
+thing to "multi-cursor".
+
+
+============================================
+  vim/nvim :s — substitute
+============================================
+
+After visual selection (V or v), press : to get :'<,'>
+auto-filled, then type the substitute command.
+
+-- core syntax ------------------------------
+:'<,'>s/pat/repl/         first match per line
+:'<,'>s/pat/repl/g        every match per line
+:'<,'>s/pat/repl/c        confirm each
+:'<,'>s/pat/repl/gc       every, confirm each
+:%s/pat/repl/g            entire buffer
+
+-- & = whole match (for insert) -------------
+:'<,'>s/foo/&NEW/         insert 'NEW' AFTER first foo
+:'<,'>s/foo/NEW&/         insert 'NEW' BEFORE first foo
+:'<,'>s/foo/&NEW/g        ...after every foo
+
+-- column-based insert ----------------------
+:'<,'>s/^.\{5\}/&MARK/    insert MARK after column 5
+:'<,'>s/^/PREFIX/         prepend PREFIX to every line
+:'<,'>s/$/SUFFIX/         append SUFFIX to every line
+
+-- whitespace ops ---------------------------
+:'<,'>s/\s\+/ /g          collapse whitespace runs to single space
+:'<,'>s/^\s\+//           strip leading whitespace
+:'<,'>s/\s\+$//           strip trailing whitespace
+:'<,'>s/  /\t/g           convert two spaces to a tab
+
+-- capture groups ---------------------------
+:'<,'>s/\(\w\+\) \(\w\+\)/\2 \1/    swap two words
+:'<,'>s/\(.*\)/[\1]/                wrap each line in brackets
+
+
+============================================
+  vim/nvim :normal — keystroke replay
+============================================
+
+:normal <keys>  runs <keys> as if you typed them in normal mode.
+
+With a range, runs on every line in the range. This is the
+"multi-cursor" of vanilla vim — script edits per line.
+
+-- basics -----------------------------------
+:normal Ifoo<Esc>         on current line: insert 'foo' at start
+:normal $x                go to end, delete last char
+:normal dd                delete current line
+
+-- ranged -----------------------------------
+:5,10normal Ifoo<Esc>     prepend 'foo' on lines 5-10
+:'<,'>normal $aEND<Esc>   append 'END' to selected lines
+:%normal ddp              every line: dd then p (swap with next)
+
+-- positional insert ------------------------
+:'<,'>normal 5|iXX<Esc>           insert XX at column 5
+:'<,'>normal 0wifoo<Esc>          skip 1 word, insert 'foo'
+:'<,'>normal f(iBEFORE<Esc>       find '(', insert BEFORE before it
+:'<,'>normal 0fXa AFTER<Esc>      find X, append ' AFTER' after it
+
+Pattern:  <range>normal <motion><insert-cmd><text><Esc>
+
+
+============================================
+  sed (shell)
+============================================
+
+Like :s but on files, outside vim.
+
+-- in-place edits (mac BSD vs GNU) ----------
+sed -i '' 's/foo/bar/g' file    Darwin BSD sed (note '' after -i)
+sed -i 's/foo/bar/g' file       Linux GNU sed
+
+-- line ranges ------------------------------
+sed -i '' '5,10s/foo/bar/' file       lines 5-10
+sed -i '' '/PATTERN/s/foo/bar/' file  lines matching PATTERN
+
+-- & = whole match (insert) -----------------
+sed -i '' 's/foo/&NEW/' file    insert NEW after each foo
+sed -i '' 's/foo/NEW&/' file    insert NEW before each foo
+
+-- column-based -----------------------------
+sed -i '' 's/^.\{5\}/&MARK/' file  insert MARK after column 5
+sed -i '' 's/^/PREFIX/' file       prepend PREFIX to every line
+sed -i '' 's/$/SUFFIX/' file       append SUFFIX to every line
+
+-- delete lines -----------------------------
+sed -i '' '/PATTERN/d' file        delete lines matching pattern
+sed -i '' '5,10d' file             delete lines 5-10
+sed -i '' '$d' file                delete last line
+
+-- multiple commands ------------------------
+sed -i '' -e 's/a/A/g' -e 's/b/B/g' file
+sed -i '' 's/a/A/g;s/b/B/g' file
+
+
+============================================
+  When to use which
+============================================
+
+  Goal                                         Tool
+  ----                                         ----
+  Same text at same column                     Ctrl-V then I (block mode)
+  Pattern-based replace in selection           :'<,'>s/pat/repl/g
+  Replace WHOLE BUFFER                         :%s/pat/repl/g
+  Complex per-line edits (multi-step)          :'<,'>normal <keys>
+  Edit a file from shell                       sed -i ''
+  Edit many files                              find + sed, or 'rg + sed'
+
+
+============================================
+  Quick reference: vim regex quirks
+============================================
+
+vim regex differs from sed/perl in a few annoying places:
+
+  vim          sed          meaning
+  ---          ---          -------
+  \(foo\)      \(foo\)      capture group (both \-escape)
+  \1 \2        \1 \2        backreference
+  \+           \+ or +      one or more (vim needs \+ by default)
+  \?           \? or ?      optional
+  \|           \|           alternation
+  \s           [[:space:]]  whitespace
+  \w           [[:alnum:]_] word char
+  \v           --           "very magic" — turns on regex-like escaping
+  \V           --           "very nomagic" — literal mode
+
+Tip:  :s/\v(foo|bar)+/X/g    much closer to PCRE with \v prefix.

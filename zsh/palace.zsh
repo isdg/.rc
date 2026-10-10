@@ -1,8 +1,8 @@
 # ============================================================
 # palace.zsh — zsh wrappers for the palace notes vault
 # ============================================================
-# Sourced by ~/.rc/zsh/aliases.zsh. The heavy lifting lives in the
-# `plc` binary (installed by bootstrap/components/plc.sh): it creates/resolves
+# Sourced by ~/.rc/zsh/rc.d/15-aliases.zsh. The heavy lifting lives in the
+# `plc` binary (installed by .rcboot/plc/plc.sh): it creates/resolves
 # note files and prints their path. These wrappers just open that path in
 # $EDITOR, and add the fzf picker for murmur notes. PALACE_DIR is exported by
 # the caller.

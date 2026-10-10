@@ -1,0 +1,192 @@
+rsync — copy files so that a destination ends up matching a source, sending
+only what differs. Locally it's a smarter cp -R; across machines it runs a
+second rsync on the far end over ssh, and the two compare notes before any
+data moves. Notes are rsync 3.x (Homebrew).
+
+-------------------------------------------------------------------------------
+TWO RSYNCS ON THIS MAC
+-------------------------------------------------------------------------------
+  /opt/homebrew/bin/rsync   rsync 3.5 (Samba project). First in PATH, so
+                            plain `rsync` is this one.
+  /usr/bin/rsync            openrsync, Apple's BSD reimplementation, which
+                            claims "2.6.9 compatible". It has no --info, no
+                            --mkpath, no -A/-X short flags.
+
+  Scripts run by launchd, cron or a bare `sh` may not see Homebrew's PATH and
+  silently get openrsync. Use the full path there.
+
+  The REMOTE side runs whatever `rsync` is on its PATH. Point it elsewhere
+  with --rsync-path=/usr/local/bin/rsync.
+
+-------------------------------------------------------------------------------
+HOW IT DECIDES WHAT TO SEND
+-------------------------------------------------------------------------------
+  1. Quick check. A file is skipped when the destination has one with the
+     same SIZE and the same MTIME. Contents are not read. That's why a re-run
+     over a synced tree finishes in seconds.
+       -c / --checksum   compare full checksums instead (reads every byte on
+                         both sides; slow, but catches same-size edits made
+                         without an mtime change)
+       --size-only       ignore mtime, compare size alone
+       -u / --update     skip files that are newer on the receiver
+
+  2. Delta transfer. For a file that differs, the receiver splits its old copy
+     into blocks and sends their checksums; the sender finds those blocks in
+     the new file and sends only the bytes between them. A 2 GB file with a
+     changed header sends kilobytes.
+     Local copies skip this (-W, --whole-file, is implied): reading both files
+     costs more than simply writing the new one.
+
+  3. Atomic replace. The new file is written to a temp name (.foo.XXXXXX) in
+     the target directory, then renamed over the old one. A reader never sees
+     a half-written file.
+       --inplace         write straight into the existing file instead (big
+                         VM images, files with hard links you must keep)
+
+-------------------------------------------------------------------------------
+THE TRAILING SLASH  (the one rule everyone gets bitten by)
+-------------------------------------------------------------------------------
+  The slash on the SOURCE decides whether the directory itself is copied:
+
+    rsync -a src  dst/    →  dst/src/...      copy the directory "src"
+    rsync -a src/ dst/    →  dst/...          copy what is INSIDE src
+
+  Read "src/" as "the contents of src". The slash on the DESTINATION does not
+  matter; dst is created if missing (only the last component — add --mkpath
+  for deeper paths).
+
+  With --delete this is the difference between a mirror and a disaster:
+  `rsync -a --delete src dst/` mirrors into dst/src and leaves the rest of dst
+  alone; with `src/` it deletes everything in dst that isn't in src.
+
+-------------------------------------------------------------------------------
+SYNTAX AND REMOTES
+-------------------------------------------------------------------------------
+  rsync [opts] SRC... DST
+
+    path            local
+    host:path       remote over ssh (relative paths start at remote $HOME)
+    user@host:path  remote over ssh as user
+    host::module    rsync daemon (port 873, no ssh) — rare these days
+
+  Exactly one side can be remote. ~/.ssh/config applies, so host aliases, keys
+  and ProxyJump all work. Pass ssh options with -e:
+    rsync -a -e 'ssh -p 2222 -i ~/.ssh/key' src/ host:dst/
+
+-------------------------------------------------------------------------------
+FLAGS
+-------------------------------------------------------------------------------
+-- the base -----------------------------------------------------------------
+  -a, --archive    = -rlptgoD. What you want almost always:
+                       r  recurse          l  symlinks as symlinks
+                       p  permissions      t  modification times
+                       g  group            o  owner (only when root)
+                       D  devices, special files
+                     Without -t, mtimes aren't kept, so the next run's quick
+                     check sees every file as changed and re-sends it.
+  -v               list transferred files     -vv   also the skipped ones
+  -h               human-readable numbers     -q    errors only
+  -z               compress over the wire. Helps on slow links with text;
+                   wastes CPU on LAN or on already-compressed data.
+
+-- not in -a ---------------------------------------------------------------
+  -H               preserve hard links (costs memory on big trees)
+  -A               ACLs              -X   extended attributes (Darwin
+                                          metadata, quarantine flags)
+  -S               sparse files stay sparse
+  --numeric-ids    keep uid/gid numbers instead of mapping by name (backups
+                   restored on another machine)
+
+-- seeing what it will do -------------------------------------------------
+  -n, --dry-run    do everything except change the destination. Run this
+                   first whenever --delete is involved.
+  -i               itemize: one line per change, e.g.
+                     >f.st......  path    sent file, size and time differ
+                     >f+++++++++  path    new file
+                     cd+++++++++  dir/    new directory
+                     .d..t......  dir/    directory mtime only
+                     *deleting    path    removed by --delete
+                   1st char: > sent  < received  c created  . unchanged
+                             h hard link  * message
+                   2nd char: f file  d dir  L symlink  D device  S special
+                   then:     c checksum  s size  t time  p perms  o owner
+                             g group  a ACL  x xattr  (+ = new)
+  --stats          totals at the end
+  --progress       per-file progress
+  --info=progress2 one overall progress line for the whole transfer
+                   (with --no-i-r so the total is known up front)
+
+-- deleting ---------------------------------------------------------------
+  --delete         remove destination files absent from the source. Only
+                   inside the directories being synced.
+  --delete-excluded  also remove destination files that match --exclude
+  --delete-after   delete once the transfer is done (default is during)
+  --max-delete=N   refuse to delete more than N files — a seatbelt
+  --remove-source-files  move instead of copy (files only; empty source
+                   directories stay)
+
+-- selecting files ---------------------------------------------------------
+  --exclude=PAT    skip matching paths       --include=PAT   keep them
+  --exclude-from=FILE / --include-from=FILE  one pattern per line
+  --files-from=FILE  copy exactly the listed paths (relative to SRC)
+  -C               skip VCS dirs and build junk: .git/ .hg/ .svn/ *.o *.so
+                   *~ *.bak core ... (rsync's fixed CVS-ignore list)
+  --max-size=100M / --min-size=SIZE
+  -f ':- .gitignore'  read exclude rules from each directory's .gitignore
+
+  Patterns:
+    foo          a file or dir named foo at any depth
+    /foo         foo only at the top of the transfer (not of the disk)
+    foo/         only directories named foo
+    *.log        * stops at /       **   crosses /
+    dir/***      dir and everything under it
+
+  First match wins, in command-line order. To copy only some files, include
+  what you want, every directory on the way down, then exclude the rest:
+    rsync -a --include='*/' --include='*.py' --exclude='*' src/ dst/
+    (add -m to drop the directories that end up empty)
+
+-- resuming and big files --------------------------------------------------
+  --partial        keep a half-sent file so the next run resumes from it
+  -P               = --partial --progress
+  --append-verify  resume by appending to the shorter destination file, then
+                   checksum the whole thing
+  --bwlimit=5M     cap the bandwidth
+  --timeout=60     give up when no data moves for 60 s
+
+-- backups -----------------------------------------------------------------
+  -b --backup-dir=DIR   move overwritten/deleted files into DIR, not away
+  --link-dest=DIR       for files unchanged since DIR, hard-link to DIR's
+                        copy instead of storing them again. Daily snapshots
+                        that each look complete but only cost the changes:
+
+    rsync -a --delete --link-dest=../2026-10-06 src/ /bak/2026-10-07/
+
+-------------------------------------------------------------------------------
+RECIPES
+-------------------------------------------------------------------------------
+  rsync -av src/ dst/                     copy / update a tree locally
+  rsync -avn --delete src/ dst/           preview a mirror (then drop -n)
+  rsync -av --delete src/ dst/            exact mirror
+  rsync -azP big.tar host:/tmp/           upload, resumable, with progress
+  rsync -azP host:/var/log/app/ ./logs/   download a remote directory
+  rsync -a --exclude=.git --exclude=node_modules --exclude=.venv \
+        ./proj/ host:proj/                push a project without the bulk
+  rsync -a -f ':- .gitignore' --exclude=.git ./proj/ host:proj/
+                                          same, driven by the .gitignore
+  rsync -ai --dry-run src/ dst/           what differs between two trees
+  rsync -rc --dry-run -i src/ dst/        ...by content, ignoring mtimes
+  rsync -aHAX --numeric-ids /src/ /dst/   full-fidelity local copy
+
+-------------------------------------------------------------------------------
+GOTCHAS
+-------------------------------------------------------------------------------
+  - Forgetting the source slash: you get dst/src/ nested a level deeper.
+  - --delete with the wrong slash or the wrong DST wipes it. Dry-run first.
+  - Paths with spaces on a REMOTE: rsync 3.2.4+ quotes them for you;
+    openrsync and old rsyncs need 'host:"my dir"'.
+  - Copying to a FAT/exFAT USB disk: 2 s mtime granularity makes every file
+    look changed. Add --modify-window=1.
+  - -a as a regular user can't set owners; that's normal, not an error.
+  - Exit code 23 = some files failed (permissions), 24 = files vanished
+    during the transfer (logs rotating) — usually safe to ignore.

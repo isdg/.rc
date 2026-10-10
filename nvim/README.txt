@@ -8,7 +8,7 @@ Same keybindings, colorschemes, and Russian layout support.
 Plugins (neovim-native):
   nvim-lspconfig + mason + nvim-cmp   (replaces CoC)
   nvim-tree.lua                       (replaces NERDTree)
-  telescope.nvim                      (replaces fzf.vim)
+  fzf-lua                             (replaces CocList)
   Comment.nvim                        (replaces NERDCommenter)
   zen-mode.nvim                       (replaces goyo.vim)
   rainbow-delimiters.nvim             (replaces rainbow)
@@ -72,7 +72,7 @@ Default is vs_light. To switch:
     :colorscheme vs_light_def
     :colorscheme vs_dark_def
 
-To make it permanent, change the last line in init.lua.
+To make it permanent, change the last line in rc.d/11-colors.lua.
 
 -------------------------------------------------------------------------------
 DONE!

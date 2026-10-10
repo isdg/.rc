@@ -2,7 +2,7 @@
 --  slots — window per hotkey, focus + maximize, cycle, last
 -- ============================================================
 -- Windows stay maximized on one Space instead of native fullscreen, whose
--- per-window Spaces force macOS's slide animation on every switch.
+-- per-window Spaces force Darwin's slide animation on every switch.
 
 local M = {}
 
@@ -64,7 +64,7 @@ local function show(win)
     maximize(win)
 end
 
--- A window on another Space is invisible to allWindows; once macOS has
+-- A window on another Space is invisible to allWindows; once Darwin has
 -- switched there, pull whatever got focused back out of fullscreen.
 local function reopen(bundleID)
     hs.task.new("/usr/bin/open", nil, { "-b", bundleID }):start()

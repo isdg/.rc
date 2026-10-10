@@ -46,9 +46,10 @@ let g:terminal_color_15 = '${ISG_ANSI_15}'
 " =====================
 hi Normal       guifg=${ISG_FG} guibg=${ISG_BG}
 " Cursor is the *terminal* cursor: 'guicursor' names this group (see
-" lua/options.lua), so Neovim emits OSC 12 with guibg on entry and OSC 112 to
-" restore on exit. That is what makes the cursor follow a theme toggle without
-" reloading Ghostty, whose cursor-color the running window keeps until it does.
+" rc.d/00-options.lua), so Neovim emits OSC 12 with guibg on entry and OSC 112
+" to restore on exit. That is what makes the cursor follow a theme toggle
+" without reloading Ghostty, whose cursor-color the running window keeps until
+" it does.
 " Mirrors ghostty/theme-light.conf: guibg = cursor-color, guifg = cursor-text —
 " ISG_CURSOR rather than ISG_FG, so the caret is the same grey in the editor as
 " at the prompt instead of jumping to pure black on entry.

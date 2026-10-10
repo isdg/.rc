@@ -2,17 +2,34 @@
 DOTFILES
 ========
 
-A minimal, keyboard-driven dev environment for macOS and Linux.
+A minimal, keyboard-driven only dev environment for Darwin and Linux.
 Built for older hardware and large codebases (~1M lines) where heavy
 IDEs feel sluggish.
 
 Includes configs for:
-  - Zsh (plain zsh, no framework + isg theme (forked from sobole) + fzf)
-  - Vim and Neovim
-  - Tmux (with TPM + tmux-resurrect)
-  - Ghostty
-  - Tig, JetBrains Mono + Computer Modern fonts
-  - macOS defaults & key remapping
+  - zsh (plain zsh, no framework + isg theme (forked from sobole) + fzf)
+  - vim and neovim
+  - tmux (with tpm, tmux-resurrect, omni and orchbus)
+  - ghostty
+  - git (with delta as the pager), tig
+  - fzf, bat
+  - k9s (skins + log plugins)
+  - ssh client and gpg-agent
+  - hammerspoon (window slots, keyboard scrolling, translate popup)
+  - claude code (settings, status line, skills plugin)
+  - light/dark theme across the terminal tools, generated from one palette
+  - jetbrains mono + computer modern fonts
+  - darwin defaults & key remapping
+
+
+My personal feeling is that I don't like the concept of an IDE as a whole.
+Why should some piece of software lead your way of working, especially
+given three "when" facts: when almost all technologies are modular enough,
+when you know what to do, and when you can responsibly build your own way
+of working? Also, here we use only the keyboard, because I feel the mouse is
+only for learning how to use a computer first and for poor user-centric OS
+context switch designs.
+
 
 -------------------------------------------------------------------------------
 QUICK START
@@ -20,34 +37,36 @@ QUICK START
 
 Clone into ~/.rc:
 
-    > git clone <repo-url> "$HOME/.rc"
+    > git clone https://github.com/isdg/.rc.git "$HOME/.rc"
     > cd "$HOME/.rc"
 
-Run the bootstrap for your OS:
+Run the bootstrap (one script for Darwin and Linux):
 
-    > ./bootstrap/darwin.sh        # macOS
-    > ./bootstrap/linux.sh         # Linux
+    > ./.rcboot/boot.sh
 
-The bootstrap is modular (see bootstrap/components/) and handles:
+The bootstrap is modular (see .rcboot/) and handles:
 Homebrew, packages, dotfile symlinks, vim-plug + plugins, fzf, fonts,
-tig, key remapping, and macOS defaults.
+tig, key remapping, and Darwin defaults.
 
-Profiles (macOS). darwin.sh reads two component registries at the top of
-the file — CORE and EXTRA — and --minimal runs only CORE with the smaller
-darwin/Brewfile.minimal:
+Each .rcboot/<name>/module.sh links and installs one tool and enables its
+rc.d/ fragments (links in ~/.config/rc/<tool>/). .rcboot/modules lists the
+modules by level, in run order; --level=N runs those up to N:
 
-    > ./bootstrap/darwin.sh --minimal    # tmux + nvim + zsh core, ~0.8 GB
-    > ./bootstrap/darwin.sh              # everything, ~14-15 GB
+    0  bare   nothing yet (reserved for a POSIX sh/vi setup)
+    1  core   zsh, tmux, vim without plugins, git, ssh, gpg
+    2  tools  + fzf, zoxide, syntax highlighting, delta, bat, tig
+    3  full   + nvim and lazy.nvim, vim-plug + coc, tpm with omni/orchbus,
+              Ghostty, fonts, Claude, k9s, GUI apps, toolchains (default)
 
-Minimal gets the editors, tmux, zsh, the fzf/rg/fd/bat picker stack, git
-+ gh + tig + delta, Ghostty, dotfile symlinks and fonts. It leaves out
-language toolchains (llvm, openjdk, zig, rust, node), media/graphics
-libs, docker/minikube/mysql, and the Rust-built side tools (plc, hr,
-omni, orchbus) — so there are no LSP servers for mason to install.
+    > ./.rcboot/boot.sh --level=2
 
-Either profile can be verified without changing anything:
+Packages follow the level too: darwin/Brewfile and the Linux lists are cut
+by it. Going down a level switches off the fragments above it; packages
+stay installed.
 
-    > ./bootstrap/darwin.sh --ensure [--minimal]
+Any level can be verified without changing anything:
+
+    > ./.rcboot/boot.sh --ensure [--level=N]
 
 Restart your terminal (or `exec zsh`) when it finishes.
 
@@ -55,17 +74,28 @@ Restart your terminal (or `exec zsh`) when it finishes.
 LAYOUT
 -------------------------------------------------------------------------------
 
-    bootstrap/      install scripts (darwin.sh, linux.sh + components/)
-    zsh/            .zshrc, aliases, fzf integration, isg theme
-    vim/            .vimrc, plugins, color schemes, coc extensions
-    nvim/           init.lua + lazy.nvim setup
-    tmux/           .tmux.conf
+    .rcboot/        install scripts (boot.sh, lib.sh, modules registry
+                    + one folder with a module.sh per tool)
+    zsh/            .zshrc loader + rc.d/ fragments (NN-name.zsh), isg theme
+    vim/            .vimrc loader + rc.d/ fragments, color schemes, coc
+    nvim/           init.lua loader + rc.d/ fragments (NN-name.lua), lua/
+                    libraries, lazy plugin specs
+    tmux/           .tmux.conf loader + rc.d/ fragments (NN-name.conf)
     ghostty/        terminal config
-    zed/            settings
+    git/            .gitconfig
     tig/            git TUI config
     fonts/          JetBrains Mono + Computer Modern
-    darwin/         macOS system defaults + Brewfile
+    darwin/         Darwin system defaults + Brewfile
     prompt/         shell prompt definitions
+    hr/             hrrc, seeded once to ~/.hrrc (hr's reading vault)
+    plc/            palace notes system (README.md); plcrc, seeded
+                    once to ~/.plcrc
+    postfix/        name pools: machine/ for hostnames (isg-<os>-<name>,
+                    picked once into ~/.config/isg/postfix), git/ for
+                    worktrees; the other lists are candidates
+    sh/             standalone scripts (theme toggle, ghostty width)
+    manuals/        command and tool reference sheets (*.txt)
+    misc/           task log, worktree manifest, inventories
 
 -------------------------------------------------------------------------------
 MANUAL SETUP (if you'd rather not run bootstrap)
@@ -77,6 +107,13 @@ MANUAL SETUP (if you'd rather not run bootstrap)
     > ln -fs "$HOME/.rc/vim/.vimrc"      "$HOME/.vimrc"
     > ln -fs "$HOME/.rc/tmux/.tmux.conf" "$HOME/.tmux.conf"
     > ln -fs "$HOME/.rc/nvim"            "$HOME/.config/nvim"
+
+   Then enable the rc.d/ fragments you want: a fragment is on when it is
+   linked into ~/.config/rc/<tool>/. tmux loads nothing until it is; zsh,
+   vim and nvim load all of rc.d/ while that directory does not exist.
+
+    > mkdir -p "$HOME/.config/rc/tmux"
+    > ln -fs "$HOME"/.rc/tmux/rc.d/*.conf "$HOME/.config/rc/tmux/"
 
    There is no framework to install and no theme link to make — .zshrc is
    plain zsh and sources zsh/isg.zsh-theme from the repo directly.
@@ -111,12 +148,12 @@ MANUAL SETUP (if you'd rather not run bootstrap)
 NOTES
 -------------------------------------------------------------------------------
 
-  - tmux prefix bindings: see tmux/.tmux.conf (new windows open to the
+  - tmux prefix bindings: see tmux/rc.d/ (new windows open to the
     right of current; & kills window and moves focus left).
-  - splits.txt is the split/pane reference: nvim's <C-w> layer and tmux's
-    C-b C-b layer share one set of keys, and it says where they differ.
+  - manuals/splits.txt is the split/pane reference: nvim's <C-w> layer and
+    tmux's C-b C-b layer share one set of keys, and it says where they differ.
   - zsh/keys.txt is the command-line key reference: vi mode and the
     nvim-style <Space> leader.
-  - toggle_theme.sh switches macOS light/dark mode and adjacent terminal
+  - sh/toggle_theme.sh switches Darwin light/dark mode and adjacent terminal
     themes in one shot.
-  - manifest.txt lists the git worktrees used alongside main.
+  - misc/manifest.txt lists the git worktrees used alongside main.
