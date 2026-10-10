@@ -8,8 +8,9 @@
 #   ./linux.sh --level=N   — up to level N; fragments above it are switched off
 #   ./linux.sh --ensure    — verify, with or without --level (no changes)
 #
-# Levels (.rcboot/modules): 0 bare, 1 core (zsh, tmux, vim, git), 2 tools
-# (fzf, zoxide, delta, bat, tig), 3 full (nvim, plugins, GUI apps, toolchains).
+# Levels (.rcboot/modules): 0 bare (~/.zshrc.local), 1 core (zsh, tmux, vim,
+# git), 2 tools (fzf, zoxide, delta, bat, tig), 3 full (nvim, plugins, GUI
+# apps, toolchains).
 #
 set -e
 

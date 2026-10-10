@@ -53,7 +53,7 @@ Each .rcboot/<name>/module.sh links and installs one tool and enables its
 rc.d/ fragments (links in ~/.config/rc/<tool>/). .rcboot/modules lists the
 modules by level, in run order; --level=N runs those up to N:
 
-    0  bare   nothing yet (reserved for a POSIX sh/vi setup)
+    0  bare   ~/.zshrc.local, this machine's own settings, at every level
     1  core   zsh, tmux, vim (.vimrc.core's fragments), git, ssh, gpg
     2  tools  + fzf, zoxide, syntax highlighting, delta, bat, tig
     3  full   + nvim and lazy.nvim, vim-plug + coc, tpm with omni/orchbus,
