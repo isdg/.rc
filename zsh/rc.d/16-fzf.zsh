@@ -1,5 +1,5 @@
 # fzf.vim analogs for zsh
-#   fp  — :Files  file picker
+#   ff  — :Files  file picker
 #   fA  — :Rg     rg once, fuzzy-filter results
 #   fa  — :RG     live ripgrep (re-runs on each keystroke)
 #   hrb — hr reading list: fuzzy-pick an unread article, open it in nvim
@@ -14,7 +14,7 @@ else
    _fzf_file_preview='awk "NR<=200 {printf \"%5d  %s\n\", NR, \$0}" {} 2>/dev/null'
 fi
 
-fp() {
+ff() {
    local files
    files=("${(@f)$(fd --type f --hidden --follow --exclude .git \
       | fzf --multi --ansi \
