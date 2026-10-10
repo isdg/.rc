@@ -51,7 +51,7 @@ Already well-modularized (done right):
                                  and up to the level .rcboot/modules gives.
    - theme system                per-app files behind one toggle.
    - *_FUNCS registry convention e.g. BANNER_LOG_FUNCS in
-                                 zsh/rc.d/21-startup.zsh — "add a function,
+                                 zsh/banner.zsh — "add a function,
                                  append it to the array".
 
 Done:

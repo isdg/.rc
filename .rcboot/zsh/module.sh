@@ -23,8 +23,6 @@ fragment zsh/rc.d/14-dirs.zsh
 fragment zsh/rc.d/15-aliases.zsh
 fragment zsh/rc.d/17-vimode.zsh
 fragment zsh/rc.d/19-keys.zsh
-fragment zsh/rc.d/21-startup.zsh
-fragment zsh/rc.d/22-banner.zsh
 
 source "$RC_BOOT/zsh/shell.sh"
 step "set_default_shell_$RC_OS" "ensure_default_shell_$RC_OS"
