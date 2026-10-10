@@ -273,7 +273,7 @@ add-zsh-hook precmd __isg::precmd
 #                              to the default foreground — so greys need a
 #                              number.
 #   BANNER_INFO_OFFSET=n       rows the info lines start below the mascot's
-#                              top (default 2)
+#                              top (default 1)
 # ----------------------------------------------------------------------------
 
 typeset -ga BANNER_LOG_FUNCS=()
@@ -436,7 +436,7 @@ fi
 
 banner_render() {
     [[ -n $BANNER_DISABLE ]] && return 0
-    local -i i rows off=${BANNER_INFO_OFFSET:-2}
+    local -i i rows off=${BANNER_INFO_OFFSET:-1}
     local fn mascot info line
     # consume the log registry — funcs run in the current shell, so exports
     # they make (e.g. SSH_AUTH_SOCK) persist in the session
