@@ -21,10 +21,6 @@ export DOTFILES_DIR
 source "$SCRIPT_DIR/lib.sh"
 
 parse_args "$@"
-# Until the package set is per level, everything below 3 gets the small one.
-BOOTSTRAP_MINIMAL=0
-[ "$RC_LEVEL" -ge 3 ] || BOOTSTRAP_MINIMAL=1
-export BOOTSTRAP_MINIMAL
 
 # ── Ensure mode ────────────────────────────────────────────────────────────────
 if [ "$RC_MODE" = ensure ]; then

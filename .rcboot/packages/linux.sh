@@ -1,14 +1,25 @@
 #!/usr/bin/env bash
 # Component: Package installation (Linux)
 
+# True when the bootstrap level includes level $1.
+_level() { [ "${RC_LEVEL:-3}" -ge "$1" ]; }
+
 ensure_packages_linux() {
     echo "[STEP] Verifying packages..."
     local failed=0 cmd
     # Split required from optional: nom and glow are not packaged on most
     # distros and prettier needs npm, so a single flat list reported [FAIL]
     # forever on a box that was in fact fine.
-    local required=(zsh git curl wget tmux vim nvim fzf rg tig)
-    local optional=(gh jq tree htop w3m sd prettier nom glow go cargo qemu-img)
+    local required=() optional=()
+    if _level 1; then required+=(zsh git curl wget tmux vim); fi
+    if _level 2; then
+        required+=(fzf rg tig)
+        optional+=(gh zoxide jq tree htop)
+    fi
+    if _level 3; then
+        required+=(nvim)
+        optional+=(w3m sd prettier nom glow go cargo qemu-img)
+    fi
 
     for cmd in "${required[@]}"; do
         if command -v "$cmd" > /dev/null 2>&1; then
@@ -53,6 +64,23 @@ _apt_install() {
     fi
 }
 
+# Names for dnf, yum, pacman and zypper up to the bootstrap level. yum has no
+# ripgrep, zoxide or glow; pacman calls gh github-cli.
+_dist_pkgs() {
+    local pm="$1" p
+    local pkgs=()
+    if _level 1; then pkgs+=(zsh git curl wget tmux vim); fi
+    if _level 2; then pkgs+=(fzf ripgrep tig gh zoxide); fi
+    if _level 3; then pkgs+=(neovim nodejs npm w3m glow); fi
+    for p in ${pkgs[@]+"${pkgs[@]}"}; do
+        case "$pm:$p" in
+            yum:ripgrep|yum:zoxide|yum:glow) ;;
+            pacman:gh) echo github-cli ;;
+            *) echo "$p" ;;
+        esac
+    done
+}
+
 detect_package_manager() {
     if command -v apt-get > /dev/null 2>&1; then
         echo "apt"
@@ -78,49 +106,61 @@ install_packages_linux() {
     case "$pkg_manager" in
         apt)
             sudo apt-get update || echo "[WARN] apt-get update had warnings, continuing..."
-            # Boring essentials. glow is optional (nothing in this repo calls
-            # it) and absent from bookworm — _apt_install drops it rather than
-            # letting it veto the shell itself.
-            _apt_install "base" \
-                zsh git gh tig curl wget jq tree htop tmux vim neovim fzf ripgrep \
-                nodejs npm python3 \
-                w3m glow
-            # Docs
-            _apt_install "man pages" man-db manpages-dev
-            # Build toolchain
-            _apt_install "build toolchain" build-essential pkg-config
-            # Kernel module + full kernel build deps
-            _apt_install "kernel build deps" \
-                "linux-headers-$(uname -r)" \
-                bc bison flex rsync kmod \
-                libssl-dev libelf-dev libncurses-dev
-            # USB userspace + headers
-            _apt_install "USB tools" usbutils libusb-1.0-0-dev
-            # Tracing & debugging (ltrace is x86-only in Debian, so it drops out
-            # on an arm64 VM — without the split it took strace and gdb with it)
-            _apt_install "tracing tools" strace ltrace gdb linux-perf
-            # Zig (compiler from apt; zls usually not packaged — install manually
-            # from https://github.com/zigtools/zls/releases or via `zigup`)
-            _apt_install "zig" zig
-            # VMs: every system emulator plus qemu-img
-            _apt_install "qemu" qemu-system qemu-utils
+            if _level 1; then
+                _apt_install "core" zsh git curl wget tmux vim man-db
+            fi
+            if _level 2; then
+                _apt_install "tools" fzf ripgrep tig gh zoxide jq tree htop
+            fi
+            if _level 3; then
+                # glow is optional (nothing in this repo calls it) and absent
+                # from bookworm — _apt_install drops it rather than letting it
+                # veto the rest.
+                _apt_install "base" neovim nodejs npm python3 w3m glow
+                _apt_install "man pages" manpages-dev
+                # Build toolchain
+                _apt_install "build toolchain" build-essential pkg-config
+                # Kernel module + full kernel build deps
+                _apt_install "kernel build deps" \
+                    "linux-headers-$(uname -r)" \
+                    bc bison flex rsync kmod \
+                    libssl-dev libelf-dev libncurses-dev
+                # USB userspace + headers
+                _apt_install "USB tools" usbutils libusb-1.0-0-dev
+                # Tracing & debugging (ltrace is x86-only in Debian, so it
+                # drops out on an arm64 VM — without the split it took strace
+                # and gdb with it)
+                _apt_install "tracing tools" strace ltrace gdb linux-perf
+                # Zig (compiler from apt; zls usually not packaged — install
+                # manually from https://github.com/zigtools/zls/releases or
+                # via `zigup`)
+                _apt_install "zig" zig
+                # VMs: every system emulator plus qemu-img
+                _apt_install "qemu" qemu-system qemu-utils
+            fi
             ;;
-        dnf)
-            sudo dnf install -y zsh git gh tig curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
-            ;;
-        yum)
-            sudo yum install -y zsh git gh tig curl vim neovim fzf nodejs npm w3m || echo "[WARN] Some packages may have failed"
-            ;;
-        pacman)
-            sudo pacman -Sy --noconfirm zsh git github-cli tig curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
-            ;;
-        zypper)
-            sudo zypper install -y zsh git gh tig curl vim neovim fzf ripgrep nodejs npm w3m glow || echo "[WARN] Some packages may have failed"
+        dnf|yum|pacman|zypper)
+            local pkgs
+            pkgs=($(_dist_pkgs "$pkg_manager"))
+            if [ ${#pkgs[@]} -gt 0 ]; then
+                if [ "$pkg_manager" = pacman ]; then
+                    sudo pacman -Sy --noconfirm "${pkgs[@]}"
+                else
+                    sudo "$pkg_manager" install -y "${pkgs[@]}"
+                fi || echo "[WARN] Some packages may have failed"
+            fi
             ;;
         *)
-            echo "[WARN] Unknown package manager. Please install manually: zsh git gh tig curl vim neovim fzf ripgrep w3m glow"
+            echo "[WARN] Unknown package manager. Please install manually:" \
+                $(_dist_pkgs unknown)
             ;;
     esac
+
+    # The rest is level 3 only: none of it is packaged everywhere.
+    if ! _level 3; then
+        echo "[OK] Packages installed"
+        return 0
+    fi
 
     # prettier (markdown formatter used by conform.nvim)
     if command -v npm > /dev/null 2>&1; then

@@ -62,9 +62,9 @@ modules by level, in run order; --level=N runs those up to N:
     > ./.rcboot/linux.sh --level=2
     > ./.rcboot/darwin.sh --minimal     # the same as --level=2
 
-Going down a level switches off the fragments above it; packages stay
-installed. Packages are not per level yet: below 3, Darwin installs
-darwin/Brewfile.minimal and Linux its whole list.
+Packages follow the level too: darwin/Brewfile and the Linux lists are cut
+by it. Going down a level switches off the fragments above it; packages
+stay installed.
 
 Any level can be verified without changing anything:
 

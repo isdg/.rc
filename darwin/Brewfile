@@ -1,100 +1,110 @@
-# Core CLI
-brew "bat"
-brew "curl"
-brew "fd"
-brew "fzf"
-brew "git"
-brew "git-delta"   # delta/delta.gitconfig sets `pager = delta`
-brew "gh"
-brew "gnupg"        # .gitconfig sets commit.gpgsign = true against key E32BE35A
-                    # and .rcboot/git/signing.sh gates on `gpg`
-                    # being on PATH, but nothing here ever installed it: a fresh
-                    # machine silently got signing switched off instead.
-brew "pinentry-mac" # the passphrase prompt gpg/gpg-agent.conf names by absolute
-                    # path. An agent pointed at a pinentry that is not installed
-                    # does not fall back, it fails to start, and every gpg call
-                    # then reports "No secret key" for keys that are right there.
-brew "ripgrep"
-brew "rsync"   # /usr/bin/rsync is openrsync since Darwin 24.4 — it answers
-               # `--version` with "protocol version 29 / rsync 2.6.9
-               # compatible", i.e. a 2006 protocol, and rejects --info=progress2,
-               # --fuzzy and friends. Not keg-only, so /opt/homebrew/bin (put
-               # ahead of /usr/bin by zsh/.zshrc) shadows it with rsync 3.
-brew "sd"    # find & replace CLI (sed alternative)
-brew "tig"   # tui git
-brew "tmux"
-brew "tokei"
-brew "tree"
-brew "zoxide"   # frecency dir jump (z / zi)
-brew "vifm"
-brew "wget"
-brew "nom"   # terminal RSS reader
-brew "glow"  # terminal markdown renderer
-brew "w3m"   # terminal web browser
+# One package set, cut by the bootstrap level (.rcboot/modules). HOMEBREW_
+# prefix because brew drops every other variable; plain `brew bundle` gets 3.
+level = ENV.fetch("HOMEBREW_RC_LEVEL", "3").to_i
 
-# Editors
-brew "vim"
-brew "neovim"
+# 1 core: the shell, multiplexer, editor and git these configs are written for,
+# newer than the copies macOS ships.
+if level >= 1
+  brew "zsh"
+  brew "tmux"
+  brew "vim"
+  brew "git"
+  brew "gnupg"        # .gitconfig sets commit.gpgsign = true against key E32BE35A
+                      # and .rcboot/git/signing.sh gates on `gpg`
+                      # being on PATH, but nothing here ever installed it: a fresh
+                      # machine silently got signing switched off instead.
+  brew "pinentry-mac" # the passphrase prompt gpg/gpg-agent.conf names by absolute
+                      # path. An agent pointed at a pinentry that is not installed
+                      # does not fall back, it fails to start, and every gpg call
+                      # then reports "No secret key" for keys that are right there.
+  brew "curl"
+  brew "wget"
+  brew "rsync"   # /usr/bin/rsync is openrsync since Darwin 24.4 — it answers
+                 # `--version` with "protocol version 29 / rsync 2.6.9
+                 # compatible", i.e. a 2006 protocol, and rejects --info=progress2,
+                 # --fuzzy and friends. Not keg-only, so /opt/homebrew/bin (put
+                 # ahead of /usr/bin by zsh/.zshrc) shadows it with rsync 3.
+end
 
-# Shell
-brew "zsh"
-brew "zsh-syntax-highlighting"
+# 2 tools: single binaries the fragments of level 2 call.
+if level >= 2
+  brew "fzf"
+  brew "ripgrep"
+  brew "fd"
+  brew "bat"
+  brew "git-delta"   # delta/delta.gitconfig sets `pager = delta`
+  brew "tig"   # tui git
+  brew "gh"
+  brew "zoxide"   # frecency dir jump (z / zi)
+  brew "zsh-syntax-highlighting"
+end
 
-# Build / dev toolchain
-brew "bear"
-brew "cmake"
-brew "pkgconf"
-brew "tree-sitter-cli"
-brew "protobuf"
-brew "prettier"
+# 3 full: everything else.
+if level >= 3
+  brew "neovim"
+  brew "sd"    # find & replace CLI (sed alternative)
+  brew "tokei"
+  brew "tree"
+  brew "vifm"
+  brew "nom"   # terminal RSS reader
+  brew "glow"  # terminal markdown renderer
+  brew "w3m"   # terminal web browser
 
-# Languages / runtimes
-brew "node"
-brew "openjdk"
-brew "maven"
-brew "pipx"
-brew "llvm"
-brew "llvm@17"
-brew "zig"
-brew "zls"   # Zig language server
-brew "rust"  # cargo — builds the plc, omni and orchbus binaries
-brew "go"    # builds the hr binary
-brew "elan-init"  # Lean 4 toolchain manager; links lean/lake proxies
+  # Build / dev toolchain
+  brew "bear"
+  brew "cmake"
+  brew "pkgconf"
+  brew "tree-sitter-cli"
+  brew "protobuf"
+  brew "prettier"
 
-# Graphics / media libs
-brew "cairo"
-brew "ffmpeg"
-brew "freetype"
-brew "glfw"
-brew "harfbuzz"
-brew "libidn"
+  # Languages / runtimes
+  brew "node"
+  brew "openjdk"
+  brew "maven"
+  brew "pipx"
+  brew "llvm"
+  brew "llvm@17"
+  brew "zig"
+  brew "zls"   # Zig language server
+  brew "rust"  # cargo — builds the plc, omni and orchbus binaries
+  brew "go"    # builds the hr binary
+  brew "elan-init"  # Lean 4 toolchain manager; links lean/lake proxies
 
-# Infra / DB
-# Containers without Docker Desktop. Desktop used to supply both halves — the
-# client (/usr/local/bin/docker was a symlink into Docker.app) and the daemon —
-# so both are named explicitly here:
-#   docker  the CLI on its own
-#   colima  the daemon, a Lima VM. `colima start` boots it and installs a
-#           "colima" docker context; `colima stop` gives the RAM back, which the
-#           always-on Desktop VM never did.
-# docker-compose is the plugin, not the old standalone binary; it lands in
-# ~/.docker/cli-plugins so `docker compose` works.
-brew "docker"
-brew "docker-compose"
-brew "colima"
-brew "dive"
-brew "minikube"
-brew "qemu"     # boots VMs; aarch64 guests run natively under HVF
-brew "k9s"      # k8s TUI; this repo carries its skins, plugins.yaml and a
-                # tmux TERM wrapper (zsh/rc.d/15-aliases.zsh), so it has to
-                # be here
-brew "argocd"   # GitOps CD for k8s; Linux gets it from .rcboot/argocd
-brew "grafanactl"  # Grafana resources (dashboards, folders) as code
-brew "logcli"      # Loki log queries (LogQL) from the shell
-brew "mysql"
-brew "postgresql@17"   # psql + a local server. Every postgresql formula is
-                       # versioned and therefore keg-only, so unlike mysql it
-                       # links nothing into /opt/homebrew/bin — zsh/.zshrc puts
-                       # its bin on PATH. `brew services start postgresql@17`
-                       # runs the server; the client works without it.
+  # Graphics / media libs
+  brew "cairo"
+  brew "ffmpeg"
+  brew "freetype"
+  brew "glfw"
+  brew "harfbuzz"
+  brew "libidn"
 
+  # Infra / DB
+  # Containers without Docker Desktop. Desktop used to supply both halves — the
+  # client (/usr/local/bin/docker was a symlink into Docker.app) and the daemon —
+  # so both are named explicitly here:
+  #   docker  the CLI on its own
+  #   colima  the daemon, a Lima VM. `colima start` boots it and installs a
+  #           "colima" docker context; `colima stop` gives the RAM back, which the
+  #           always-on Desktop VM never did.
+  # docker-compose is the plugin, not the old standalone binary; it lands in
+  # ~/.docker/cli-plugins so `docker compose` works.
+  brew "docker"
+  brew "docker-compose"
+  brew "colima"
+  brew "dive"
+  brew "minikube"
+  brew "qemu"     # boots VMs; aarch64 guests run natively under HVF
+  brew "k9s"      # k8s TUI; this repo carries its skins, plugins.yaml and a
+                  # tmux TERM wrapper (zsh/rc.d/15-aliases.zsh), so it has to
+                  # be here
+  brew "argocd"   # GitOps CD for k8s; Linux gets it from .rcboot/argocd
+  brew "grafanactl"  # Grafana resources (dashboards, folders) as code
+  brew "logcli"      # Loki log queries (LogQL) from the shell
+  brew "mysql"
+  brew "postgresql@17"   # psql + a local server. Every postgresql formula is
+                         # versioned and therefore keg-only, so unlike mysql it
+                         # links nothing into /opt/homebrew/bin — zsh/.zshrc puts
+                         # its bin on PATH. `brew services start postgresql@17`
+                         # runs the server; the client works without it.
+end
