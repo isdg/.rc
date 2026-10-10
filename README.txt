@@ -54,7 +54,7 @@ rc.d/ fragments (links in ~/.config/rc/<tool>/). .rcboot/modules lists the
 modules by level, in run order; --level=N runs those up to N:
 
     0  bare   nothing yet (reserved for a POSIX sh/vi setup)
-    1  core   zsh, tmux, vim (.vimrc.core's fragments), git, ssh, gpg
+    1  core   zsh, tmux, vim without plugins, git, ssh, gpg
     2  tools  + fzf, zoxide, syntax highlighting, delta, bat, tig
     3  full   + nvim and lazy.nvim, vim-plug + coc, tpm with omni/orchbus,
               Ghostty, fonts, Claude, k9s, GUI apps, toolchains (default)

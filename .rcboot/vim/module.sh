@@ -1,6 +1,5 @@
 #!/usr/bin/env bash
-# Module: vim — .vimrc and the plugin-free fragments, the ones .vimrc.core
-# loads too. vimplug adds the rest.
+# Module: vim — .vimrc and the plugin-free fragments. vimplug adds the rest.
 
 link vim/.vimrc "$HOME/.vimrc"
 
