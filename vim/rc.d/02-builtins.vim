@@ -3,7 +3,7 @@
 " ============================================================
 " The plugin keys on vim's own tools (netrw, :find, :ls, :vimgrep, q:). The
 " plugin fragments after 09-plugins.vim remap the same keys, so these only
-" remain where the plugin fragments are off (--level=1 and 2).
+" remain where the plugin fragments are not enabled.
 set wildmode=full
 set path+=**
 set wildignore+=*/.git/*,*/node_modules/*,*/build/*,*/target/*,*.o,*.pyc

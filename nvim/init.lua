@@ -13,7 +13,7 @@
 --   (new)         → nvim-treesitter
 
 -- Everything else lives in rc.d/, run in prefix order from ~/.config/rc/nvim,
--- where .rcboot links the ones its level enables. A checkout never
+-- where .rcboot links the enabled ones. A checkout never
 -- bootstrapped runs all of rc.d/, found through this file's own path.
 local rc_d = vim.fn.expand("~/.config/rc/nvim")
 if vim.fn.isdirectory(rc_d) == 0 then
