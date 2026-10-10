@@ -32,3 +32,6 @@ Host *
     AddKeysToAgent yes
     UseKeychain yes
     IdentityFile ~/.ssh/delos-new
+    # This machine's name (set in zsh/.zshenv), for the far banner's "ssh
+    # from". Cumulative with the system's SendEnv LANG LC_*.
+    SendEnv LC_ISG_FROM
