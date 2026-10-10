@@ -11,4 +11,3 @@ banner_info "%D{%a %d %b %Y · %H:%M}"
 _banner_branch=$(command git symbolic-ref --short HEAD 2>/dev/null)
 banner_info "%~${_banner_branch:+ · $_banner_branch}"
 unset _banner_branch
-banner_render
