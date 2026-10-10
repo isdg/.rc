@@ -87,7 +87,9 @@ LAYOUT
     fonts/          JetBrains Mono + Computer Modern
     darwin/         Darwin system defaults + Brewfile
     prompt/         shell prompt definitions
-    plc/            palace notes system (README.md)
+    hr/             hrrc, seeded once to ~/.hrrc (hr's reading vault)
+    plc/            palace notes system (README.md); plcrc, seeded
+                    once to ~/.plcrc
     postfix/        name pools: machine/ for hostnames (isg-<os>-<name>,
                     picked once into ~/.config/isg/postfix), git/ for
                     worktrees; the other lists are candidates

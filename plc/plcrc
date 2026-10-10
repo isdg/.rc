@@ -1,0 +1,2 @@
+# Seeded to ~/.plcrc by .rcboot once; plc config --set rewrites it there.
+PALACE_DIR = ~/backup/palace
