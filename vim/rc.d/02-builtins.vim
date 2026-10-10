@@ -3,7 +3,7 @@
 " ============================================================
 " The plugin keys on vim's own tools (netrw, :find, :ls, :vimgrep, q:). The
 " plugin fragments after 09-plugins.vim remap the same keys, so these only
-" remain where plugins are not loaded, as in .vimrc.core.
+" remain where the plugin fragments are off (--level=1 and 2).
 set wildmode=full
 set path+=**
 set wildignore+=*/.git/*,*/node_modules/*,*/build/*,*/target/*,*.o,*.pyc
@@ -17,5 +17,4 @@ nnoremap <leader>F mzgg=Gg`z
 nnoremap <leader>; q:
 nnoremap <leader>/ q/
 
-" Reload whichever vimrc vim started with: ~/.vimrc or .vimrc.core.
 nnoremap <leader>R :source $MYVIMRC<CR>

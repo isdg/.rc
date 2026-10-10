@@ -75,7 +75,7 @@ Done:
                                               source-file glob tpm can follow
    vim config      one 743-line .vimrc        vim/rc.d/NN-name.vim; .vimrc
                                               keeps the hotkey header + loader
-   vim core        separate .vimrc.core       the rc.d/ prefix before
-                   with its own keys          09-plugins.vim
+   vim core        separate .vimrc.core       --level=1: the rc.d/ prefix
+                   with its own keys          before 09-plugins.vim
    nvim startup    init.lua requiring         nvim/rc.d/NN-name.lua, run by
                    options, keymaps/init      init.lua; lua/ keeps libraries
