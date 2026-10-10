@@ -11,3 +11,8 @@ novgorod
 staritsa
 torzhok
 plyos
+yaroslavl
+vladimir
+pereslavl
+ivanovo
+sergiev
