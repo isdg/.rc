@@ -88,6 +88,9 @@ LAYOUT
     darwin/         Darwin system defaults + Brewfile
     prompt/         shell prompt definitions
     plc/            palace notes system (README.md)
+    postfix/        name pools: machine/ for hostnames (isg-<os>-<name>,
+                    picked once into ~/.config/isg/postfix), git/ for
+                    worktrees; the other lists are candidates
     sh/             standalone scripts (theme toggle, ghostty width)
     manuals/        command and tool reference sheets (*.txt)
     misc/           task log, worktree manifest, inventories
