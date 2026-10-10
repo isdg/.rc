@@ -1,0 +1,58 @@
+# Debian 13 VM with this repo bootstrapped inside (boot.sh --level=3 by
+# default). How to launch it: lima/README.md.
+minimumLimaVersion: 2.0.0
+
+base:
+- template:_images/debian-13
+
+cpus: 4
+memory: 8GiB
+disk: 60GiB
+
+# The Mac home, read-only: handy for reading files. The VM's ~/.rc is its own
+# clone, since boot.sh writes into its repo (fzf theme link, nvim lock).
+mounts:
+- location: "~"
+
+# Lima's default rootless containerd + nerdctl, not wanted in a coding VM.
+containerd:
+  system: false
+  user: false
+
+# git push from the VM uses the Mac's keys; no private key enters the VM.
+ssh:
+  forwardAgent: true
+
+param:
+  Level: "3"
+  # The hostname's last word (~/.config/isg/postfix); empty picks a random one.
+  Postfix: ""
+  # What to clone; a path under the Mac home works too (it is mounted).
+  Repo: https://github.com/isdg/.rc.git
+
+provision:
+# Lima hands cloud-init the hostname lima-<name>, which it would put back on
+# every boot over the isg-debian-<postfix> that boot.sh sets.
+- mode: system
+  script: |
+    #!/bin/bash
+    set -eux -o pipefail
+    echo 'preserve_hostname: true' > /etc/cloud/cloud.cfg.d/99-isg-hostname.cfg
+
+# Runs on every boot, so the bootstrap is guarded by a marker; a failed run
+# leaves none and is retried on the next boot. Later updates are by hand.
+- mode: user
+  script: |
+    #!/bin/bash
+    set -eux -o pipefail
+    marker=~/.config/isg/.lima-bootstrapped
+    [ ! -e "$marker" ] || exit 0
+    sudo apt-get update
+    sudo DEBIAN_FRONTEND=noninteractive apt-get install -y git
+    [ -d ~/.rc ] || git clone "$PARAM_Repo" ~/.rc
+    mkdir -p ~/.config/isg
+    if [ -n "${PARAM_Postfix:-}" ] && [ ! -f ~/.config/isg/postfix ]; then
+      echo "$PARAM_Postfix" > ~/.config/isg/postfix
+    fi
+    ~/.rc/.rcboot/boot.sh --level="${PARAM_Level:-3}"
+    touch "$marker"

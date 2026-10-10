@@ -23,9 +23,14 @@ install_nvim_plugins() {
         git clone --filter=blob:none --branch=stable \
             https://github.com/folke/lazy.nvim.git "$(_lazy_path)"
     fi
-    if nvim --headless "+Lazy! sync" +qa; then
+    # nvim exits 0 even when init.lua throws (and then syncs nothing), so its
+    # own error banner is what tells failure apart.
+    local out
+    if out="$(nvim --headless "+Lazy! sync" +qa 2>&1)" &&
+        ! printf '%s' "$out" | grep -q 'Error detected while processing'; then
         echo "[OK] Neovim plugins installed"
     else
+        printf '%s\n' "$out" | grep -A3 'Error detected' | sed 's/^/       /'
         echo "[WARN] Neovim plugin install failed — run" \
             "'nvim --headless \"+Lazy! sync\" +qa' to see why"
     fi
