@@ -88,6 +88,8 @@ LAYOUT
     darwin/         Darwin system defaults + Brewfile
     prompt/         shell prompt definitions
     hr/             hrrc, seeded once to ~/.hrrc (hr's reading vault)
+    lima/           Debian VM template with this repo bootstrapped inside;
+                    launched by hand (lima/README.md)
     plc/            palace notes system (README.md); plcrc, seeded
                     once to ~/.plcrc
     postfix/        name pools: machine/ for hostnames (isg-<os>-<name>,
