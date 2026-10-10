@@ -6,7 +6,6 @@
 # Usage:
 #   ./linux.sh             — install / configure everything (level 3)
 #   ./linux.sh --level=N   — up to level N; fragments above it are switched off
-#   ./linux.sh --minimal   — the same as --level=2
 #   ./linux.sh --ensure    — verify, with or without --level (no changes)
 #
 # Levels (.rcboot/modules): 0 bare, 1 core (zsh, tmux, vim, git), 2 tools

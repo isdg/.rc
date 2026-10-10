@@ -269,7 +269,6 @@ parse_args() {
         case "$arg" in
             --ensure)          RC_MODE=ensure ;;
             --level=[0-3])     RC_LEVEL="${arg#--level=}" ;;
-            --minimal)         RC_LEVEL=2 ;;
             -h|--help)
                 sed -n '2,/^[^#]/p' "$0" | sed '$d; s/^# \{0,1\}//'
                 exit 0

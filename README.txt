@@ -60,7 +60,6 @@ modules by level, in run order; --level=N runs those up to N:
               Ghostty, fonts, Claude, k9s, GUI apps, toolchains (default)
 
     > ./.rcboot/linux.sh --level=2
-    > ./.rcboot/darwin.sh --minimal     # the same as --level=2
 
 Packages follow the level too: darwin/Brewfile and the Linux lists are cut
 by it. Going down a level switches off the fragments above it; packages

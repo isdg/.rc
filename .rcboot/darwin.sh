@@ -6,7 +6,6 @@
 # Usage:
 #   ./darwin.sh             — install / configure everything (level 3)
 #   ./darwin.sh --level=N   — up to level N; fragments above it are switched off
-#   ./darwin.sh --minimal   — the same as --level=2
 #   ./darwin.sh --ensure    — verify, with or without --level (no changes)
 #
 # Levels (.rcboot/modules): 0 bare, 1 core (zsh, tmux, vim, git), 2 tools
