@@ -1,17 +1,18 @@
 #!/usr/bin/env bash
 # Component: modern Neovim (Linux)
 #
-# nvim/init.lua needs Neovim >= 0.10 — lazy.nvim, telescope, mason and gitsigns
-# all require it. Debian bookworm packages 0.7.2, on which init.lua dies at the
-# first option call ("E5113: … E546: Illegal mode"), so lazy.nvim never
-# bootstraps and nvim opens with no plugins at all. Distro packages lag Neovim
+# nvim/init.lua needs Neovim >= 0.11: the terminal-mode 'guicursor' entry in
+# 00-options.lua and the pinned mason-lspconfig and gitsigns all require it.
+# Debian 13 packages 0.10, on which init.lua dies at the first option call
+# ("E5113: … E546: Illegal mode"), so lazy.nvim never bootstraps and nvim
+# opens with no plugins at all. Distro packages lag Neovim
 # badly and always will, so when apt's copy is too old, fetch the official
 # static build into ~/.local rather than pinning the config to a 2022 API.
 #
 # ~/.local/bin must precede /usr/bin on PATH for this to take effect; .zshrc
 # prepends it.
 
-NVIM_MIN_MINOR=10   # minimum 0.x we support
+NVIM_MIN_MINOR=11   # minimum 0.x we support
 
 # Resolve nvim the way an interactive shell would. Plain `command -v nvim` is
 # not enough: ~/.local/bin is prepended by .zshrc, so a bash-run --ensure (or
