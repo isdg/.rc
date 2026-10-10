@@ -8,7 +8,7 @@ call plug#begin('~/.vim/plugged')
 
 Plug 'neoclide/coc.nvim', {'branch': 'release'} " LSP
 Plug 'preservim/nerdtree'                       " File tree
-Plug 'junegunn/fzf', { 'do': './install --all' }" Fuzzy finder
+Plug 'junegunn/fzf', { 'do': './install --bin' }" Fuzzy finder
 Plug 'junegunn/fzf.vim'
 Plug 'preservim/nerdcommenter'                  " Commenting
 Plug 'junegunn/goyo.vim' " centered

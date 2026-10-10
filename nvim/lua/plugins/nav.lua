@@ -59,7 +59,8 @@ return {
     -- fzf.vim (fast native fzf for file finding)
     {
         "junegunn/fzf",
-        build = "./install --all",
+        -- --bin: --all also writes ~/.fzf.* and appends to ~/.zshrc (the repo).
+        build = "./install --bin",
     },
     {
         "junegunn/fzf.vim",
