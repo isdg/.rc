@@ -40,10 +40,9 @@ Clone into ~/.rc:
     > git clone https://github.com/isdg/.rc.git "$HOME/.rc"
     > cd "$HOME/.rc"
 
-Run the bootstrap for your OS:
+Run the bootstrap (one script for Darwin and Linux):
 
-    > ./.rcboot/darwin.sh        # Darwin
-    > ./.rcboot/linux.sh         # Linux
+    > ./.rcboot/boot.sh
 
 The bootstrap is modular (see .rcboot/) and handles:
 Homebrew, packages, dotfile symlinks, vim-plug + plugins, fzf, fonts,
@@ -59,7 +58,7 @@ modules by level, in run order; --level=N runs those up to N:
     3  full   + nvim and lazy.nvim, vim-plug + coc, tpm with omni/orchbus,
               Ghostty, fonts, Claude, k9s, GUI apps, toolchains (default)
 
-    > ./.rcboot/linux.sh --level=2
+    > ./.rcboot/boot.sh --level=2
 
 Packages follow the level too: darwin/Brewfile and the Linux lists are cut
 by it. Going down a level switches off the fragments above it; packages
@@ -67,7 +66,7 @@ stay installed.
 
 Any level can be verified without changing anything:
 
-    > ./.rcboot/darwin.sh --ensure [--level=N]
+    > ./.rcboot/boot.sh --ensure [--level=N]
 
 Restart your terminal (or `exec zsh`) when it finishes.
 
@@ -75,7 +74,7 @@ Restart your terminal (or `exec zsh`) when it finishes.
 LAYOUT
 -------------------------------------------------------------------------------
 
-    .rcboot/        install scripts (darwin.sh, linux.sh, modules registry
+    .rcboot/        install scripts (boot.sh, lib.sh, modules registry
                     + one folder with a module.sh per tool)
     zsh/            .zshrc loader + rc.d/ fragments (NN-name.zsh), isg theme
     vim/            .vimrc loader + rc.d/ fragments, color schemes, coc

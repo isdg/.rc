@@ -1,16 +1,16 @@
 #!/usr/bin/env bash
 #
-# Bootstrap script for Darwin systems
+# Bootstrap script for Darwin and Linux
 # Assembles modular components for dotfiles setup
 #
 # Usage:
-#   ./darwin.sh             — install / configure everything (level 3)
-#   ./darwin.sh --level=N   — up to level N; fragments above it are switched off
-#   ./darwin.sh --ensure    — verify, with or without --level (no changes)
+#   ./boot.sh             — install / configure everything (level 3)
+#   ./boot.sh --level=N   — up to level N; fragments above it are switched off
+#   ./boot.sh --ensure    — verify, with or without --level (no changes)
 #
 # Levels (.rcboot/modules): 0 bare (nothing yet), 1 core (zsh, tmux, vim,
 # git), 2 tools (fzf, zoxide, delta, bat, tig), 3 full (nvim, plugins, GUI
-# apps, toolchains).
+# apps, toolchains). Modules branch on the OS themselves ($RC_OS).
 #
 set -e
 
@@ -19,13 +19,25 @@ DOTFILES_DIR="$(dirname "$SCRIPT_DIR")"
 export DOTFILES_DIR
 
 source "$SCRIPT_DIR/lib.sh"
-
 parse_args "$@"
+
+case "$RC_OS" in
+    darwin) OS_NAME=Darwin ;;
+    linux)
+        OS_NAME=Linux
+        # Everything this script installs because the distro's own copy is too
+        # old — neovim, bat, delta — lands in ~/.local/bin, which only .zshrc
+        # puts on PATH. This script runs under bash, so without this line both
+        # the install steps and every --ensure check measure the older /usr/bin
+        # copy and report a failure on a machine that is actually fine.
+        export PATH="$HOME/.local/bin:$HOME/.elan/bin:$PATH"
+        ;;
+esac
 
 # ── Ensure mode ────────────────────────────────────────────────────────────────
 if [ "$RC_MODE" = ensure ]; then
     echo "=========================================="
-    echo "  Dotfiles Verify for Darwin"
+    echo "  Dotfiles Verify for $OS_NAME"
     echo "  Level: $RC_LEVEL"
     echo "=========================================="
     echo ""
@@ -46,7 +58,7 @@ fi
 
 # ── Install mode ───────────────────────────────────────────────────────────────
 echo "=========================================="
-echo "  Dotfiles Bootstrap for Darwin"
+echo "  Dotfiles Bootstrap for $OS_NAME"
 echo "  Level: $RC_LEVEL"
 echo "=========================================="
 echo ""
@@ -63,6 +75,6 @@ echo "  2. Open Vim and verify plugins loaded correctly"
 if [ "$RC_LEVEL" -lt 3 ]; then
     echo ""
     echo "Level $RC_LEVEL: no nvim plugins, vim plugins, tmux plugins, language"
-    echo "toolchains or side tools. Run ./.rcboot/darwin.sh for the full set."
+    echo "toolchains or side tools. Run ./.rcboot/boot.sh for the full set."
 fi
 echo ""

@@ -103,7 +103,7 @@ install_keyremap_darwin() {
 
     # RunAtLoad fires hidutil asynchronously, so confirm the mapping actually
     # landed rather than trusting bootstrap's exit code. Reported, never fatal:
-    # darwin.sh runs install mode under `set -e`, and a remap that needs a
+    # boot.sh runs install mode under `set -e`, and a remap that needs a
     # re-login should not abort the rest of a bootstrap.
     local expected live
     expected="$(_keyremap_expected_pairs "$src")"
@@ -114,7 +114,7 @@ install_keyremap_darwin() {
         echo "[WARN] Key mapping not active yet — log out and back in, or run:"
         echo "       launchctl kickstart -k $domain/com.local.KeyRemap"
     else
-        echo "[WARN] Active key mapping differs from the plist; run ./.rcboot/darwin.sh --ensure"
+        echo "[WARN] Active key mapping differs from the plist; run ./.rcboot/boot.sh --ensure"
     fi
 
     return 0
