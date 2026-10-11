@@ -3,7 +3,9 @@ NEOVIM SETUP
 ============
 
 Lua-based config equivalent to the Vim setup.
-Same keybindings, colorschemes, and Russian layout support.
+Same core keybindings, colorschemes, and Russian layout support; nvim
+adds keys of its own (git hunks, harpoon, flash, the <leader><leader>
+plugins layer).
 
 Plugins (neovim-native):
   nvim-lspconfig + mason + nvim-cmp   (replaces CoC)
@@ -78,4 +80,5 @@ To make it permanent, change the last line in rc.d/11-colors.lua.
 DONE!
 -------------------------------------------------------------------------------
 
-Same keybindings as Vim — see vim/.vimrc header for the full hotkey reference.
+Shared keys are listed in the vim/.vimrc header; nvim-only keys are
+described where they are mapped, in rc.d/ and lua/plugins/.

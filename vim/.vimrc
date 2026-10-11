@@ -24,21 +24,24 @@
 "   <leader>J        Jump list (fzf)
 "   <leader>:        Ex commands (fzf)
 "   <leader>y        Yank to system clipboard
+"   <leader>p        Paste from system clipboard
+"   <leader>yf/yp/yP Copy file name / absolute / relative path
 "   <leader>v        Reselect last visual selection
 "   <leader>F        Format buffer (on demand; nothing formats on save)
 "   .                Redo last command 
 "   u                Undo last command
 "   U                Undo all changes on current line
 "   :source          Load any session or config file
+"   <leader>R        Reload vimrc
 
 " SPLITS
-"   <leader>e        Vertical split
-"   <leader>r        Horizontal split
+"   <C-w>sv / sh     Split side by side / stacked
 "   <C-h/j/k/l>      Move between splits
-"   <leader>+/-         Resize split vertically
-"   <leader>< / >       Resize split horizontally
-"   <leader>=           Equalize all split sizes
-"   <C-w>H/J/K/L     Move split to left/bottom/top/right
+"   <C-w><C-h/j/k/l> Move the split itself (swaps with its neighbour)
+"   <C-w>H/J/K/L     Resize: border left/down/up/right (count = cells)
+"   <C-w>E           Equalize all split sizes
+"   <C-w>;  /  o     Last split / cycle splits
+"   <C-w>1-9         Go to split by number
 
 " SESSIONS
 "   <leader><Tab>    Save session
@@ -57,7 +60,7 @@
 
 " FUZZY FIND
 "   <leader>f        Search files
-"   <C-b>            Search buffers
+"   <leader>b        Search buffers
 "   :History         Open file history
 "   :BLines          Search inside current buffer
 
@@ -168,9 +171,8 @@
 " FUZZY & SYMBOL SEARCH (via plugins)
 "   <leader>f         Fuzzy find files (:Files)
 "   <leader>e / E     LSP symbols: this file / workspace
-"   <leader>c / C     Lines: this buffer / all open buffers
-"   <C-b>             Fuzzy find buffers (:Buffers)
-"   <C-e>             Fuzzy search inside current buffer
+"   <leader>l / L     Lines: this buffer / all open buffers
+"   <leader>b         Fuzzy find buffers (:Buffers)
 "   :Rg <text>        Ripgrep search across project (requires ripgrep)
 
 " NOTES
@@ -219,12 +221,9 @@
 " ============================================================
 "                    ADVANCED (POWER) HOTKEYS (NOT IMPLEMENTED YET) #TODO
 " ============================================================
-"   <leader>R        Reload vimrc (source ~/.vimrc)
 "   <leader>o        Close all other buffers
 "   <leader>n        Open new empty buffer
 "   <leader><leader> Switch between last two buffers
-"   <leader>cp       Copy full file path to clipboard
-"   <leader>cf       Copy file name to clipboard
 
 " ============================================================
 
