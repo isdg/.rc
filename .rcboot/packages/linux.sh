@@ -130,7 +130,7 @@ install_packages_linux() {
                 # Tracing & debugging (ltrace is x86-only in Debian, so it
                 # drops out on an arm64 VM — without the split it took strace
                 # and gdb with it)
-                _apt_install "tracing tools" strace ltrace gdb linux-perf
+                _apt_install "tracing tools" strace ltrace gdb lldb linux-perf
                 # Zig (compiler from apt; zls usually not packaged — install
                 # manually from https://github.com/zigtools/zls/releases or
                 # via `zigup`)
