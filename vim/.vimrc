@@ -32,13 +32,16 @@
 "   :source          Load any session or config file
 
 " SPLITS
-"   <leader>e        Vertical split
-"   <leader>r        Horizontal split
+"   <C-w>sv / sh     Split side by side / stacked
 "   <C-h/j/k/l>      Move between splits
+"   <C-w><C-h/j/k/l> Move the split itself (swaps with its neighbour)
+"   <C-w>H/J/K/L     Resize: border left/down/up/right (count = cells)
+"   <C-w>E           Equalize all split sizes
+"   <C-w>;  /  o     Last split / cycle splits
+"   <C-w>1-9         Go to split by number
 "   <leader>+/-         Resize split vertically
 "   <leader>< / >       Resize split horizontally
 "   <leader>=           Equalize all split sizes
-"   <C-w>H/J/K/L     Move split to left/bottom/top/right
 
 " SESSIONS
 "   <leader><Tab>    Save session
