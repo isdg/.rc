@@ -24,6 +24,8 @@
 "   <leader>J        Jump list (fzf)
 "   <leader>:        Ex commands (fzf)
 "   <leader>y        Yank to system clipboard
+"   <leader>p        Paste from system clipboard
+"   <leader>yf/yp/yP Copy file name / absolute / relative path
 "   <leader>v        Reselect last visual selection
 "   <leader>F        Format buffer (on demand; nothing formats on save)
 "   .                Redo last command 
