@@ -1,2 +1,1 @@
 lldb:bind -v
-lldb:bind jJ vi-command-mode
