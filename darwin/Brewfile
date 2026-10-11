@@ -71,6 +71,7 @@ if level >= 3
   brew "go"    # builds the hr binary
   brew "delve"   # dlv, the Go debugger; rust-lldb ships with rust
   brew "py-spy"  # stacks of a live Python process, no restart
+  brew "lldb"    # lldb-dap for nvim-dap; the Xcode tools copy can fail
   brew "elan-init"  # Lean 4 toolchain manager; links lean/lake proxies
 
   # Graphics / media libs
