@@ -12,7 +12,7 @@ Includes configs for:
   - tmux (with tpm, tmux-resurrect, omni and orchbus)
   - ghostty
   - git (with delta as the pager), tig
-  - lldb (history autosuggestion)
+  - lldb
   - fzf, bat
   - k9s (skins + log plugins)
   - ssh client and gpg-agent

@@ -1,7 +1,5 @@
 # lldb reads this at startup.
 
-# Grey completion from history; C-f accepts it.
-settings set show-autosuggestion true
 # q and quit end a live debuggee without the y/n prompt.
 settings set interpreter.prompt-on-quit false
 settings set stop-line-count-before 5
