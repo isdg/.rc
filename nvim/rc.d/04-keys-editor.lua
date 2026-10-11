@@ -165,8 +165,7 @@ map("n", "<C-w>E", "<C-w>=", { desc = "Equalize splits" })
 -- key alone: the second is a thing to maintain, a thing to read past, and a
 -- coin flip for the fingers at the moment of use. The <C-w> set is the one
 -- kept because it is the one that matches tmux.
--- vim/rc.d/04-splits.vim now has the same <C-w> layer, beside its old
--- <leader> resize maps.
+-- vim/rc.d/04-splits.vim has the same <C-w> layer and dropped them too.
 
 
 -- ─── History & clipboard ────────────────────────────────────────

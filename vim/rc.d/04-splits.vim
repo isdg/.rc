@@ -83,11 +83,3 @@ for s:i in range(1, 9)
         \ . ':<C-u>execute min([%d, winnr("$")]) . "wincmd w"<CR>', s:i, s:i)
 endfor
 unlet s:i
-
-" Resize splits
-" Height, width, and equalize all
-nnoremap <leader>+ :resize +5<CR>
-nnoremap <leader>- :resize -5<CR>
-nnoremap <leader>< :vertical resize -5<CR>
-nnoremap <leader>> :vertical resize +5<CR>
-nnoremap <leader>= <C-w>=

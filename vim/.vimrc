@@ -42,9 +42,6 @@
 "   <C-w>E           Equalize all split sizes
 "   <C-w>;  /  o     Last split / cycle splits
 "   <C-w>1-9         Go to split by number
-"   <leader>+/-         Resize split vertically
-"   <leader>< / >       Resize split horizontally
-"   <leader>=           Equalize all split sizes
 
 " SESSIONS
 "   <leader><Tab>    Save session
