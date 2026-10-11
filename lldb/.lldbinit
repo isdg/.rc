@@ -1,8 +1,6 @@
-# lldb reads this at startup. Vi mode is in lldb/.editrc, which takes no
-# comments: libedit stops reading at one that precedes a binding. No jJ
-# escape there: autosuggestion swallows multi-key bindings, so Esc it is.
+# lldb reads this at startup.
 
-# Grey completion from history; C-f accepts it, in vi insert mode too.
+# Grey completion from history; C-f accepts it.
 settings set show-autosuggestion true
 # q and quit end a live debuggee without the y/n prompt.
 settings set interpreter.prompt-on-quit false

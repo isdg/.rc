@@ -2,7 +2,6 @@
 # Module: lldb.
 
 link lldb/.lldbinit "$HOME/.lldbinit"
-link lldb/.editrc "$HOME/.editrc"
 
 ensure_lldb() {
     echo "[STEP] Verifying lldb..."

@@ -12,7 +12,7 @@ Includes configs for:
   - tmux (with tpm, tmux-resurrect, omni and orchbus)
   - ghostty
   - git (with delta as the pager), tig
-  - lldb (vi-mode line editor, history autosuggestion)
+  - lldb (history autosuggestion)
   - fzf, bat
   - k9s (skins + log plugins)
   - ssh client and gpg-agent
@@ -85,7 +85,7 @@ LAYOUT
     ghostty/        terminal config
     git/            .gitconfig
     tig/            git TUI config
-    lldb/           .lldbinit + .editrc (lldb's vi-mode line editor)
+    lldb/           .lldbinit
     fonts/          JetBrains Mono + Computer Modern
     darwin/         Darwin system defaults + Brewfile
     prompt/         shell prompt definitions
