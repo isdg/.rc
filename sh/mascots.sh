@@ -1,6 +1,6 @@
 #!/bin/bash
 # Mascots + splash renderer for toggle_theme.sh — mascot left · status
-# right, like banner_render in zsh/isg.zsh-theme. Mascots are
+# right, like banner_render in zsh/banner.zsh. Mascots are
 # shade-block bodies (░ rim, ▓ body, █ core) with half-cell edges
 # (▗ ▄ ▐ ▌ ▀ ▝ ▘), each signed by its governing law instead of a
 # caption —

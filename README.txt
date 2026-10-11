@@ -118,7 +118,8 @@ MANUAL SETUP (if you'd rather not run bootstrap)
     > ln -fs "$HOME"/.rc/tmux/rc.d/*.conf "$HOME/.config/rc/tmux/"
 
    There is no framework to install and no theme link to make — .zshrc is
-   plain zsh and sources zsh/isg.zsh-theme from the repo directly.
+   plain zsh and sources zsh/isg.zsh-theme and zsh/banner.zsh from the
+   repo directly.
 
    Anything true of this machine rather than of the config — the ssh keys
    log_ssh loads into the agent, paths only this box has — goes in
