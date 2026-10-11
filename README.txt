@@ -13,6 +13,7 @@ Includes configs for:
   - ghostty
   - git (with delta as the pager), tig
   - lldb
+  - readline/libedit keys (~/.inputrc, ~/.editrc)
   - fzf, bat
   - k9s (skins + log plugins)
   - ssh client and gpg-agent
@@ -86,6 +87,7 @@ LAYOUT
     git/            .gitconfig
     tig/            git TUI config
     lldb/           .lldbinit
+    readline/       .inputrc + .editrc: line keys for psql, lldb, sqlite3...
     fonts/          JetBrains Mono + Computer Modern
     darwin/         Darwin system defaults + Brewfile
     prompt/         shell prompt definitions

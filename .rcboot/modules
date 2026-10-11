@@ -9,6 +9,7 @@
 1 vim
 1 gpg
 1 git
+1 readline
 1 ssh
 1 theme
 # Core because it changes what every keystroke does.
