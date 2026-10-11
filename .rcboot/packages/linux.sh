@@ -19,6 +19,7 @@ ensure_packages_linux() {
     if _level 3; then
         required+=(nvim)
         optional+=(w3m sd prettier nom glow go cargo qemu-img)
+        optional+=(gdb lldb dlv py-spy rr)
     fi
 
     for cmd in "${required[@]}"; do
@@ -130,7 +131,8 @@ install_packages_linux() {
                 # Tracing & debugging (ltrace is x86-only in Debian, so it
                 # drops out on an arm64 VM — without the split it took strace
                 # and gdb with it)
-                _apt_install "tracing tools" strace ltrace gdb linux-perf
+                _apt_install "tracing tools" strace ltrace gdb lldb linux-perf
+                _apt_install "debuggers" delve py-spy rr
                 # Zig (compiler from apt; zls usually not packaged — install
                 # manually from https://github.com/zigtools/zls/releases or
                 # via `zigup`)

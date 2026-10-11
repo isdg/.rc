@@ -1,0 +1,11 @@
+# lldb reads this at startup. Its line-editor keys (vi mode, jJ to leave
+# insert) are in lldb/.editrc, which takes no comments: libedit stops
+# reading at one that precedes a binding.
+
+# Grey completion from history; C-f accepts it, in vi insert mode too.
+settings set show-autosuggestion true
+# q and quit end a live debuggee without the y/n prompt.
+settings set interpreter.prompt-on-quit false
+settings set stop-line-count-before 5
+settings set stop-line-count-after 5
+settings set target.x86-disassembly-flavor intel

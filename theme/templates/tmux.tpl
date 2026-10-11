@@ -23,3 +23,13 @@ set -g status-right-style "bg=default,fg=${ISG_UI_FG}"
 set -g message-style "bg=default,fg=${ISG_UI_MSG}"
 set -g pane-border-style "fg=${ISG_BORDER}"
 set -g pane-active-border-style "fg=${ISG_BORDER_ACTIVE}"
+# tmux 3.8 draws its own chrome in fixed 256-colour shades and paints popups
+# and menus grey. `theme terminal` returns it to the ANSI ramp and `default` to
+# the terminal background, as 3.7 did; -q keeps older tmux quiet.
+set -sq theme terminal
+set -gq popup-style default
+set -gq popup-border-style default
+set -gq menu-style default
+set -gq menu-border-style default
+set -gq tree-mode-border-style default
+set -gq display-panes-border-style default
