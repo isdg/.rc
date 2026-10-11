@@ -1,6 +1,6 @@
-# lldb reads this at startup. Its line-editor keys (vi mode, jJ to leave
-# insert) are in lldb/.editrc, which takes no comments: libedit stops
-# reading at one that precedes a binding.
+# lldb reads this at startup. Vi mode is in lldb/.editrc, which takes no
+# comments: libedit stops reading at one that precedes a binding. No jJ
+# escape there: autosuggestion swallows multi-key bindings, so Esc it is.
 
 # Grey completion from history; C-f accepts it, in vi insert mode too.
 settings set show-autosuggestion true
