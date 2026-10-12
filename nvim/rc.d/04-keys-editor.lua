@@ -261,6 +261,16 @@ vim.api.nvim_create_autocmd("FileType", {
 map("n", "<C-i>", "<C-o>", { noremap = true, desc = "Jump back" })
 map("n", "<C-o>", "<C-i>", { noremap = true, desc = "Jump forward" })
 
+-- Emacs char motion, as in every readline prompt (readline/.inputrc): tmux
+-- keeps <C-b>, so <C-v> steps back. <C-g>U keeps the undo step and dot-repeat
+-- whole; <C-q> takes over <C-v>'s literal insert and block visual.
+map("n", "<C-f>", "l", { desc = "Forward a char" })
+map("n", "<C-v>", "h", { desc = "Back a char" })
+map("i", "<C-f>", "<C-g>U<Right>", { desc = "Forward a char" })
+map("i", "<C-v>", "<C-g>U<Left>", { desc = "Back a char" })
+map("c", "<C-f>", "<Right>", { desc = "Forward a char" })
+map("c", "<C-v>", "<Left>", { desc = "Back a char" })
+
 -- Yank to system clipboard (visual mode)
 lmap("v", "y", '"+y', { desc = "Yank to clipboard" })
 
