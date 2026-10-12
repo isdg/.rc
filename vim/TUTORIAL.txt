@@ -54,8 +54,7 @@ GENERAL HOTKEYS
 5. NERDTREE
 ------------
 
-    <C-n>            Toggle NERDTree
-    <C-f>            Find current file in NERDTree
+    <leader>t        Toggle NERDTree, revealing the current file
     I                Show/hide hidden files
     m                File management menu
     o/i/s/t/go       Open file (normal/split/tab)
@@ -106,7 +105,7 @@ NAVIGATION EXTENDED
 2. SCREEN & SCROLL MOVEMENT
 ----------------------------
 
-    <C-b> / <C-f>       Scroll full-page up / down
+    <C-b>               Scroll full-page up
     H / M / L           Move cursor to top / middle / bottom of screen
     zz / zt / zb        Center / top / bottom current line on screen
     <C-u> / <C-d>       Scroll half-page up / down
@@ -179,7 +178,7 @@ VISUAL NAVIGATION EXTENDED
 
     v                 Start visual mode (characterwise)
     V                 Line visual mode
-    <C-v>             Block visual mode
+    <C-q>             Block visual mode
     o                 Jump to other end of current selection
     gv                Reselect last visual selection
     <leader>v         Reselect last visual selection (custom)
