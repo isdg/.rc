@@ -70,8 +70,12 @@ vim.api.nvim_create_autocmd("LspAttach", {
         map("n", "gi", picker.locations("implementation", "Implementations"), opts)
         map("n", "gr", picker.locations("references", "References"), opts)
         map("n", "K", vim.lsp.buf.hover, opts)
-        map("n", "]d", vim.diagnostic.goto_next, opts)
-        map("n", "[d", vim.diagnostic.goto_prev, opts)
+        map("n", "]d", function()
+            vim.diagnostic.jump({ count = 1, float = true })
+        end, opts)
+        map("n", "[d", function()
+            vim.diagnostic.jump({ count = -1, float = true })
+        end, opts)
 
         -- <leader>df: act on what dk just read. It completes the <leader>d verb
         -- set — k reads the diagnostic, l/L list them, f fixes it — so the
