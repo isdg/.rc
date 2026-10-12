@@ -50,7 +50,7 @@
 "   :source ~/.vim/session.vim  Restore manually
 
 " NERDTREE
-"   <leader>t        Toggle NERDTree, revealing the current file
+"   <leader>t        Find current file in NERDTree
 "   I                Show/hide hidden files
 "   m                File management menu
 "   o/i/s/t/go       Open file (normal/split/tab)
