@@ -37,3 +37,4 @@ drama
 fars
 esse
 mif
+tropar
