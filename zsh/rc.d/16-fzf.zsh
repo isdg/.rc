@@ -110,6 +110,36 @@ hrv() {
    "${EDITOR:-nvim}" -c "HrStart $*"
 }
 
+prv() {
+   # Open PRs involving me, with a state cell (legend in sh/prv.sh).
+   # -c/--current-repo limits to this repo; other args are GitHub search
+   # qualifiers (`prv author:someone`). ctrl-m is enter, hence alt-m.
+   local -a quals
+   local repo
+   while (( $# )); do
+      case $1 in
+         -c|--current-repo)
+            repo=$(gh repo view --json nameWithOwner -q .nameWithOwner) \
+               || return
+            quals+=("repo:$repo") ;;
+         *) quals+=("$1") ;;
+      esac
+      shift
+   done
+   local sh="${ISGRC:-$HOME/.rc}/sh/prv.sh"
+   sh="bash ${(q)sh}"
+   local list="$sh list ${(j: :)${(@q)quals}}"
+   eval "$list" | fzf --ansi --delimiter='\t' --with-nth=3 --id-nth=1,2 \
+      --prompt 'pr> ' --layout=reverse \
+      --header 'enter diff · alt-m merge · ctrl-o browser · ctrl-r reload' \
+      --preview 'gh pr diff {2} -R {1} | delta --width=$FZF_PREVIEW_COLUMNS' \
+      --preview-window 'down:70%' \
+      --bind 'enter:execute(gh pr diff {2} -R {1})' \
+      --bind "alt-m:execute($sh merge {1} {2})+reload($list)" \
+      --bind 'ctrl-o:execute-silent(gh pr view -w {2} -R {1})' \
+      --bind "ctrl-r:reload($list)"
+}
+
 # ----------------------------------------------------------------------------
 # ZLE pickers for the vicmd <Space> leader (bound in 17-vimode.zsh). Each
 # inserts its pick at the cursor, shell-quoted.
