@@ -23,3 +23,17 @@ poslanie
 triolet
 epigramma
 rasskaz
+povest
+novella
+ocherk
+pritcha
+legenda
+etud
+oktava
+terzina
+sekstina
+ekloga
+drama
+fars
+esse
+mif
