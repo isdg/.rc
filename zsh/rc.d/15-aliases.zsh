@@ -36,6 +36,8 @@ gjobs() {
 # passes non-diff output through untouched and pages with .gitconfig's less -RFX.
 export GH_PAGER=delta
 
+alias gps='gh pr status'
+
 # gh/glamour markdown theme. Inside tmux the OSC 11 background-colour query is
 # answered by tmux itself (with its dark default) rather than reaching the outer
 # terminal, so glamour's `auto` style renders dark in a light terminal even with
