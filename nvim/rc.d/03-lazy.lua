@@ -1,7 +1,7 @@
 -- lazy.nvim and the plugins are installed by .rcboot's nvim module. Without
 -- them nvim starts plain: a config loads plugins, it does not fetch them.
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not vim.loop.fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
     return
 end
 vim.opt.rtp:prepend(lazypath)
