@@ -4,7 +4,7 @@
 local map = require("keymaps.leader").map
 local lmap = require("keymaps.leader").lmap
 
--- ─── Commenting (Comment.nvim, replaces NERDCommenter) ──────────
+-- ─── Commenting (builtin gc, replaces NERDCommenter) ────────────
 map("n", "<C-_>", "gcc", { remap = true, desc = "Toggle comment" })
 map("v", "<C-_>", "gc", { remap = true, desc = "Toggle comment" })
 
