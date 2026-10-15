@@ -110,4 +110,6 @@ if level >= 3
                          # links nothing into /opt/homebrew/bin — zsh/.zshrc puts
                          # its bin on PATH. `brew services start postgresql@17`
                          # runs the server; the client works without it.
+  brew "redis"   # redis-cli + a local server; `brew services start redis`
+                 # runs it, the client works without it.
 end
