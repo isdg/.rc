@@ -28,7 +28,7 @@ PROMPT2='. '
 # fzf Esc and Ctrl-C as loudly as on a real failure. `echo $?` on demand instead.
 
 __isg::top_line () {
-  # RPROMPT only reaches the last line, so the stamp (tmux status-right's) is
+  # RPROMPT only reaches the last line, so the stamp (nvim <leader>nt's) is
   # right-aligned here by padding; one column spare, as ZLE_RPROMPT_INDENT does.
   setopt localoptions extendedglob
   local left right lw rw
@@ -38,7 +38,7 @@ __isg::top_line () {
   lw=${(m)#${${(%)left}//$'\e'\[[0-9;]#m/}}
   rw=${(m)#right}
   local pad=$(( COLUMNS - lw - rw - 1 ))
-  # tmux status-right's grey: ISG_UI_FG in theme/palette.sh.
+  # The tmux status bar's grey: ISG_UI_FG in theme/palette.sh.
   local grey='#555555'
   [[ "$ISG_THEME_MODE" == 'dark' ]] && grey='#c0c0c0'
   if (( pad > 0 )); then
