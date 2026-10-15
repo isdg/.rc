@@ -4,10 +4,10 @@
 -- Equivalent to vim/.vimrc — same features, keybindings, layout
 --
 -- Plugins (neovim-native equivalents):
---   CoC           → nvim-lspconfig + mason + nvim-cmp
+--   CoC           → native vim.lsp + mason + blink.cmp
 --   NERDTree      → nvim-tree.lua
 --   CocList       → fzf-lua
---   NERDCommenter → Comment.nvim
+--   NERDCommenter → builtin gc
 --   goyo.vim      → zen-mode.nvim
 --   rainbow       → rainbow-delimiters.nvim
 --   (new)         → nvim-treesitter
