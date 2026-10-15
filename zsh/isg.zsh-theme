@@ -34,12 +34,12 @@ __isg::top_line () {
   local left right lw rw
   left="$(__isg::current_venv)$(__isg::user_info)$(__isg::current_dir)"
   left+=" $(git_prompt_info)"
-  right='isg %D{%Y-%m-%d %H:%M %z}'
+  right=${(%):-'isg %D{%Y-%m-%d %H:%M %z}'}
   lw=${(m)#${${(%)left}//$'\e'\[[0-9;]#m/}}
-  rw=${(m)#${(%)right}}
+  rw=${(m)#right}
   local pad=$(( COLUMNS - lw - rw - 1 ))
   if (( pad > 0 )); then
-    print -rn -- "$left${(l:pad:)}$right"
+    print -rn -- "$left${(l:pad:)}%F{244}$right%f"
   else
     print -rn -- "$left"
   fi
