@@ -2,7 +2,7 @@
 # plugins or highlighting; a bare shell for testing
 [[ -n $ZSH_BARE ]] && return
 
-# startup timing — read by log_shell (banner.zsh)
+# startup timing — read by info_shell (banner.zsh)
 zmodload zsh/datetime
 typeset -gF _BANNER_T0=$EPOCHREALTIME
 

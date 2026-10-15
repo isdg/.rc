@@ -2,7 +2,7 @@
 #
 #          ▼ q₀        isg · zsh
 #   ┄┬─┬─┬─┬─┬─┬┄      Wed 11 Jun 2026 · 20:42
-#   ┄┤0│1│1│0│1├┄      ~/.rc · main
+#   ┄┤0│1│1│0│1├┄      zsh 5.9 · 77 ms
 #   ┄┴─┴─┴─┴─┴─┴┄
 #   δ(q₀,0)=⟨B,1,R⟩
 #
@@ -226,23 +226,24 @@ banner_render() {
 #
 # banner_host_info and banner_net_info are the exceptions: they print instead
 # of registering, because they feed the info lines beside the mascot rather
-# than the logs.
+# than the logs. info_shell feeds them too, but registers: the timing must be
+# read at render time, after ~/.zshrc.local.
 
 BANNER_LOG_FUNCS=(
-    log_shell
+    info_shell
     log_tmux
     log_ssh
 )
 
-# zsh version + startup time, e.g. "zsh 5.9 · 361 ms".
+# zsh version + startup time, e.g. "zsh 5.9 · 361 ms", as the last info line.
 # _BANNER_T0 is stamped on .zshrc line 1; the timing is dropped if it's unset.
-log_shell() {
+info_shell() {
     local seg="zsh $ZSH_VERSION"
     if [[ -n $_BANNER_T0 ]]; then
         local -i ms=$(( (EPOCHREALTIME - _BANNER_T0) * 1000 ))
         seg+=" · ${ms} ms"
     fi
-    banner_log "$seg"
+    banner_info "$seg"
 }
 
 # The ssh origin recovered from utmp, computed at most once.
@@ -542,6 +543,3 @@ _banner_net=$(banner_net_info)
 [[ -n $_banner_net ]] && banner_info "$_banner_net"
 unset _banner_net
 banner_info "%D{%a %d %b %Y · %H:%M}"
-_banner_branch=$(command git symbolic-ref --short HEAD 2>/dev/null)
-banner_info "%~${_banner_branch:+ · $_banner_branch}"
-unset _banner_branch
