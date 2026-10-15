@@ -28,13 +28,13 @@ PROMPT2='. '
 # fzf Esc and Ctrl-C as loudly as on a real failure. `echo $?` on demand instead.
 
 __isg::top_line () {
-  # RPROMPT only reaches the last line, so the stamp (nvim <leader>nt's) is
-  # right-aligned here by padding; one column spare, as ZLE_RPROMPT_INDENT does.
+  # RPROMPT only reaches the last line, so the date stamp is right-aligned
+  # here by padding; one column spare, as ZLE_RPROMPT_INDENT does.
   setopt localoptions extendedglob
   local left right lw rw
   left="$(__isg::current_venv)$(__isg::user_info)$(__isg::current_dir)"
   left+=" $(git_prompt_info)"
-  right=${(%):-'isg %D{%Y-%m-%d %H:%M:%S %z}'}
+  right=${(%):-'%D{%Y-%m-%d %H:%M:%S %z}'}
   lw=${(m)#${${(%)left}//$'\e'\[[0-9;]#m/}}
   rw=${(m)#right}
   local pad=$(( COLUMNS - lw - rw - 1 ))
