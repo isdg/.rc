@@ -19,13 +19,31 @@
 # These settings changes how your terminal prompt looks like
 # ----------------------------------------------------------------------------
 
-PROMPT='$(__isg::current_venv)$(__isg::user_info)$(__isg::current_dir) $(git_prompt_info)
+PROMPT='$(__isg::top_line)
 $(__isg::current_caret) '
 
 PROMPT2='. '
 
 # No RPROMPT: the exit-status segment that lived here shouted `130 ⚠️` on every
 # fzf Esc and Ctrl-C as loudly as on a real failure. `echo $?` on demand instead.
+
+__isg::top_line () {
+  # RPROMPT only reaches the last line, so the stamp (tmux status-right's) is
+  # right-aligned here by padding; one column spare, as ZLE_RPROMPT_INDENT does.
+  setopt localoptions extendedglob
+  local left right lw rw
+  left="$(__isg::current_venv)$(__isg::user_info)$(__isg::current_dir)"
+  left+=" $(git_prompt_info)"
+  right='isg %D{%Y-%m-%d %H:%M %z}'
+  lw=${(m)#${${(%)left}//$'\e'\[[0-9;]#m/}}
+  rw=${(m)#${(%)right}}
+  local pad=$(( COLUMNS - lw - rw - 1 ))
+  if (( pad > 0 )); then
+    print -rn -- "$left${(l:pad:)}$right"
+  else
+    print -rn -- "$left"
+  fi
+}
 
 __isg::current_caret () {
   # This function sets caret color and sign
