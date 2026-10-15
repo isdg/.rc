@@ -38,8 +38,11 @@ __isg::top_line () {
   lw=${(m)#${${(%)left}//$'\e'\[[0-9;]#m/}}
   rw=${(m)#right}
   local pad=$(( COLUMNS - lw - rw - 1 ))
+  # tmux status-right's grey: ISG_UI_FG in theme/palette.sh.
+  local grey='#555555'
+  [[ "$ISG_THEME_MODE" == 'dark' ]] && grey='#c0c0c0'
   if (( pad > 0 )); then
-    print -rn -- "$left${(l:pad:)}%F{244}$right%f"
+    print -rn -- "$left${(l:pad:)}%F{$grey}$right%f"
   else
     print -rn -- "$left"
   fi
