@@ -2,23 +2,18 @@
 --                    LSP / COMPLETION
 -- ============================================================
 return {
-    -- Treesitter (parser installation + highlight)
+    -- Treesitter highlight. The main branch neither installs parsers from
+    -- setup() nor starts highlighting; .rcboot installs lua/ts_parsers.lua.
     {
         "nvim-treesitter/nvim-treesitter",
+        branch = "main",
         build = ":TSUpdate",
         config = function()
-            -- Install parsers:  :TSInstall c cpp python rust go lua javascript typescript markdown json bash
-            require("nvim-treesitter").setup({
-                ensure_installed = {
-                    "c", "cpp", "python", "rust", "go", "lua", "zig",
-                    "javascript", "typescript", "markdown", "json", "bash",
-                },
+            vim.api.nvim_create_autocmd("FileType", {
+                callback = function(ev)
+                    pcall(vim.treesitter.start, ev.buf)
+                end,
             })
-            -- vim.api.nvim_create_autocmd("FileType", {
-            --    callback = function()
-            --       pcall(vim.treesitter.start)
-            --    end,
-            -- })
         end,
     },
 
