@@ -8,10 +8,10 @@ adds keys of its own (git hunks, harpoon, flash, the <leader><leader>
 plugins layer).
 
 Plugins (neovim-native):
-  nvim-lspconfig + mason + nvim-cmp   (replaces CoC)
+  vim.lsp + mason + blink.cmp         (replaces CoC)
   nvim-tree.lua                       (replaces NERDTree)
   fzf-lua                             (replaces CocList)
-  Comment.nvim                        (replaces NERDCommenter)
+  builtin gc                          (replaces NERDCommenter)
   zen-mode.nvim                       (replaces goyo.vim)
   rainbow-delimiters.nvim             (replaces rainbow)
   nvim-treesitter                     (new)
@@ -28,12 +28,10 @@ Create a symlink from the repo to the Neovim config directory:
 2. Install plugins
 -------------------
 
-Open Neovim — lazy.nvim will bootstrap itself and install all plugins
-on the first launch:
+.rcboot's nvim module installs lazy.nvim, the plugins and the Treesitter
+parsers; the config only loads them. To sync plugins by hand:
 
-    > nvim
-
-Wait for the install to finish, then restart.
+    > nvim --headless "+Lazy! sync" +qa
 
 -------------------------------------------------------------------------------
 3. LSP servers
@@ -42,10 +40,13 @@ Wait for the install to finish, then restart.
 Mason will auto-install configured language servers on first load:
 
     clangd          C/C++
-    pyright         Python
     rust_analyzer   Rust
     gopls           Go
     ts_ls           TypeScript/JavaScript
+    zls             Zig
+
+Python uses ty, found on $PATH rather than installed by mason.
+A server whose binary is missing is skipped, not an error.
 
 To manage servers manually:
 
@@ -55,12 +56,13 @@ To manage servers manually:
 4. Treesitter parsers
 ----------------------
 
-Treesitter parsers are installed automatically for:
+.rcboot's nvim module installs the parsers in lua/ts_parsers.lua (built
+with the tree-sitter CLI, so it and a C compiler must be present):
 
-    c, cpp, python, rust, go, lua, javascript, typescript,
+    c, cpp, python, rust, go, lua, zig, javascript, typescript,
     markdown, json, bash
 
-To add more:
+To add one for good, list it there; for this machine only:
 
     :TSInstall <language>
 

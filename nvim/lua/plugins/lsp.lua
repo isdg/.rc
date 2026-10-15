@@ -2,23 +2,18 @@
 --                    LSP / COMPLETION
 -- ============================================================
 return {
-    -- Treesitter (parser installation + highlight)
+    -- Treesitter highlight. The main branch neither installs parsers from
+    -- setup() nor starts highlighting; .rcboot installs lua/ts_parsers.lua.
     {
         "nvim-treesitter/nvim-treesitter",
+        branch = "main",
         build = ":TSUpdate",
         config = function()
-            -- Install parsers:  :TSInstall c cpp python rust go lua javascript typescript markdown json bash
-            require("nvim-treesitter").setup({
-                ensure_installed = {
-                    "c", "cpp", "python", "rust", "go", "lua", "zig",
-                    "javascript", "typescript", "markdown", "json", "bash",
-                },
+            vim.api.nvim_create_autocmd("FileType", {
+                callback = function(ev)
+                    pcall(vim.treesitter.start, ev.buf)
+                end,
             })
-            -- vim.api.nvim_create_autocmd("FileType", {
-            --    callback = function()
-            --       pcall(vim.treesitter.start)
-            --    end,
-            -- })
         end,
     },
 
@@ -32,22 +27,19 @@ return {
 
     {
         "williamboman/mason-lspconfig.nvim",
-        dependencies = { "williamboman/mason.nvim", "hrsh7th/cmp-nvim-lsp" },
+        dependencies = { "williamboman/mason.nvim" },
         config = function()
             require("mason-lspconfig").setup({
                 ensure_installed = {
                     "clangd", "rust_analyzer", "gopls", "ts_ls", "zls",
                 },
+                -- The loop below is the one place that enables servers.
+                automatic_enable = false,
             })
 
             -- Configure LSP servers using neovim 0.11+ native API
+            -- Completion capabilities come from blink.cmp's plugin/ file.
             vim.lsp.log.set_level("WARN")
-            local capabilities = require("cmp_nvim_lsp").default_capabilities()
-
-            -- Apply capabilities to all servers
-            vim.lsp.config("*", {
-                capabilities = capabilities,
-            })
 
             vim.lsp.config("clangd", {
                 -- NB: do not add "--header-filter=.*" here. It is a clang-tidy
@@ -101,8 +93,7 @@ return {
                     -- textDocument/semanticTokens/full answers with an empty token
                     -- array and Neovim paints nothing. Without it Go highlighting
                     -- is whatever $VIMRUNTIME/syntax/go.vim manages on its own,
-                    -- which leaves types, function names and consts uncoloured
-                    -- (there is no treesitter go parser installed either).
+                    -- which leaves types, function names and consts uncoloured.
                     -- Tokens land on the @lsp.type.*.go / @lsp.mod.*.go groups.
                     gopls = { staticcheck = true, semanticTokens = true },
                 },
@@ -152,88 +143,79 @@ return {
 
     -- Completion (replaces CoC completion)
     {
-        "hrsh7th/nvim-cmp",
-        dependencies = {
-            "hrsh7th/cmp-nvim-lsp",
-            "hrsh7th/cmp-buffer",
-            "hrsh7th/cmp-path",
-            "L3MON4D3/LuaSnip",
-            "saadparwaiz1/cmp_luasnip",
-        },
-        config = function()
-            local cmp = require("cmp")
-            cmp.setup({
-                snippet = {
-                    expand = function(args)
-                        require("luasnip").lsp_expand(args.body)
+        "saghen/blink.cmp",
+        version = "1.*",
+        dependencies = { { "L3MON4D3/LuaSnip", version = "v2.*" } },
+        -- Fetch the prebuilt fuzzy matcher here, in Lazy's build step, which
+        -- .rcboot runs, instead of on first start.
+        build = function()
+            local done, err = false, nil
+            require("blink.cmp.fuzzy.download").ensure_downloaded(
+                function(e) done, err = true, e end)
+            vim.wait(120000, function() return done end)
+            if err then error(err) end
+        end,
+        opts = {
+            snippets = { preset = "luasnip" },
+            sources = { default = { "lsp", "snippets", "buffer", "path" } },
+            cmdline = { enabled = false },
+            completion = {
+                -- <leader>S flips vim.g.completion_autoshow
+                -- (rc.d/09-keys-lsp.lua); show() opens the menu regardless.
+                menu = {
+                    auto_show = function()
+                        return vim.g.completion_autoshow ~= false
                     end,
                 },
-                mapping = cmp.mapping.preset.insert({
-                    ["<CR>"] = cmp.mapping.confirm({ select = false }),
-                    ["<C-j>"] = cmp.mapping.select_next_item(),
-                    ["<C-k>"] = cmp.mapping.select_prev_item(),
-                    -- Coarse movement, <C-d>/<C-u> as in normal mode. These stay
-                    -- scoped to the menu for free: cmp.mapping.select_*_item runs
-                    -- fallback() when the menu is closed, so with no menu up the
-                    -- insert-mode defaults survive untouched (|i_CTRL-D| removes
-                    -- a shiftwidth of indent, |i_CTRL-U| kills what you typed).
-                    -- Select, not the Insert default, so a 4-entry jump doesn't
-                    -- drag four candidates through the buffer on the way past.
-                    ["<C-d>"] = cmp.mapping.select_next_item({
-                        behavior = cmp.SelectBehavior.Select,
-                        count = 4,
-                    }),
-                    ["<C-u>"] = cmp.mapping.select_prev_item({
-                        behavior = cmp.SelectBehavior.Select,
-                        count = 4,
-                    }),
-                    -- Trigger the menu on demand. This is the escape hatch that
-                    -- makes <leader>S (toggle auto-suggestions) usable: it goes
-                    -- through cmp.complete(), which ignores
-                    -- completion.autocomplete entirely.
-                    -- <C-l>, not <C-Space>: Darwin maps Ctrl+Space to the input
-                    -- source switcher, so the terminal never sees it. Insert-mode
-                    -- CTRL-L has no Neovim default (:h i_CTRL-L does not exist —
-                    -- CTRL-L is only meaningful inside |i_CTRL-X| completion
-                    -- mode), and this is a different mode from the normal-mode
-                    -- <C-l> window motion in rc.d/04-keys-editor.lua.
-                    --
-                    -- One key, three states, because what you want from it
-                    -- depends on what is on screen:
-                    --   no menu      → open the menu
-                    --   menu, no doc → pin the doc float for the entry
-                    --   doc pinned   → put it away
-                    -- The float cannot be *entered*: cmp opens it with
-                    -- nvim_open_win(..., false, ...) and never focuses it, and
-                    -- any window jump leaves insert mode, which closes the menu
-                    -- underneath it. Pinning (is_docs_view_pinned) is the
-                    -- equivalent — it keeps the float up while <C-j>/<C-k> walk
-                    -- the list, instead of it coming and going per entry.
-                    ["<C-l>"] = cmp.mapping(function()
-                        if not cmp.visible() then
-                            cmp.complete()
-                        elseif cmp.visible_docs() then
-                            cmp.close_docs()
-                        else
-                            -- completeopt has `noselect`, so a freshly opened
-                            -- menu has no selected entry — and open_docs() is a
-                            -- no-op without one. Land on the first entry (Select,
-                            -- so nothing is written to the buffer) first.
-                            if not cmp.get_selected_entry() then
-                                cmp.select_next_item({ behavior = cmp.SelectBehavior.Select })
-                            end
-                            cmp.open_docs()
+                list = { selection = { preselect = false } },
+                documentation = { auto_show = true },
+            },
+            keymap = {
+                preset = "none",
+                -- Nothing selected: accept() declines and <CR> is a newline.
+                ["<CR>"] = { "accept", "fallback" },
+                ["<C-y>"] = { "accept", "fallback" },
+                ["<C-e>"] = { "cancel", "fallback" },
+                ["<C-n>"] = { "select_next", "fallback" },
+                ["<C-p>"] = { "select_prev", "fallback" },
+                ["<C-j>"] = { "select_next", "fallback" },
+                ["<C-k>"] = { "select_prev", "fallback" },
+                -- Coarse movement, <C-d>/<C-u> as in normal mode, without
+                -- inserting the entries passed over. With no menu up, the
+                -- insert-mode defaults (|i_CTRL-D|, |i_CTRL-U|) still run.
+                ["<C-d>"] = {
+                    function(cmp)
+                        return cmp.select_next(
+                            { count = 4, auto_insert = false })
+                    end,
+                    "fallback",
+                },
+                ["<C-u>"] = {
+                    function(cmp)
+                        return cmp.select_prev(
+                            { count = 4, auto_insert = false })
+                    end,
+                    "fallback",
+                },
+                -- <C-l>, not <C-Space>: Darwin takes Ctrl+Space for the input
+                -- source switcher. One key, three states:
+                --   no menu → open it   menu → show docs   docs → hide them
+                ["<C-l>"] = {
+                    function(cmp)
+                        if not cmp.is_menu_visible() then
+                            return cmp.show()
+                        elseif cmp.is_documentation_visible() then
+                            return cmp.hide_documentation()
                         end
-                    end, { "i" }),
-                }),
-                sources = cmp.config.sources({
-                    { name = "nvim_lsp" },
-                    { name = "luasnip" },
-                }, {
-                    { name = "buffer" },
-                    { name = "path" },
-                }),
-            })
-        end,
+                        -- Docs need a selected entry; nothing is preselected.
+                        if not cmp.get_selected_item() then
+                            cmp.select_next({ auto_insert = false })
+                        end
+                        vim.schedule(cmp.show_documentation)
+                        return true
+                    end,
+                },
+            },
+        },
     },
 }

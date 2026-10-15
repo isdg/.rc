@@ -2,14 +2,6 @@
 --                  EDITING / FORMATTING
 -- ============================================================
 return {
-    -- Commenting (replaces NERDCommenter)
-    {
-        "numToStr/Comment.nvim",
-        config = function()
-            require("Comment").setup()
-        end,
-    },
-
     -- Zen mode (Goyo — commented out)
     -- {
     --    "junegunn/goyo.vim",
