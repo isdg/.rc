@@ -19,8 +19,9 @@
 #   banner_render             consume the registry and draw — call once, last
 #
 # Config
-#   BANNER_MODE=modes          full (default) · nomascot · nologs · off;
-#                              words combine: 'nomascot nologs'.
+#   BANNER_MODE=modes          nologs (default) · full · nomascot · off;
+#                              words combine: 'nomascot nologs'. A set
+#                              value replaces the default; full shows all.
 #                              The log funcs run in every mode, off too:
 #                              their side effects (ssh-agent) still matter.
 #   BANNER_ACCENT=color        mascot color (default: 244, a mid grey that
@@ -194,7 +195,7 @@ fi
 banner_render() {
     local -i i rows off=${BANNER_INFO_OFFSET:-1}
     local fn mascot info line
-    local -a mode=( ${=BANNER_MODE} )
+    local -a mode=( ${=BANNER_MODE:-nologs} )
     {
         # consume the log registry — funcs run in the current shell, so
         # exports they make (e.g. SSH_AUTH_SOCK) persist in the session
