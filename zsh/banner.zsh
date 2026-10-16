@@ -203,7 +203,7 @@ banner_render() {
         print
         if [[ $mode == nomascot ]]; then
             for info in "${_banner_info_lines[@]}"; do
-                print -P -- "    ${info}"
+                print -P -- "    › ${info}"
             done
         else
             rows=$(( ${#_banner_mascot} > ${#_banner_info_lines} + off \
