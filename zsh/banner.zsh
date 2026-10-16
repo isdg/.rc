@@ -19,7 +19,8 @@
 #   banner_render             consume the registry and draw — call once, last
 #
 # Config
-#   BANNER_MODE=mode           full (default) · nomascot · nologs · off.
+#   BANNER_MODE=modes          full (default) · nomascot · nologs · off;
+#                              words combine: 'nomascot nologs'.
 #                              The log funcs run in every mode, off too:
 #                              their side effects (ssh-agent) still matter.
 #   BANNER_ACCENT=color        mascot color (default: 244, a mid grey that
@@ -192,16 +193,17 @@ fi
 
 banner_render() {
     local -i i rows off=${BANNER_INFO_OFFSET:-1}
-    local fn mascot info line mode=${BANNER_MODE:-full}
+    local fn mascot info line
+    local -a mode=( ${=BANNER_MODE} )
     {
         # consume the log registry — funcs run in the current shell, so
         # exports they make (e.g. SSH_AUTH_SOCK) persist in the session
         for fn in "${BANNER_LOG_FUNCS[@]}"; do
             (( $+functions[$fn] )) && $fn
         done
-        [[ $mode == off ]] && return 0
+        (( ${mode[(Ie)off]} )) && return 0
         print
-        if [[ $mode == nomascot ]]; then
+        if (( ${mode[(Ie)nomascot]} )); then
             for info in "${_banner_info_lines[@]}"; do
                 print -P -- "    › ${info}"
             done
@@ -217,7 +219,7 @@ banner_render() {
                     "  %F{${BANNER_ACCENT:-244}}${mascot}%f   ${info}"
             done
         fi
-        if [[ $mode != nologs ]] && (( ${#_banner_log_lines} )); then
+        if (( ! ${mode[(Ie)nologs]} && ${#_banner_log_lines} )); then
             print
             # no colour of their own: the logs take the default foreground,
             # the same as the info lines beside the mascot, in both themes
