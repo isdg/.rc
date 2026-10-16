@@ -19,7 +19,9 @@
 #   banner_render             consume the registry and draw — call once, last
 #
 # Config
-#   BANNER_DISABLE=1           skip rendering entirely
+#   BANNER_MODE=mode           full (default) · nomascot · nologs · off.
+#                              The log funcs run in every mode, off too:
+#                              their side effects (ssh-agent) still matter.
 #   BANNER_ACCENT=color        mascot color (default: 244, a mid grey that
 #                              holds up on both the dark and light background).
 #                              Any %F{..} value: a base name, or 0-255. Note
@@ -189,32 +191,45 @@ if zmodload zsh/datetime 2>/dev/null; then
 fi
 
 banner_render() {
-    [[ -n $BANNER_DISABLE ]] && return 0
     local -i i rows off=${BANNER_INFO_OFFSET:-1}
-    local fn mascot info line
-    # consume the log registry — funcs run in the current shell, so exports
-    # they make (e.g. SSH_AUTH_SOCK) persist in the session
-    for fn in "${BANNER_LOG_FUNCS[@]}"; do
-        (( $+functions[$fn] )) && $fn
-    done
-    rows=$(( ${#_banner_mascot} > ${#_banner_info_lines} + off \
-             ? ${#_banner_mascot} : ${#_banner_info_lines} + off ))
-    print
-    for (( i = 1; i <= rows; i++ )); do
-        mascot="${_banner_mascot[i]:-}"
-        info=""
-        (( i > off )) && info="${_banner_info_lines[i - off]:-}"
-        print -P -- "  %F{${BANNER_ACCENT:-244}}${(r:${_banner_mascot_width}:)mascot}%f   ${info}"
-    done
-    (( ${#_banner_log_lines} )) && print
-    # no colour of their own: the logs take the default foreground, the same
-    # as the info lines beside the mascot, in both themes
-    for line in "${_banner_log_lines[@]}"; do
-        print -P -- "    · ${line//\%/%%}"
-    done
-    print
-    # consumed — a re-source/re-render starts clean
-    _banner_info_lines=() _banner_log_lines=()
+    local fn mascot info line mode=${BANNER_MODE:-full}
+    {
+        # consume the log registry — funcs run in the current shell, so
+        # exports they make (e.g. SSH_AUTH_SOCK) persist in the session
+        for fn in "${BANNER_LOG_FUNCS[@]}"; do
+            (( $+functions[$fn] )) && $fn
+        done
+        [[ $mode == off ]] && return 0
+        print
+        if [[ $mode == nomascot ]]; then
+            for info in "${_banner_info_lines[@]}"; do
+                print -P -- "  ${info}"
+            done
+        else
+            rows=$(( ${#_banner_mascot} > ${#_banner_info_lines} + off \
+                     ? ${#_banner_mascot} : ${#_banner_info_lines} + off ))
+            for (( i = 1; i <= rows; i++ )); do
+                mascot="${_banner_mascot[i]:-}"
+                info=""
+                (( i > off )) && info="${_banner_info_lines[i - off]:-}"
+                mascot=${(r:${_banner_mascot_width}:)mascot}
+                print -P -- \
+                    "  %F{${BANNER_ACCENT:-244}}${mascot}%f   ${info}"
+            done
+        fi
+        if [[ $mode != nologs ]] && (( ${#_banner_log_lines} )); then
+            print
+            # no colour of their own: the logs take the default foreground,
+            # the same as the info lines beside the mascot, in both themes
+            for line in "${_banner_log_lines[@]}"; do
+                print -P -- "    · ${line//\%/%%}"
+            done
+        fi
+        print
+    } always {
+        # consumed — a re-source/re-render starts clean
+        _banner_info_lines=() _banner_log_lines=()
+    }
 }
 
 # ── log registry ──
