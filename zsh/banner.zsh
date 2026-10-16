@@ -6,8 +6,8 @@
 #   ┄┴─┴─┴─┴─┴─┴┄
 #   δ(q₀,0)=⟨B,1,R⟩
 #
-#     · ssh-agent started · pid 724
-#     · Identity added: /Users/isg/.ssh/delos-new (...)
+#     › ssh-agent started · pid 724
+#     › Identity added: /Users/isg/.ssh/delos-new (...)
 #
 # Interface
 #   banner_info "text"        add a status line, shown right of the mascot
@@ -224,7 +224,7 @@ banner_render() {
             # no colour of their own: the logs take the default foreground,
             # the same as the info lines beside the mascot, in both themes
             for line in "${_banner_log_lines[@]}"; do
-                print -P -- "    · ${line//\%/%%}"
+                print -P -- "    › ${line//\%/%%}"
             done
         fi
         print
