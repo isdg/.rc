@@ -68,6 +68,7 @@ if level >= 3
   brew "zig"
   brew "zls"   # Zig language server
   brew "rust"  # cargo — builds the plc, omni and orchbus binaries
+  brew "lspmux"  # keeps rust-analyzer alive between nvim sessions
   brew "go"    # builds the hr binary
   brew "delve"   # dlv, the Go debugger; rust-lldb ships with rust
   brew "py-spy"  # stacks of a live Python process, no restart

@@ -74,13 +74,31 @@ return {
                 root_markers = { "pyproject.toml", "setup.py", "setup.cfg", "requirements.txt", ".git" },
             })
 
+            -- Through lspmux when its server is up, so rust-analyzer and its
+            -- index outlive this nvim; plain rust-analyzer otherwise.
+            local function ra_cmd()
+                local ra = vim.fn.exepath("rust-analyzer")
+                if ra == "" or vim.fn.executable("lspmux") == 0 then
+                    return { "rust-analyzer" }
+                end
+                return {
+                    "sh", "-c",
+                    'if lspmux status >/dev/null 2>&1; then '
+                        .. 'exec lspmux client --server-path "$1"; fi; '
+                        .. 'exec "$1"',
+                    "sh", ra,
+                }
+            end
+            local ra_settings = { check = { command = "clippy" } }
+
             vim.lsp.config("rust_analyzer", {
-                cmd = { "rust-analyzer" },
+                cmd = ra_cmd(),
                 filetypes = { "rust" },
                 root_markers = { "Cargo.toml", "rust-project.json", ".git" },
-                settings = {
-                    ["rust-analyzer"] = { check = { command = "clippy" } },
-                },
+                settings = { ["rust-analyzer"] = ra_settings },
+                -- lspmux drops server-to-client requests, among them
+                -- workspace/configuration: settings must come at initialize.
+                init_options = ra_settings,
             })
 
             vim.lsp.config("gopls", {
