@@ -68,6 +68,7 @@ if level >= 3
   brew "zig"
   brew "zls"   # Zig language server
   brew "rust"  # cargo — builds the plc, omni and orchbus binaries
+  brew "lspmux"  # keeps rust-analyzer alive between nvim sessions
   brew "go"    # builds the hr binary
   brew "delve"   # dlv, the Go debugger; rust-lldb ships with rust
   brew "py-spy"  # stacks of a live Python process, no restart
@@ -104,6 +105,7 @@ if level >= 3
   brew "argocd"   # GitOps CD for k8s; Linux gets it from .rcboot/argocd
   brew "grafanactl"  # Grafana resources (dashboards, folders) as code
   brew "logcli"      # Loki log queries (LogQL) from the shell
+  brew "prometheus"  # for promtool: PromQL queries from the shell
   brew "mysql"
   brew "postgresql@17"   # psql + a local server. Every postgresql formula is
                          # versioned and therefore keg-only, so unlike mysql it

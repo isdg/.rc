@@ -1,0 +1,9 @@
+# Read by `lspmux server` (brew services) and by every `lspmux client`.
+
+# An idle rust-analyzer is kept for 8 hours, so reopening a project within a
+# working day skips its reindex. `brew services restart lspmux` frees them all.
+instance_timeout = 28800
+
+# rust-analyzer finds cargo and rustc on the PATH it was spawned with; pass the
+# editor's, not the service's minimal one.
+pass_environment = ["PATH"]

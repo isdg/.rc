@@ -94,6 +94,8 @@ LAYOUT
     hr/             hrrc, seeded once to ~/.hrrc (hr's reading vault)
     colima/         template new Colima profiles are created from (4 CPU,
                     8 GiB); seeded once to ~/.colima/_templates/
+    lspmux/         lspmux config: idle rust-analyzers live 8 hours, so
+                    reopening a project skips the reindex (Darwin)
     lima/           Debian VM template with this repo bootstrapped inside;
                     launched by hand (lima/README.md)
     plc/            palace notes system (README.md); plcrc, seeded

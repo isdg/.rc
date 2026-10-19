@@ -67,6 +67,30 @@ And three rules on how the work reads:
 
 # Global preferences (apply in every project / folder)
 
+## Precedence
+
+Everything below is the default, and it holds almost always. But if I
+explicitly say otherwise for a specific case — "work on main this time",
+"skip the PR", "just commit it", "merge it yourself", "no need to split
+this" — then do what I said. Don't quote these rules back at me, don't ask
+me to confirm a second time, and don't re-litigate the choice.
+
+Such an override covers the task at hand and then expires: the defaults
+resume afterwards unless I say the change is permanent. If I do say it's
+permanent, edit this file so the new rule is the written one.
+
+Project-specific rules live in that project's gitignored `CLAUDE.local.md`,
+not here.
+
+## Searching
+
+- **Use `rg`, not `grep`.** Whenever you'd reach for `grep` in the shell —
+  searching a tree, a file, or filtering a pipe — use `rg` (ripgrep): it's
+  recursive by default, honours `.gitignore`, and is faster.
+- **Scripts you commit are the exception.** Code that ships in a repo and
+  may run where `rg` isn't installed (CI, containers, other machines) keeps
+  using `grep`, unless the project already depends on `rg`.
+
 ## Database access
 
 - **Read-only by default.** Any database CLI or tool — `psql`, `supabase`,
