@@ -92,6 +92,52 @@ vim.api.nvim_create_autocmd("SwapExists", {
     callback = function() vim.v.swapchoice = "" end,
 })
 
+-- Autosave: write a changed file buffer a second after edits settle, and at
+-- once on leaving it or the editor. vim.g.autosave = false (or vim.b) opts out.
+local autosave_timers = {}
+
+local function autosave(buf)
+    local timer = autosave_timers[buf]
+    if timer then timer:stop() end
+    if not vim.api.nvim_buf_is_valid(buf) then return end
+    if vim.g.autosave == false or vim.b[buf].autosave == false then return end
+    local bo = vim.bo[buf]
+    if not bo.modified or bo.buftype ~= "" or bo.readonly
+        or not bo.modifiable or vim.api.nvim_buf_get_name(buf) == "" then
+        return
+    end
+    vim.api.nvim_buf_call(buf, function()
+        local ok, err = pcall(vim.cmd, "silent lockmarks update")
+        if not ok then vim.notify("autosave: " .. err, vim.log.levels.WARN) end
+    end)
+end
+
+local autosave_group = vim.api.nvim_create_augroup("autosave", {})
+vim.api.nvim_create_autocmd({ "InsertLeave", "TextChanged" }, {
+    group = autosave_group,
+    callback = function(args)
+        local buf = args.buf
+        autosave_timers[buf] = autosave_timers[buf] or vim.uv.new_timer()
+        autosave_timers[buf]:start(1000, 0, vim.schedule_wrap(function()
+            autosave(buf)
+        end))
+    end,
+})
+vim.api.nvim_create_autocmd({ "BufLeave", "FocusLost", "VimSuspend" }, {
+    group = autosave_group,
+    callback = function(args) autosave(args.buf) end,
+})
+vim.api.nvim_create_autocmd("BufWipeout", {
+    group = autosave_group,
+    callback = function(args)
+        local timer = autosave_timers[args.buf]
+        if timer then
+            timer:close()
+            autosave_timers[args.buf] = nil
+        end
+    end,
+})
+
 -- Clipboard provider, chosen by context:
 --   * Local: leave Neovim's default (pbcopy on Darwin, xclip/wl on Linux). It
 --     writes the OS clipboard via a CLI call, so it works in EVERY terminal --
