@@ -67,6 +67,15 @@ And three rules on how the work reads:
 
 # Global preferences (apply in every project / folder)
 
+## Searching
+
+- **Use `rg`, not `grep`.** Whenever you'd reach for `grep` in the shell —
+  searching a tree, a file, or filtering a pipe — use `rg` (ripgrep): it's
+  recursive by default, honours `.gitignore`, and is faster.
+- **Scripts you commit are the exception.** Code that ships in a repo and
+  may run where `rg` isn't installed (CI, containers, other machines) keeps
+  using `grep`, unless the project already depends on `rg`.
+
 ## Database access
 
 - **Read-only by default.** Any database CLI or tool — `psql`, `supabase`,
