@@ -12,7 +12,7 @@ lmap("n", "b", "<cmd>Buffers<CR>", { desc = "Find buffers" })
 -- Lowercase = this buffer, uppercase = wider scope, for each pair:
 --   e / E   symbols in this file / across the workspace   (LSP)
 --   l / L   lines in this buffer / across open buffers    (fzf)
---   i / I   path to the cursor / that object as a tree   (LSP, else TS)
+--   i / I   this object / this file, as a tree           (LSP, else TS)
 --
 -- FzfBLinesPreview / FzfLinesPreview (vim/fzf-layout.vim) rather than plain
 -- :BLines and :Lines — fzf.vim ships both without a preview pane.
@@ -22,9 +22,10 @@ lmap("n", "a", "<cmd>RG<CR>", { desc = "Live ripgrep" })
 lmap("n", "A", "<cmd>Rg<CR>", { desc = "Ripgrep (fzf filter)" })
 lmap("n", "E", function() require("lsp_picker").workspace_symbols() end, { desc = "Workspace symbols" })
 lmap("n", "e", function() require("lsp_picker").document_symbols() end, { desc = "Document symbols" })
-lmap("n", "i", function() require("breadcrumb").show() end, { desc = "Show breadcrumb" })
-lmap("n", "I", function() require("breadcrumb").tree() end,
+lmap("n", "i", function() require("structure").tree("object") end,
     { desc = "Object structure (tree)" })
+lmap("n", "I", function() require("structure").tree("file") end,
+    { desc = "File structure (tree)" })
 -- H for history, free since the tool keys moved into <leader><leader>
 -- (rc.d/10-keys-plugins.lua). B only ever meant "the uppercase of b", naming
 -- this after a neighbouring key instead of after the thing it opens.
