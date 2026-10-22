@@ -1,9 +1,9 @@
 -- ============================================================
---                       BREADCRUMB
+--                       STRUCTURE
 -- ============================================================
--- LSP-first, Treesitter-fallback symbol tree of the buffer, read two ways:
--- show() prints the path to the cursor ("class > method"), tree() opens the
--- outermost object on that path, whole, as a tree in fzf.
+-- LSP-first, Treesitter-fallback symbol tree of the buffer, opened in fzf:
+-- the object the cursor is in, or the whole file, under the path to the
+-- cursor ("class > method").
 
 local M = {}
 
@@ -173,20 +173,10 @@ local function cursor_row()
     return vim.api.nvim_win_get_cursor(0)[1] - 1
 end
 
-function M.show()
-    local nodes = symbols(0)
-    if not nodes then
-        print("(no LSP or Treesitter)")
-        return
-    end
-    local names = vim.tbl_map(function(n) return n.name end,
-        path(nodes, cursor_row()))
-    print(#names > 0 and table.concat(names, " > ") or "(top level)")
-end
-
--- Outside every symbol the whole file is the object. fzf opens on the
--- innermost symbol holding the cursor, the last link of show()'s path.
-function M.tree()
+-- scope "object" is the outermost symbol on the cursor's path, or the whole
+-- file outside every symbol; "file" is always the whole file. fzf opens on
+-- the innermost symbol holding the cursor, the last link of that path.
+function M.tree(scope)
     local bufnr = vim.api.nvim_get_current_buf()
     local nodes = symbols(bufnr) or {}
     if #nodes == 0 then
@@ -194,7 +184,8 @@ function M.tree()
         return
     end
     local trail = path(nodes, cursor_row())
-    local roots = #trail > 0 and { trail[1] } or nodes
+    local whole = scope == "file" or #trail == 0
+    local roots = whole and nodes or { trail[1] }
     local here = trail[#trail]
     local file = vim.api.nvim_buf_get_name(bufnr)
 
@@ -214,14 +205,15 @@ function M.tree()
     end
     for _, r in ipairs(roots) do add(r, "", "") end
 
-    local title = #trail > 0 and trail[1].name
-        or vim.fn.fnamemodify(file, ":t")
+    local title = whole and vim.fn.fnamemodify(file, ":t") or trail[1].name
+    local names = vim.tbl_map(function(n) return n.name end, trail)
+    local crumb = #names > 0 and table.concat(names, " > ") or "(top level)"
     -- --tac: the default layout lists bottom-up and a tree must read down, so
     -- pos() counts from the far end. fzf_args passes through sh: quote it.
     local pos = at and ("load:pos(%d)"):format(#items - at + 1)
     require("lsp_picker").items("Structure: " .. title, items, {
         opts = {
-            fzf_opts = { ["--tac"] = true },
+            fzf_opts = { ["--tac"] = true, ["--header"] = crumb },
             fzf_args = pos and "--bind=" .. vim.fn.shellescape(pos),
         },
     })
