@@ -17,11 +17,19 @@ expectations depend on the PR *type*:
 - **Refactor** — roughly equal adds/deletes (net ≈ 0).
 - **Pure rename/move** — large diff but trivial; call it out in the description.
 
-When implementing multi-part work, land it as a sequence of small PRs
-(e.g. foundation → UI → cleanup) and let the user merge each before continuing.
-That consecutive ordering is for **dependent** PRs (each builds on the last);
-**independent** PRs are the exception — open them in parallel, with no need to
-wait for a merge between them.
+When implementing multi-part work, plan it up front as small PRs and sort
+the parts by dependency:
+
+- **Dependent parts stack.** Each PR branches from the one before it and
+  targets that branch (e.g. foundation → UI → cleanup), so the whole stack is
+  open for review at once — don't wait for a merge to start the next PR.
+- **Independent parts go in parallel.** Branch them from `main` and open them
+  side by side; never thread them into a stack they don't depend on.
+- **Merge from the head of the stack.** The user merges the first PR (the one
+  targeting `main`) first, then the next — never the last PR first, which
+  would fold the stack into its parent branch instead of `main`. After each
+  merge, rebase the next PR onto `main` (`git rebase --onto main <merged>`)
+  and retarget it (`gh pr edit --base main`).
 
 If a feature (or any change) can't fit in one reasonably-sized PR, **propose a
 split up front** — break it into a sequence of PRs and include **tests at each
