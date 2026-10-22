@@ -113,10 +113,24 @@ local function picker_opts(title, extra)
     return vim.tbl_deep_extend("force", opts, extra and extra.opts or {})
 end
 
--- Show quickfix items; a lone result is jumped to without opening fzf.
+local function with_file(items)
+    return vim.tbl_filter(function(i) return i.filename and i.filename ~= "" end, items)
+end
+
+-- Show quickfix items; a lone result is jumped to without opening fzf. items
+-- may instead be a function returning them, re-run on every reload action, so
+-- a picker can redraw in place.
 function M.items(title, items, extra)
     extra = extra or {}
-    items = vim.tbl_filter(function(i) return i.filename and i.filename ~= "" end, items)
+    if type(items) == "function" then
+        local produce = items
+        local contents = function(cb)
+            for _, line in ipairs(M.format(with_file(produce()))) do cb(line) end
+            cb(nil)
+        end
+        return require("fzf-lua").fzf_exec(contents, picker_opts(title, extra))
+    end
+    items = with_file(items)
     if #items == 0 then
         vim.notify("No " .. title:lower() .. " found", vim.log.levels.INFO)
         return
