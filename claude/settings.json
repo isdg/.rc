@@ -60,7 +60,9 @@
   },
   "theme": "auto",
   "editorMode": "vim",
-  "vimInsertModeRemaps": { "jJ": "<Esc>" },
+  "vimInsertModeRemaps": {
+    "jJ": "<Esc>"
+  },
   "verbose": true,
   "skipAutoPermissionPrompt": true,
   "autoMode": {
@@ -104,5 +106,10 @@
       "**routine under /Users/isg/cosmos-main/ prefix**: routine dev commands (pnpm/uv/git/gh) scoped to this repo's worktrees are expected and frequent"
     ]
   },
-  "voiceEnabled": true
+  "voiceEnabled": true,
+  "modelSettings": {
+    "claude-opus-5-5": {
+      "effortLevel": "high"
+    }
+  }
 }
