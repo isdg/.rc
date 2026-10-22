@@ -159,6 +159,13 @@ local function tmuxPaneCells()
     return tonumber(l), tonumber(t), tonumber(w), tonumber(h), tonumber(gw), rows
 end
 
+-- A posted mouseMoved, not a bare warp: the warp moves the cursor silently, and
+-- Ghostty reports a wheel at the last position it saw MOVE to, so tmux scrolled
+-- whichever pane the pointer had been over before the jump.
+local function moveTo(p)
+    hs.eventtap.event.newMouseEvent(hs.eventtap.event.types.mouseMoved, p):post()
+end
+
 local function warpToFocus()
     local win = hs.window.frontmostWindow()
     if not win then return end
@@ -181,11 +188,11 @@ local function warpToFocus()
     end
 
     savedPos = hs.mouse.absolutePosition()
-    hs.mouse.absolutePosition({ x = x, y = y })
+    moveTo({ x = x, y = y })
 end
 
 local function restorePointer()
-    if savedPos then hs.mouse.absolutePosition(savedPos) savedPos = nil end
+    if savedPos then moveTo(savedPos) savedPos = nil end
 end
 
 local function scroll(dx, dy)
