@@ -62,7 +62,9 @@ function M.format(items)
             p.cut[avail] = p.cut[avail] or cut_left(p.s, avail)
             s, w = p.cut[avail], width
         end
-        local text = vim.trim(((item.text or ""):gsub("%s*\n%s*", " ")))
+        -- verbatim keeps leading space that means something, a tree's indent.
+        local text = (item.text or ""):gsub("%s*\n%s*", " ")
+        if not item.verbatim then text = vim.trim(text) end
         lines[i] = ("%s  %s%s%s  %s%s%s:%d:%d:"):format(
             ansi("90", ("%" .. num_width .. "d"):format(i)),
             s == "" and "" or ansi("34", s), ansi("32", lnum), (" "):rep(width - w),
