@@ -22,7 +22,7 @@ vim.g.git_messenger_always_into_popup = true
 -- This is the operative default: it is set unconditionally at startup, so the
 -- fallback in plugins/edit.lua is only a guard for the case where this file has
 -- not run.
-vim.g.zen_height = 0.9
+vim.g.zen_height = 0.95
 
 -- Colors
 vim.opt.termguicolors = true
