@@ -1,0 +1,20 @@
+# Defaults for oui, the typing test (github.com/isdg/oui). Linked, not
+# seeded like plcrc, to ~/.oui/config: oui never writes it, so edits here are
+# what it reads. Every key mirrors a flag (`oui --help`); flags always win.
+
+# Word list for random words, or the texts for `mode = text`: english,
+# french, russian, or any language kept in ~/.oui/texts/<language>/.
+language = english
+
+# `words` draws from the list; `text` types whole passages of real prose.
+mode = words
+
+# Extras mixed into random words -- punctuation, numbers, capitals, symbols
+# (p, n, c, s). Text mode ignores them: the author's punctuation is there.
+with =
+
+# Fifty words, as ttyper; swap for `time = 60` for a timed test, never both.
+words = 50
+
+# Heatmap layout; `auto` picks ЙЦУКЕН for Cyrillic words, QWERTY otherwise.
+layout = auto
