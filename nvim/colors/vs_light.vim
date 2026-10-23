@@ -68,7 +68,7 @@ hi IncSearch    guifg=#000000 guibg=#add6ff
 " =====================
 " Comments
 " =====================
-hi Comment      guifg=#999999 gui=italic
+hi Comment      guifg=#999999
 
 " =====================
 " Constants / Numbers / Booleans

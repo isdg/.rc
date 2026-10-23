@@ -64,7 +64,7 @@ hi PmenuSbar    guibg=#454545
 hi PmenuThumb   guibg=#007acc
 
 " Comments
-hi Comment      guifg=#888888 gui=italic
+hi Comment      guifg=#888888
 
 " Constants
 hi Constant     guifg=#569cd6

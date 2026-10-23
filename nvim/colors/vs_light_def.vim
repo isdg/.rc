@@ -27,7 +27,7 @@ hi IncSearch    ctermfg=0   ctermbg=11
 " =====================
 " Comments
 " =====================
-hi Comment      ctermfg=8 cterm=italic
+hi Comment      ctermfg=8
 
 " =====================
 " Constants / Numbers / Booleans

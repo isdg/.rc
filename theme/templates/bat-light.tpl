@@ -33,7 +33,6 @@
       <key>name</key><string>Comment</string>
       <key>scope</key><string>comment, punctuation.definition.comment</string>
       <key>settings</key><dict>
-        <key>fontStyle</key><string>italic</string>
         <key>foreground</key><string>${ISG_COMMENT}</string>
       </dict>
     </dict>

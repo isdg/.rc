@@ -64,7 +64,7 @@ hi PmenuSbar    guibg=${ISG_BORDER_UI}
 hi PmenuThumb   guibg=${ISG_BUTTON_FOCUS_BG}
 
 " Comments
-hi Comment      guifg=${ISG_COMMENT} gui=italic
+hi Comment      guifg=${ISG_COMMENT}
 
 " Constants
 hi Constant     guifg=${ISG_ACCENT}
