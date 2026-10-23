@@ -119,8 +119,8 @@ local ok, err = pcall(function()
         ("buffer %s nowait %s"):format(m.buffer, m.nowait))
     local rn = vim.fn.maparg("<leader>rn", "n", false, true)
     local rr = vim.fn.maparg("<leader>rr", "x", false, true)
-    check("<leader>rn and visual <leader>rr are buffer-local",
-        rn.buffer == 1 and rr.buffer == 1, vim.inspect({ rn.lhs, rr.lhs }))
+    check("<leader>rn is global, visual <leader>rr buffer-local",
+        rn.buffer == 0 and rr.buffer == 1, vim.inspect({ rn.lhs, rr.lhs }))
 
     row, col = find("tokio/src/runtime/runtime.rs", "self.handle.enter()")
     vim.api.nvim_win_set_cursor(0, { row, col })
