@@ -91,10 +91,74 @@ return {
             end
             local ra_settings = { check = { command = "clippy" } }
 
+            -- One rust-analyzer per Cargo workspace. The nearest Cargo.toml is
+            -- a member's, which gave every crate its own server, so ask cargo.
+            local workspace_of = {}
+            local function cargo_root(crate, on_dir)
+                if workspace_of[crate] then
+                    return on_dir(workspace_of[crate])
+                end
+                vim.system({
+                    "cargo", "metadata", "--no-deps", "--format-version", "1",
+                    "--manifest-path", crate .. "/Cargo.toml",
+                }, { text = true }, function(out)
+                    local ok, meta = pcall(vim.json.decode, out.stdout or "")
+                    local root = out.code == 0 and ok and meta.workspace_root
+                    if root then
+                        workspace_of[crate] = vim.fs.normalize(root)
+                    else
+                        vim.schedule(function()
+                            vim.notify("rust-analyzer: cargo metadata failed, "
+                                .. "rooting at " .. crate, vim.log.levels.WARN)
+                        end)
+                    end
+                    on_dir(workspace_of[crate] or crate)
+                end)
+            end
+
+            -- A registry or rust-src file is a dependency the running server
+            -- already indexes; its own root would be a lone server that knows
+            -- none of its callers. Join the server of the buffer we came from.
+            local home = vim.env.HOME
+            local cargo_home = vim.env.CARGO_HOME or (home .. "/.cargo")
+            local rustup_home = vim.env.RUSTUP_HOME or (home .. "/.rustup")
+            local libraries = {
+                cargo_home .. "/registry/src",
+                cargo_home .. "/git/checkouts",
+                rustup_home .. "/toolchains",
+            }
+            local function library_root(fname)
+                for _, dir in ipairs(libraries) do
+                    if vim.fs.relpath(dir, fname) then
+                        local from = vim.fn.bufnr("#")
+                        local c = from > 0 and vim.lsp.get_clients({
+                            bufnr = from, name = "rust_analyzer",
+                        })[1]
+                        local all = vim.lsp.get_clients({
+                            name = "rust_analyzer",
+                        })
+                        c = c or all[#all]
+                        return c and c.root_dir
+                    end
+                end
+            end
+
+            local function ra_root(bufnr, on_dir)
+                local fname = vim.api.nvim_buf_get_name(bufnr)
+                local lib = library_root(fname)
+                if lib then return on_dir(lib) end
+                local crate = vim.fs.root(bufnr, "Cargo.toml")
+                if not crate then
+                    local other = { "rust-project.json", ".git" }
+                    return on_dir(vim.fs.root(bufnr, other))
+                end
+                cargo_root(crate, on_dir)
+            end
+
             vim.lsp.config("rust_analyzer", {
                 cmd = ra_cmd(),
                 filetypes = { "rust" },
-                root_markers = { "Cargo.toml", "rust-project.json", ".git" },
+                root_dir = ra_root,
                 settings = { ["rust-analyzer"] = ra_settings },
                 -- lspmux drops server-to-client requests, among them
                 -- workspace/configuration: settings must come at initialize.
