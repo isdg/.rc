@@ -52,6 +52,15 @@ To manage servers manually:
 
     :Mason
 
+rust-analyzer runs once per Cargo workspace (its root comes from cargo
+metadata); std and dependency files reached with gd join that server.
+
+To test gd/gr/gi/gy, the picker and this setup headless on a pinned
+tokio (needs git, cargo and rust-analyzer):
+
+    > nvim/tests/lsp/run.sh --quick     # focused checks, about a minute
+    > nvim/tests/lsp/run.sh             # and the full suite, ~10 minutes
+
 -------------------------------------------------------------------------------
 4. Treesitter parsers
 ----------------------
