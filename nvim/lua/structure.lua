@@ -235,7 +235,8 @@ function M.tree(scope)
     end
 
     local function selected_node(selected)
-        local lnum, col = (selected[1] or ""):match(":(%d+):(%d+):$")
+        local row = selected[1] or ""
+        local _, lnum, col = require("lsp_picker").location_of(row)
         return lnum and at_pos[lnum .. ":" .. col]
     end
 

@@ -65,12 +65,22 @@ function M.format(items)
         -- verbatim keeps leading space that means something, a tree's indent.
         local text = (item.text or ""):gsub("%s*\n%s*", " ")
         if not item.verbatim then text = vim.trim(text) end
-        lines[i] = ("%s  %s%s%s  %s%s%s:%d:%d:"):format(
+        -- After the location, the text again without colour: fzf-lua takes a
+        -- quickfix entry's text from whatever follows the col.
+        local plain = vim.trim((text:gsub("\27%[[%d;]*m", "")))
+        lines[i] = ("%s  %s%s%s  %s%s%s:%d:%d:%s%s"):format(
             ansi("90", ("%" .. num_width .. "d"):format(i)),
             s == "" and "" or ansi("34", s), ansi("32", lnum), (" "):rep(width - w),
-            text, SEP, item.filename, item.lnum, math.max(item.col or 1, 1))
+            text, SEP, item.filename, item.lnum, math.max(item.col or 1, 1),
+            SEP, plain)
     end
     return lines
+end
+
+-- The file, line and col a formatted row points at.
+function M.location_of(line)
+    local file, lnum, col = line:match(SEP .. "(.*):(%d+):(%d+):" .. SEP)
+    return file, tonumber(lnum), tonumber(col)
 end
 
 local function jump(item)
@@ -101,7 +111,12 @@ local function picker_opts(title, extra)
         previewer = "builtin",
         actions = vim.tbl_extend("force", {}, file_actions),
         fzf_opts = { ["--multi"] = true, ["--delimiter"] = SEP, ["--with-nth"] = "{1}" },
-        _fmt = { from = function(s) return s:match(SEP .. "(.*)$") or s end },
+        _fmt = {
+            from = function(s)
+                local hidden = s:match(SEP .. "(.*)$")
+                return hidden and (hidden:gsub(SEP, "")) or s
+            end,
+        },
     }
     if extra and extra.push_tag then
         local push = extra.push_tag
@@ -113,8 +128,20 @@ local function picker_opts(title, extra)
     return vim.tbl_deep_extend("force", opts, extra and extra.opts or {})
 end
 
+-- Drops items with no file, and repeats of a location: a server can report
+-- one target twice (rust-analyzer does inside macros), which would turn a
+-- direct jump into a picker of identical rows.
 local function with_file(items)
-    return vim.tbl_filter(function(i) return i.filename and i.filename ~= "" end, items)
+    local seen, out = {}, {}
+    for _, i in ipairs(items) do
+        local key = ("%s:%d:%d"):format(
+            i.filename or "", i.lnum or 0, i.col or 0)
+        if i.filename and i.filename ~= "" and not seen[key] then
+            seen[key] = true
+            out[#out + 1] = i
+        end
+    end
+    return out
 end
 
 -- Show quickfix items; a lone result is jumped to without opening fzf. items
@@ -132,7 +159,9 @@ function M.items(title, items, extra)
     end
     items = with_file(items)
     if #items == 0 then
-        vim.notify("No " .. title:lower() .. " found", vim.log.levels.INFO)
+        local why = extra.why and (" — " .. extra.why) or ""
+        vim.notify("No " .. title:lower() .. " found" .. why,
+            vim.log.levels.INFO)
         return
     end
     if #items == 1 and extra.jump1 then
@@ -142,19 +171,84 @@ function M.items(title, items, extra)
     require("fzf-lua").fzf_exec(M.format(items), picker_opts(title, extra))
 end
 
--- vim.lsp.buf location requests: definition, type_definition, implementation,
--- references. They notify "No locations found" themselves.
+local METHODS = {
+    definition = "textDocument/definition",
+    type_definition = "textDocument/typeDefinition",
+    implementation = "textDocument/implementation",
+    references = "textDocument/references",
+}
+
+-- Why an answer can be empty without being wrong: the server is still busy
+-- (unfinished $/progress), or, as rust-analyzer flags with a diagnostic, the
+-- code is compiled out by #[cfg] or outside the module tree, so unanalysed.
+local function why_empty(clients, bufnr, row)
+    local why = {}
+    for _, c in ipairs(clients) do
+        for _, title in pairs(c.progress.pending) do
+            why[#why + 1] = ("%s: %s in progress"):format(
+                c.name, tostring(title))
+        end
+    end
+    for _, d in ipairs(vim.diagnostic.get(bufnr)) do
+        local code = tostring(d.code)
+        local covers = d.lnum <= row and row <= (d.end_lnum or d.lnum)
+        local inactive = covers and code:match("^inactive[-_]code$")
+        if code == "unlinked-file" or inactive then
+            why[#why + 1] = d.message
+            break
+        end
+    end
+    return #why > 0 and table.concat(why, "; ") or nil
+end
+
+-- Asked directly, not through vim.lsp.buf.definition() and kin: those drop
+-- error replies and say "No locations found" before on_list runs, so a failing
+-- or still-indexing server read as a real empty answer.
 function M.locations(fn_name, title)
+    local method = METHODS[fn_name]
     return function()
+        local bufnr = vim.api.nvim_get_current_buf()
+        local win = vim.api.nvim_get_current_win()
+        local clients = vim.lsp.get_clients({ bufnr = bufnr, method = method })
+        if #clients == 0 then
+            vim.notify("No attached server supports " .. method,
+                vim.log.levels.WARN)
+            return
+        end
         local push = tagstack_pusher()
-        local on_list = function(t)
-            M.items(title, t.items, { jump1 = true, push_tag = push })
-        end
-        if fn_name == "references" then
-            vim.lsp.buf.references(nil, { on_list = on_list })
-        else
-            vim.lsp.buf[fn_name]({ on_list = on_list })
-        end
+        local row = vim.api.nvim_win_get_cursor(win)[1] - 1
+        vim.lsp.buf_request_all(bufnr, method, function(client)
+            local params = vim.lsp.util.make_position_params(
+                win, client.offset_encoding)
+            if fn_name == "references" then
+                params.context = { includeDeclaration = true }
+            end
+            return params
+        end, function(results)
+            local items, errors = {}, {}
+            for id, res in pairs(results) do
+                local client = vim.lsp.get_client_by_id(id)
+                if res.err then
+                    errors[#errors + 1] = ("%s: %s"):format(
+                        client and client.name or id, tostring(res.err.message))
+                elseif res.result and client then
+                    local locs = vim.islist(res.result) and res.result
+                        or { res.result }
+                    vim.list_extend(items, vim.lsp.util.locations_to_items(
+                        locs, client.offset_encoding))
+                end
+            end
+            if #items == 0 and #errors > 0 then
+                vim.notify(title .. ": " .. table.concat(errors, "; "),
+                    vim.log.levels.WARN)
+                return
+            end
+            M.items(title, items, {
+                jump1 = true,
+                push_tag = push,
+                why = why_empty(clients, bufnr, row),
+            })
+        end)
     end
 end
 

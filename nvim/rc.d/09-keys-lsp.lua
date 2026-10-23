@@ -55,7 +55,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
         map("n", "gd", picker.locations("definition", "Definitions"), opts)
         map("n", "gy", picker.locations("type_definition", "Type Definitions"), opts)
         map("n", "gi", picker.locations("implementation", "Implementations"), opts)
-        map("n", "gr", picker.locations("references", "References"), opts)
+        -- nowait: Nvim's own grr/gra/gri/grn/grt are global, so a plain gr
+        -- would sit out 'timeoutlen' to see if one of them was meant.
+        map("n", "gr", picker.locations("references", "References"),
+            vim.tbl_extend("force", opts, { nowait = true }))
         map("n", "K", vim.lsp.buf.hover, opts)
         map("n", "]d", function()
             vim.diagnostic.jump({ count = 1, float = true })
