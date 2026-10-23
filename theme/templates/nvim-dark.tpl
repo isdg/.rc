@@ -188,8 +188,9 @@ hi @variable.parameter  guifg=${ISG_FG}
 hi @variable.member     guifg=${ISG_FG}
 hi @variable.builtin    guifg=${ISG_ACCENT}
 
-" Enums (match VSCode Visual Studio Dark)
-hi Enum                 guifg=${ISG_TYPE}
-hi @type.enum           guifg=${ISG_TYPE}
-hi @lsp.type.enum       guifg=${ISG_TYPE}
-hi @lsp.type.enumMember guifg=${ISG_TYPE}
+" Enums: the light theme's muted cyan-blue hue, not VS Code's brighter teal
+" (ISG_TYPE), which glared beside the keyword blue. nvim only; bat keeps teal.
+hi Enum                 guifg=#61afc0
+hi link @type.enum           Enum
+hi link @lsp.type.enum       Enum
+hi link @lsp.type.enumMember Enum
