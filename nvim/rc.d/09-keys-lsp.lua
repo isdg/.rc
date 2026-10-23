@@ -48,6 +48,21 @@ lmap("n", "S", function()
     vim.notify("Suggestions " .. (on and "on (auto)" or "off (<C-l> to invoke)"))
 end, { desc = "Toggle auto-suggestions" })
 
+-- <leader>r refactors. rn asks the language server and falls back to a
+-- whole-word text rename in this buffer; rN renames by text across the repo,
+-- after listing every match. Both work in any filetype (lua/text_rename.lua).
+lmap("n", "rn", function()
+    local servers = vim.lsp.get_clients({ bufnr = 0,
+        method = "textDocument/rename" })
+    if #servers > 0 then
+        vim.lsp.buf.rename()
+    else
+        require("text_rename").buffer()
+    end
+end, { desc = "Rename symbol (LSP, else text)" })
+lmap("n", "rN", function() require("text_rename").project() end,
+    { desc = "Rename word across the repo (text)" })
+
 vim.api.nvim_create_autocmd("LspAttach", {
     callback = function(ev)
         local opts = { buffer = ev.buf, silent = true }
@@ -86,5 +101,14 @@ vim.api.nvim_create_autocmd("LspAttach", {
         -- not choose is worse than one extra keypress.
         lmap("n", "df", "<cmd>FzfLua lsp_code_actions<CR>",
             vim.tbl_extend("force", opts, { desc = "Fix diagnostic (code action)" }))
+
+        -- Only refactor.* actions, on the selection in visual mode. With
+        -- <leader>rn it stands in for Nvim's gra/grn, which the nowait gr
+        -- above makes unreachable; buffer-local for the reason df is.
+        lmap({ "n", "x" }, "rr", function()
+            require("fzf-lua").lsp_code_actions({
+                context = { only = { "refactor" } },
+            })
+        end, vim.tbl_extend("force", opts, { desc = "Refactor (code action)" }))
     end,
 })

@@ -13,7 +13,7 @@ return {
 
     -- hr: reading-list sidebar over the `hr` CLI. Portable Vimscript plugin
     -- (works in vim too); replaces the old lua/hr/init.lua module. Loaded on
-    -- the :Hr* commands, fired by <leader>r (see lua/keymaps.lua).
+    -- the :Hr* commands, fired by <leader><leader>h (rc.d/10-keys-plugins.lua).
     {
         "isdg/hr.vim",
         cmd = { "Hr", "HrToggle", "HrOpen", "HrClose", "HrStart", "HrRefresh", "HrSync", "HrLocate" },

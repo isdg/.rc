@@ -117,6 +117,33 @@ local ok, err = pcall(function()
     local m = vim.fn.maparg("gr", "n", false, true)
     check("gr is buffer-local and nowait", m.buffer == 1 and m.nowait == 1,
         ("buffer %s nowait %s"):format(m.buffer, m.nowait))
+    local rn = vim.fn.maparg("<leader>rn", "n", false, true)
+    local rr = vim.fn.maparg("<leader>rr", "x", false, true)
+    check("<leader>rn is global, visual <leader>rr buffer-local",
+        rn.buffer == 0 and rr.buffer == 1, vim.inspect({ rn.lhs, rr.lhs }))
+
+    row, col = find("tokio/src/runtime/runtime.rs", "self.handle.enter()")
+    vim.api.nvim_win_set_cursor(0, { row, col })
+    local ui = require("fzf-lua.providers.ui_select")
+    local real_select, offered = ui.ui_select, nil
+    ui.ui_select = function(items) offered = items end
+    vim.api.nvim_feedkeys(("v%dl"):format(#"self.handle" - 1), "nx", false)
+    vim.api.nvim_feedkeys(vim.keycode("<leader>rr"), "x", false)
+    vim.wait(30000, function() return offered ~= nil end, 10)
+    ui.ui_select = real_select
+    vim.cmd("normal! \27")
+    local titles, only_refactor, span = {}, offered ~= nil, nil
+    for _, it in ipairs(offered or {}) do
+        titles[#titles + 1] = it.action.title
+        only_refactor = only_refactor
+            and (it.action.kind or ""):find("^refactor") ~= nil
+        span = it.ctx.params.range
+    end
+    check("<leader>rr offers refactors only, on the selection",
+        only_refactor and vim.tbl_contains(titles, "Extract into variable")
+            and span.start.character == col
+            and span["end"].character == col + #"self.handle",
+        vim.inspect({ titles, span }))
 
     row, col = find("tokio/src/runtime/runtime.rs", "Duration")
     open("tokio/src/runtime/runtime.rs", row, col)

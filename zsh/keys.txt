@@ -64,7 +64,7 @@ off from the word before. Esc in a picker inserts nothing.
 
     Space f    files under the cwd (fzf's C-t picker)
     Space ;    command history (fzf's C-r picker; replaces the line)
-    Space r    the same, as in nvim
+    Space r    the same
     Space a    live ripgrep, re-run on each keystroke -> inserts file:line
     Space A    ripgrep once, then fuzzy-filter        -> inserts file:line
     Space gd   changed + untracked files -> paths relative to the cwd
