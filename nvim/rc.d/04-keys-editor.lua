@@ -271,6 +271,14 @@ map("i", "<C-v>", "<C-g>U<Left>", { desc = "Back a char" })
 map("c", "<C-f>", "<Right>", { desc = "Forward a char" })
 map("c", "<C-v>", "<Left>", { desc = "Back a char" })
 
+-- The rest of readline's line editing, on the command line only. Costs <C-a>'s
+-- insert-all-matches and <C-k>'s digraphs there; insert mode keeps <C-k>.
+map("c", "<C-a>", "<Home>", { desc = "Start of line" })
+map("c", "<C-k>", "<C-\\>estrpart(getcmdline(), 0, getcmdpos() - 1)<CR>",
+    { desc = "Kill to end of line" })
+map("c", "<M-b>", "<S-Left>", { desc = "Back a word" })
+map("c", "<M-f>", "<S-Right>", { desc = "Forward a word" })
+
 -- Yank to system clipboard (visual mode)
 lmap("v", "y", '"+y', { desc = "Yank to clipboard" })
 
