@@ -201,7 +201,6 @@ local function command_history()
 end
 
 lmap("n", ";", command_history, { desc = "Command history → cmdline (fzf)" })
-lmap("n", "r", command_history, { desc = "Command history → cmdline (fzf)" })
 lmap("n", "/", "<cmd>History/<CR>", { desc = "Search history (fzf)" })
 -- Jumplist as a list instead of stepping through it with <C-i>/<C-o>
 lmap("n", "J", "<cmd>Jumps<CR>", { desc = "Jump list (fzf)" })
