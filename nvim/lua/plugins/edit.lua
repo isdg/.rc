@@ -21,7 +21,7 @@ return {
             -- decides the height — it is named once anyway so the height
             -- function and :ZenHeight's readout cannot report different
             -- numbers.
-            local DEFAULT_HEIGHT = 0.9
+            local DEFAULT_HEIGHT = 0.95
 
             -- The window options the zen float is opened with. Hoisted out of the
             -- setup table because the width function below has to size the gutters
