@@ -86,5 +86,16 @@ vim.api.nvim_create_autocmd("LspAttach", {
         -- not choose is worse than one extra keypress.
         lmap("n", "df", "<cmd>FzfLua lsp_code_actions<CR>",
             vim.tbl_extend("force", opts, { desc = "Fix diagnostic (code action)" }))
+
+        -- <leader>r is the refactor prefix, standing in for Nvim's grn/gra,
+        -- which the nowait gr above makes unreachable. rr lists only the
+        -- refactor.* actions; in visual mode they act on the selection.
+        lmap("n", "rn", vim.lsp.buf.rename,
+            vim.tbl_extend("force", opts, { desc = "Rename symbol" }))
+        lmap({ "n", "x" }, "rr", function()
+            require("fzf-lua").lsp_code_actions({
+                context = { only = { "refactor" } },
+            })
+        end, vim.tbl_extend("force", opts, { desc = "Refactor (code action)" }))
     end,
 })
