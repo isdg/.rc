@@ -61,6 +61,12 @@ tokio (needs git, cargo and rust-analyzer):
     > nvim/tests/lsp/run.sh --quick     # focused checks, about a minute
     > nvim/tests/lsp/run.sh             # and the full suite, ~10 minutes
 
+<leader>rn falls back to a text rename where no server can rename, and
+<leader>rN renames by text across the repo (lua/text_rename.lua). Its test
+needs only rg:
+
+    > nvim --clean --headless -l nvim/tests/text_rename.lua
+
 -------------------------------------------------------------------------------
 4. Treesitter parsers
 ----------------------
