@@ -45,7 +45,7 @@ hi IncSearch    guifg=${ISG_FG} guibg=${ISG_VISUAL_BG}
 " =====================
 " Comments
 " =====================
-hi Comment      guifg=${ISG_COMMENT} gui=italic
+hi Comment      guifg=${ISG_COMMENT}
 
 " =====================
 " Constants / Numbers / Booleans

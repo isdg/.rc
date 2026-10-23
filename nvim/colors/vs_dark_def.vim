@@ -23,7 +23,7 @@ hi PmenuSbar    ctermbg=8
 hi PmenuThumb   ctermbg=12
 
 " Comments
-hi Comment      ctermfg=8 cterm=italic
+hi Comment      ctermfg=8
 
 " Constants
 hi Constant     ctermfg=12

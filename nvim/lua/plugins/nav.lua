@@ -111,19 +111,6 @@ return {
         opts = {
             modes = { search = { enabled = true } },
         },
-        config = function(_, opts)
-            require("flash").setup(opts)
-            -- FlashBackdrop (the dimmed non-matched text while flash/char mode is
-            -- active) links to Comment, which is gui=italic in the vs_* themes, so
-            -- triggering flash italicizes the whole screen. Keep the dim colour but
-            -- drop the italic; re-apply on ColorScheme so it survives the toggle.
-            local function fix_backdrop()
-                local c = vim.api.nvim_get_hl(0, { name = "Comment" })
-                vim.api.nvim_set_hl(0, "FlashBackdrop", { fg = c.fg, italic = false })
-            end
-            fix_backdrop()
-            vim.api.nvim_create_autocmd("ColorScheme", { callback = fix_backdrop })
-        end,
         keys = {
             { "<leader>j", mode = { "n", "x", "o" }, function() require("flash").jump() end, desc = "Flash jump" },
             { "<c-s>", mode = { "c" }, function() require("flash").toggle() end, desc = "Toggle Flash Search" },
