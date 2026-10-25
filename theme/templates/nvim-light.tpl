@@ -59,7 +59,7 @@ hi LineNr       guifg=${ISG_GUTTER_FG} guibg=${ISG_BG}
 hi CursorLineNr guifg=#999999 guibg=${ISG_BG}
 hi StatusLine   guifg=${ISG_FG} guibg=${ISG_BG}
 hi StatusLineNC guifg=${ISG_FG_FAINT} guibg=${ISG_BG}
-hi VertSplit    guifg=${ISG_BORDER_UI} guibg=${ISG_BG_DEEP}
+hi VertSplit    guifg=${ISG_BORDER} guibg=${ISG_BG_DEEP}
 hi Pmenu        guifg=${ISG_FG} guibg=${ISG_BG_ALT}
 hi PmenuSel     guifg=${ISG_ON_ACCENT} guibg=${ISG_BUTTON_BG}
 hi Search       guifg=${ISG_FG} guibg=${ISG_SEARCH_BG}
@@ -119,10 +119,10 @@ hi Todo         guifg=${ISG_STRING} guibg=NONE gui=bold
 " Diff / Git
 " =====================
 " Window-diff backgrounds (:diffthis, vimdiff)
-hi DiffAdd      guifg=NONE    guibg=#E6FFEC
-hi DiffChange   guifg=NONE    guibg=#E6FFEC
-hi DiffDelete   guifg=NONE    guibg=#FFEBE9
-hi DiffText     guifg=NONE    guibg=#ABF2BC gui=NONE
+hi DiffAdd      guifg=NONE    guibg=${ISG_DIFF_ADD_BG}
+hi DiffChange   guifg=NONE    guibg=${ISG_DIFF_ADD_BG}
+hi DiffDelete   guifg=NONE    guibg=${ISG_DIFF_DEL_BG}
+hi DiffText     guifg=NONE    guibg=${ISG_DIFF_ADD_EMPH_BG} gui=NONE
 
 " Diff-as-text — reading a patch in a buffer (ft=diff/git, fugitive, :Git show).
 " Explicit here too so a dark->light flip can't leave dark-background variants
@@ -134,7 +134,7 @@ hi Changed      guifg=#9A6700 guibg=NONE
 hi diffAdded    guifg=#1A7F37 guibg=NONE
 hi diffRemoved  guifg=#CF222E guibg=NONE
 hi diffChanged  guifg=#9A6700 guibg=NONE
-hi diffFile     guifg=#0550AE guibg=NONE
+hi diffFile     guifg=${ISG_ACCENT_DEEP} guibg=NONE
 hi diffIndexLine guifg=#57606A guibg=NONE
 hi diffLine     guifg=#0969DA guibg=NONE
 " `--- …` is usually a deleted `--` comment, not a file header — see vs_dark.vim

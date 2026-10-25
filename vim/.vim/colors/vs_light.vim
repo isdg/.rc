@@ -36,7 +36,7 @@ hi LineNr       guifg=#c0c0c0 guibg=#fafafa
 hi CursorLineNr guifg=#999999 guibg=#fafafa
 hi StatusLine   guifg=#ffffff guibg=#16825d
 hi StatusLineNC guifg=#919191 guibg=#f3f3f3
-hi VertSplit    guifg=#d4d4d4 guibg=#ffffff
+hi VertSplit    guifg=#cccccc guibg=#ffffff
 hi Pmenu        guifg=#000000 guibg=#f3f3f3
 hi PmenuSel     guifg=#ffffff guibg=#007acc
 hi Search       guifg=#000000 guibg=#90c2f9
@@ -99,7 +99,7 @@ hi Todo         guifg=#a31515 guibg=NONE gui=bold
 " The four washes are used once each, so they stay literal.
 hi DiffAdd      guifg=#098658 guibg=#E8F8F5
 hi DiffChange   guifg=#0451a5 guibg=#F0F0FF
-hi DiffDelete   guifg=#a31515 guibg=#FFECEC
+hi DiffDelete   guifg=#a31515 guibg=#ffebe9
 hi DiffText     guifg=#000000 guibg=#FFD700
 
 " =====================

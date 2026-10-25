@@ -36,7 +36,7 @@ hi LineNr       guifg=${ISG_GUTTER_FG} guibg=${ISG_BG}
 hi CursorLineNr guifg=#999999 guibg=${ISG_BG}
 hi StatusLine   guifg=${ISG_ON_ACCENT} guibg=${ISG_VIM_STATUS_BG}
 hi StatusLineNC guifg=${ISG_VIM_STATUS_NC_FG} guibg=${ISG_BG_ALT}
-hi VertSplit    guifg=${ISG_BORDER_UI} guibg=${ISG_BG_DEEP}
+hi VertSplit    guifg=${ISG_BORDER} guibg=${ISG_BG_DEEP}
 hi Pmenu        guifg=${ISG_FG} guibg=${ISG_BG_ALT}
 hi PmenuSel     guifg=${ISG_ON_ACCENT} guibg=${ISG_BUTTON_BG}
 hi Search       guifg=${ISG_FG} guibg=${ISG_SEARCH_BG}
@@ -99,7 +99,7 @@ hi Todo         guifg=${ISG_STRING} guibg=NONE gui=bold
 " The four washes are used once each, so they stay literal.
 hi DiffAdd      guifg=${ISG_NUMBER} guibg=#E8F8F5
 hi DiffChange   guifg=${ISG_ACCENT_DEEP} guibg=#F0F0FF
-hi DiffDelete   guifg=${ISG_STRING} guibg=#FFECEC
+hi DiffDelete   guifg=${ISG_STRING} guibg=${ISG_DIFF_DEL_BG}
 hi DiffText     guifg=${ISG_FG} guibg=#FFD700
 
 " =====================

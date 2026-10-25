@@ -79,7 +79,6 @@ isg_palette() {
         # role in two shades — see the light branch for the contrast.
         ISG_FG_DIM='#888888'            # info labels, completed, yaml colons
         ISG_BG_ALT='#252526'            # dialogs, panels raised off the body
-        ISG_BORDER_UI='#444444'
         ISG_ON_ACCENT='#ffffff'         # text on a filled accent (buttons, cursor)
         ISG_CRUMB_FG="$ISG_BG"          # crumbs invert: body colour on accent
         # These blues look mergeable here, but nvim, vim and bat paint syntax
@@ -137,7 +136,7 @@ isg_palette() {
         # vim looks like — so it gets its own two slots rather than pretending
         # the two editors agree.
         ISG_VIM_STATUS_BG='#007acc'
-        ISG_VIM_STATUS_NC_FG='#bbbbbb'
+        ISG_VIM_STATUS_NC_FG='#c0c0c0'
 
         # ── diff tints (delta) ── GitHub's dark tints (15% / 40% alpha) blended
         # onto ISG_BG by hand: retune ISG_BG and these must be re-blended.
@@ -184,7 +183,6 @@ isg_palette() {
         # secondary text, which is where the two tools should have agreed anyway.
         ISG_FG_DIM='#777777'
         ISG_BG_ALT='#f3f3f3'
-        ISG_BORDER_UI='#d4d4d4'
         ISG_ON_ACCENT='#ffffff'
         ISG_CRUMB_FG='#ffffff'          # light crumbs do NOT invert to the body
         # Here the four blues really are four different colours, where dark reuses

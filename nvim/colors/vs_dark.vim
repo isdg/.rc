@@ -58,7 +58,7 @@ hi CursorLineNr guifg=#888888 guibg=#2f2f2f
 hi StatusLine   guifg=#d4d4d4 guibg=#2f2f2f
 hi StatusLineNC guifg=#6b6b6b guibg=#2f2f2f
 hi VertSplit    guifg=#444444 guibg=#1e1e1e
-hi Pmenu        guifg=#CCCCCC guibg=#252526
+hi Pmenu        guifg=#d4d4d4 guibg=#252526
 hi PmenuSel     guifg=#ffffff guibg=#007acc
 hi PmenuSbar    guibg=#444444
 hi PmenuThumb   guibg=#007acc
@@ -145,7 +145,7 @@ hi IncSearch    guifg=#d4d4d4 guibg=#007acc
 hi Terminal     guifg=#d4d4d4 guibg=#1e1e1e
 
 " Popup and floating windows
-hi FloatBorder  guifg=#303031
+hi FloatBorder  guifg=#2f2f2f
 hi NormalFloat  guifg=#d4d4d4 guibg=#1e1e1e
 
 " =====================

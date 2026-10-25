@@ -35,10 +35,10 @@ hi LineNr       guifg=${ISG_GUTTER_FG} guibg=${ISG_BG}
 hi CursorLineNr guifg=#888888 guibg=${ISG_BG}
 hi StatusLine   guifg=${ISG_FG} guibg=${ISG_VIM_STATUS_BG}
 hi StatusLineNC guifg=${ISG_VIM_STATUS_NC_FG} guibg=${ISG_BG_DEEP}
-hi VertSplit    guifg=${ISG_BORDER_UI} guibg=${ISG_BG_DEEP}
-hi Pmenu        guifg=#CCCCCC guibg=${ISG_BG_ALT}
+hi VertSplit    guifg=${ISG_BORDER} guibg=${ISG_BG_DEEP}
+hi Pmenu        guifg=${ISG_FG} guibg=${ISG_BG_ALT}
 hi PmenuSel     guifg=${ISG_ON_ACCENT} guibg=${ISG_BUTTON_BG}
-hi PmenuSbar    guibg=${ISG_BORDER_UI}
+hi PmenuSbar    guibg=${ISG_BORDER}
 hi PmenuThumb   guibg=${ISG_BUTTON_FOCUS_BG}
 
 " Comments
@@ -103,7 +103,7 @@ hi IncSearch    guifg=${ISG_FG} guibg=${ISG_BUTTON_BG}
 hi Terminal     guifg=${ISG_FG} guibg=${ISG_BG_DEEP}
 
 " Popup and floating windows
-hi FloatBorder  guifg=#303031
+hi FloatBorder  guifg=${ISG_BG}
 hi NormalFloat  guifg=${ISG_FG} guibg=${ISG_BG_DEEP}
 
 " Set folder color (optional)
