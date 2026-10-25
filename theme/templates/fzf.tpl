@@ -12,9 +12,10 @@
 # painting our own background would leave the popup a different shade than the
 # pane behind it. The selected row (bg+/fg+) is the one colour that cannot be
 # shared between modes — a light selection reads as a glaring white bar on dark —
-# so each mode borrows its editor's own nvim `hi Search`. `prompt` likewise:
-# black is invisible on dark. Everything else is an ANSI name, which is what
-# makes these two files nearly identical.
+# so each mode borrows its editor's own nvim `hi Search`, with the accents
+# drawn on it (hl+, pointer) darkened to stay readable there. `prompt`
+# likewise: black is invisible on dark. Everything else is an ANSI name, which
+# is what makes these two files nearly identical.
 #
 # M-j enters fzf's jump mode — EasyMotion-style labels over every visible row —
 # and the `jump` event accepts what it lands on. Alt because the query still
@@ -28,6 +29,6 @@
 --bind=alt-j:jump,jump:accept
 --bind=alt-d:half-page-down,alt-u:half-page-up,alt-g:last,alt-G:first
 --color=bg:-1,fg:-1,bg+:${ISG_SEL_BG},fg+:${ISG_SEL_FG}
---color=hl:bright-blue,hl+:blue
---color=header:green,info:green,pointer:blue
+--color=hl:bright-blue,hl+:${ISG_FZF_ON_SEL}
+--color=header:green,info:green,pointer:${ISG_FZF_ON_SEL}
 --color=marker:bright-blue,prompt:${ISG_FZF_PROMPT},spinner:blue

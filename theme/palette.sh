@@ -20,9 +20,9 @@
 #                   `green` to — the only colour language every tool here speaks.
 #   ISG_*           Truecolour roles, for tools that accept hex.
 #
-# A few slots hold an ANSI *name* rather than hex (ISG_TIG_*, ISG_FZF_PROMPT, and
-# ISG_SEL_FG in light mode). Not an oversight: tig accepts no hex at all, and fzf
-# takes names for those fields. They resolve through the ramp above.
+# A few slots hold an ANSI *name* rather than hex (ISG_TIG_*, ISG_FZF_PROMPT,
+# and ISG_FZF_ON_SEL in dark mode). Not an oversight: tig accepts no hex at
+# all, and fzf takes names for those fields. They resolve through the ramp above.
 #
 # The ANSI values began as Ghostty's bundled "Catppuccin Mocha" / "Catppuccin
 # Latte" and are byte-for-byte unchanged, but those themes are no longer
@@ -132,6 +132,7 @@ isg_palette() {
 
         # ── name-only tokens ──
         ISG_FZF_PROMPT='blue'
+        ISG_FZF_ON_SEL='blue'           # hl+ and pointer, on the selected row
         # color24 (#005f87) is nearest256(ISG_SEL_BG) — a 256-palette stand-in,
         # because tig takes no hex. Indices 16-255 keep their xterm values (we
         # remap only 0-15), so 24 is stable. ANSI blue is a pale #89b4fa here:
@@ -202,7 +203,7 @@ isg_palette() {
         # Visual Studio Light
         local vs_blue='#0000ff' vs_navy='#000080' vs_azure='#007acc'
         local vs_deep='#0451a5' vs_sky='#90c2f9' vs_ice='#add6ff'
-        local vs_frost='#dce7f2' vs_mist='#e5ebf1' vs_green='#008000'
+        local vs_mist='#e5ebf1' vs_green='#008000'
         local vs_jade='#098658' vs_pine='#16825d' vs_teal='#267f99'
         local vs_maroon='#800000' vs_wine='#811f3f' vs_brick='#a31515'
         local vs_red='#e50000' vs_scarlet='#ff0000' vs_amber='#a67102'
@@ -230,10 +231,8 @@ isg_palette() {
         ISG_CURSOR=$grey_44
 
         # ── selection ── nvim colors/vs_light.vim `hi Search`
-        ISG_SEL_BG=$vs_frost
-        # A name, not hex: on this pale selection the terminal's bright-black is
-        # the readable choice, and it tracks the ramp if that is ever retuned.
-        ISG_SEL_FG='bright-black'
+        ISG_SEL_BG=$vs_sky
+        ISG_SEL_FG=$black
 
         # ── tmux status bar / pane borders ──
         ISG_UI_FG=$grey_55
@@ -273,6 +272,8 @@ isg_palette() {
 
         # ── name-only tokens ──
         ISG_FZF_PROMPT='black'
+        # ANSI blue is 2.6:1 on ISG_SEL_BG here; this is 4.1:1
+        ISG_FZF_ON_SEL=$vs_deep
         # ANSI blue is a strong #1e66f5 here, so white bold on it reads at
         # 4.91:1 and needs no 256-index stand-in.
         ISG_TIG_SEL_FG='white'
@@ -298,10 +299,6 @@ isg_palette() {
         ISG_BG_DEEP=$white              # only VertSplit's bg here, unlike dark
         ISG_FG_FAINT=$grey_aa
         ISG_GUTTER_FG_CUR=$grey_99
-        # Note this is NOT ISG_SEL_BG (#dce7f2). fzf's opts-light.conf claims to
-        # mirror nvim's `hi Search`, but nvim's is #90C2F9 and always has been —
-        # the two drifted apart before either was written down. Left as-is: fixing
-        # it moves pixels. See the PR discussion.
         ISG_SEARCH_BG=$vs_sky
         ISG_DIAG_WARN=$vs_ochre
 
