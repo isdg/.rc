@@ -6,12 +6,14 @@
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 8 \
     '<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>100</integer><integer>2</integer><integer>8388608</integer></array><key>type</key><string>standard</string></dict></dict>'
 
-# 60 = Select the previous input source, on ⌃⇧Space instead of ⌃Space, which
-# tmux takes as its second prefix. parameters: (space, keycode 49, ⌃⇧ 0x60000)
+# 60 = Select the previous input source, on Ctrl+Shift+Space instead of
+# Ctrl+Space, which tmux takes as its second prefix.
+# parameters: (space, keycode 49, Ctrl+Shift mask 0x60000)
 defaults write com.apple.symbolichotkeys AppleSymbolicHotKeys -dict-add 60 \
     '<dict><key>enabled</key><true/><key>value</key><dict><key>parameters</key><array><integer>32</integer><integer>49</integer><integer>393216</integer></array><key>type</key><string>standard</string></dict></dict>'
 
-# 🌐 pressed alone changes the input source (0 nothing, 2 emoji, 3 dictation).
+# Globe pressed alone changes the input source (0 nothing, 2 emoji palette,
+# 3 dictation).
 defaults write com.apple.HIToolbox AppleFnUsageType -int 1
 
 # Shortcuts are read at login; this reloads them now.
