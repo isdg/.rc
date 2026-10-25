@@ -92,6 +92,9 @@
 " BASIC MOVEMENT
 "   h / j / k / l     Move cursor left / down / up / right
 "   <C-b> / <C-f>     Move cursor back / forward a char (also insert, cmdline)
+"   <C-a> / <C-e>     Move to line start / end (insert)
+"   <C-k> / <C-d>     Kill to line end / delete a char (insert)
+"   <C-y>             Yank the last kill (insert)
 "   w / W             Jump forward to start of next word / WORD
 "   e / E             Jump forward to end of current word / WORD
 "   b / B             Jump backward to start of previous word / WORD
