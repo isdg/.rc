@@ -150,7 +150,7 @@ remove() {
 gc() {
     local dry="${1:-}" now dir='' locked line
     git rev-parse -q --git-dir >/dev/null 2>&1 || return 0
-    git worktree prune
+    [ "$dry" = --dry-run ] || git worktree prune
     now="$(date +%s)"
     while read -r line; do
         case "$line" in
