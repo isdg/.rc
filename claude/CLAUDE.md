@@ -141,8 +141,8 @@ not here.
 - **Collect your own garbage.** When the work is done, leave the worktree
   with `ExitWorktree` and remove it. What's left behind — subagent and
   workflow worktrees are never removed for you — is swept at session start
-  once it is a day old, clean, unlocked and upstream;
-  `~/.claude/hooks/worktree.sh gc --dry-run` lists what would go.
+  once it is a day old, clean, unlocked, upstream and no live session works
+  in it; `~/.claude/hooks/worktree.sh gc --dry-run` lists what would go.
 - **Never remove work.** Don't delete a worktree with uncommitted or
   unpushed changes, or one the hook didn't make (the main checkout, a
   pooled worktree). Neither the hook nor the sweep will.

@@ -145,11 +145,13 @@ remove() {
     drop "$dir"
 }
 
-# Clean, upstreamed, unlocked and older than WT_GC_MIN_AGE seconds (1 day):
-# the worktrees Claude Code leaves behind for subagents and workflows.
+# Clean, upstreamed, unlocked, not any live session's directory and older
+# than WT_GC_MIN_AGE seconds (1 day): what subagents and workflows leave.
 gc() {
-    local dry="${1:-}" now dir='' locked line
+    local dry="${1:-}" now dir='' locked line live
     git rev-parse -q --git-dir >/dev/null 2>&1 || return 0
+    live="$(claude agents --json | jq -r '.[].cwd')" ||
+        die "can't list live sessions, so sweeping nothing"
     [ "$dry" = --dry-run ] || git worktree prune
     now="$(date +%s)"
     while read -r line; do
@@ -164,6 +166,7 @@ gc() {
 sweep() {
     local dir="$1" born
     [ -z "$2" ] && ours "$dir" || return 0
+    in_use "$dir" && return 0
     born="$(cat "$(git -C "$dir" rev-parse --git-dir)/$marker")"
     [ $((now - born)) -ge "${WT_GC_MIN_AGE:-86400}" ] || return 0
     [ -z "$(git -C "$dir" status --porcelain)" ] || return 0
@@ -173,6 +176,14 @@ sweep() {
     else
         drop "$dir" && echo "removed $dir"
     fi
+}
+
+in_use() {
+    local c
+    while read -r c; do
+        [ -n "$c" ] && [[ "$c/" == "$1/"* ]] && return 0
+    done <<<"$live"
+    return 1
 }
 
 case "${1:-}" in
