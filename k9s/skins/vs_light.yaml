@@ -30,7 +30,7 @@ k9s:
     fieldFgColor: "#000000"
   frame:
     border:
-      fgColor: "#d4d4d4"
+      fgColor: "#cccccc"
       focusColor: "#0000ff"
     menu:
       fgColor: "#000000"

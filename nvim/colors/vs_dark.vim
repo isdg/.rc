@@ -3,15 +3,13 @@
 " Separate from nvim-light.tpl: the two schemes declare different highlight
 " groups, not just different colours.
 "
-" Colours with a single use are left as literal hex — naming a role with one
-" consumer buys nothing. The substituted ones are the foundations that have to
-" agree with the terminal, and the syntax roles shared with bat and k9s.
+" Every colour comes from theme/palette.sh; generate.sh rejects literal hex.
 
 " 'background' first, then `hi clear`: hi clear recomputes Neovim's built-in
 " defaults for the *current* background. Without it the light-background
-" variants survive the theme flip — Added #005523, Removed #590008, ErrorMsg
-" #590008, WarningMsg #6b5300, Question/MoreMsg #007373 — all near-black on
-" this #2f2f2f background, which is why git diffs and gitsigns were unreadable.
+" variants survive the theme flip — Added, Removed, ErrorMsg, WarningMsg and
+" Question/MoreMsg all near-black on this #2f2f2f background, which is why
+" git diffs and gitsigns were unreadable.
 set background=dark
 hi clear
 if exists('syntax_on')
@@ -57,10 +55,10 @@ hi LineNr       guifg=#555555 guibg=#2f2f2f
 hi CursorLineNr guifg=#888888 guibg=#2f2f2f
 hi StatusLine   guifg=#d4d4d4 guibg=#2f2f2f
 hi StatusLineNC guifg=#6b6b6b guibg=#2f2f2f
-hi VertSplit    guifg=#454545 guibg=#1e1e1e
-hi Pmenu        guifg=#CCCCCC guibg=#252526
-hi PmenuSel     guifg=#ffffff guibg=#0078d4
-hi PmenuSbar    guibg=#454545
+hi VertSplit    guifg=#444444 guibg=#1e1e1e
+hi Pmenu        guifg=#d4d4d4 guibg=#252526
+hi PmenuSel     guifg=#ffffff guibg=#007acc
+hi PmenuSbar    guibg=#444444
 hi PmenuThumb   guibg=#007acc
 
 " Comments
@@ -109,21 +107,21 @@ hi Error        guifg=#f44747 guibg=#1e1e1e gui=bold
 hi Todo         guifg=#b5cea8 guibg=NONE gui=bold
 
 " Diff — window-diff backgrounds (:diffthis, vimdiff)
-hi DiffAdd      guifg=NONE    guibg=#0D4429
-hi DiffChange   guifg=NONE    guibg=#0D4429
-hi DiffDelete   guifg=NONE    guibg=#3C1418
-hi DiffText     guifg=NONE    guibg=#1A7F37 gui=NONE
+hi DiffAdd      guifg=NONE    guibg=#2f4032
+hi DiffChange   guifg=NONE    guibg=#2f4032
+hi DiffDelete   guifg=NONE    guibg=#4d3433
+hi DiffText     guifg=NONE    guibg=#2e5c37 gui=NONE
 
 " Diff-as-text — reading a patch in a buffer (ft=diff/git, fugitive, :Git show).
 " Set explicitly rather than inherited: gitsigns links its signs to
 " Added/Removed/Changed, so these three drive the gutter too.
-" These are GitHub's diff palette, not ours — one use each, so no role.
-hi Added        guifg=#3FB950 guibg=NONE
-hi Removed      guifg=#F85149 guibg=NONE
-hi Changed      guifg=#D29922 guibg=NONE
-hi diffAdded    guifg=#3FB950 guibg=NONE
-hi diffRemoved  guifg=#F85149 guibg=NONE
-hi diffChanged  guifg=#D29922 guibg=NONE
+" GitHub's foreground diff palette, held in the ISG_DIFF_*_FG slots.
+hi Added        guifg=#3fb950 guibg=NONE
+hi Removed      guifg=#f85149 guibg=NONE
+hi Changed      guifg=#d29922 guibg=NONE
+hi diffAdded    guifg=#3fb950 guibg=NONE
+hi diffRemoved  guifg=#f85149 guibg=NONE
+hi diffChanged  guifg=#d29922 guibg=NONE
 hi diffFile     guifg=#569cd6 guibg=NONE
 hi diffIndexLine guifg=#808080 guibg=NONE
 hi diffLine     guifg=#9cdcfe guibg=NONE
@@ -131,21 +129,21 @@ hi diffLine     guifg=#9cdcfe guibg=NONE
 " matches as the old-file header. Colour headers like the changes they sit on
 " so those lines stop reading as blue metadata; `diff --git`/`index` still
 " mark file boundaries.
-hi diffOldFile  guifg=#F85149 guibg=NONE
-hi diffNewFile  guifg=#3FB950 guibg=NONE
+hi diffOldFile  guifg=#f85149 guibg=NONE
+hi diffNewFile  guifg=#3fb950 guibg=NONE
 
 " Match parentheses
 hi MatchParen   guibg=#264f78
 
 " Search
 hi Search       guifg=#d4d4d4 guibg=#264f78
-hi IncSearch    guifg=#d4d4d4 guibg=#0078d4
+hi IncSearch    guifg=#d4d4d4 guibg=#007acc
 
 " Terminal colors
 hi Terminal     guifg=#d4d4d4 guibg=#1e1e1e
 
 " Popup and floating windows
-hi FloatBorder  guifg=#303031
+hi FloatBorder  guifg=#2f2f2f
 hi NormalFloat  guifg=#d4d4d4 guibg=#1e1e1e
 
 " =====================

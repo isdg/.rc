@@ -3,15 +3,13 @@
 " Separate from nvim-light.tpl: the two schemes declare different highlight
 " groups, not just different colours.
 "
-" Colours with a single use are left as literal hex — naming a role with one
-" consumer buys nothing. The substituted ones are the foundations that have to
-" agree with the terminal, and the syntax roles shared with bat and k9s.
+" Every colour comes from theme/palette.sh; generate.sh rejects literal hex.
 
 " 'background' first, then `hi clear`: hi clear recomputes Neovim's built-in
 " defaults for the *current* background. Without it the light-background
-" variants survive the theme flip — Added #005523, Removed #590008, ErrorMsg
-" #590008, WarningMsg #6b5300, Question/MoreMsg #007373 — all near-black on
-" this ${ISG_BG} background, which is why git diffs and gitsigns were unreadable.
+" variants survive the theme flip — Added, Removed, ErrorMsg, WarningMsg and
+" Question/MoreMsg all near-black on this ${ISG_BG} background, which is why
+" git diffs and gitsigns were unreadable.
 set background=dark
 hi clear
 if exists('syntax_on')
@@ -54,13 +52,13 @@ hi Cursor       guifg=${ISG_BG} guibg=${ISG_CURSOR}
 hi CursorLine   guibg=${ISG_LINE_HL}
 hi Visual       guibg=${ISG_VISUAL_BG}
 hi LineNr       guifg=${ISG_GUTTER_FG} guibg=${ISG_BG}
-hi CursorLineNr guifg=#888888 guibg=${ISG_BG}
+hi CursorLineNr guifg=${ISG_GUTTER_FG_CUR} guibg=${ISG_BG}
 hi StatusLine   guifg=${ISG_FG} guibg=${ISG_BG}
 hi StatusLineNC guifg=${ISG_FG_FAINT} guibg=${ISG_BG}
-hi VertSplit    guifg=${ISG_BORDER_UI} guibg=${ISG_BG_DEEP}
-hi Pmenu        guifg=#CCCCCC guibg=${ISG_BG_ALT}
+hi VertSplit    guifg=${ISG_BORDER} guibg=${ISG_BG_DEEP}
+hi Pmenu        guifg=${ISG_FG} guibg=${ISG_BG_ALT}
 hi PmenuSel     guifg=${ISG_ON_ACCENT} guibg=${ISG_BUTTON_BG}
-hi PmenuSbar    guibg=${ISG_BORDER_UI}
+hi PmenuSbar    guibg=${ISG_BORDER}
 hi PmenuThumb   guibg=${ISG_BUTTON_FOCUS_BG}
 
 " Comments
@@ -109,30 +107,30 @@ hi Error        guifg=${ISG_ERROR} guibg=${ISG_BG_DEEP} gui=bold
 hi Todo         guifg=${ISG_NUMBER} guibg=NONE gui=bold
 
 " Diff — window-diff backgrounds (:diffthis, vimdiff)
-hi DiffAdd      guifg=NONE    guibg=#0D4429
-hi DiffChange   guifg=NONE    guibg=#0D4429
-hi DiffDelete   guifg=NONE    guibg=#3C1418
-hi DiffText     guifg=NONE    guibg=#1A7F37 gui=NONE
+hi DiffAdd      guifg=NONE    guibg=${ISG_DIFF_ADD_BG}
+hi DiffChange   guifg=NONE    guibg=${ISG_DIFF_ADD_BG}
+hi DiffDelete   guifg=NONE    guibg=${ISG_DIFF_DEL_BG}
+hi DiffText     guifg=NONE    guibg=${ISG_DIFF_ADD_EMPH_BG} gui=NONE
 
 " Diff-as-text — reading a patch in a buffer (ft=diff/git, fugitive, :Git show).
 " Set explicitly rather than inherited: gitsigns links its signs to
 " Added/Removed/Changed, so these three drive the gutter too.
-" These are GitHub's diff palette, not ours — one use each, so no role.
-hi Added        guifg=#3FB950 guibg=NONE
-hi Removed      guifg=#F85149 guibg=NONE
-hi Changed      guifg=#D29922 guibg=NONE
-hi diffAdded    guifg=#3FB950 guibg=NONE
-hi diffRemoved  guifg=#F85149 guibg=NONE
-hi diffChanged  guifg=#D29922 guibg=NONE
+" GitHub's foreground diff palette, held in the ISG_DIFF_*_FG slots.
+hi Added        guifg=${ISG_DIFF_ADD_FG} guibg=NONE
+hi Removed      guifg=${ISG_DIFF_DEL_FG} guibg=NONE
+hi Changed      guifg=${ISG_DIFF_CHANGE_FG} guibg=NONE
+hi diffAdded    guifg=${ISG_DIFF_ADD_FG} guibg=NONE
+hi diffRemoved  guifg=${ISG_DIFF_DEL_FG} guibg=NONE
+hi diffChanged  guifg=${ISG_DIFF_CHANGE_FG} guibg=NONE
 hi diffFile     guifg=${ISG_ACCENT} guibg=NONE
-hi diffIndexLine guifg=#808080 guibg=NONE
-hi diffLine     guifg=${ISG_TAG_ATTR} guibg=NONE
+hi diffIndexLine guifg=${ISG_DIFF_META_FG} guibg=NONE
+hi diffLine     guifg=${ISG_DIFF_HUNK_FG} guibg=NONE
 " A deleted `--` comment (Lua, SQL) becomes `--- …`, which the diff syntax
 " matches as the old-file header. Colour headers like the changes they sit on
 " so those lines stop reading as blue metadata; `diff --git`/`index` still
 " mark file boundaries.
-hi diffOldFile  guifg=#F85149 guibg=NONE
-hi diffNewFile  guifg=#3FB950 guibg=NONE
+hi diffOldFile  guifg=${ISG_DIFF_DEL_FG} guibg=NONE
+hi diffNewFile  guifg=${ISG_DIFF_ADD_FG} guibg=NONE
 
 " Match parentheses
 hi MatchParen   guibg=${ISG_SEARCH_BG}
@@ -145,7 +143,7 @@ hi IncSearch    guifg=${ISG_FG} guibg=${ISG_BUTTON_BG}
 hi Terminal     guifg=${ISG_FG} guibg=${ISG_BG_DEEP}
 
 " Popup and floating windows
-hi FloatBorder  guifg=#303031
+hi FloatBorder  guifg=${ISG_BG}
 hi NormalFloat  guifg=${ISG_FG} guibg=${ISG_BG_DEEP}
 
 " =====================
@@ -190,7 +188,7 @@ hi @variable.builtin    guifg=${ISG_ACCENT}
 
 " Enums: the light theme's muted cyan-blue hue, not VS Code's brighter teal
 " (ISG_TYPE), which glared beside the keyword blue. nvim only; bat keeps teal.
-hi Enum                 guifg=#61afc0
+hi Enum                 guifg=${ISG_ENUM}
 hi link @type.enum           Enum
 hi link @lsp.type.enum       Enum
 hi link @lsp.type.enumMember Enum

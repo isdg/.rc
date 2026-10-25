@@ -33,10 +33,10 @@ hi Normal       guifg=${ISG_FG} guibg=${ISG_BG}
 hi Cursor       guifg=${ISG_BG} guibg=${ISG_CURSOR}
 hi Visual       guibg=${ISG_VISUAL_BG}
 hi LineNr       guifg=${ISG_GUTTER_FG} guibg=${ISG_BG}
-hi CursorLineNr guifg=#999999 guibg=${ISG_BG}
+hi CursorLineNr guifg=${ISG_GUTTER_FG_CUR} guibg=${ISG_BG}
 hi StatusLine   guifg=${ISG_ON_ACCENT} guibg=${ISG_VIM_STATUS_BG}
 hi StatusLineNC guifg=${ISG_VIM_STATUS_NC_FG} guibg=${ISG_BG_ALT}
-hi VertSplit    guifg=${ISG_BORDER_UI} guibg=${ISG_BG_DEEP}
+hi VertSplit    guifg=${ISG_BORDER} guibg=${ISG_BG_DEEP}
 hi Pmenu        guifg=${ISG_FG} guibg=${ISG_BG_ALT}
 hi PmenuSel     guifg=${ISG_ON_ACCENT} guibg=${ISG_BUTTON_BG}
 hi Search       guifg=${ISG_FG} guibg=${ISG_SEARCH_BG}
@@ -95,12 +95,12 @@ hi Todo         guifg=${ISG_STRING} guibg=NONE gui=bold
 " =====================
 " Diff / Git
 " =====================
-" Foreground-tinted over a pale wash, unlike Neovim's background-based diffs.
-" The four washes are used once each, so they stay literal.
-hi DiffAdd      guifg=${ISG_NUMBER} guibg=#E8F8F5
-hi DiffChange   guifg=${ISG_ACCENT_DEEP} guibg=#F0F0FF
-hi DiffDelete   guifg=${ISG_STRING} guibg=#FFECEC
-hi DiffText     guifg=${ISG_FG} guibg=#FFD700
+" Foreground-tinted, unlike Neovim's background-only diffs, but over the same
+" washes as Neovim and delta.
+hi DiffAdd      guifg=${ISG_NUMBER} guibg=${ISG_DIFF_ADD_BG}
+hi DiffChange   guifg=${ISG_ACCENT_DEEP} guibg=${ISG_DIFF_ADD_BG}
+hi DiffDelete   guifg=${ISG_STRING} guibg=${ISG_DIFF_DEL_BG}
+hi DiffText     guifg=${ISG_FG} guibg=${ISG_DIFF_ADD_EMPH_BG}
 
 " =====================
 " CursorLine and Search

@@ -30,7 +30,7 @@ k9s:
     fieldFgColor: "${ISG_FG}"
   frame:
     border:
-      fgColor: "${ISG_BORDER_UI}"
+      fgColor: "${ISG_BORDER}"
       focusColor: "${ISG_ACCENT}"
     menu:
       fgColor: "${ISG_FG}"

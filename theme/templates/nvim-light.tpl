@@ -5,8 +5,7 @@
 " NormalFloat and the treesitter @variable groups. Different files, not just
 " different colours.
 "
-" Colours with a single use stay literal hex — naming a role with one consumer
-" buys nothing.
+" Every colour comes from theme/palette.sh; generate.sh rejects literal hex.
 
 " 'background' first, then `hi clear` — see the same note in vs_dark.vim. Light
 " happens to be the background Neovim's defaults were already computed for, but
@@ -56,10 +55,10 @@ hi Normal       guifg=${ISG_FG} guibg=${ISG_BG}
 hi Cursor       guifg=${ISG_BG} guibg=${ISG_CURSOR}
 hi Visual       guibg=${ISG_VISUAL_BG}
 hi LineNr       guifg=${ISG_GUTTER_FG} guibg=${ISG_BG}
-hi CursorLineNr guifg=#999999 guibg=${ISG_BG}
+hi CursorLineNr guifg=${ISG_GUTTER_FG_CUR} guibg=${ISG_BG}
 hi StatusLine   guifg=${ISG_FG} guibg=${ISG_BG}
 hi StatusLineNC guifg=${ISG_FG_FAINT} guibg=${ISG_BG}
-hi VertSplit    guifg=${ISG_BORDER_UI} guibg=${ISG_BG_DEEP}
+hi VertSplit    guifg=${ISG_BORDER} guibg=${ISG_BG_DEEP}
 hi Pmenu        guifg=${ISG_FG} guibg=${ISG_BG_ALT}
 hi PmenuSel     guifg=${ISG_ON_ACCENT} guibg=${ISG_BUTTON_BG}
 hi Search       guifg=${ISG_FG} guibg=${ISG_SEARCH_BG}
@@ -119,27 +118,27 @@ hi Todo         guifg=${ISG_STRING} guibg=NONE gui=bold
 " Diff / Git
 " =====================
 " Window-diff backgrounds (:diffthis, vimdiff)
-hi DiffAdd      guifg=NONE    guibg=#E6FFEC
-hi DiffChange   guifg=NONE    guibg=#E6FFEC
-hi DiffDelete   guifg=NONE    guibg=#FFEBE9
-hi DiffText     guifg=NONE    guibg=#ABF2BC gui=NONE
+hi DiffAdd      guifg=NONE    guibg=${ISG_DIFF_ADD_BG}
+hi DiffChange   guifg=NONE    guibg=${ISG_DIFF_ADD_BG}
+hi DiffDelete   guifg=NONE    guibg=${ISG_DIFF_DEL_BG}
+hi DiffText     guifg=NONE    guibg=${ISG_DIFF_ADD_EMPH_BG} gui=NONE
 
 " Diff-as-text — reading a patch in a buffer (ft=diff/git, fugitive, :Git show).
 " Explicit here too so a dark->light flip can't leave dark-background variants
 " behind; gitsigns links its signs to Added/Removed/Changed.
-" GitHub's diff palette, not ours — one use each, so no role.
-hi Added        guifg=#1A7F37 guibg=NONE
-hi Removed      guifg=#CF222E guibg=NONE
-hi Changed      guifg=#9A6700 guibg=NONE
-hi diffAdded    guifg=#1A7F37 guibg=NONE
-hi diffRemoved  guifg=#CF222E guibg=NONE
-hi diffChanged  guifg=#9A6700 guibg=NONE
-hi diffFile     guifg=#0550AE guibg=NONE
-hi diffIndexLine guifg=#57606A guibg=NONE
-hi diffLine     guifg=#0969DA guibg=NONE
+" GitHub's foreground diff palette, held in the ISG_DIFF_*_FG slots.
+hi Added        guifg=${ISG_DIFF_ADD_FG} guibg=NONE
+hi Removed      guifg=${ISG_DIFF_DEL_FG} guibg=NONE
+hi Changed      guifg=${ISG_DIFF_CHANGE_FG} guibg=NONE
+hi diffAdded    guifg=${ISG_DIFF_ADD_FG} guibg=NONE
+hi diffRemoved  guifg=${ISG_DIFF_DEL_FG} guibg=NONE
+hi diffChanged  guifg=${ISG_DIFF_CHANGE_FG} guibg=NONE
+hi diffFile     guifg=${ISG_ACCENT_DEEP} guibg=NONE
+hi diffIndexLine guifg=${ISG_DIFF_META_FG} guibg=NONE
+hi diffLine     guifg=${ISG_DIFF_HUNK_FG} guibg=NONE
 " `--- …` is usually a deleted `--` comment, not a file header — see vs_dark.vim
-hi diffOldFile  guifg=#CF222E guibg=NONE
-hi diffNewFile  guifg=#1A7F37 guibg=NONE
+hi diffOldFile  guifg=${ISG_DIFF_DEL_FG} guibg=NONE
+hi diffNewFile  guifg=${ISG_DIFF_ADD_FG} guibg=NONE
 
 " =====================
 " CursorLine and Search
@@ -179,7 +178,7 @@ hi DiagnosticUnderlineHint  gui=undercurl guisp=${ISG_NUMBER}
 " =====================
 " Enums (match VSCode Visual Studio Light)
 " =====================
-hi Enum                 guifg=${ISG_TYPE}
-hi @type.enum           guifg=${ISG_TYPE}
-hi @lsp.type.enum       guifg=${ISG_TYPE}
-hi @lsp.type.enumMember guifg=${ISG_TYPE}
+hi Enum                 guifg=${ISG_ENUM}
+hi @type.enum           guifg=${ISG_ENUM}
+hi @lsp.type.enum       guifg=${ISG_ENUM}
+hi @lsp.type.enumMember guifg=${ISG_ENUM}

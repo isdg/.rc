@@ -23,14 +23,14 @@ k9s:
     fgColor: "#d4d4d4"
     bgColor: "#252526"
     buttonFgColor: "#ffffff"
-    buttonBgColor: "#0078d4"
+    buttonBgColor: "#007acc"
     buttonFocusFgColor: "#ffffff"
     buttonFocusBgColor: "#007acc"
     labelFgColor: "#569cd6"
     fieldFgColor: "#d4d4d4"
   frame:
     border:
-      fgColor: "#454545"
+      fgColor: "#444444"
       focusColor: "#569cd6"
     menu:
       fgColor: "#d4d4d4"
@@ -88,4 +88,4 @@ k9s:
       bgColor: "#2f2f2f"
       indicator:
         fgColor: "#ffffff"
-        bgColor: "#0078d4"
+        bgColor: "#007acc"
