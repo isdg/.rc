@@ -22,7 +22,8 @@
 #
 # A few slots hold an ANSI *name* rather than hex (ISG_TIG_*, ISG_FZF_PROMPT,
 # and ISG_FZF_ON_SEL in dark mode). Not an oversight: tig accepts no hex at
-# all, and fzf takes names for those fields. They resolve through the ramp above.
+# all, and fzf takes names for those fields. They resolve through the ramp
+# above.
 #
 # The ANSI values began as Ghostty's bundled "Catppuccin Mocha" / "Catppuccin
 # Latte" and are byte-for-byte unchanged, but those themes are no longer
