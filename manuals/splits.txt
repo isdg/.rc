@@ -19,8 +19,8 @@ split stacked           C-w s h              layer  s h   (or prefix ")
 last split              C-w ;   (or C-w p)   —
 cycle                   C-w o                layer  o
 
-layer is the prefix twice, C-Enter C-Enter, so "layer h" is: prefix, then the
-layer, then h.
+layer is the prefix twice, C-Enter C-Enter or C-Space C-Space, so "layer h" is:
+prefix, then the layer, then h.
 
 
 -- v and h name the divider, not the axis ---------------------------------

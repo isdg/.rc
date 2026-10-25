@@ -28,7 +28,21 @@ bracketed paste) still have time to arrive whole.
 
     Backspace / C-h   delete any character on the line (stock vi mode stops
                       at the point where insert mode was last entered)
-    C-b / C-f         back / forward a character, as in readline and vim
+
+Emacs line editing, as in readline and the nvim command line:
+
+    C-a / C-e         start / end of line
+    C-b / C-f         back / forward a character
+    M-b / M-f         back / forward a word
+    C-d               delete the character under the cursor; EOF when empty
+    C-k / C-u         kill to the end / start of the line
+    C-w / M-Backspace kill the previous word
+    M-d               kill the next word
+    C-y               yank the last kill
+    C-_               undo
+    C-p / C-n         history by the prefix already typed, as Up / Down
+    C-s               forward history search
+    M-.               insert the last word of the previous command
 
 Plus fzf's own widgets, from its key-bindings.zsh:
 

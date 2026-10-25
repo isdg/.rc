@@ -269,8 +269,30 @@ map("i", "<C-b>", "<C-g>U<Left>", { desc = "Back a char" })
 map("c", "<C-f>", "<Right>", { desc = "Forward a char" })
 map("c", "<C-b>", "<Left>", { desc = "Back a char" })
 
+-- Emacs line keys in insert mode, from <C-g>U moves and <Del> so undo and
+-- dot-repeat stay whole. Fed when the key runs: an expr map is read too early
+-- under queued keys (macros). blink's menu claims E/K/D/Y while it is open.
+local function feed(keys)
+    vim.api.nvim_feedkeys(vim.keycode(keys), "ni", false)
+end
+map("i", "<C-a>", function()
+    feed(("<C-g>U<Left>"):rep(vim.fn.charcol(".") - 1))
+end, { desc = "Start of line" })
+map("i", "<C-e>", function()
+    local len = vim.fn.strcharlen(vim.fn.getline("."))
+    feed(("<C-g>U<Right>"):rep(len - vim.fn.charcol(".") + 1))
+end, { desc = "End of line" })
+map("i", "<C-k>", function()
+    local rest = vim.fn.getline("."):sub(vim.fn.col("."))
+    if rest == "" then return feed("<Del>") end
+    vim.fn.setreg('"', rest, "c")
+    feed(("<Del>"):rep(vim.fn.strcharlen(rest)))
+end, { desc = "Kill to end of line" })
+map("i", "<C-d>", "<Del>", { desc = "Delete a char" })
+map("i", "<C-y>", '<C-r><C-o>"', { desc = "Yank the last kill" })
+
 -- The rest of readline's line editing, on the command line only. Costs <C-a>'s
--- insert-all-matches and <C-k>'s digraphs there; insert mode keeps <C-k>.
+-- insert-all-matches and <C-k>'s digraphs there.
 map("c", "<C-a>", "<Home>", { desc = "Start of line" })
 map("c", "<C-k>", "<C-\\>estrpart(getcmdline(), 0, getcmdpos() - 1)<CR>",
     { desc = "Kill to end of line" })

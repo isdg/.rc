@@ -12,6 +12,8 @@ for _km in viins vicmd; do
     bindkey -M $_km '^[OB' down-line-or-beginning-search
 done
 unset _km
+bindkey -M viins '^P' up-line-or-beginning-search
+bindkey -M viins '^N' down-line-or-beginning-search
 
 # Shift-Tab steps back through the completion menu (cd <Tab>, then Shift-Tab to
 # go back one). The second oh-my-zsh binding worth keeping: its key-bindings.zsh
