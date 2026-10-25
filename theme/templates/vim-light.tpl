@@ -33,7 +33,7 @@ hi Normal       guifg=${ISG_FG} guibg=${ISG_BG}
 hi Cursor       guifg=${ISG_BG} guibg=${ISG_CURSOR}
 hi Visual       guibg=${ISG_VISUAL_BG}
 hi LineNr       guifg=${ISG_GUTTER_FG} guibg=${ISG_BG}
-hi CursorLineNr guifg=#999999 guibg=${ISG_BG}
+hi CursorLineNr guifg=${ISG_GUTTER_FG_CUR} guibg=${ISG_BG}
 hi StatusLine   guifg=${ISG_ON_ACCENT} guibg=${ISG_VIM_STATUS_BG}
 hi StatusLineNC guifg=${ISG_VIM_STATUS_NC_FG} guibg=${ISG_BG_ALT}
 hi VertSplit    guifg=${ISG_BORDER} guibg=${ISG_BG_DEEP}

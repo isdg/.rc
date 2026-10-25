@@ -10,7 +10,7 @@
 " simply follows the same palette. It also targets CoC and NERDTree rather than
 " native LSP and nvim-tree.
 "
-" Colours with a single use stay literal hex.
+" Every colour comes from theme/palette.sh; generate.sh rejects literal hex.
 
 if exists('syntax_on')
   syntax reset
@@ -32,7 +32,7 @@ hi Cursor       guifg=${ISG_BG} guibg=${ISG_CURSOR}
 hi CursorLine   guibg=${ISG_LINE_HL}
 hi Visual       guibg=${ISG_VISUAL_BG}
 hi LineNr       guifg=${ISG_GUTTER_FG} guibg=${ISG_BG}
-hi CursorLineNr guifg=#888888 guibg=${ISG_BG}
+hi CursorLineNr guifg=${ISG_GUTTER_FG_CUR} guibg=${ISG_BG}
 hi StatusLine   guifg=${ISG_FG} guibg=${ISG_VIM_STATUS_BG}
 hi StatusLineNC guifg=${ISG_VIM_STATUS_NC_FG} guibg=${ISG_BG_DEEP}
 hi VertSplit    guifg=${ISG_BORDER} guibg=${ISG_BG_DEEP}

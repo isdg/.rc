@@ -96,6 +96,7 @@ isg_palette() {
         ISG_STRING='#ce9178'
         ISG_NUMBER='#b5cea8'
         ISG_TYPE='#4ec9b0'
+        ISG_ENUM='#61afc0'              # nvim only; bat keeps ISG_TYPE
         ISG_ERROR='#f44747'
         ISG_WARN='#f9e2af'
 
@@ -124,6 +125,7 @@ isg_palette() {
         # ── editor chrome (nvim) ──
         ISG_BG_DEEP='#1e1e1e'           # floats, :terminal, Error bg — below BG
         ISG_FG_FAINT='#6b6b6b'          # inactive statusline, unused-symbol hints
+        ISG_GUTTER_FG_CUR='#888888'     # the cursor line's number
         ISG_SEARCH_BG='#264f78'         # nvim `hi Search`; MatchParen too
         # NOT ISG_WARN: that is k9s's amber and was already retuned once for light
         # contrast (#26). nvim's diagnostics are their own yellow, and on dark this
@@ -144,6 +146,13 @@ isg_palette() {
         ISG_DIFF_DEL_EMPH_BG='#7f3d39'
         ISG_DIFF_ADD_BG='#2f4032'
         ISG_DIFF_ADD_EMPH_BG='#2e5c37'
+
+        # Patch text and gitsigns (nvim): GitHub's foreground diff palette
+        ISG_DIFF_ADD_FG='#3fb950'
+        ISG_DIFF_DEL_FG='#f85149'
+        ISG_DIFF_CHANGE_FG='#d29922'
+        ISG_DIFF_META_FG='#808080'      # index lines
+        ISG_DIFF_HUNK_FG='#9cdcfe'      # @@ hunk headers
         ;;
     light)
         ISG_MODE='light'
@@ -199,6 +208,7 @@ isg_palette() {
         ISG_STRING='#a31515'
         ISG_NUMBER='#098658'
         ISG_TYPE='#267f99'
+        ISG_ENUM='#267f99'
         ISG_ERROR='#ff0000'
         # 4.04:1, same amber hue. #BF8803 was 2.99:1 against dark's 10.54:1.
         ISG_WARN='#a67102'
@@ -229,6 +239,7 @@ isg_palette() {
         # ── editor chrome (nvim) ── see the dark branch
         ISG_BG_DEEP='#ffffff'           # only VertSplit's bg here; dark uses it more
         ISG_FG_FAINT='#aaaaaa'
+        ISG_GUTTER_FG_CUR='#999999'
         # Note this is NOT ISG_SEL_BG (#dce7f2). fzf's opts-light.conf claims to
         # mirror nvim's `hi Search`, but nvim's is #90C2F9 and always has been —
         # the two drifted apart before either was written down. Left as-is: fixing
@@ -246,6 +257,13 @@ isg_palette() {
         ISG_DIFF_DEL_EMPH_BG='#ffc1c0'
         ISG_DIFF_ADD_BG='#e6ffec'
         ISG_DIFF_ADD_EMPH_BG='#abf2bc'
+
+        # Patch text and gitsigns (nvim): GitHub's foreground diff palette
+        ISG_DIFF_ADD_FG='#1a7f37'
+        ISG_DIFF_DEL_FG='#cf222e'
+        ISG_DIFF_CHANGE_FG='#9a6700'
+        ISG_DIFF_META_FG='#57606a'      # index lines
+        ISG_DIFF_HUNK_FG='#0969da'      # @@ hunk headers
         ;;
     *)
         printf 'palette: unknown mode %s (want dark|light)\n' "$1" >&2

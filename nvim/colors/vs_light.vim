@@ -5,8 +5,7 @@
 " NormalFloat and the treesitter @variable groups. Different files, not just
 " different colours.
 "
-" Colours with a single use stay literal hex — naming a role with one consumer
-" buys nothing.
+" Every colour comes from theme/palette.sh; generate.sh rejects literal hex.
 
 " 'background' first, then `hi clear` — see the same note in vs_dark.vim. Light
 " happens to be the background Neovim's defaults were already computed for, but
@@ -127,19 +126,19 @@ hi DiffText     guifg=NONE    guibg=#abf2bc gui=NONE
 " Diff-as-text — reading a patch in a buffer (ft=diff/git, fugitive, :Git show).
 " Explicit here too so a dark->light flip can't leave dark-background variants
 " behind; gitsigns links its signs to Added/Removed/Changed.
-" GitHub's diff palette, not ours — one use each, so no role.
-hi Added        guifg=#1A7F37 guibg=NONE
-hi Removed      guifg=#CF222E guibg=NONE
-hi Changed      guifg=#9A6700 guibg=NONE
-hi diffAdded    guifg=#1A7F37 guibg=NONE
-hi diffRemoved  guifg=#CF222E guibg=NONE
-hi diffChanged  guifg=#9A6700 guibg=NONE
+" GitHub's foreground diff palette, held in the ISG_DIFF_*_FG slots.
+hi Added        guifg=#1a7f37 guibg=NONE
+hi Removed      guifg=#cf222e guibg=NONE
+hi Changed      guifg=#9a6700 guibg=NONE
+hi diffAdded    guifg=#1a7f37 guibg=NONE
+hi diffRemoved  guifg=#cf222e guibg=NONE
+hi diffChanged  guifg=#9a6700 guibg=NONE
 hi diffFile     guifg=#0451a5 guibg=NONE
-hi diffIndexLine guifg=#57606A guibg=NONE
-hi diffLine     guifg=#0969DA guibg=NONE
+hi diffIndexLine guifg=#57606a guibg=NONE
+hi diffLine     guifg=#0969da guibg=NONE
 " `--- …` is usually a deleted `--` comment, not a file header — see vs_dark.vim
-hi diffOldFile  guifg=#CF222E guibg=NONE
-hi diffNewFile  guifg=#1A7F37 guibg=NONE
+hi diffOldFile  guifg=#cf222e guibg=NONE
+hi diffNewFile  guifg=#1a7f37 guibg=NONE
 
 " =====================
 " CursorLine and Search

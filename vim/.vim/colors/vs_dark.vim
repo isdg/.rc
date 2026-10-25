@@ -10,7 +10,7 @@
 " simply follows the same palette. It also targets CoC and NERDTree rather than
 " native LSP and nvim-tree.
 "
-" Colours with a single use stay literal hex.
+" Every colour comes from theme/palette.sh; generate.sh rejects literal hex.
 
 if exists('syntax_on')
   syntax reset

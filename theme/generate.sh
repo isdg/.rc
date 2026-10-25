@@ -76,6 +76,12 @@ elif [ $# -gt 0 ]; then
     exit 2
 fi
 
+# A literal hex in a template is a colour the palette can neither see nor retune.
+if grep -nE '#[0-9A-Fa-f]{6}' "$ROOT"/theme/templates/*.tpl >&2; then
+    printf 'theme: literal colour in a template; add a slot to palette.sh\n' >&2
+    exit 1
+fi
+
 stale=0
 for mode in dark light; do
     isg_palette "$mode"
