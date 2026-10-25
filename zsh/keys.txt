@@ -28,6 +28,7 @@ bracketed paste) still have time to arrive whole.
 
     Backspace / C-h   delete any character on the line (stock vi mode stops
                       at the point where insert mode was last entered)
+    C-b / C-f         back / forward a character, as in readline and vim
 
 Plus fzf's own widgets, from its key-bindings.zsh:
 

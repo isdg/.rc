@@ -15,6 +15,10 @@ export KEYTIMEOUT=10
 bindkey -M viins '^?' backward-delete-char
 bindkey -M viins '^H' backward-delete-char
 
+# Emacs char motion, as in vim, nvim and readline; stock viins self-inserts both.
+bindkey -M viins '^B' backward-char
+bindkey -M viins '^F' forward-char
+
 # jJ leaves insert mode. A plain 'jJ' bindkey holds j back for KEYTIMEOUT
 # (100ms, too short), so j is typed at once and J within 1s takes it back.
 zmodload zsh/datetime
