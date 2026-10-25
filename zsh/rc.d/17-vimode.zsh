@@ -15,9 +15,26 @@ export KEYTIMEOUT=10
 bindkey -M viins '^?' backward-delete-char
 bindkey -M viins '^H' backward-delete-char
 
-# Emacs char motion, as in vim and readline; stock viins self-inserts both.
+# Emacs line editing, as in readline and the nvim command line. Stock viins
+# self-inserts most of these, and its vi-* kills stop where insert began.
+bindkey -M viins '^A' beginning-of-line
+bindkey -M viins '^E' end-of-line
 bindkey -M viins '^B' backward-char
 bindkey -M viins '^F' forward-char
+bindkey -M viins '^D' delete-char-or-list
+bindkey -M viins '^K' kill-line
+bindkey -M viins '^U' backward-kill-line
+bindkey -M viins '^W' backward-kill-word
+bindkey -M viins '^Y' yank
+bindkey -M viins '^_' undo
+bindkey -M viins '^S' history-incremental-search-forward
+# Meta arrives as Esc+key inside KEYTIMEOUT: these cost only an Esc followed
+# by the same key within 100ms, which would otherwise be a vicmd command.
+bindkey -M viins '^[b' backward-word
+bindkey -M viins '^[f' forward-word
+bindkey -M viins '^[d' kill-word
+bindkey -M viins '^[^?' backward-kill-word
+bindkey -M viins '^[.' insert-last-word
 
 # jJ leaves insert mode. A plain 'jJ' bindkey holds j back for KEYTIMEOUT
 # (100ms, too short), so j is typed at once and J within 1s takes it back.

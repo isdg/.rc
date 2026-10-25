@@ -1,1 +1,1 @@
-bind ^V ed-prev-char
+bind -e
