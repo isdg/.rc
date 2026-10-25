@@ -68,8 +68,14 @@ for p in "${pids[@]}"; do wait "$p"; done
 check "concurrent creates get distinct worktrees" \
     test "$(sort -u "$tmp"/par* | wc -l)" -eq 3
 
-for _ in $(seq 20); do create "$main" >/dev/null 2>&1 || break; done
-check "exhaustion fails with a message" \
+create "$main" >/dev/null && create "$main" >/dev/null
+check "pairs run out into three-word names" \
+    test "$(create "$main")" = "$HOME/proj-oda-stih-vega"
+
+echo solo > "$WT_POSTFIX/git/literatura.txt"
+rm "$WT_POSTFIX/stars.txt"
+create "$main" >/dev/null
+check "a list too short to stack fails instead of looping" \
     bash -c "jq -n '{cwd: \"$main\"}' | '$hook' create 2>&1 |
         grep -q 'every name is taken'"
 check "outside git it fails" \

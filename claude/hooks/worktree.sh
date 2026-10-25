@@ -9,18 +9,41 @@ marker=claude-worktree
 
 die() { echo "worktree: $*" >&2; exit 1; }
 
-# Literatura alone, then literatura joined with itself and every other list.
-names() {
-    local lit="$postfix/git/literatura.txt" a b others
+load_words() {
+    local w
+    lits=() words=()
     [ -r "$lit" ] || die "no name list at $lit"
-    shopt -s nullglob
-    others=("$postfix"/*.txt)
-    cat "$lit"
-    while read -r a; do
-        cat "$lit" "${others[@]}" | while read -r b; do
-            [ -n "$b" ] && [ "$a" != "$b" ] && echo "$a-$b"
-        done
+    while read -r w; do
+        [ -n "$w" ] && lits+=("$w")
     done < "$lit"
+    while read -r w; do
+        words+=("$w")
+    done < <(cat "$lit" "$postfix"/*.txt 2>/dev/null |
+        awk 'NF && !seen[$0]++')
+}
+
+# Depth-first, so the search stops at the first free name: literatura
+# first, then each name stacked with one more word from any list.
+claim() {
+    local w
+    if [ "$2" -eq 0 ]; then
+        reserve "$1"
+        return
+    fi
+    for w in "${words[@]}"; do
+        [[ "-$1-" == *"-$w-"* ]] && continue
+        claim "$1-$w" $(($2 - 1)) && return 0
+    done
+    return 1
+}
+
+# mkdir is the reservation, so agents spawned together never collide.
+reserve() {
+    dir="$HOME/$pre-$1"
+    [[ "$branches" == *$'\n'"wt/$1"$'\n'* ]] && return 1
+    [ -e "$dir" ] && return 1
+    mkdir "$dir" 2>/dev/null || return 1
+    name="$1"
 }
 
 # ~/cosmos-main -> cosmos, ~/.rc -> .rc
@@ -56,7 +79,8 @@ copy_includes() {
 }
 
 create() {
-    local input cwd common main pre name dir ref
+    local input cwd common main pre name dir ref branches depth first
+    local lit="$postfix/git/literatura.txt" lits words
     input="$(cat)"
     cwd="$(jq -r .cwd <<<"$input")"
     common="$(git -C "$cwd" rev-parse --path-format=absolute \
@@ -66,21 +90,25 @@ create() {
     cd "$main"
     ref="$(base_ref)"
 
-    # mkdir is the reservation, so agents spawned together never collide.
-    while read -r name; do
-        dir="$HOME/$pre-$name"
-        git show-ref -q --verify "refs/heads/wt/$name" && continue
-        mkdir "$dir" 2>/dev/null || continue
-        if ! git worktree add -q -b "wt/$name" "$dir" "$ref" >&2; then
-            rmdir "$dir" 2>/dev/null || true
-            die "git worktree add failed for $dir"
-        fi
-        date +%s > "$(git -C "$dir" rev-parse --git-dir)/$marker"
-        copy_includes "$main" "$dir"
-        echo "$dir"
-        return 0
-    done < <(names)
-    die "every name is taken; extend $postfix"
+    branches=$'\n'"$(git for-each-ref --format='%(refname:short)' \
+        refs/heads/wt)"$'\n'
+    load_words
+    name=''
+    # No repeated word, so no name is deeper than the word count.
+    for ((depth = 0; depth < ${#words[@]}; depth++)); do
+        for first in "${lits[@]}"; do
+            claim "$first" "$depth" && break 2
+        done
+    done
+    [ -n "$name" ] || die "every name is taken; extend $postfix"
+
+    if ! git worktree add -q -b "wt/$name" "$dir" "$ref" >&2; then
+        rmdir "$dir" 2>/dev/null || true
+        die "git worktree add failed for $dir"
+    fi
+    date +%s > "$(git -C "$dir" rev-parse --git-dir)/$marker"
+    copy_includes "$main" "$dir"
+    echo "$dir"
 }
 
 case "${1:-}" in
