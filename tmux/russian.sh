@@ -9,19 +9,19 @@
 # Five tables, matching the two halves of the editor story plus the layer:
 #   prefix        the <leader> equivalent — every prefix-<letter> binding
 #   copy-mode-vi  the normal-mode equivalent — hjkl, v, y, w, b, G, ...
-#   plugins       the second layer (C-b C-b), whose letters need twins for the
-#                 same reason the prefix ones do — its C-b entry key does not,
-#                 being a control combination.
+#   plugins       the second layer (C-Enter C-Enter), whose letters need
+#                 twins for the same reason the prefix ones do — its C-Enter
+#                 entry key does not, being a control combination.
 #   splits        the layer's s sub-table, one level deeper, same reasoning.
 #   moves         the layer's p sub-table (push/pull a pane), same again.
 #
-# Only single Latin letters are twinned. C-b, M-1, Space, arrows and the
+# Only single Latin letters are twinned. C-Enter, M-1, Space, arrows and the
 # punctuation bindings are deliberately skipped: terminals derive control and
 # meta combinations from the physical key, so those already fire under either
 # layout, while punctuation does not sit on matching keys across the two.
 #
 # Run from rc.d/15-russian.conf AFTER tpm, so the plugins' own keys (omni
-# b/a/j/P/A/J, orchbus o/O, resurrect C-s/C-r) are twinned too. Sweeping what is actually
+# b/a/j/P/A/J, orchbus o/O, resurrect C-w/C-r) are twinned too. Sweeping what is actually
 # bound, rather than listing keys here, is the whole point — a hand-written list
 # would go stale the moment a plugin or a bind line changes.
 #

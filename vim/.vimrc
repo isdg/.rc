@@ -91,7 +91,7 @@
 " ============================================================
 " BASIC MOVEMENT
 "   h / j / k / l     Move cursor left / down / up / right
-"   <C-v> / <C-f>     Move cursor back / forward a char (also insert, cmdline)
+"   <C-b> / <C-f>     Move cursor back / forward a char (also insert, cmdline)
 "   w / W             Jump forward to start of next word / WORD
 "   e / E             Jump forward to end of current word / WORD
 "   b / B             Jump backward to start of previous word / WORD
@@ -105,7 +105,6 @@
 "   H / M / L         Move cursor to top / middle / bottom of screen
 "   zz / zt / zb      Center / top / bottom current line on screen
 "   <C-u> / <C-d>     Scroll half-page up / down
-"   <C-b>             Scroll full-page up
 "   <C-e> / <C-y>     Scroll screen down / up (without moving cursor)
 "   gg=G              Re-indent whole file
 
@@ -187,7 +186,7 @@
 " BASIC SELECTION
 "   v                Start visual mode (characterwise)
 "   V                Line visual mode
-"   <C-q>            Block visual mode
+"   <C-v>            Block visual mode
 "   o                Jump to other end of current selection
 "   gv               Reselect last visual selection
 "   <leader>v        Reselect last visual selection (custom)

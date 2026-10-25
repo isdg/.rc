@@ -3,7 +3,7 @@
 -- ============================================================
 -- <leader><leader> opens a layer whose bare letters are tools, each handing off
 -- to a sub-layer of that tool's verbs — the shape of tmux's `plugins` table
--- (C-b C-b, then a letter, then the verb), down to the name.
+-- (C-Enter C-Enter, then a letter, then the verb), down to the name.
 --
 -- This replaces <leader>P* and <leader>H*, which spent two shifted top-level
 -- prefixes on four keys between them. The letters survive unshifted, so the

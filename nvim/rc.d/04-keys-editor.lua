@@ -260,15 +260,14 @@ vim.api.nvim_create_autocmd("FileType", {
 map("n", "<C-i>", "<C-o>", { noremap = true, desc = "Jump back" })
 map("n", "<C-o>", "<C-i>", { noremap = true, desc = "Jump forward" })
 
--- Emacs char motion, as in every readline prompt (readline/.inputrc): tmux
--- keeps <C-b>, so <C-v> steps back. <C-g>U keeps the undo step and dot-repeat
--- whole; <C-q> takes over <C-v>'s literal insert and block visual.
+-- Emacs char motion, as in every readline prompt. <C-g>U keeps the undo step
+-- and dot-repeat whole.
 map("n", "<C-f>", "l", { desc = "Forward a char" })
-map("n", "<C-v>", "h", { desc = "Back a char" })
+map("n", "<C-b>", "h", { desc = "Back a char" })
 map("i", "<C-f>", "<C-g>U<Right>", { desc = "Forward a char" })
-map("i", "<C-v>", "<C-g>U<Left>", { desc = "Back a char" })
+map("i", "<C-b>", "<C-g>U<Left>", { desc = "Back a char" })
 map("c", "<C-f>", "<Right>", { desc = "Forward a char" })
-map("c", "<C-v>", "<Left>", { desc = "Back a char" })
+map("c", "<C-b>", "<Left>", { desc = "Back a char" })
 
 -- The rest of readline's line editing, on the command line only. Costs <C-a>'s
 -- insert-all-matches and <C-k>'s digraphs there; insert mode keeps <C-k>.

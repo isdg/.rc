@@ -10,16 +10,17 @@ One column reads down: h goes to a split, H grows toward it, C-h drags it there.
 
 -- The shared set ---------------------------------------------------------
 Verb                    nvim                 tmux
-go to a split           C-h C-j C-k C-l      C-b C-b  h j k l
-move the split itself   C-w C-h C-j C-k C-l  C-b C-b  C-h C-j C-k C-l
-resize                  C-w H J K L          C-b C-b  H J K L
-equalize                C-w E   (or C-w =)   C-b C-b  E
-split side by side      C-w s v              C-b C-b  s v   (or prefix %)
-split stacked           C-w s h              C-b C-b  s h   (or prefix ")
+go to a split           C-h C-j C-k C-l      layer  h j k l
+move the split itself   C-w C-h C-j C-k C-l  layer  C-h C-j C-k C-l
+resize                  C-w H J K L          layer  H J K L
+equalize                C-w E   (or C-w =)   layer  E
+split side by side      C-w s v              layer  s v   (or prefix %)
+split stacked           C-w s h              layer  s h   (or prefix ")
 last split              C-w ;   (or C-w p)   —
-cycle                   C-w o                C-b C-b  o
+cycle                   C-w o                layer  o
 
-prefix is C-b, so "C-b C-b h" is: prefix, then the layer, then h.
+layer is the prefix twice, C-Enter C-Enter, so "layer h" is: prefix, then the
+layer, then h.
 
 
 -- v and h name the divider, not the axis ---------------------------------
@@ -53,11 +54,11 @@ they are in.
 
 
 -- The tmux layer is a key table, and that shows -------------------------
-C-b C-b enters the `plugins` table. Escape or q leaves it. C-b C-b C-b sends a
-literal C-b, for a nested tmux over SSH — send-prefix moved inside the layer
-because the layer took its key. While the table is active status-left shows a
-`+`, the way the prefix shows a `*`: a key table is durable state, so
-#{client_key_table} can drive an indicator.
+C-Enter C-Enter enters the `plugins` table. Escape or q leaves it. A third
+C-Enter sends a literal one, for a nested tmux over SSH — send-prefix moved
+inside the layer because the layer took its key. While the table is active
+status-left shows a `+`, the way the prefix shows a `*`: a key table is durable
+state, so #{client_key_table} can drive an indicator.
 
   sticky     resize (H J K L), equalize (E) and pane moves (C-h C-j C-k C-l)
              re-enter the table. They are inherently repetitive, and you are
@@ -88,7 +89,7 @@ in Russian.
 Neither program has a "move this window there" verb, so both are built out of
 a swap — and both make the swap read as a move.
 
-tmux: C-b C-b C-h is swap-pane -t '{left-of}' followed by select-pane -t
+tmux: layer C-h is swap-pane -t '{left-of}' followed by select-pane -t
 '{left-of}'. The select is the load-bearing half: it runs before anything has
 moved the cursor, so {left-of} still resolves from the unchanged position and
 now names the pane that just travelled there. Without it a swap leaves you
@@ -147,12 +148,12 @@ orchbus. Both were spent on the layer rather than lost.
 prefix %  /  prefix "        split right / down — tmux's own keys, kept
 prefix Z                     zoom the pane (z is zen mode: hide the status bar)
 prefix x                     kill the pane
-prefix Up Down Left Right    walk panes; -r, so C-b Up Up Up repeats
-C-b C-b p l                  PULL: a pane you pick arrives here as a split
-C-b C-b p s                  PUSH: send this pane at a picked target —
+prefix Up Down Left Right    walk panes; -r, so prefix Up Up Up repeats
+layer p l                    PULL: a pane you pick arrives here as a split
+layer p s                    PUSH: send this pane at a picked target —
                              join-pane into a pane, break-pane -d -a into a
                              window or a session
-C-b C-b w                    write this pane's scrollback to a file
+layer w                      write this pane's scrollback to a file
 prefix s  /  prefix w        session / window choosers, M-<letter> to jump
 
 Panes are also reachable by their contents rather than their position: omni's

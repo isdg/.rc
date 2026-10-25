@@ -24,11 +24,8 @@
 # M-d (fzf's kill-word). All four read the screen rather than the match order,
 # since the list grows bottom-up: M-d/M-G go toward the prompt, M-u/M-g away
 # from it — which is why M-g, the top of the screen, is spelled `last`.
-#
-# C-v steps back a char like C-b, which tmux keeps as its prefix.
 --preview-window=down:55%
 --bind=alt-j:jump,jump:accept
---bind=ctrl-v:backward-char
 --bind=alt-d:half-page-down,alt-u:half-page-up,alt-g:last,alt-G:first
 --color=bg:-1,fg:-1,bg+:${ISG_SEL_BG},fg+:${ISG_SEL_FG}
 --color=hl:bright-blue,hl+:blue

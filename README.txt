@@ -164,7 +164,8 @@ NOTES
   - tmux prefix bindings: see tmux/rc.d/ (new windows open to the
     right of current; & kills window and moves focus left).
   - manuals/splits.txt is the split/pane reference: nvim's <C-w> layer and
-    tmux's C-b C-b layer share one set of keys, and it says where they differ.
+    tmux's second layer share one set of keys, and it says where they
+    differ.
   - zsh/keys.txt is the command-line key reference: vi mode and the
     nvim-style <Space> leader.
   - sh/toggle_theme.sh switches Darwin light/dark mode and adjacent terminal

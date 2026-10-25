@@ -1,4 +1,0 @@
-/* Cocoa text fields: C-v steps back a char like C-b (was page down). */
-{
-    "^v" = "moveBackward:";
-}

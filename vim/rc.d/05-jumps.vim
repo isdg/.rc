@@ -5,15 +5,14 @@
 nnoremap <C-i> <C-o>
 nnoremap <C-o> <C-i>
 
-" Emacs char motion, as in every readline prompt (readline/.inputrc): tmux
-" keeps <C-b>, so <C-v> steps back. <C-g>U keeps the undo step and dot-repeat
-" whole; <C-q> takes over <C-v>'s literal insert and block visual.
+" Emacs char motion, as in every readline prompt. <C-g>U keeps the undo step
+" and dot-repeat whole.
 nnoremap <C-f> l
-nnoremap <C-v> h
+nnoremap <C-b> h
 inoremap <C-f> <C-g>U<Right>
-inoremap <C-v> <C-g>U<Left>
+inoremap <C-b> <C-g>U<Left>
 cnoremap <C-f> <Right>
-cnoremap <C-v> <Left>
+cnoremap <C-b> <Left>
 
 " Reselect last visual selection
 nnoremap <leader>v gv
