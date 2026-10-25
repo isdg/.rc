@@ -53,6 +53,7 @@
   "alwaysThinkingEnabled": true,
   "autoUpdatesChannel": "stable",
   "tui": "fullscreen",
+  "maxProseWidth": 80,
   "voice": {
     "enabled": true,
     "mode": "hold"
