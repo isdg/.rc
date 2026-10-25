@@ -138,6 +138,13 @@ isg_palette() {
         # the two editors agree.
         ISG_VIM_STATUS_BG='#007acc'
         ISG_VIM_STATUS_NC_FG='#bbbbbb'
+
+        # ── diff tints (delta) ── GitHub's dark tints (15% / 40% alpha) blended
+        # onto ISG_BG by hand: retune ISG_BG and these must be re-blended.
+        ISG_DIFF_DEL_BG='#4d3433'
+        ISG_DIFF_DEL_EMPH_BG='#7f3d39'
+        ISG_DIFF_ADD_BG='#2f4032'
+        ISG_DIFF_ADD_EMPH_BG='#2e5c37'
         ;;
     light)
         ISG_MODE='light'
@@ -235,6 +242,12 @@ isg_palette() {
         # dark's is blue: the two vim statuslines never matched each other either.
         ISG_VIM_STATUS_BG='#16825d'
         ISG_VIM_STATUS_NC_FG='#919191'
+
+        # ── diff tints (delta) ── GitHub's light tints, verbatim
+        ISG_DIFF_DEL_BG='#ffebe9'
+        ISG_DIFF_DEL_EMPH_BG='#ffc1c0'
+        ISG_DIFF_ADD_BG='#e6ffec'
+        ISG_DIFF_ADD_EMPH_BG='#abf2bc'
         ;;
     *)
         printf 'palette: unknown mode %s (want dark|light)\n' "$1" >&2

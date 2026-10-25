@@ -35,6 +35,7 @@ k9s.tpl      k9s/skins/vs_MODE.yaml
 bat-MODE.tpl bat/themes/vs_MODE.tmTheme
 nvim-MODE.tpl nvim/colors/vs_MODE.vim
 vim-MODE.tpl vim/.vim/colors/vs_MODE.vim
+delta-MODE.tpl delta/theme-MODE.gitconfig
 '
 
 # Placeholder pattern, hoisted into a variable: bash 3.2 mishandles an inline
