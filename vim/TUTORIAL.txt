@@ -105,7 +105,6 @@ NAVIGATION EXTENDED
 2. SCREEN & SCROLL MOVEMENT
 ----------------------------
 
-    <C-b>               Scroll full-page up
     H / M / L           Move cursor to top / middle / bottom of screen
     zz / zt / zb        Center / top / bottom current line on screen
     <C-u> / <C-d>       Scroll half-page up / down
@@ -178,7 +177,7 @@ VISUAL NAVIGATION EXTENDED
 
     v                 Start visual mode (characterwise)
     V                 Line visual mode
-    <C-q>             Block visual mode
+    <C-v>             Block visual mode
     o                 Jump to other end of current selection
     gv                Reselect last visual selection
     <leader>v         Reselect last visual selection (custom)

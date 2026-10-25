@@ -1,6 +1,1 @@
 $include /etc/inputrc
-
-# C-v steps back a char like C-b, which tmux keeps as its prefix. Readline
-# would rebind it to the tty's lnext (quoted-insert) unless told not to.
-set bind-tty-special-chars off
-"\C-v": backward-char

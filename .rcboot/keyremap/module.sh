@@ -5,6 +5,3 @@
 
 source "$RC_BOOT/keyremap/keyremap.sh"
 step install_keyremap_darwin ensure_keyremap_darwin
-
-link darwin/DefaultKeyBinding.dict \
-    "$HOME/Library/KeyBindings/DefaultKeyBinding.dict"
