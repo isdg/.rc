@@ -15,7 +15,7 @@ export KEYTIMEOUT=10
 bindkey -M viins '^?' backward-delete-char
 bindkey -M viins '^H' backward-delete-char
 
-# Emacs char motion, as in vim, nvim and readline; stock viins self-inserts both.
+# Emacs char motion, as in vim and readline; stock viins self-inserts both.
 bindkey -M viins '^B' backward-char
 bindkey -M viins '^F' forward-char
 
