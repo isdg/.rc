@@ -14,6 +14,7 @@ fragment tmux/rc.d/11-pane-save.conf
 fragment tmux/rc.d/12-alerts.conf
 fragment tmux/rc.d/13-splits.conf
 fragment tmux/rc.d/15-russian.conf
+fragment tmux/rc.d/16-jumplist.conf
 
 setup_tmux() {
     # Apply to any already-running tmux server. Unlike ghostty/k9s, tmux's
