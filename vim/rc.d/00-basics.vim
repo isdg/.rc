@@ -41,6 +41,9 @@ set hidden            " Allow switching buffers without saving
 " break, or wherever insert mode began. nvim defaults to this value and
 " plain vim was the one left with the 1976 rule.
 set backspace=indent,eol,start
+" Inside tmux TERM is tmux-*, which keyprotocol's default omits, so Alt+key
+" arrives as Esc then the key. tmux's extended-keys speaks modifyOtherKeys.
+if exists('+keyprotocol') | set keyprotocol^=tmux:mok2 | endif
 
 
 " ----------------------------
