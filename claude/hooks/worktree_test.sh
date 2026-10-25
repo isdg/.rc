@@ -155,4 +155,24 @@ check "but keeps dirty, locked, unpushed and live ones" \
     test -d "$dirty" -a -d "$locked" -a -d "$ahead" -a -d "$busy"
 check "gc outside git is a no-op" bash -c "cd '$tmp' && '$hook' gc"
 
+guard() {
+    jq -n --arg cwd "$1" --arg c "$2" \
+        '{cwd: $cwd, tool_input: {command: $c}}' |
+        "$hook" guard 2>/dev/null && echo 0 || echo $?
+}
+blocks() { check "guard blocks: $2" test "$(guard "$1" "$2")" = 2; }
+allows() { check "guard allows: $2" test "$(guard "$1" "$2")" = 0; }
+blocks "$dirty" "git push"
+blocks "$dirty" "git push -u origin HEAD"
+blocks "$dirty" "gh pr create --fill"
+blocks "$main" "git -C $dirty push"
+blocks "$main" "cd '$dirty' && git push"
+blocks "$main" "FOO=1 git -c a=b push origin \"wt/r9\""
+allows "$main" "git push"
+allows "$main" "git push origin wt/r9:feat/a/b"
+allows "$dirty" "git status && git log --grep push"
+allows "$dirty" "gh pr create --head feat/a/b"
+git -C "$dirty" branch -m feat/a/b
+allows "$dirty" "git push -u origin HEAD"
+
 [ "$fails" -eq 0 ] || { echo "$fails failed"; exit 1; }

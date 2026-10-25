@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Claude Code worktree hooks: worktrees live at ~/<prefix>-<name>, named
-# from the postfix lists. Usage: worktree.sh create|remove|gc [--dry-run]
+# from the postfix lists. Usage: worktree.sh create|remove|guard|gc
+# [--dry-run]; hook JSON arrives on stdin.
 set -euo pipefail
 
 self="$(readlink -f "${BASH_SOURCE[0]}")"
@@ -145,6 +146,66 @@ remove() {
     drop "$dir"
 }
 
+# wt/<name> is a placeholder: refuse to publish it under that name.
+guard() {
+    local input cmd seg d to
+    set -f
+    input="$(cat)"
+    cmd="$(jq -r '.tool_input.command // ""' <<<"$input")"
+    d="$(jq -r .cwd <<<"$input")"
+    while read -r seg; do
+        check_push "$d" $seg
+        [[ "$seg" =~ ^cd[[:space:]]+([^[:space:]]+)$ ]] || continue
+        to="${BASH_REMATCH[1]//[\"\']/}"
+        to="$(cd "$d" && cd "${to/#\~/$HOME}" && pwd)" && d="$to" || true
+    done < <(awk '{ gsub(/&&|\|\||;|\|/, "\n"); print }' <<<"$cmd")
+}
+
+# check_push <dir> <words of one command>: exits 2 to block the call.
+check_push() {
+    local d="$1" head='' dest=() w
+    shift
+    set -- "${@//[\"\']/}"
+    while [[ "${1:-}" =~ ^[A-Za-z_][A-Za-z0-9_]*= ]]; do shift; done
+    case "${1:-}" in
+        git)
+            shift
+            while [ $# -gt 0 ]; do
+                case "$1" in
+                    -C) d="${2/#\~/$HOME}"; shift 2 ;;
+                    -c) shift 2 ;;
+                    -*) shift ;;
+                    *) break ;;
+                esac
+            done
+            [ "${1:-}" = push ] || return 0
+            shift
+            for w in "$@"; do [[ "$w" == -* ]] || dest+=("${w##*:}"); done
+            dest=("${dest[@]:1}") ;;
+        gh)
+            [ "${2:-}" = pr ] && [ "${3:-}" = create ] || return 0
+            shift 3
+            while [ $# -gt 0 ]; do
+                case "$1" in
+                    -H|--head) dest=("$2"); shift 2 ;;
+                    --head=*) dest=("${1#--head=}"); shift ;;
+                    *) shift ;;
+                esac
+            done ;;
+        *) return 0 ;;
+    esac
+    head="$(git -C "$d" branch --show-current 2>/dev/null)" || true
+    [ ${#dest[@]} -gt 0 ] || dest=(HEAD)
+    for w in "${dest[@]}"; do
+        [ "$w" = HEAD ] && w="$head"
+        if [[ "$w" == wt/* ]]; then
+            echo "worktree: $w is a placeholder; rename it first:" \
+                "git branch -m <type>/<scope>/<slug>" >&2
+            exit 2
+        fi
+    done
+}
+
 # Clean, upstreamed, unlocked, not any live session's directory and older
 # than WT_GC_MIN_AGE seconds (1 day): what subagents and workflows leave.
 gc() {
@@ -189,6 +250,7 @@ in_use() {
 case "${1:-}" in
     create) create ;;
     remove) remove ;;
+    guard) guard ;;
     gc) gc "${2:-}" ;;
-    *) die "usage: worktree.sh create|remove|gc [--dry-run]" ;;
+    *) die "usage: worktree.sh create|remove|guard|gc [--dry-run]" ;;
 esac
