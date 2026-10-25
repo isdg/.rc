@@ -13,8 +13,8 @@ mode = words
 # (p, n, c, s). Text mode ignores them: the author's punctuation is there.
 with =
 
-# Fifty words, as ttyper; swap for `time = 60` for a timed test, never both.
-words = 50
+# Thirty-five words; swap for `time = 60` for a timed test, never both.
+words = 35
 
 # Heatmap layout; `auto` picks ЙЦУКЕН for Cyrillic words, QWERTY otherwise.
 layout = auto
