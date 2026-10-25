@@ -49,6 +49,10 @@
           {
             "type": "command",
             "command": "jq -r '\": \\(now|floor):0;\\(.tool_input.command | gsub(\"\\n\"; \"\\\\\\n\"))\"' >> ~/.claude/agents.zsh_history 2>/dev/null || true"
+          },
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/worktree.sh guard"
           }
         ]
       }
