@@ -57,10 +57,10 @@ hi LineNr       guifg=#555555 guibg=#2f2f2f
 hi CursorLineNr guifg=#888888 guibg=#2f2f2f
 hi StatusLine   guifg=#d4d4d4 guibg=#2f2f2f
 hi StatusLineNC guifg=#6b6b6b guibg=#2f2f2f
-hi VertSplit    guifg=#454545 guibg=#1e1e1e
+hi VertSplit    guifg=#444444 guibg=#1e1e1e
 hi Pmenu        guifg=#CCCCCC guibg=#252526
-hi PmenuSel     guifg=#ffffff guibg=#0078d4
-hi PmenuSbar    guibg=#454545
+hi PmenuSel     guifg=#ffffff guibg=#007acc
+hi PmenuSbar    guibg=#444444
 hi PmenuThumb   guibg=#007acc
 
 " Comments
@@ -139,7 +139,7 @@ hi MatchParen   guibg=#264f78
 
 " Search
 hi Search       guifg=#d4d4d4 guibg=#264f78
-hi IncSearch    guifg=#d4d4d4 guibg=#0078d4
+hi IncSearch    guifg=#d4d4d4 guibg=#007acc
 
 " Terminal colors
 hi Terminal     guifg=#d4d4d4 guibg=#1e1e1e

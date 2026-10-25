@@ -79,16 +79,16 @@ isg_palette() {
         # role in two shades — see the light branch for the contrast.
         ISG_FG_DIM='#888888'            # info labels, completed, yaml colons
         ISG_BG_ALT='#252526'            # dialogs, panels raised off the body
-        ISG_BORDER_UI='#454545'
+        ISG_BORDER_UI='#444444'
         ISG_ON_ACCENT='#ffffff'         # text on a filled accent (buttons, cursor)
         ISG_CRUMB_FG="$ISG_BG"          # crumbs invert: body colour on accent
-        # Four near-identical blues, kept apart because that is what the skins do
-        # today. Collapsing them is the obvious next simplification, but it moves
-        # pixels, so it is not part of this refactor.
+        # These blues look mergeable here, but nvim, vim and bat paint syntax
+        # with them too, and light mode keeps them apart: keywords ISG_ACCENT,
+        # types and functions ISG_ACCENT_DEEP. Merging slots would fuse those.
         ISG_ACCENT='#569cd6'            # logo, labels, menu keys, focus, headers
         ISG_ACCENT_DEEP='#569cd6'       # suggestions, crumbs, xray graphics
         ISG_ACCENT_BRIGHT='#87cfff'
-        ISG_BUTTON_BG='#0078d4'
+        ISG_BUTTON_BG='#007acc'
         ISG_BUTTON_FOCUS_BG='#007acc'
         ISG_TABLE_CURSOR_BG='#264f78'
         ISG_XRAY_CURSOR='#264f78'
