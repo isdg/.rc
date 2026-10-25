@@ -67,7 +67,8 @@
     "gopls-lsp@claude-plugins-official": true,
     "mattpocock-skills@mattpocock": true,
     "isg-skills@isg": true,
-    "clangd-lsp@claude-plugins-official": true
+    "clangd-lsp@claude-plugins-official": true,
+    "orchbus-probe@orchbus": true
   },
   "extraKnownMarketplaces": {
     "mattpocock": {
@@ -80,6 +81,12 @@
       "source": {
         "source": "directory",
         "path": "/Users/isg/.rc"
+      }
+    },
+    "orchbus": {
+      "source": {
+        "source": "directory",
+        "path": "/Users/isg/orchbus"
       }
     }
   },
