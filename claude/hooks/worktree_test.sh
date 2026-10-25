@@ -132,8 +132,15 @@ check "gc --dry-run reports the idle worktree once" \
 check "and not the dirty, locked or unpushed ones" \
     test "$(listed "$dirty")$(listed "$locked")$(listed "$ahead")" = 000
 check "--dry-run removes nothing" test -d "$idle"
+gone="$(create "$main")"
+rm -rf "$gone"
+(cd "$main" && WT_GC_MIN_AGE=0 "$hook" gc --dry-run >/dev/null)
+check "--dry-run leaves stale entries for prune" \
+    bash -c "git -C '$main' worktree list | grep -q prunable"
 (cd "$dirty" && WT_GC_MIN_AGE=0 "$hook" gc >/dev/null)
 check "gc removes an idle worktree, from any checkout" test ! -e "$idle"
+check "and prunes stale entries" \
+    bash -c "! git -C '$main' worktree list | grep -q prunable"
 check "but keeps dirty, locked and unpushed ones" \
     test -d "$dirty" -a -d "$locked" -a -d "$ahead"
 check "gc outside git is a no-op" bash -c "cd '$tmp' && '$hook' gc"
