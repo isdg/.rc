@@ -65,7 +65,7 @@ GENERAL HOTKEYS
 --------------
 
     <C-p>            Search files
-    <C-b>            Search buffers
+    <leader>b        Search buffers
     :History         Open file history
     :BLines          Search inside current buffer
 
@@ -164,7 +164,7 @@ SEARCH EXTENDED
 -------------------------
 
     <C-p>             Fuzzy find files (:Files)
-    <C-b>             Fuzzy find buffers (:Buffers)
+    <leader>b         Fuzzy find buffers (:Buffers)
     :BLines           Fuzzy search inside current buffer
     :Rg <text>        Ripgrep search across project (requires ripgrep)
 
