@@ -76,9 +76,15 @@ elif [ $# -gt 0 ]; then
     exit 2
 fi
 
-# A literal hex in a template is a colour the palette can neither see nor retune.
+# A literal hex outside palette.sh's named colours is one nobody can count or
+# retune, so it stops the build: in a template, or assigned straight to a slot.
 if grep -nE '#[0-9A-Fa-f]{6}' "$ROOT"/theme/templates/*.tpl >&2; then
     printf 'theme: literal colour in a template; add a slot to palette.sh\n' >&2
+    exit 1
+fi
+if grep -nE "^[[:space:]]*ISG_[A-Z0-9_]+=['\"]?#" "$ROOT/theme/palette.sh" >&2
+then
+    printf 'theme: slot assigned a literal hex; name the colour first\n' >&2
     exit 1
 fi
 
