@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Claude Code worktree hooks: worktrees live at ~/<prefix>-<name>, named
-# from the postfix lists. Usage: worktree.sh create  (hook JSON on stdin)
+# from the postfix lists. Usage: worktree.sh create|remove|gc [--dry-run]
 set -euo pipefail
 
 self="$(readlink -f "${BASH_SOURCE[0]}")"
@@ -111,7 +111,73 @@ create() {
     echo "$dir"
 }
 
+# Removing loses nothing committed: every commit is on a remote, or the
+# branch's content already landed upstream (squash and rebase merges too).
+upstreamed() {
+    local up
+    [ -z "$(git -C "$1" rev-list -n1 HEAD --not --remotes)" ] && return 0
+    up="$(git -C "$1" symbolic-ref -q --short refs/remotes/origin/HEAD)" ||
+        return 1
+    [ "$(git -C "$1" merge-tree --write-tree "$up" HEAD 2>/dev/null)" = \
+        "$(git -C "$1" rev-parse "$up^{tree}")" ]
+}
+
+ours() {
+    [ -f "$(git -C "$1" rev-parse --git-dir 2>/dev/null)/$marker" ]
+}
+
+drop() {
+    local dir="$1" main branch
+    main="$(dirname "$(git -C "$dir" rev-parse --path-format=absolute \
+        --git-common-dir)")"
+    branch="$(git -C "$dir" branch --show-current)"
+    git -C "$main" worktree remove --force "$dir" || return 1
+    [ -z "$branch" ] || git -C "$main" branch -q -D "$branch"
+}
+
+# Claude Code has already asked about uncommitted files; commits it can't see.
+remove() {
+    local dir
+    dir="$(jq -r .worktree_path)"
+    ours "$dir" || die "$dir was not made by this hook; leaving it"
+    upstreamed "$dir" ||
+        die "keeping $dir: it has commits that are not upstream"
+    drop "$dir"
+}
+
+# Clean, upstreamed, unlocked and older than WT_GC_MIN_AGE seconds (1 day):
+# the worktrees Claude Code leaves behind for subagents and workflows.
+gc() {
+    local dry="${1:-}" now dir='' locked line
+    git rev-parse -q --git-dir >/dev/null 2>&1 || return 0
+    git worktree prune
+    now="$(date +%s)"
+    while read -r line; do
+        case "$line" in
+            "worktree "*) dir="${line#worktree }" locked='' ;;
+            locked*) locked=1 ;;
+            '') [ -z "$dir" ] || sweep "$dir" "$locked"; dir='' ;;
+        esac
+    done < <(git worktree list --porcelain; echo)
+}
+
+sweep() {
+    local dir="$1" born
+    [ -z "$2" ] && ours "$dir" || return 0
+    born="$(cat "$(git -C "$dir" rev-parse --git-dir)/$marker")"
+    [ $((now - born)) -ge "${WT_GC_MIN_AGE:-86400}" ] || return 0
+    [ -z "$(git -C "$dir" status --porcelain)" ] || return 0
+    upstreamed "$dir" || return 0
+    if [ "$dry" = --dry-run ]; then
+        echo "would remove $dir"
+    else
+        drop "$dir" && echo "removed $dir"
+    fi
+}
+
 case "${1:-}" in
     create) create ;;
-    *) die "usage: worktree.sh create" ;;
+    remove) remove ;;
+    gc) gc "${2:-}" ;;
+    *) die "usage: worktree.sh create|remove|gc [--dry-run]" ;;
 esac

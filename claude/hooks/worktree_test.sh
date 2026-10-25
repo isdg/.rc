@@ -81,4 +81,61 @@ check "a list too short to stack fails instead of looping" \
 check "outside git it fails" \
     bash -c "! jq -n '{cwd: \"$tmp\"}' | '$hook' create 2>/dev/null"
 
+printf 'r1\nr2\nr3\nr4\nr5\nr6\nr7\n' > "$WT_POSTFIX/git/literatura.txt"
+remove() { jq -n --arg p "$1" '{worktree_path: $p}' | "$hook" remove; }
+commit() {
+    echo "$2" > "$1/$2"
+    git -C "$1" add "$2"
+    git -C "$1" commit -qm "$2"
+}
+
+w="$(create "$main")"
+remove "$w"
+check "remove drops a worktree with nothing in it" test ! -e "$w"
+check "and deletes its branch" \
+    bash -c "! git -C '$main' show-ref -q --verify refs/heads/wt/r1"
+check "a freed name is reused" test "$(create "$main")" = "$w"
+
+commit "$w" local
+check "remove keeps a worktree with unpushed commits" \
+    bash -c "! jq -n '{worktree_path: \"$w\"}' | '$hook' remove 2>/dev/null"
+check "so the directory is still there" test -d "$w"
+git -C "$w" push -q origin HEAD 2>/dev/null
+remove "$w"
+check "once pushed, remove drops it" test ! -e "$w"
+
+w="$(create "$main")"
+commit "$w" feature
+git -C "$main" checkout -q -B land origin/main
+git -C "$main" merge -q --squash "$(git -C "$w" branch --show-current)" \
+    >/dev/null
+git -C "$main" commit -qm squash
+git -C "$main" push -q origin land:main
+git -C "$main" fetch -q origin
+remove "$w"
+check "a squash-merged branch counts as upstream" test ! -e "$w"
+check "remove refuses a worktree it did not make" \
+    bash -c "! jq -n '{worktree_path: \"$main\"}' | '$hook' remove 2>/dev/null"
+
+idle="$(create "$main")"
+dirty="$(create "$main")"; echo wip > "$dirty/wip"
+locked="$(create "$main")"; git -C "$main" worktree lock "$locked"
+ahead="$(create "$main")"; commit "$ahead" ahead
+(cd "$main" && "$hook" gc)
+check "gc leaves worktrees younger than a day" test -d "$idle"
+report="$(cd "$main" && WT_GC_MIN_AGE=0 "$hook" gc --dry-run)"
+listed() {
+    grep -cxF "would remove $(cd "$1" && pwd -P)" <<<"$report" || true
+}
+check "gc --dry-run reports the idle worktree once" \
+    test "$(listed "$idle")" -eq 1
+check "and not the dirty, locked or unpushed ones" \
+    test "$(listed "$dirty")$(listed "$locked")$(listed "$ahead")" = 000
+check "--dry-run removes nothing" test -d "$idle"
+(cd "$dirty" && WT_GC_MIN_AGE=0 "$hook" gc >/dev/null)
+check "gc removes an idle worktree, from any checkout" test ! -e "$idle"
+check "but keeps dirty, locked and unpushed ones" \
+    test -d "$dirty" -a -d "$locked" -a -d "$ahead"
+check "gc outside git is a no-op" bash -c "cd '$tmp' && '$hook' gc"
+
 [ "$fails" -eq 0 ] || { echo "$fails failed"; exit 1; }
