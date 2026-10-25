@@ -129,6 +129,24 @@ not here.
   `chore`, `cleanup`, `docs`); `scope` is the affected area/component (use
   `general` when none fits); `slug` is a short kebab-case description.
 
+## Worktrees
+
+- **Where they go.** `--worktree`, isolated subagents, workflow agents and
+  background sessions get a worktree from `~/.claude/hooks/worktree.sh`:
+  `~/<repo>-<name>` on branch `wt/<name>`, cut from origin's default branch.
+  Rename the branch to `<type>/<scope>/<slug>` before its first push.
+- **Done means upstream.** Before you finish, commit and push everything
+  worth keeping. A worktree is garbage once it is clean and every commit is
+  on a remote or already merged (squash merges count).
+- **Collect your own garbage.** When the work is done, leave the worktree
+  with `ExitWorktree` and remove it. What's left behind — subagent and
+  workflow worktrees are never removed for you — is swept at session start
+  once it is a day old, clean, unlocked and upstream;
+  `~/.claude/hooks/worktree.sh gc --dry-run` lists what would go.
+- **Never remove work.** Don't delete a worktree with uncommitted or
+  unpushed changes, or one the hook didn't make (the main checkout, a
+  pooled worktree). Neither the hook nor the sweep will.
+
 ## PR sizing conventions
 
 Keep pull requests small and type-focused so they stay reviewable. Size

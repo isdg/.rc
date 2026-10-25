@@ -8,6 +8,38 @@
   },
   "model": "opus",
   "hooks": {
+    "WorktreeCreate": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/worktree.sh create"
+          }
+        ]
+      }
+    ],
+    "WorktreeRemove": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/worktree.sh remove"
+          }
+        ]
+      }
+    ],
+    "SessionStart": [
+      {
+        "matcher": "startup",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash ~/.claude/hooks/worktree.sh gc",
+            "async": true
+          }
+        ]
+      }
+    ],
     "PreToolUse": [
       {
         "matcher": "Bash",
@@ -21,7 +53,7 @@
     ]
   },
   "worktree": {
-    "bgIsolation": "none"
+    "bgIsolation": "worktree"
   },
   "statusLine": {
     "type": "command",
