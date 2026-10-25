@@ -22,7 +22,11 @@ export GIT_CONFIG_GLOBAL="$tmp/gitconfig" GIT_CONFIG_NOSYSTEM=1
 git config --global user.name test
 git config --global user.email test@example.com
 git config --global init.defaultBranch main
-mkdir -p "$HOME" "$WT_POSTFIX/git"
+mkdir -p "$HOME" "$WT_POSTFIX/git" "$tmp/bin"
+printf '#!/bin/sh\n[ -z "$FAKE_FAIL" ] || exit 1\ncat %s || echo "[]"\n' \
+    "'$tmp/live.json' 2>/dev/null" > "$tmp/bin/claude"
+chmod +x "$tmp/bin/claude"
+export PATH="$tmp/bin:$PATH"
 printf 'oda\nstih\n' > "$WT_POSTFIX/git/literatura.txt"
 printf 'vega\nrigel\ndeneb\n' > "$WT_POSTFIX/stars.txt"
 
@@ -121,6 +125,8 @@ idle="$(create "$main")"
 dirty="$(create "$main")"; echo wip > "$dirty/wip"
 locked="$(create "$main")"; git -C "$main" worktree lock "$locked"
 ahead="$(create "$main")"; commit "$ahead" ahead
+busy="$(create "$main")"; mkdir "$busy/sub"
+jq -n --arg c "$(cd "$busy" && pwd -P)/sub" '[{cwd: $c}]' > "$tmp/live.json"
 (cd "$main" && "$hook" gc)
 check "gc leaves worktrees younger than a day" test -d "$idle"
 report="$(cd "$main" && WT_GC_MIN_AGE=0 "$hook" gc --dry-run)"
@@ -129,20 +135,24 @@ listed() {
 }
 check "gc --dry-run reports the idle worktree once" \
     test "$(listed "$idle")" -eq 1
-check "and not the dirty, locked or unpushed ones" \
-    test "$(listed "$dirty")$(listed "$locked")$(listed "$ahead")" = 000
+check "and not the dirty, locked, unpushed or live ones" \
+    test "$(listed "$dirty")$(listed "$locked")$(listed "$ahead")$(
+        listed "$busy")" = 0000
 check "--dry-run removes nothing" test -d "$idle"
 gone="$(create "$main")"
 rm -rf "$gone"
 (cd "$main" && WT_GC_MIN_AGE=0 "$hook" gc --dry-run >/dev/null)
 check "--dry-run leaves stale entries for prune" \
     bash -c "git -C '$main' worktree list | grep -q prunable"
+check "gc sweeps nothing when it can't list live sessions" \
+    bash -c "cd '$main' && ! FAKE_FAIL=1 WT_GC_MIN_AGE=0 '$hook' gc \
+        2>/dev/null && test -d '$idle'"
 (cd "$dirty" && WT_GC_MIN_AGE=0 "$hook" gc >/dev/null)
 check "gc removes an idle worktree, from any checkout" test ! -e "$idle"
 check "and prunes stale entries" \
     bash -c "! git -C '$main' worktree list | grep -q prunable"
-check "but keeps dirty, locked and unpushed ones" \
-    test -d "$dirty" -a -d "$locked" -a -d "$ahead"
+check "but keeps dirty, locked, unpushed and live ones" \
+    test -d "$dirty" -a -d "$locked" -a -d "$ahead" -a -d "$busy"
 check "gc outside git is a no-op" bash -c "cd '$tmp' && '$hook' gc"
 
 [ "$fails" -eq 0 ] || { echo "$fails failed"; exit 1; }
