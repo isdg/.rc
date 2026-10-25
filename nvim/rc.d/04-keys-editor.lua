@@ -291,13 +291,90 @@ end, { desc = "Kill to end of line" })
 map("i", "<C-d>", "<Del>", { desc = "Delete a char" })
 map("i", "<C-y>", '<C-r><C-o>"', { desc = "Yank the last kill" })
 
--- The rest of readline's line editing, on the command line only. Costs <C-a>'s
--- insert-all-matches and <C-k>'s digraphs there.
+-- Emacs words are runs of 'iskeyword', as for w and i_CTRL-W. Positions are
+-- {row, byte col} insert-cursor slots: just past a word's end, or at its start.
+local function word_end()
+    local row, col = unpack(vim.fn.searchpos([[\k\>]], "cnW"))
+    if row == 0 then return nil end
+    local char = vim.fn.strcharpart(vim.fn.getline(row):sub(col), 0, 1)
+    return { row, col - 1 + #char }
+end
+local function word_start()
+    local row, col = unpack(vim.fn.searchpos([[\<\k]], "bnW"))
+    if row == 0 then return nil end
+    return { row, col - 1 }
+end
+-- Keys that walk the cursor to pos in <C-g>U steps. Across lines it is set
+-- directly instead: no insert-mode move keeps the undo step there anyway.
+local function walk(pos)
+    local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+    if pos[1] ~= row then
+        vim.api.nvim_win_set_cursor(0, pos)
+        return ""
+    end
+    local lo, hi = math.min(col, pos[2]), math.max(col, pos[2])
+    local n = vim.fn.strchars(vim.api.nvim_get_current_line():sub(lo + 1, hi))
+    return (pos[2] > col and "<C-g>U<Right>" or "<C-g>U<Left>"):rep(n)
+end
+-- Kills always delete forward with <Del>: <BS> would eat a whole indent
+-- level under 'softtabstop', so a backward kill walks to its start first.
+local function kill_to(pos)
+    local here = vim.api.nvim_win_get_cursor(0)
+    local fwd = pos[1] > here[1] or (pos[1] == here[1] and pos[2] > here[2])
+    local from, to = fwd and here or pos, fwd and pos or here
+    local text = table.concat(vim.api.nvim_buf_get_text(
+        0, from[1] - 1, from[2], to[1] - 1, to[2], {}), "\n")
+    if text == "" then return end
+    vim.fn.setreg('"', text, "c")
+    feed((fwd and "" or walk(from)) .. ("<Del>"):rep(vim.fn.strchars(text)))
+end
+local function with(find, act)
+    return function()
+        local pos = find()
+        if pos then act(pos) end
+    end
+end
+map("i", "<M-f>", with(word_end, function(p) feed(walk(p)) end),
+    { desc = "Forward a word" })
+map("i", "<M-b>", with(word_start, function(p) feed(walk(p)) end),
+    { desc = "Back a word" })
+map("i", "<M-d>", with(word_end, kill_to), { desc = "Kill a word forward" })
+map("i", "<M-BS>", with(word_start, kill_to), { desc = "Kill a word back" })
+
+-- The rest of readline's line editing, on the command line, with the same
+-- words and kills as insert mode. Costs <C-a>'s insert-all-matches, <C-k>'s
+-- digraphs and <C-d>'s completion list there.
+local cmd_word_end = [[^\%(\k\@!.\)*\k*]]
+local cmd_word_start = [[\k*\%(\k\@!.\)*$]]
+local function cmd_pos() return vim.fn.getcmdpos() - 1 end
+local function cmd_end_of_word()
+    local pos = cmd_pos()
+    return pos + vim.fn.matchend(vim.fn.getcmdline():sub(pos + 1), cmd_word_end)
+end
+local function cmd_start_of_word()
+    return vim.fn.match(vim.fn.getcmdline():sub(1, cmd_pos()), cmd_word_start)
+end
+-- setcmdpos() is ignored from a Lua mapping; setcmdline() places the cursor.
+local function cmd_goto(pos) vim.fn.setcmdline(vim.fn.getcmdline(), pos + 1) end
+local function cmd_kill(from, to)
+    if from == to then return end
+    local line = vim.fn.getcmdline()
+    vim.fn.setreg('"', line:sub(from + 1, to), "c")
+    vim.fn.setcmdline(line:sub(1, from) .. line:sub(to + 1), from + 1)
+end
 map("c", "<C-a>", "<Home>", { desc = "Start of line" })
-map("c", "<C-k>", "<C-\\>estrpart(getcmdline(), 0, getcmdpos() - 1)<CR>",
+map("c", "<C-d>", "<Del>", { desc = "Delete a char" })
+map("c", "<C-y>", '<C-r><C-o>"', { desc = "Yank the last kill" })
+map("c", "<C-k>", function() cmd_kill(cmd_pos(), #vim.fn.getcmdline()) end,
     { desc = "Kill to end of line" })
-map("c", "<M-b>", "<S-Left>", { desc = "Back a word" })
-map("c", "<M-f>", "<S-Right>", { desc = "Forward a word" })
+map("c", "<M-f>", function() cmd_goto(cmd_end_of_word()) end,
+    { desc = "Forward a word" })
+map("c", "<M-b>", function() cmd_goto(cmd_start_of_word()) end,
+    { desc = "Back a word" })
+map("c", "<M-d>", function() cmd_kill(cmd_pos(), cmd_end_of_word()) end,
+    { desc = "Kill a word forward" })
+map("c", "<M-BS>", function() cmd_kill(cmd_start_of_word(), cmd_pos()) end,
+    { desc = "Kill a word back" })
 
 -- Yank to system clipboard (visual mode)
 lmap("v", "y", '"+y', { desc = "Yank to clipboard" })
