@@ -25,7 +25,6 @@
   "worktree": {
     "bgIsolation": "none"
   },
-  "disableAgentView": true,
   "statusLine": {
     "type": "command",
     "command": "bash ~/.claude/statusline-command.sh"
