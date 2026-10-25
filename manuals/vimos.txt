@@ -36,7 +36,7 @@ Ctrl-q      XON             unfreeze (antidote to C-s)
 
 
 -- Readline / shell line editing ------------
-(bash, zsh in emacs mode)
+(readline, libedit, zsh insert mode)
 
 Ctrl-a       beginning of line
 Ctrl-e       end of line
