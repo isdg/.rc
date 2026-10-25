@@ -109,10 +109,10 @@ hi Error        guifg=${ISG_ERROR} guibg=${ISG_BG_DEEP} gui=bold
 hi Todo         guifg=${ISG_NUMBER} guibg=NONE gui=bold
 
 " Diff — window-diff backgrounds (:diffthis, vimdiff)
-hi DiffAdd      guifg=NONE    guibg=#0D4429
-hi DiffChange   guifg=NONE    guibg=#0D4429
-hi DiffDelete   guifg=NONE    guibg=#3C1418
-hi DiffText     guifg=NONE    guibg=#1A7F37 gui=NONE
+hi DiffAdd      guifg=NONE    guibg=${ISG_DIFF_ADD_BG}
+hi DiffChange   guifg=NONE    guibg=${ISG_DIFF_ADD_BG}
+hi DiffDelete   guifg=NONE    guibg=${ISG_DIFF_DEL_BG}
+hi DiffText     guifg=NONE    guibg=${ISG_DIFF_ADD_EMPH_BG} gui=NONE
 
 " Diff-as-text — reading a patch in a buffer (ft=diff/git, fugitive, :Git show).
 " Set explicitly rather than inherited: gitsigns links its signs to

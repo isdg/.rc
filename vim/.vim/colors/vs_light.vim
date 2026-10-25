@@ -95,12 +95,12 @@ hi Todo         guifg=#a31515 guibg=NONE gui=bold
 " =====================
 " Diff / Git
 " =====================
-" Foreground-tinted over a pale wash, unlike Neovim's background-based diffs.
-" The four washes are used once each, so they stay literal.
-hi DiffAdd      guifg=#098658 guibg=#E8F8F5
-hi DiffChange   guifg=#0451a5 guibg=#F0F0FF
+" Foreground-tinted, unlike Neovim's background-only diffs, but over the same
+" washes as Neovim and delta.
+hi DiffAdd      guifg=#098658 guibg=#e6ffec
+hi DiffChange   guifg=#0451a5 guibg=#e6ffec
 hi DiffDelete   guifg=#a31515 guibg=#ffebe9
-hi DiffText     guifg=#000000 guibg=#FFD700
+hi DiffText     guifg=#000000 guibg=#abf2bc
 
 " =====================
 " CursorLine and Search
