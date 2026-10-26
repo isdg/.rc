@@ -99,6 +99,13 @@
 	fsmonitor = true
 	untrackedCache = true
 
+; Commit subjects stay within 50 characters. A config hook runs beside each
+; repo's own .git/hooks, where a global core.hooksPath would replace them;
+; .rcboot/git links the script. `git commit --no-verify` skips it.
+[hook "commit-title"]
+	event = commit-msg
+	command = ~/.config/git/commit-title.sh
+
 ; Machine-local overrides. Last, so they win over everything above; missing is
 ; fine, git ignores an include path that does not exist. Untracked, so nothing
 ; here follows the repo to another machine.
