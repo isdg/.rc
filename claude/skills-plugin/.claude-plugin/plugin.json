@@ -1,6 +1,6 @@
 {
   "name": "isg-skills",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "Personal agent skills, maintained locally in .rc.",
   "author": {
     "name": "Isai Gordeev"
