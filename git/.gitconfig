@@ -45,6 +45,60 @@
 	smtpServerPort = 587
 	smtpEncryption = tls
 	smtpUser = isai.gordeev.2022@polytechnique.org
+; Parallelism. Git's *thread*-based parallelism is already on and needs nothing
+; here: pack.threads (delta search when packing), grep.threads, index.threads
+; and core.preloadIndex all default to 0/true, which git reads as "call
+; online_cpus() and use all of them". What ships OFF is the parallelism built on
+; child processes -- forking workers costs more to start and fails messier than
+; threads sharing an address space, so git makes you ask. Those are the three
+; sections below. 0 means the same auto-detect as the thread knobs.
+;
+; These are [global] scope on purpose. Setting them as GIT_CONFIG_KEY_* exports
+; from zsh/ would work, but `git config --show-scope` reports those as `command`
+; -- the same layer as `git -c` -- so they would override every repo's own
+; .git/config, including a monorepo that pinned a value deliberately. A repo
+; should still be able to disagree with this file.
+[checkout]
+	; Parallel worktree writes, via git-checkout--worker children (git 2.32+).
+	; Applies to checkout/switch/clone/reset --hard. Only engages above
+	; checkout.thresholdForParallelism (default 100 entries) -- under that the
+	; spawn and IPC cost outweighs the win, so small checkouts stay serial and
+	; there is no reason to tune the threshold.
+	workers = 0
+[fetch]
+	; Parallel submodule fetches, and parallel remotes under `git fetch
+	; --multiple`. Defaults to 1, i.e. one remote at a time.
+	parallel = 0
+[submodule]
+	; Overrides fetch.parallel for submodules specifically, and is what
+	; `git submodule update` reads. Set to match rather than to differ.
+	fetchJobs = 0
+
+; Filesystem monitor. The one part of git that is a genuinely threaded
+; long-running service rather than a fork-per-job: `git fsmonitor--daemon`
+; watches the worktree through FSEvents on background threads and answers "what
+; changed since token T", so status/diff/add skip the lstat() walk over every
+; tracked path. Built in since git 2.37, no Watchman needed -- both gits on this
+; box list `feature: fsmonitor--daemon` under `git version --build-options`.
+;
+; Started lazily, per repo: the first git command in a worktree spawns that
+; worktree's daemon, so repos never touched cost nothing. `git fsmonitor--daemon
+; status` inspects one and `... stop` kills it. Git declines to use it on
+; network filesystems, where the event stream cannot be trusted.
+;
+; untrackedCache is the companion rather than a separate idea. fsmonitor removes
+; the walk over *tracked* files; without the untracked cache, status still
+; readdir()s every directory hunting for new ones, which is most of the
+; remaining cost on a large worktree. It requires the filesystem to report
+; directory mtime honestly -- `git update-index --test-untracked-cache` passes
+; on APFS here.
+;
+; Second [core] block on purpose: this file groups by topic rather than by
+; section name, and git merges duplicate sections.
+[core]
+	fsmonitor = true
+	untrackedCache = true
+
 ; Machine-local overrides. Last, so they win over everything above; missing is
 ; fine, git ignores an include path that does not exist. Untracked, so nothing
 ; here follows the repo to another machine.
