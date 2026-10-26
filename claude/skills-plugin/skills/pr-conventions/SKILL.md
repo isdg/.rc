@@ -5,6 +5,12 @@ description: Use when opening a pull request, deciding how to size or split a ch
 
 # PR conventions
 
+Land each change on its own branch, then open a pull request (ready for
+review, not draft) with the `gh` CLI, and use `gh` for all PR management —
+creating, updating, checking status. A branch may hold several commits;
+follow-up work doesn't need to be amended into one. Reviewing a PR (comments,
+a summary) is fine; merging it is the user's.
+
 Keep pull requests small and type-focused so they stay reviewable. Size
 expectations depend on the PR *type*:
 
