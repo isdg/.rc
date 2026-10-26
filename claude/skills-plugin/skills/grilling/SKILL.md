@@ -1,6 +1,6 @@
 ---
 name: grilling
-description: Use when the user asks to be grilled, says "grill me", or wants a plan, design, decision or idea stress-tested or challenged before acting on it.
+description: Use when planning, when the user asks to be grilled or says "grill me", or wants a plan, design, decision or idea stress-tested or challenged before acting on it.
 ---
 
 # Grilling
@@ -19,5 +19,8 @@ act on it until they confirm you're there.
 - **Push on the weak spots.** Hunt for hidden assumptions, failure modes
   and a cheaper alternative; say so when an answer contradicts an earlier
   one.
+- **Scale to the plan.** With no real open decision, ask one confirming
+  question and move on.
 - **Close with the shared picture.** When the tree is exhausted, list the
-  decisions made and ask the user to confirm them before acting.
+  decisions made and ask the user to confirm them before acting. In plan
+  mode, that comes before you write the plan and call `ExitPlanMode`.
