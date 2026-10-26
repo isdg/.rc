@@ -5,7 +5,7 @@
 # The scripts are linked because settings.json names them by path.
 local f
 for f in CLAUDE.md settings.json statusline-command.sh \
-    hooks/worktree.sh; do
+    hooks/worktree.sh hooks/plan-grill.sh; do
     link "claude/$f" "$HOME/.claude/$f"
 done
 
