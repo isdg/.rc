@@ -79,7 +79,8 @@ works but is invisible — tmux only learns a modifier once a whole key arrives,
 so there is no "prefix + Alt held" state to render.
 
 Sub-tables, one level deeper, because a tmux key is a single key — a sequence
-IS a table: s for splits (s v, s h), p for cross-window moves (p l, p s).
+IS a table: s for splits (s v, s h), p for cross-window moves (p l, p s
+from the fuzzy switcher; p L, p S from the tree).
 
 russian.sh twins every letter binding in prefix, copy-mode-vi, plugins, splits
 and moves onto its Cyrillic key, so the whole layer answers with the keyboard
