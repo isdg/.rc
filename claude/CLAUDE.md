@@ -79,8 +79,9 @@ Such an override covers the task at hand and then expires: the defaults
 resume afterwards unless I say the change is permanent. If I do say it's
 permanent, edit this file so the new rule is the written one.
 
-Project-specific rules live in that project's gitignored `CLAUDE.local.md`,
-not here.
+Rules for one project or one machine don't go here: they live in
+`~/.claude/rules/` (linked from `claude/rules/` on a setup branch) or in a
+project's gitignored `CLAUDE.local.md`.
 
 ## Searching
 
