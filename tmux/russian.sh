@@ -21,9 +21,9 @@
 # layout, while punctuation does not sit on matching keys across the two.
 #
 # Run from rc.d/15-russian.conf AFTER tpm, so the plugins' own keys (omni
-# h/a/j/P/A/J, orchbus o/O, resurrect C-w/C-r) are twinned too. Sweeping what is actually
-# bound, rather than listing keys here, is the whole point — a hand-written list
-# would go stale the moment a plugin or a bind line changes.
+# h/a/j/P/A/J, orchbus o/O, resurrect C-w/C-e) are twinned too. Sweeping what
+# is actually bound, rather than listing keys here, is the whole point — a
+# hand-written list would go stale the moment a plugin or a bind line changes.
 #
 # Re-running is safe and idempotent: the twins it creates are Cyrillic, which
 # never match the table again, so a re-source (toggle_theme.sh does one) just
