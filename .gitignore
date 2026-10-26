@@ -32,6 +32,7 @@ delta/theme-active.gitconfig
 # sourced by 15-aliases.zsh if present. Never published.
 zsh/aliases.ignored.zsh
 
-# Rules for this machine and employer (claude module links them into
-# ~/.claude/rules). Kept out of the public repo.
-claude/rules/
+# The cosmos-saas rule (claude module links it into ~/.claude/rules). Work
+# detail, kept out of the public repo; general rules in claude/rules/ stay
+# tracked.
+claude/rules/cosmos.md
