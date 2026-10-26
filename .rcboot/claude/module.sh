@@ -8,3 +8,10 @@ for f in CLAUDE.md settings.json statusline-command.sh \
     hooks/worktree.sh; do
     link "claude/$f" "$HOME/.claude/$f"
 done
+
+# Each rule is linked on its own, so ~/.claude/rules stays a real directory
+# that can also hold rules no branch tracks.
+for f in "$DOTFILES_DIR"/claude/rules/*.md; do
+    [ -e "$f" ] || continue
+    link "claude/rules/${f##*/}" "$HOME/.claude/rules/${f##*/}"
+done
