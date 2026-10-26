@@ -44,6 +44,9 @@ require("slots").bind({ "alt" }, { "alt", "shift" }, {
 -- it (Darwin ignores posted events for its shortcuts), so flip the setting.
 require("menubar").bind({ "alt" }, "0")
 
+-- ⌃⌥ + a s d f g h j k l ; types 1 2 3 4 5 6 7 8 9 0, in any app.
+require("numrow").bind({ "ctrl", "alt" })
+
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher
     .new(hs.configdir, function(files)
@@ -56,4 +59,6 @@ hs.pathwatcher
     end)
     :start()
 
-hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll · ⌥1-8 slots · ⌥9 last · ⌥- max · ⌥0 menu bar · 📋 screenshots)")
+hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll"
+    .. " · ⌥1-8 slots · ⌥9 last · ⌥- max · ⌥0 menu bar · ⌃⌥ home row digits"
+    .. " · 📋 screenshots)")
