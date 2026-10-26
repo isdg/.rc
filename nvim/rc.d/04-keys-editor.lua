@@ -43,8 +43,9 @@ map("n", "<C-l>", "<C-w>l", { desc = "Move to right split" })
 --
 -- On <C-w><C-hjkl>, which costs nothing: those are builtin synonyms for
 -- <C-w>hjkl, and navigation already lives on bare <C-hjkl> above, so the
--- synonyms are dead weight here. Spending them makes nvim read exactly like the
--- tmux layer — hjkl goes to a split, C-hjkl drags it there — so the two editors
+-- synonyms are dead weight here. Spending them makes nvim read like the
+-- tmux layer — hjkl goes to a split, the letter held with a modifier drags it
+-- there (M-hjkl in tmux, whose C-hjkl pick windows) — so the two editors
 -- keep one set of muscle memory between them.
 --
 -- Swapping buffers rather than windows is what vim gives us, and it needs the
