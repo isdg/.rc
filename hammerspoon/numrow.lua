@@ -13,7 +13,7 @@ local ROW = {
 }
 
 -- Explicit empty flags: the modifiers still held must not ride along, or the
--- app sees ⌃⌥1 instead of 1.
+-- app sees Ctrl+Option+1 instead of 1.
 local function tap(digit)
     hs.eventtap.event.newKeyEvent({}, digit, true):post()
     hs.eventtap.event.newKeyEvent({}, digit, false):post()

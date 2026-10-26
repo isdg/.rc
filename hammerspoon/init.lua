@@ -44,7 +44,7 @@ require("slots").bind({ "alt" }, { "alt", "shift" }, {
 -- it (Darwin ignores posted events for its shortcuts), so flip the setting.
 require("menubar").bind({ "alt" }, "0")
 
--- ⌃⌥ + a s d f g h j k l ; types 1 2 3 4 5 6 7 8 9 0, in any app.
+-- Ctrl+Option + a s d f g h j k l ; types 1 2 3 4 5 6 7 8 9 0, in any app.
 require("numrow").bind({ "ctrl", "alt" })
 
 -- Auto-reload this config when any file in it changes (so editing is live).
