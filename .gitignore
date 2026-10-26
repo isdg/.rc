@@ -31,3 +31,7 @@ delta/theme-active.gitconfig
 # Machine-local zsh aliases/functions (work-specific, private repo names, etc.)
 # sourced by 15-aliases.zsh if present. Never published.
 zsh/aliases.ignored.zsh
+
+# Rules for this machine and employer (claude module links them into
+# ~/.claude/rules). Kept out of the public repo.
+claude/rules/
