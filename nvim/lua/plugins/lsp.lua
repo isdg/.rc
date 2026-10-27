@@ -221,7 +221,8 @@ return {
     {
         "Julian/lean.nvim",
         event = { "BufReadPre *.lean", "BufNewFile *.lean" },
-        init = function()
+        init = function(plugin)
+            require("lean_ascii").install(plugin.dir)
             vim.g.lean_config = {
                 infoview = {
                     messages = {

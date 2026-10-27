@@ -67,6 +67,12 @@ needs only rg:
 
     > nvim --clean --headless -l nvim/tests/text_rename.lua
 
+lean.nvim draws its UI with Unicode glyphs; lua/lean_ascii.lua swaps them
+for ASCII as its modules load, keeping Lean notation. Its test fails when
+an update brings a glyph the swap doesn't know:
+
+    > nvim --clean --headless -l nvim/tests/lean_ascii.lua
+
 -------------------------------------------------------------------------------
 4. Treesitter parsers
 ----------------------
