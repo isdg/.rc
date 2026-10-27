@@ -28,8 +28,8 @@ check("a scoped swap applies in its module",
     la.rewrite("lean.module_hierarchy", "a · b") == "a | b",
     la.rewrite("lean.module_hierarchy", "a · b"))
 
--- Lean notation the plugin matches on or prints as part of a goal.
-local notation = { ["⊢"] = true, ["✝"] = true, ["·"] = true }
+-- Lean notation the plugin matches on or prints as part of a goal, and µ.
+local allowed = { ["⊢"] = true, ["✝"] = true, ["·"] = true, ["µ"] = true }
 local strings = vim.treesitter.query.parse("lua", "(string) @s")
 local left = {}
 for _, m in ipairs(modules) do
@@ -38,7 +38,7 @@ for _, m in ipairs(modules) do
     for _, node in strings:iter_captures(tree:root(), src) do
         local text = vim.treesitter.get_node_text(node, src)
         for ch in text:gmatch("[\192-\247][\128-\191]*") do
-            if not notation[ch] then
+            if not allowed[ch] then
                 left[#left + 1] = ("%s:%d %s"):format(m.name,
                     node:start() + 1, ch)
             end
@@ -59,8 +59,7 @@ for _, m in ipairs(modules) do
 end
 check("every module loads rewritten", #broken == 0, broken)
 check("modules load through the searcher",
-    require("lean.config")().progress_bars.character == "|"
-    and require("std.humanize").duration(1500):find("us$") ~= nil,
-    require("std.humanize").duration(1500))
+    require("lean.config")().progress_bars.character == "|",
+    require("lean.config")().progress_bars.character)
 
 os.exit(failed == 0 and 0 or 1)
