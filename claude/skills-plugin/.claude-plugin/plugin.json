@@ -1,6 +1,6 @@
 {
   "name": "isg-skills",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Personal agent skills, maintained locally in .rc.",
   "author": {
     "name": "Isai Gordeev"
@@ -8,6 +8,13 @@
   "skills": [
     "./skills/pr-conventions",
     "./skills/worktrees",
-    "./skills/grilling"
+    "./skills/grilling",
+    "./skills/tdd",
+    "./skills/diagnosing-bugs",
+    "./skills/prototype",
+    "./skills/research",
+    "./skills/domain-modeling",
+    "./skills/codebase-design",
+    "./skills/resolving-merge-conflicts"
   ]
 }
