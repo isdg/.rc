@@ -90,7 +90,7 @@
     "pyright-lsp@claude-plugins-official": true,
     "rust-analyzer-lsp@claude-plugins-official": true,
     "gopls-lsp@claude-plugins-official": true,
-    "mattpocock-skills@mattpocock": false,
+    "mattpocock-skills@mattpocock": true,
     "isg-skills@isg": true,
     "clangd-lsp@claude-plugins-official": true,
     "orchbus-probe@orchbus": true
