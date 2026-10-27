@@ -221,6 +221,15 @@ return {
     {
         "Julian/lean.nvim",
         event = { "BufReadPre *.lean", "BufNewFile *.lean" },
+        init = function()
+            vim.g.lean_config = {
+                infoview = {
+                    messages = {
+                        goals = { accomplished = "Goals accomplished." },
+                    },
+                },
+            }
+        end,
     },
 
     -- Completion (replaces CoC completion)
