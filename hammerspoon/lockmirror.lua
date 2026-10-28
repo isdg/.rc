@@ -10,6 +10,10 @@ local M = {}
 local dir = os.getenv("HOME") .. "/Library/Containers/"
     .. "com.apple.ScreenSaver.Engine.legacyScreenSaver/Data/"
 
+-- Brightening that cancels the screen saver's dimming, tuned by eye per
+-- display: exposure in stops, gamma below 1 lifts mid-tones. See Tone.swift.
+M.tone = { exposure = 0, gamma = 1 }
+
 -- Snapshots hold whatever was on screen, so none outlive the lock.
 local function clear()
     if not hs.fs.attributes(dir) then return end
@@ -28,10 +32,13 @@ function M.lock()
             shot:saveToFile(dir .. "lockmirror-" .. scr:getUUID() .. ".png")
         end
     end
+    hs.plist.write(dir .. "lockmirror-tone.plist", M.tone)
     hs.caffeinate.startScreensaver()
 end
 
-function M.bind(mods, key)
+-- tone, optional: { exposure = <stops>, gamma = <power> }.
+function M.bind(mods, key, tone)
+    for k, v in pairs(tone or {}) do M.tone[k] = v end
     clear()
     local w = hs.caffeinate.watcher
     M.watcher = w.new(function(event)
