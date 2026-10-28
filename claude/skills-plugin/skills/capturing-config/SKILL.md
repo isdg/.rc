@@ -5,14 +5,16 @@ description: Use after installing a tool or package, or changing machine or tool
 
 # Capturing config
 
-A setup change made by hand lives only on this machine. Propose turning it
-into a module change in the dotfiles repo (`~/.rc`, main checkout
-`~/.rc-main`), so a fresh bootstrap reproduces it and `git log` explains it.
+A setup change made by hand lives only on this machine. Offer to record it
+as a commit in the dotfiles repo (`~/.rc`, main checkout `~/.rc-main`), so
+a future bootstrap reproduces it and `git log` explains it. The machine
+already has the change: recording it is a commit, never a re-install.
 
-- **Propose, don't impose.** Once the change works, say in one or two lines
-  where it would go and ask. Skip the offer for throwaway experiments,
-  project-local setup (a repo's own venv or `node_modules`), and anything
-  already tracked: `rg` the repo for it first.
+- **Ask whether it belongs first.** Once the change works, ask in one or
+  two lines whether the user wants it kept, and where you would put it.
+  Their answer decides what goes in and where; a "no" ends it. Skip the
+  offer for throwaway experiments, project-local setup (a repo's own venv
+  or `node_modules`), and anything already tracked: `rg` the repo first.
 - **Secrets and one-box facts stay out.** Keys, tokens, hostnames and paths
   only this machine has go in `~/.zshrc.local` or a `*.local` file the
   module leaves untracked; the repo may hold the template.
@@ -34,11 +36,6 @@ into a module change in the dotfiles repo (`~/.rc`, main checkout
   - macOS defaults: `darwin/defaults.sh`.
 - **Make --ensure see it.** Every install gets an ensure function, so
   `boot.sh --ensure` reports drift instead of passing silently.
-- **Land it.** Commit as `feat(<tool>): ...` and land per the
-  `landing-on-main` skill. Don't run `boot.sh` from your worktree: it links
-  `~` into the worktree.
-- **Make it live.** `~/.rc` is what `~` links into, and it sits on a
-  `setup/<machine>` branch: with its tree clean, merge `main` there
-  ("Merge main into setup/<machine>"). Then run `~/.rc/.rcboot/boot.sh`
-  so the hand-made file becomes the repo's link (the old one is moved to
-  `.backup`), and `boot.sh --ensure` to confirm.
+- **Commit, don't run.** Commit as `feat(<tool>): ...` and land it per
+  the `landing-on-main` skill. Don't run `boot.sh` or any module: nothing
+  here needs installing again.
