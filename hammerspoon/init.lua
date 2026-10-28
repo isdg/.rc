@@ -47,6 +47,10 @@ require("menubar").bind({ "alt" }, "0")
 -- Ctrl+Option + a s d f g h j k l ; types 1 2 3 4 5 6 7 8 9 0, in any app.
 require("numrow").bind({ "ctrl", "alt" })
 
+-- Ctrl+Cmd+L locks behind a screen saver that shows the screen as it was
+-- left, so locked and unlocked look the same until a key is pressed.
+require("lockmirror").bind({ "ctrl", "cmd" }, "l")
+
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher
     .new(hs.configdir, function(files)
@@ -61,4 +65,4 @@ hs.pathwatcher
 
 hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll"
     .. " · ⌥1-8 slots · ⌥9 last · ⌥- max · ⌥0 menu bar · ⌃⌥ home row digits"
-    .. " · 📋 screenshots)")
+    .. " · ⌃⌘L lock · 📋 screenshots)")
