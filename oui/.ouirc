@@ -1,5 +1,5 @@
 # Defaults for oui, the typing test (github.com/isdg/oui). Linked, not
-# seeded like plcrc, to ~/.oui/config: oui never writes it, so edits here are
+# seeded like plcrc, to ~/.ouirc: oui never writes it, so edits here are
 # what it reads. Every key mirrors a flag (`oui --help`); flags always win.
 
 # Word list for random words, or the texts for `mode = text`: english,
