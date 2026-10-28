@@ -18,6 +18,7 @@ Includes configs for:
   - k9s (skins + log plugins)
   - ssh client and gpg-agent
   - hammerspoon (window slots, keyboard scrolling, translate popup)
+  - lockmirror (a lock that leaves the screen looking as it was)
   - claude code (settings, status line, skills plugin)
   - light/dark theme across the terminal tools, generated from one palette
   - jetbrains mono + computer modern fonts
