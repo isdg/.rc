@@ -48,8 +48,9 @@ require("menubar").bind({ "alt" }, "0")
 require("numrow").bind({ "ctrl", "alt" })
 
 -- Ctrl+Cmd+L locks behind a screen saver that shows the screen as it was
--- left, so locked and unlocked look the same until a key is pressed.
-require("lockmirror").bind({ "ctrl", "cmd" }, "l")
+-- left, so locked and unlocked look the same until a key is pressed. The
+-- exposure cancels the saver's dimming, tuned by eye on an LG HDR 4K.
+require("lockmirror").bind({ "ctrl", "cmd" }, "l", { exposure = 0.3 })
 
 -- Auto-reload this config when any file in it changes (so editing is live).
 hs.pathwatcher
