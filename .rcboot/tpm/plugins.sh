@@ -8,10 +8,12 @@
 # self-heal with a background build if it's missing — this component just makes
 # the build deterministic at setup time.
 #
-# Registry: one "name|repo|src" per binary. Add a line to ship another.
+# Registry: one "name|repo|src[|crate]" per binary, crate being the package's
+# path inside src when it isn't the root (orchbus's root is a virtual
+# workspace, which cargo install refuses). Add a line to ship another.
 _TMUX_PLUGIN_BINS=(
     "omni|https://github.com/isdg/omni.git|$HOME/omni"
-    "orchbus|https://github.com/isdg/orchbus.git|$HOME/orchbus"
+    "orchbus|https://github.com/isdg/orchbus.git|$HOME/orchbus|crates/orchbus"
 )
 
 ensure_tmux_plugins() {
@@ -39,12 +41,10 @@ install_tmux_plugins() {
 
     _export_buildable_sdk
 
-    local entry name rest repo src
+    local entry name repo src crate pkg
     for entry in "${_TMUX_PLUGIN_BINS[@]}"; do
-        name="${entry%%|*}"
-        rest="${entry#*|}"
-        repo="${rest%%|*}"
-        src="${rest##*|}"
+        IFS='|' read -r name repo src crate <<< "$entry"
+        pkg="$src${crate:+/$crate}"
 
         if [ ! -d "$src/.git" ]; then
             echo "[INFO] Cloning $name into $src..."
@@ -57,8 +57,8 @@ install_tmux_plugins() {
             git -C "$src" pull --ff-only || echo "[WARN] git pull $name failed — building existing checkout as-is."
         fi
 
-        echo "[INFO] cargo install --path $src..."
-        if cargo install --path "$src"; then
+        echo "[INFO] cargo install --path $pkg..."
+        if cargo install --path "$pkg"; then
             echo "[OK] $name installed to ~/.cargo/bin/$name"
         else
             echo "[WARN] cargo install $name failed — see output above."
