@@ -106,6 +106,7 @@ if level >= 3
   brew "grafanactl"  # Grafana resources (dashboards, folders) as code
   brew "logcli"      # Loki log queries (LogQL) from the shell
   brew "prometheus"  # for promtool: PromQL queries from the shell
+  cask "sentry-cli"  # Sentry from the shell; ships only as a cask
   brew "mysql"
   brew "postgresql@17"   # psql + a local server. Every postgresql formula is
                          # versioned and therefore keg-only, so unlike mysql it
