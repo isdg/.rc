@@ -1,0 +1,14 @@
+# Seeded to ~/.hrrc by .rcboot once; hr init / hr use change only the
+# vault line there, so the settings and comments below survive.
+vault = "~/feed"
+
+# Defaults for every vault; a key in a vault's hr.toml overrides one.
+
+# Sort order for `hr list` / `hr feed`. "desc" = newest first.
+ordering = "desc"
+
+# Mark items read when their file is opened (requires nvim autocmd).
+autoread = false
+
+# User-Agent for HTTP requests.
+user_agent = "hrb/0.1"
