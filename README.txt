@@ -73,6 +73,9 @@ Any level can be verified without changing anything:
 
 Restart your terminal (or `exec zsh`) when it finishes.
 
+Some Darwin settings cannot be scripted. lockmirror/README.md lists the
+steps its lock needs once per Mac.
+
 -------------------------------------------------------------------------------
 LAYOUT
 -------------------------------------------------------------------------------
