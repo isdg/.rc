@@ -10,7 +10,7 @@ LOCKMIRROR_BIN="$LOCKMIRROR_SAVER/Contents/MacOS/LockMirror"
 _lockmirror_stale() {
     local f
     [ -f "$LOCKMIRROR_BIN" ] || return 0
-    for f in "$DOTFILES_DIR"/lockmirror/{LockMirrorView.swift,Info.plist}; do
+    for f in "$DOTFILES_DIR"/lockmirror/{*.swift,Info.plist}; do
         [ "$f" -nt "$LOCKMIRROR_BIN" ] && return 0
     done
     return 1

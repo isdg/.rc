@@ -6,8 +6,11 @@ import ScreenSaver
 final class LockMirrorView: ScreenSaverView {
     private var image: NSImage?
 
-    // Sandboxed, so this is legacyScreenSaver's container, where
-    // hammerspoon/lockmirror.lua writes lockmirror-<display UUID>.png.
+    // Sandboxed, so home is legacyScreenSaver's container, where
+    // hammerspoon/lockmirror.lua writes lockmirror-<display UUID>.png and
+    // lockmirror-tone.plist.
+    private let home = URL(fileURLWithPath: NSHomeDirectory())
+
     private var shot: URL? {
         let key = NSDeviceDescriptionKey("NSScreenNumber")
         guard
@@ -17,13 +20,24 @@ final class LockMirrorView: ScreenSaverView {
                 .takeRetainedValue(),
             let name = CFUUIDCreateString(nil, uuid) as String?
         else { return nil }
-        return URL(fileURLWithPath: NSHomeDirectory())
-            .appendingPathComponent("lockmirror-\(name).png")
+        return home.appendingPathComponent("lockmirror-\(name).png")
+    }
+
+    private func load(_ url: URL) -> NSImage? {
+        let tone = Tone(
+            contentsOf: home.appendingPathComponent("lockmirror-tone.plist"))
+        guard !tone.isIdentity else { return NSImage(contentsOf: url) }
+        guard
+            let source = CGImageSourceCreateWithURL(url as CFURL, nil),
+            let raw = CGImageSourceCreateImageAtIndex(source, 0, nil),
+            let toned = tone.apply(to: raw)
+        else { return nil }
+        return NSImage(cgImage: toned, size: .zero)
     }
 
     override func startAnimation() {
         super.startAnimation()
-        image = shot.flatMap(NSImage.init(contentsOf:))
+        image = shot.flatMap(load)
         needsDisplay = true
     }
 

@@ -16,7 +16,7 @@ cp "$src/Info.plist" "$bundle/Contents/"
 swiftc -O -parse-as-library -module-name LockMirror \
     -target "$(uname -m)-apple-macos14" \
     -Xlinker -bundle -framework ScreenSaver \
-    -o "$bundle/Contents/MacOS/LockMirror" "$src/LockMirrorView.swift"
+    -o "$bundle/Contents/MacOS/LockMirror" "$src"/*.swift
 codesign -f -s - "$bundle" 2> /dev/null
 
 mkdir -p "$dest"
