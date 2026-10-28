@@ -2,7 +2,7 @@
 # Component: oui — the typing test binary (shared)
 #
 # Clones the oui repo if needed and installs the binary via cargo into
-# ~/.cargo/bin. Its config is oui/ouirc, linked by module.sh; its history
+# ~/.cargo/bin. Its config is oui/.ouirc, linked by module.sh; its history
 # lives in ~/.oui and is snapshotted by ~/.rcstate/sync.sh, not tracked here.
 
 # SSH, not HTTPS: the repo is private, and gh is set up for ssh.

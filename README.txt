@@ -99,8 +99,8 @@ LAYOUT
                     reopening a project skips the reindex (Darwin)
     lima/           Debian VM template with this repo bootstrapped inside;
                     launched by hand (lima/README.md)
-    oui/            ouirc, the typing test's defaults; linked to
-                    ~/.oui/config (history goes to ~/.rcstate instead)
+    oui/            .ouirc, the typing test's defaults; linked to
+                    ~/.ouirc (history goes to ~/.rcstate instead)
     plc/            palace notes system (README.md); plcrc, seeded
                     once to ~/.plcrc
     postfix/        name pools: machine/ for hostnames (isg-<os>-<name>,
