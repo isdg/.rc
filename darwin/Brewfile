@@ -115,4 +115,6 @@ if level >= 3
                          # runs the server; the client works without it.
   brew "redis"   # redis-cli + a local server; `brew services start redis`
                  # runs it, the client works without it.
+  brew "cloudflared"   # quick https tunnels to a local server, e.g.
+                       # `cloudflared tunnel --url http://localhost:8000`
 end
