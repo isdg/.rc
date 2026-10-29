@@ -188,35 +188,6 @@ if [[ "$ISG_SYNTAX_HIGHLIGHTING" != 'false' ]]; then
 fi
 
 # ----------------------------------------------------------------------------
-# fzf and fzf-tab tweaks.
-# See:
-# - https://github.com/junegunn/fzf
-# - https://github.com/Aloxaf/fzf-tab
-# ----------------------------------------------------------------------------
-
-if [[ "$ISG_FZF_THEME" != 'false' ]]; then
-  if (( $+commands[fzf] )); then
-    # fzf's own colours are NOT set here. They live in fzf/opts-{dark,light}.conf
-    # and reach fzf through $FZF_DEFAULT_OPTS_FILE, exported from zsh/.zshenv so
-    # that non-interactive shells — tmux popups, nvim, anything spawned by a
-    # `zsh -c` — get them too, which an interactive-only export never could.
-    # Setting them in FZF_DEFAULT_OPTS additionally would *override* that file
-    # (fzf applies the file first, the variable second), reintroducing the stale
-    # copy tmux freezes in its server environment. Only fzf-tab's zstyles, which
-    # are a zsh-side plugin setting and can't live in an fzf options file, remain.
-
-    # fzf-tab theme, setting the default color for suggestions (blue for me)
-    # Test all colors: `msgcat --color=test`
-    zstyle ':fzf-tab:*' default-color $'\x1b[30m'
-
-    # Matched text highlight
-    local fzf_flags
-    fzf_flags=( '--color=hl:bright-blue' )
-    zstyle ':fzf-tab:*' fzf-flags $fzf_flags
-  fi
-fi
-
-# ----------------------------------------------------------------------------
 # less (and man) colors
 # ----------------------------------------------------------------------------
 
