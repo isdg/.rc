@@ -44,11 +44,22 @@ Emacs line editing, as in readline and the nvim command line:
     C-s               forward history search
     M-.               insert the last word of the previous command
 
-Plus fzf's own widgets, from its key-bindings.zsh:
+Plus fzf's own widgets, from its key-bindings.zsh and completion.zsh:
 
     C-r      history picker, replaces the line
     C-t      file picker, inserts the paths
     Alt-c    cd into a picked subdirectory
+    **, Tab  path picker under the typed directory (`vim src/**` then Tab)
+
+Tab lists every completion in fzf (fzf-tab, rc.d/09-fzf-tab.zsh). A shared
+prefix is inserted first and a single match goes in directly; otherwise:
+
+    type            filter the list
+    Tab / S-Tab     next / previous candidate
+    C-Space         mark several, inserted together
+    Enter           insert the candidate
+    /               insert the candidate and complete on (into a directory)
+    F1 / F2         previous / next group (options, commands, files...)
 
 
 -------------------------------------------------------------------------------
@@ -114,4 +125,5 @@ the pick in nvim instead of inserting it.
 -------------
 
     Up / Down    history search by what is already typed
-    Shift-Tab    step back through the completion menu
+    Shift-Tab    step back through zsh's own completion menu, which Tab
+                 opens only where fzf-tab is not installed

@@ -15,6 +15,7 @@
 # Core because it changes what every keystroke does.
 1 keyremap
 2 fzf
+2 fzf-tab
 2 zoxide
 2 highlight
 2 delta

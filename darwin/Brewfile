@@ -37,6 +37,7 @@ if level >= 2
   brew "gh"
   brew "zoxide"   # frecency dir jump (z / zi)
   brew "zsh-syntax-highlighting"
+  brew "fzf-tab"   # Tab completion through fzf
 end
 
 # 3 full: everything else.
