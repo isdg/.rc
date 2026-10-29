@@ -7,7 +7,8 @@ Built for older hardware and large codebases (~1M lines) where heavy
 IDEs feel sluggish.
 
 Includes configs for:
-  - zsh (plain zsh, no framework + isg theme (forked from sobole) + fzf)
+  - zsh (plain zsh, no framework + isg theme (forked from sobole) + fzf,
+    fzf-tab)
   - vim and neovim
   - tmux (with tpm, tmux-resurrect, omni and orchbus)
   - ghostty
@@ -57,7 +58,7 @@ modules by level, in run order; --level=N runs those up to N:
 
     0  bare   nothing yet (reserved for a POSIX sh/vi setup)
     1  core   zsh, tmux, vim without plugins, git, ssh, gpg
-    2  tools  + fzf, zoxide, syntax highlighting, delta, bat, tig
+    2  tools  + fzf, fzf-tab, zoxide, syntax highlighting, delta, bat, tig
     3  full   + nvim and lazy.nvim, vim-plug + coc, tpm with omni/orchbus,
               Ghostty, fonts, Claude, k9s, GUI apps, toolchains (default)
 
