@@ -82,13 +82,15 @@ local ok, err = pcall(function()
     check("normal mode: the cursor line without a count",
         clip and vim.startswith(clip, "lua/m.lua:2 (function M.outer)\n"),
         clip)
-    check("normal mode: notifies the header",
-        notes[#notes] == "Copied lua/m.lua:2 (function M.outer)", notes)
+    check("normal mode: one short message",
+        notes[#notes] == '1 line with context yanked into "+', notes)
 
     vim.api.nvim_win_set_cursor(0, { 6, 0 })
     vim.cmd("normal 9Q")
     check("normal mode: a count stops at the last line",
         clip and vim.startswith(clip, "lua/m.lua:6-7\n"), clip)
+    check("normal mode: the message counts the lines yanked",
+        notes[#notes] == '2 lines with context yanked into "+', notes)
 
     vim.api.nvim_win_set_cursor(0, { 5, 3 })
     vim.cmd("normal vkkQ")

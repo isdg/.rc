@@ -59,11 +59,12 @@ function M.payload(bufnr, first, last)
         out[#out + 1] = "Diagnostics:"
         vim.list_extend(out, diags)
     end
-    return table.concat(out, "\n") .. "\n", header
+    return table.concat(out, "\n") .. "\n"
 end
 
 -- Normal mode takes [count] lines from the cursor, like yy; visual mode the
--- selection's whole lines, whatever its kind.
+-- selection's whole lines, whatever its kind. The message stays as short as
+-- yank's own: the header, symbol trail and all, outgrows the command line.
 function M.yank()
     local mode = vim.fn.mode()
     local first, last
@@ -75,9 +76,10 @@ function M.yank()
         first = vim.fn.line(".")
         last = math.min(first + vim.v.count1 - 1, vim.fn.line("$"))
     end
-    local text, header = M.payload(0, first - 1, last - 1)
-    vim.fn.setreg("+", text)
-    vim.notify("Copied " .. header)
+    vim.fn.setreg("+", M.payload(0, first - 1, last - 1))
+    local count = last - first + 1
+    vim.notify(('%d line%s with context yanked into "+')
+        :format(count, count == 1 and "" or "s"))
 end
 
 return M
