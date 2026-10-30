@@ -67,6 +67,13 @@ needs only rg:
 
     > nvim --clean --headless -l nvim/tests/text_rename.lua
 
+<leader>Y copies the line, [count] lines or the visual selection for an
+agent: repo-relative path:range, the enclosing symbol (lua/structure.lua),
+an [unsaved] mark, the code fenced, and diagnostics on those lines
+(lua/agentic_yank.lua). Its test:
+
+    > nvim --clean --headless -l nvim/tests/agentic_yank.lua
+
 lean.nvim draws its UI with Unicode glyphs; lua/lean_ascii.lua swaps them
 for ASCII as its modules load, keeping Lean notation. Its test fails when
 an update brings a glyph the swap doesn't know:
