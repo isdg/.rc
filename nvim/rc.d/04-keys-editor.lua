@@ -407,6 +407,11 @@ lmap("n", "yf", yank_path(":t"), { desc = "Yank file name to clipboard" })
 lmap("n", "yp", yank_path(":p"), { desc = "Yank absolute path to clipboard" })
 lmap("n", "yP", yank_path(":."), { desc = "Yank relative path to clipboard" })
 
+-- Lines for pasting into an agent: path:range, enclosing symbol and
+-- diagnostics around the code (lua/agentic_yank.lua).
+lmap({ "n", "v" }, "Y", function() require("agentic_yank").yank() end,
+    { desc = "Yank lines with context for an agent" })
+
 -- Reselect last visual selection
 lmap("n", "v", "gv", { desc = "Reselect visual" })
 

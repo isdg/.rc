@@ -317,4 +317,10 @@ function M.tree(scope)
     })
 end
 
+-- The symbols whose extent holds rows first..last (0-based), outermost first.
+function M.enclosing(bufnr, first, last)
+    local trail = path(symbols(bufnr) or {}, first)
+    return vim.tbl_filter(function(n) return n.last >= last end, trail)
+end
+
 return M
