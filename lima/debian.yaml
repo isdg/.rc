@@ -56,3 +56,13 @@ provision:
     fi
     ~/.rc/.rcboot/boot.sh --level="${PARAM_Level:-3}"
     touch "$marker"
+
+# limactl shell runs ssh directly, so Ghostty's ssh wrapper never installs its
+# terminfo, and Debian ships it only as `ghostty`. Read from the clone: Lima
+# would parse the `{{` in it as a template in a data provision.
+- mode: user
+  script: |
+    #!/bin/bash
+    set -eux -o pipefail
+    src=~/.rc/lima/xterm-ghostty.terminfo
+    [ ! -f "$src" ] || sudo tic -x -o /etc/terminfo "$src"
