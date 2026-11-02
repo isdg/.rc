@@ -1,5 +1,5 @@
 # Debian 13 VM with this repo bootstrapped inside (boot.sh --level=3 by
-# default). How to launch it: lima/README.md.
+# default). How to launch it: lima/README.txt.
 minimumLimaVersion: 2.0.0
 
 base:
