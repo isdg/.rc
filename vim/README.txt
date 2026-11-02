@@ -1,40 +1,44 @@
-
 VIM SETUP
 =========
 
-1. Link Vim configuration
--------------------------
+Plain Vim with vim-plug and CoC for language servers. .rcboot's vim and
+vimplug modules do all of this; the steps below are the manual path.
+
+
+-------------------------------------------------------------------------------
+LINK
+-------------------------------------------------------------------------------
 
 Create a symlink from the repo Vim configuration to your home directory:
 
-    > ln -fs "$HOME/.rc/vim/.vimrc" \
-          "$HOME/.vimrc"
+    > ln -fs "$HOME/.rc/vim/.vimrc" "$HOME/.vimrc"
 
-For colors 
+For colors:
 
+    > mkdir -p "$HOME/.vim/colors"
     > ln -fs "$HOME/.rc/vim/.vim/colors/vs_dark.vim" \
-          "$HOME/.vim/vim/colors/vs_dark.vim"
+        "$HOME/.vim/colors/vs_dark.vim"
 
 -------------------------------------------------------------------------------
-2. Check LSP/Treesitter config inside Vim
------------------------------------------
+LSP CONFIG
+-------------------------------------------------------------------------------
 
 Open Vim and run:
 
     :CocConfig
 
 -------------------------------------------------------------------------------
-3. Install Python LSP (pylance) inside Vim
--------------------------------------------
+PYTHON LSP
+-------------------------------------------------------------------------------
 
-Open Vim and run:
+Install the Python LSP (coc-pyright). Open Vim and run:
 
     :CocInstall coc-pyright
 
 -------------------------------------------------------------------------------
-4. Install C/C++ clang LSP inside Vim
---------------------------------------
+C/C++ LSP
+-------------------------------------------------------------------------------
 
-Open Vim and run:
+Install the clangd client. Open Vim and run:
 
     :CocInstall coc-clangd
