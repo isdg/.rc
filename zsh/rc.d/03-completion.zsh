@@ -4,6 +4,8 @@ if [[ -n $HOME/.zcompdump-lite(#qN.mh-24) ]]; then
     compinit -C -d "$HOME/.zcompdump-lite"
 else
     compinit -d "$HOME/.zcompdump-lite"
+    # compinit rewrites the dump only when the fpath file count changed
+    touch "$HOME/.zcompdump-lite"
 fi
 autoload -Uz bashcompinit && bashcompinit   # tools that ship only bash completions
 
