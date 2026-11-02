@@ -160,7 +160,7 @@ prefix s  /  prefix w        session / window choosers, M-<letter> to jump
 
 Panes are also reachable by their contents rather than their position: omni's
 prefix a / prefix A search window text and land the cursor on the matched line
-(scope of each key in ~/omni/README.md), and prefix b is the fzf window jump
+(scope of each key in ~/omni/README.txt), and prefix b is the fzf window jump
 within this session (prefix B across all of them).
 
 
