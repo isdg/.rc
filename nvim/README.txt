@@ -61,6 +61,12 @@ To test gd/gr/gi/gy, the picker and this setup headless on a pinned tokio
     > nvim/tests/lsp/run.sh --quick     # focused checks, about a minute
     > nvim/tests/lsp/run.sh             # and the full suite, ~10 minutes
 
+In insert mode <C-n>/<C-p> move a line down/up, as in emacs; they walk
+the completion menu only once <C-l> has opened it (<C-j>/<C-k> walk any
+menu). Its test runs the installed plugins under this checkout's config:
+
+    > nvim --clean --headless -l nvim/tests/completion_keys.lua
+
 -------------------------------------------------------------------------------
 EDITING HELPERS
 -------------------------------------------------------------------------------

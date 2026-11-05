@@ -32,5 +32,5 @@ lmap("n", "I", function() require("structure").tree("file") end,
 lmap("n", "H", "<cmd>History<CR>", { desc = "File history (fzf)" })
 
 -- <C-p> deliberately unmapped: file finding lives on <leader>f only, and
--- leaving <C-p> alone restores its builtin meaning (previous line / insert-mode
--- keyword completion).
+-- leaving <C-p> alone restores its builtin meaning (previous line; in insert
+-- mode the emacs one, rc.d/04-keys-editor.lua).
