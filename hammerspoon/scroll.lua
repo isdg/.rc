@@ -114,14 +114,16 @@ local function repoDir()
 end
 
 -- Ghostty insets its grid by window-padding-{x,y}, so the window frame is NOT
--- the terminal grid. That inset is not a rounding detail here: width.sh writes
--- window-padding-x for the `ww` alias and it runs to hundreds of points — a
--- quarter of the window on each side — so treating the frame as the grid would
--- aim the pointer outside the terminal entirely.
+-- the terminal grid. That inset is not a rounding detail here: padding.sh
+-- writes window-padding-x for the `ww` alias and it runs to hundreds of
+-- points — a quarter of the window on each side — so treating the frame as
+-- the grid would aim the pointer outside the terminal entirely. `wh` writes
+-- window-padding-y the same way.
 local function ghosttyPadding()
     local dir = repoDir() .. "ghostty/"
     local px, py = 0, 0
-    for _, name in ipairs({ "config", "width-active.conf" }) do
+    local files = { "config", "width-active.conf", "height-active.conf" }
+    for _, name in ipairs(files) do
         local f = io.open(dir .. name)
         if f then
             for line in f:lines() do
