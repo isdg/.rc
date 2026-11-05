@@ -36,12 +36,16 @@ selection-background = f81ce5
 selection-foreground = ffffff
 
 # --- window / layout ---
-# window-padding-x is written into width-active.conf by width.sh (alias `ww`):
+# window-padding-x is written into width-active.conf by padding.sh (alias `ww`):
 # `ww` toggles 400/600, `ww N` sets any width. That file is gitignored, so
 # widening the text column never shows up as a diff in this tracked one.
 # Larger padding = narrower text. Reload with cmd+shift+, to apply.
 config-file = width-active.conf
+# Likewise `wh` (12/120, `wh N`) writes window-padding-y into
+# height-active.conf. Optional: until the first `wh`, the 12 here holds,
+# since an include loads after this file and wins.
 window-padding-y = 12
+config-file = ?height-active.conf
 window-padding-balance = true
 window-save-state = always
 # tabs integrated into the titlebar — most compact tab-friendly option
