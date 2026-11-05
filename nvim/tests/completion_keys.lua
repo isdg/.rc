@@ -1,5 +1,5 @@
--- Insert-mode <C-n>/<C-p>: emacs line moves, the menu's entries only after
--- <C-l>. Drives an embedded nvim on this checkout's config and installed
+-- Insert-mode <C-n>/<C-p>: the menu's entries while one is up, else emacs
+-- line moves. Drives an embedded nvim on this checkout's config and installed
 -- plugins:  nvim --clean --headless -l nvim/tests/completion_keys.lua
 local nvim = vim.fs.dirname(vim.fs.dirname(vim.fs.abspath(arg[0])))
 
@@ -25,22 +25,26 @@ local function state()
         local cmp = require("blink.cmp")
         local ctx = cmp.is_menu_visible() and cmp.get_context()
         return {
+            mode = vim.api.nvim_get_mode().mode,
             line = vim.fn.line("."),
+            text = vim.api.nvim_get_current_line(),
             menu = ctx and ctx.trigger.initial_kind or false,
             sel = cmp.get_selected_item_idx() or false,
         }
     ]])
 end
--- Keys land asynchronously; wait until the state settles on the expected.
+-- Keys land and blink's menu refreshes asynchronously: wait until the
+-- state has held the expected for 300 ms, so the next key meets it.
 local function press(keys, want)
     rq("nvim_input", keys)
-    local got
-    vim.wait(3000, function()
+    local got, since
+    vim.wait(5000, function()
         got = state()
         for k, v in pairs(want) do
-            if got[k] ~= v then return false end
+            if got[k] ~= v then since = nil return false end
         end
-        return true
+        since = since or vim.uv.now()
+        return vim.uv.now() - since >= 300
     end, 20)
     return got
 end
@@ -63,12 +67,18 @@ local ok, err = pcall(function()
             { "alpha alphabet alphanumeric", "", "third" })
         vim.api.nvim_win_set_cursor(0, { 2, 0 })
     ]])
-    rq("nvim_input", "i")
+    check("i enters insert mode", "i", { mode = "i" })
 
     check("<C-n> with no menu moves down", "<C-n>", { line = 3, menu = false })
     check("<C-p> with no menu moves up", "<C-p>", { line = 2, menu = false })
-    check("typing pops the auto menu", "al", { line = 2, menu = "keyword" })
-    check("<C-n> on the auto menu moves down", "<C-n>", { line = 3 })
+    check("typing pops the auto menu", "a",
+        { line = 2, text = "a", menu = "keyword" })
+    check("typing filters the auto menu", "l",
+        { line = 2, text = "al", menu = "keyword" })
+    check("<C-n> selects in the auto menu", "<C-n>",
+        { line = 2, menu = "keyword", sel = 1 })
+    check("<C-p> deselects in the auto menu", "<C-p>",
+        { line = 2, menu = "keyword", sel = false })
 
     lua("vim.g.completion_autoshow = false")
     press("<Esc>", { menu = false })
@@ -76,7 +86,7 @@ local ok, err = pcall(function()
         vim.api.nvim_buf_set_lines(0, 1, 2, false, { "al" })
         vim.api.nvim_win_set_cursor(0, { 2, 1 })
     ]])
-    rq("nvim_input", "a")
+    check("a enters insert mode", "a", { mode = "i", menu = false })
     check("<C-l> opens the menu", "<C-l>", { line = 2, menu = "manual" })
     check("typing filters the <C-l> list", "p",
         { line = 2, menu = "manual", sel = false })

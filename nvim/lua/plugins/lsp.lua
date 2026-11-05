@@ -2,13 +2,6 @@
 --                    LSP / COMPLETION
 -- ============================================================
 
--- A menu <C-l> opened. blink keeps a context's initial trigger kind while
--- typing filters it; inserting an entry and typing on starts a new one.
-local function invoked(cmp)
-    local ctx = cmp.is_menu_visible() and cmp.get_context()
-    return ctx and ctx.trigger.initial_kind == "manual"
-end
-
 return {
     -- Treesitter highlight. The main branch neither installs parsers from
     -- setup() nor starts highlighting; .rcboot installs lua/ts_parsers.lua.
@@ -276,16 +269,10 @@ return {
                 ["<CR>"] = { "accept", "fallback" },
                 ["<C-y>"] = { "accept", "fallback" },
                 ["<C-e>"] = { "cancel", "fallback" },
-                -- Emacs line moves (rc.d/04-keys-editor.lua) unless <C-l>
-                -- opened the menu; <C-j>/<C-k> walk any menu.
-                ["<C-n>"] = {
-                    function(cmp) return invoked(cmp) and cmp.select_next() end,
-                    "fallback",
-                },
-                ["<C-p>"] = {
-                    function(cmp) return invoked(cmp) and cmp.select_prev() end,
-                    "fallback",
-                },
+                -- With no menu up, the emacs line moves
+                -- (rc.d/04-keys-editor.lua).
+                ["<C-n>"] = { "select_next", "fallback" },
+                ["<C-p>"] = { "select_prev", "fallback" },
                 ["<C-j>"] = { "select_next", "fallback" },
                 ["<C-k>"] = { "select_prev", "fallback" },
                 -- Coarse movement, <C-d>/<C-u> as in normal mode, without
