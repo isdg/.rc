@@ -270,6 +270,9 @@ map("i", "<C-b>", "<C-g>U<Left>", { desc = "Back a char" })
 map("c", "<C-f>", "<Right>", { desc = "Forward a char" })
 map("c", "<C-b>", "<Left>", { desc = "Back a char" })
 
+map("i", "<C-n>", "<Down>", { desc = "Next line" })
+map("i", "<C-p>", "<Up>", { desc = "Previous line" })
+
 -- Emacs line keys in insert mode, from <C-g>U moves and <Del> so undo and
 -- dot-repeat stay whole. Fed when the key runs: an expr map is read too early
 -- under queued keys (macros). blink's menu claims E/K/D/Y while it is open.

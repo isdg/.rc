@@ -1,6 +1,7 @@
 -- ============================================================
 --                    LSP / COMPLETION
 -- ============================================================
+
 return {
     -- Treesitter highlight. The main branch neither installs parsers from
     -- setup() nor starts highlighting; .rcboot installs lua/ts_parsers.lua.
@@ -268,6 +269,8 @@ return {
                 ["<CR>"] = { "accept", "fallback" },
                 ["<C-y>"] = { "accept", "fallback" },
                 ["<C-e>"] = { "cancel", "fallback" },
+                -- With no menu up, the emacs line moves
+                -- (rc.d/04-keys-editor.lua).
                 ["<C-n>"] = { "select_next", "fallback" },
                 ["<C-p>"] = { "select_prev", "fallback" },
                 ["<C-j>"] = { "select_next", "fallback" },
