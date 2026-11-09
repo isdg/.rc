@@ -32,6 +32,11 @@ _gui_apps_darwin() {
     # 7.x, and lands as "Telegram Desktop.app" instead.
     echo "Telegram|telegram|"
 
+    # Not a daily browser: it hosts the Claude in Chrome extension, which
+    # lets Claude Code drive sites that block plain fetches.
+    echo "Google Chrome|google-chrome|Install the extension from" \
+        "https://claude.ai/chrome, then run /chrome in Claude Code"
+
     # Deliberately not here: Homerow. hammerspoon/scroll.lua does the scrolling
     # it was installed for, in Lua we control and with no licence -- see the
     # header there.
