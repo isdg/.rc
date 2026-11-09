@@ -15,3 +15,10 @@ for f in "$DOTFILES_DIR"/claude/rules/*.md; do
     [ -e "$f" ] || continue
     link "claude/rules/${f##*/}" "$HOME/.claude/rules/${f##*/}"
 done
+
+# Skills the same way, one link per skill directory.
+for f in "$DOTFILES_DIR"/claude/skills/*/; do
+    [ -e "$f" ] || continue
+    f=${f%/}
+    link "claude/skills/${f##*/}" "$HOME/.claude/skills/${f##*/}"
+done
