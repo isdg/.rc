@@ -85,7 +85,11 @@ bindkey -M visual ' y' vi-yank-clipboard
 function vi-put-clipboard() {
    local saved="$CUTBUFFER"
    CUTBUFFER="$(pbpaste 2>/dev/null || xclip -selection clipboard -o 2>/dev/null)"
-   [[ $WIDGET == *-before ]] && zle vi-put-before || zle vi-put-after
+   if [[ $WIDGET == *-before ]]; then
+      zle vi-put-before
+   else
+      zle vi-put-after
+   fi
    CUTBUFFER="$saved"
 }
 zle -N vi-put-clipboard
@@ -138,22 +142,8 @@ bindkey -M vicmd ' J'  fzf-dirstack-widget
 # broken redraw state on return)
 bindkey -M vicmd -r 'K'
 
-# Cursor shape per mode + mode-aware isg prompt caret
-# user:  » in normal, › in insert    root:  # in normal, @ in insert
+# Cursor shape per mode; VI_MODE picks the isg prompt caret (isg.zsh-theme).
 VI_MODE=ins
-
-# Override isg theme's caret to react to vi mode. Color rules mirror the original.
-__isg::current_caret () {
-   local color sign
-   if [[ "$USER" == 'root' ]] || [[ "$(id -u "$USER")" == 0 ]]; then
-      color='red'
-      [[ $VI_MODE == ins ]] && sign='@' || sign='#'
-   else
-      [[ "$ISG_THEME_MODE" == 'dark' ]] && color='white' || color='black'
-      [[ $VI_MODE == ins ]] && sign='›' || sign='»'
-   fi
-   echo "%{$fg[$color]%}$sign%{$reset_color%}"
-}
 
 function zle-keymap-select {
    case $KEYMAP in

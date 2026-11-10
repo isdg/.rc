@@ -150,14 +150,13 @@ vim.api.nvim_create_autocmd("BufWipeout", {
 -- text.
 if vim.env.SSH_TTY or vim.env.SSH_CONNECTION then
     local osc52 = require("vim.ui.clipboard.osc52")
-    local function paste_reg()
-        return function()
-            return { vim.fn.split(vim.fn.getreg(""), "\n"), vim.fn.getregtype("") }
-        end
+    local function paste()
+        local lines = vim.fn.split(vim.fn.getreg(""), "\n")
+        return { lines, vim.fn.getregtype("") }
     end
     vim.g.clipboard = {
         name = "OSC 52",
         copy = { ["+"] = osc52.copy("+"), ["*"] = osc52.copy("*") },
-        paste = { ["+"] = paste_reg(), ["*"] = paste_reg() },
+        paste = { ["+"] = paste, ["*"] = paste },
     }
 end

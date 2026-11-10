@@ -197,11 +197,9 @@ return {
             -- Only enable servers whose binary is actually present: one missing
             -- executable makes vim.lsp.enable() abort the whole pass, which
             -- silently prevents *every* server from attaching.
-            for _, name in ipairs({ "clangd", "ty", "rust_analyzer", "gopls", "ts_ls", "zls" }) do
-                local cfg = vim.lsp.config[name]
-                local bin = cfg and cfg.cmd and cfg.cmd[1]
-                -- bin == nil => cmd comes from lspconfig defaults; leave it alone.
-                if bin == nil or vim.fn.executable(bin) == 1 then
+            for _, name in ipairs({ "clangd", "ty", "rust_analyzer", "gopls",
+                "ts_ls", "zls" }) do
+                if vim.fn.executable(vim.lsp.config[name].cmd[1]) == 1 then
                     vim.lsp.enable(name)
                 end
             end

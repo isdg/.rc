@@ -56,9 +56,11 @@ install_nvim_plugins() {
     nvim --headless +'lua require("nvim-treesitter")
         .install(require("ts_parsers")):wait(300000)' +qa 2>&1 |
         sed 's/^/       /'
-    if [ -z "$(_missing_ts_parsers)" ]; then
+    local missing
+    missing="$(_missing_ts_parsers)"
+    if [ -z "$missing" ]; then
         echo "[OK] Treesitter parsers installed"
     else
-        echo "[WARN] Treesitter parsers missing:" $(_missing_ts_parsers)
+        echo "[WARN] Treesitter parsers missing:" $missing
     fi
 }

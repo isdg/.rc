@@ -49,22 +49,21 @@ __isg::top_line () {
 }
 
 __isg::current_caret () {
-  # This function sets caret color and sign
-  # based on theme and privileges.
+  # user:  » in normal, › in insert    root:  # in normal, @ in insert
+  # VI_MODE is kept by 17-vimode; without it the caret stays on normal.
+  local color sign
   if [[ "$USER" == 'root' ]] || [[ "$(id -u "$USER")" == 0 ]]; then
-    CARET_COLOR='red'
-    CARET_SIGN='#'
+    color='red'
+    if [[ $VI_MODE == ins ]]; then sign='@'; else sign='#'; fi
   else
-    CARET_SIGN='»'
-
     if [[ "$ISG_THEME_MODE" == 'dark' ]]; then
-      CARET_COLOR='white'
+      color='white'
     else
-      CARET_COLOR='black'
+      color='black'
     fi
+    if [[ $VI_MODE == ins ]]; then sign='›'; else sign='»'; fi
   fi
-
-  echo "%{$fg[$CARET_COLOR]%}$CARET_SIGN%{$reset_color%}"
+  echo "%{$fg[$color]%}$sign%{$reset_color%}"
 }
 
 __isg::current_dir () {
@@ -74,7 +73,7 @@ __isg::current_dir () {
 
   color='blue'
 
-  if [[ $(echo -n "$PWD" | wc -c) -gt "$max_pwd_length" ]]; then
+  if (( ${#PWD} > max_pwd_length )); then
     echo "%{$fg_bold[$color]%}%-1~ ... %2~%{$reset_color%} "
   else
     echo "%{$fg_bold[$color]%}%~%{$reset_color%} "
@@ -193,17 +192,17 @@ fi
 
 if [[ "$ISG_LESS_THEME" != 'false' ]]; then
   if [[ "$ISG_THEME_MODE" == 'dark' ]]; then
-    export LESS_TERMCAP_mb="$(printf '\e[1;35m')"
-    export LESS_TERMCAP_md="$(printf '\e[1;35m')"
+    export LESS_TERMCAP_mb=$'\e[1;35m'
+    export LESS_TERMCAP_md=$'\e[1;35m'
   else
-    export LESS_TERMCAP_mb="$(printf '\e[1;34m')"
-    export LESS_TERMCAP_md="$(printf '\e[1;34m')"
+    export LESS_TERMCAP_mb=$'\e[1;34m'
+    export LESS_TERMCAP_md=$'\e[1;34m'
   fi
-  export LESS_TERMCAP_me="$(printf '\e[0m')"
-  export LESS_TERMCAP_se=$(printf '\e[0m')
-  export LESS_TERMCAP_so=$(printf '\e[30m')
-  export LESS_TERMCAP_ue=$(printf '\e[0m')
-  export LESS_TERMCAP_us=$(printf '\e[1;32m')
+  export LESS_TERMCAP_me=$'\e[0m'
+  export LESS_TERMCAP_se=$'\e[0m'
+  export LESS_TERMCAP_so=$'\e[30m'
+  export LESS_TERMCAP_ue=$'\e[0m'
+  export LESS_TERMCAP_us=$'\e[1;32m'
   # Search matches only (the prompt keeps `so`): white on 256-colour red, which
   # stays vivid in both modes where ANSI 1 goes pink in dark.
   export LESS='--use-color -DS231.160'

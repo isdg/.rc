@@ -50,7 +50,6 @@ PAIRS=$(echo $PAIRS)
 # tmux exactly as it came out, with its quoting intact. Passing those same
 # strings through the shell would re-tokenise every "#{...}" and nested quote.
 conf="${TMPDIR:-/tmp}/tmux-russian.$$"
-: > "$conf"
 
 for table in prefix copy-mode-vi plugins splits moves; do
     tmux list-keys -T "$table" | awk -v pairs="$PAIRS" '
@@ -68,8 +67,8 @@ for table in prefix copy-mode-vi plugins splits moves; do
             sub(/[ \t].*$/, "", key)
             if (key in ru) printf "%s%s%s\n", head, ru[key], substr(rest, length(key) + 1)
         }
-    ' >> "$conf"
-done
+    '
+done > "$conf"
 
 tmux source-file "$conf"
 rm -f "$conf"

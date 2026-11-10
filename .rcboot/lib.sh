@@ -258,8 +258,9 @@ _sync_fragments() {
 # (set -e), since later modules build on earlier ones. Either name may be -.
 step() {
     if [ "$RC_MODE" = ensure ]; then
-        [ -n "${2:-}" ] && [ "$2" != - ] || return 0
-        "$2" || RC_FAILURES=$((RC_FAILURES + 1))
+        if [ -n "${2:-}" ] && [ "$2" != - ]; then
+            "$2" || RC_FAILURES=$((RC_FAILURES + 1))
+        fi
     elif [ "$1" != - ]; then
         "$1"
     fi
@@ -269,7 +270,9 @@ step() {
 # whose failure is reported but does not stop the run.
 hook() {
     if [ "$RC_MODE" = ensure ]; then
-        step - "${2:-}"
+        if [ -n "${2:-}" ] && [ "$2" != - ]; then
+            "$2" || RC_FAILURES=$((RC_FAILURES + 1))
+        fi
     elif [ "$1" != - ]; then
         "$1" || true
     fi
@@ -328,7 +331,7 @@ run_modules() {
     _sync_fragments "$1"
     echo ""
     local fn
-    for fn in ${RC_FINALLY[@]+"${RC_FINALLY[@]}"}; do
+    for fn in "${RC_FINALLY[@]}"; do
         "$fn" || true
     done
 }

@@ -8,7 +8,3 @@ else
 fi
 alias grep='grep --color=auto --exclude-dir={.bzr,CVS,.git,.hg,.svn,.idea,.tox,.venv,venv}'
 alias history='fc -l 1'
-
-# keep the whole history — the init block above defaults SAVEHIST to 10k,
-# which trims the file (recovered Jun 2026 after a wipe; see .zsh_history.bak-*)
-SAVEHIST=50000

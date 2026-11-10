@@ -11,6 +11,12 @@ bootstrap; this file holds the rules for changing them.
   for slow machines and million-line codebases. `time zsh -i -c exit`
   stays under 80 ms: measure it before and after touching a startup file,
   and nothing heavy goes in one.
+- **Simple first.** Code is for the human who maintains it: the plainest
+  version that is still complete, read top to bottom, in the tool's
+  everyday idiom. A few repeated lines beat a helper, a flag or a layer of
+  indirection; three plain lines beat one clever one. Only a measured
+  budget or a case that must be handled buys complexity, and a comment
+  then says which.
 - **Preferably no framework.** Plain zsh, small composed tools, an `rc.d`
   fragment before a plugin; tpm and lazy.nvim are the exception, at level 3.
 - **Screen-centric, zen.** One centred text column (`ghostty` padding, set

@@ -277,17 +277,13 @@ info_shell() {
 # pane has no utmp entry at all on darwin, so both yield "" and the callers
 # fall back to saying nothing rather than guessing.
 #
-# The probe costs a fork and both banner_host_info and banner_net_info want the
-# same answer, so it is memoised — one fork per login, not two. Callers gate it
-# on SUDO_USER, which sudo sets itself: an ordinary interactive startup never
-# reaches here and stays subprocess-free.
+# The probe costs a fork, so callers gate it on SUDO_USER, which sudo sets
+# itself: an ordinary interactive startup never reaches here and stays
+# subprocess-free.
 _banner_sudo_origin() {
-    if (( ! ${+_banner_sudo_origin_done} )); then
-        typeset -g _banner_sudo_origin_done=1 _banner_sudo_origin=
-        local line=$(command who -m 2>/dev/null)
-        [[ $line == *'('*')' ]] && typeset -g _banner_sudo_origin=${${line##*\(}%\)}
-    fi
-    print -r -- "$_banner_sudo_origin"
+    local line=$(command who -m 2>/dev/null)
+    [[ $line == *'('*')' ]] || return 0
+    print -r -- ${${line##*\(}%\)}
 }
 
 # The peer's name, into REPLY: the one its zsh sent (LC_ISG_FROM, kept as

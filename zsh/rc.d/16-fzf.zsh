@@ -126,10 +126,10 @@ prv() {
       esac
       shift
    done
-   local sh="${ISGRC:-$HOME/.rc}/sh/prv.sh"
-   sh="bash ${(q)sh}"
+   local prv="${ISGRC:-$HOME/.rc}/sh/prv.sh"
+   local sh="bash ${(q)prv}"
    local list="$sh list ${(j: :)${(@q)quals}}"
-   eval "$list" | fzf --ansi --delimiter='\t' --with-nth=3 --id-nth=1,2 \
+   bash "$prv" list "${quals[@]}" | fzf --ansi --delimiter='\t' --with-nth=3 --id-nth=1,2 \
       --prompt 'pr> ' --layout=reverse \
       --header 'enter diff · alt-m merge · ctrl-o browser · ctrl-r reload' \
       --preview 'gh pr diff {2} -R {1} | delta --width=$FZF_PREVIEW_COLUMNS' \
@@ -194,7 +194,11 @@ fzf-git-changed-widget() {
       --preview "p=\$(printf %s {} | cut -c4-); cd ${(q)top} && { git diff --color=always HEAD -- \"\$p\" | grep -q . && git diff --color=always HEAD -- \"\$p\" || cat -- \"\$p\"; }" \
       --preview-window 'down:55%')"})
    for p in "${(@)picked#???}"; do
-      [[ -n $prefix && $p == "$prefix"* ]] && paths+=("${p#$prefix}") || paths+=("$cdup$p")
+      if [[ -n $prefix && $p == "$prefix"* ]]; then
+         paths+=("${p#$prefix}")
+      else
+         paths+=("$cdup$p")
+      fi
    done
    _fzf_insert "${(@)paths}"
 }

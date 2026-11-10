@@ -214,8 +214,8 @@ function M.tree(scope)
     local function render()
         local items = {}
         local function add(n, lead, branch)
-            local mark = #n.children == 0 and ""
-                or folded[n] and "▸ " or "▾ "
+            local mark = ""
+            if #n.children > 0 then mark = folded[n] and "▸ " or "▾ " end
             local info = details
                 and " " .. GREY .. detail_of(bufnr, n) .. RESET or ""
             items[#items + 1] = {
@@ -224,8 +224,12 @@ function M.tree(scope)
                     n.name, info, DIM, n.kind, RESET),
             }
             if folded[n] then return end
-            local under = lead .. (branch == "└─ " and "   "
-                or branch == "" and "" or "│  ")
+            local under = lead
+            if branch == "├─ " then
+                under = lead .. "│  "
+            elseif branch == "└─ " then
+                under = lead .. "   "
+            end
             for i, c in ipairs(n.children) do
                 add(c, under, i == #n.children and "└─ " or "├─ ")
             end
@@ -255,8 +259,10 @@ function M.tree(scope)
     end
     local function shown(n)
         local up = n
-        for p in function(_, c) return parent[c] end, nil, n do
+        local p = parent[n]
+        while p do
             if folded[p] then up = p end
+            p = parent[p]
         end
         return up
     end
@@ -265,7 +271,9 @@ function M.tree(scope)
             fn = function(sel)
                 local n = selected_node(sel)
                 fn(n)
-                aim(n and shown(n) ~= n and shown(n) or nil)
+                local up = n and shown(n)
+                if up == n then up = nil end
+                aim(up)
             end,
             reload = true,
             field_index = "{}",

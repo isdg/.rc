@@ -45,7 +45,7 @@ return {
 
                     local function map(lhs, fn, desc)
                         vim.keymap.set("n", lhs, fn,
-                            { buffer = bufnr, noremap = true, silent = true, desc = desc })
+                            { buffer = bufnr, silent = true, desc = desc })
                     end
                     map("C", to_node, "nvim-tree: change root to node (+history)")
                     map("<C-]>", to_node, "nvim-tree: change root to node (+history)")

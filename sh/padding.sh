@@ -20,14 +20,12 @@ usage() {
 }
 
 case "${1:-}" in
-    x) PRESETS=(400 600); FILE=width-active.conf ;;
-    y) PRESETS=(12 120); FILE=height-active.conf ;;
+    x) PRESETS=(400 600); FILE=width-active.conf; alias_name=ww ;;
+    y) PRESETS=(12 120); FILE=height-active.conf; alias_name=wh ;;
     *) usage ;;
 esac
 axis="$1"
 shift
-alias_name=ww
-[ "$axis" = y ] && alias_name=wh
 
 RC_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 ACTIVE="$RC_DIR/ghostty/$FILE"
@@ -43,11 +41,9 @@ cur=""
 if [ $# -gt 0 ]; then
     case "$1" in
         -h|--help) usage ;;
-    esac
-    # Any value is allowed, but it still has to be a number — a typo here lands
-    # in a config file that ghostty refuses wholesale, taking the theme include
-    # down with it.
-    case "$1" in
+        # Any value is allowed, but it still has to be a number — a typo here
+        # lands in a config file that ghostty refuses wholesale, taking the
+        # theme include down with it.
         ''|*[!0-9]*)
             printf 'padding.sh: %s is not a number\n' "$1" >&2
             exit 1

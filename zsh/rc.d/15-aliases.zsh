@@ -43,9 +43,9 @@ alias gps='gh pr status'
 # answered by tmux itself (with its dark default) rather than reaching the outer
 # terminal, so glamour's `auto` style renders dark in a light terminal even with
 # allow-passthrough on. Pin the style to our light/dark marker instead — its
-# values (`light`/`dark`) are glamour's own style names. Re-source (or open a new
-# shell) after toggle_theme.sh flips the marker to follow it.
-export GLAMOUR_STYLE="$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev/null || echo light)"
+# values (`light`/`dark`) are glamour's own style names. Open a new shell after
+# toggle_theme.sh flips the marker to follow it.
+export GLAMOUR_STYLE=$ISG_THEME_MODE
 
 # k9s: force a terminfo entry its TUI library can actually use, but only inside
 # tmux. Outside tmux k9s renders the skin exactly; inside it, everything came out
