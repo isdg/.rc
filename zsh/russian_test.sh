@@ -12,6 +12,7 @@ LC_ALL="$(locale -a | grep -i -E '^(en_US|C)\.utf-?8$' | sed -n 1p)"
 export LC_ALL HOME="$tmp" ZDOTDIR="$tmp"
 
 cat > "$ZDOTDIR/.zshrc" <<EOF
+source "$repo/zsh/rc.d/01-options.zsh"
 source "$repo/zsh/rc.d/17-vimode.zsh"
 source "$repo/zsh/rc.d/24-russian.zsh"
 PS1='> '
@@ -31,6 +32,7 @@ dump-twins() {
         twin vicmd Э
         twin vicmd Ё
         twin viopp шц
+        twin vicmd '\^'
     } > "$tmp/twins"
 }
 zle -N dump-buffer
@@ -111,6 +113,7 @@ check "a leader sequence gets a twin" vi-yank-line-clipboard "$(twin 2)"
 check "an escaped key gets a twin" vi-set-buffer "$(twin 3)"
 check "Ё is the layout's ё key" "$yo" "$(twin 4)"
 check "a text object gets a twin" select-in-word "$(twin 5)"
+check "^ keeps its own widget" vi-first-non-blank "$(twin 6)"
 check "ии then вц is bb dw" 'print aaa bbb ddd' "$(line 2)"
 check "вшц is diw" 'echo one ' "$(line 3)"
 check "мшцв is viwd" 'echo one ' "$(line 4)"
