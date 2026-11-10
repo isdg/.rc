@@ -2,7 +2,7 @@
 #   ff  — :Files  file picker
 #   fA  — :Rg     rg once, fuzzy-filter results
 #   fa  — :RG     live ripgrep (re-runs on each keystroke)
-#   hrb — hr reading list: fuzzy-pick an unread article, open it in nvim
+#   hrl — hr reading list: fuzzy-pick an unread article, open it in nvim
 #   hrv — hr reading list: open the nvim sidebar, scoped by `hr list` flags
 # plus the ZLE pickers behind the vicmd <Space> leader (see the end of the file).
 
@@ -60,7 +60,7 @@ fa() {
    [[ -n $file ]] && "${EDITOR:-nvim}" "+${line}" "$file"
 }
 
-hrb() {
+hrl() {
    # Fuzzy-pick an article from the hr reading list (`hr list --tsv` columns:
    # path<TAB>feed<TAB>date<TAB>read<TAB>fav<TAB>title; read and unread both)
    # and open it in nvim, where the hr.vim plugin is loaded (sidebar: `nr`).
@@ -98,7 +98,7 @@ hrv() {
    # Values must not contain spaces: they cross into nvim as :HrStart args,
    # which split on whitespace. For those, set g:hr_filter in nvim instead.
    #
-   # Unlike hrb (fuzzy-pick one article), this opens the panel so you can
+   # Unlike hrl (fuzzy-pick one article), this opens the panel so you can
    # browse and act on the list with its buffer keys.
    command -v hr >/dev/null 2>&1 || { print -u2 "hrv: hr not found"; return 1 }
    # Validate against the CLI first (~0.1s on a 10k-article vault): a typo'd
