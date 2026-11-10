@@ -41,6 +41,4 @@ let ru_eng_final = extend(copy(ru_eng), ru_eng_upper)
 
 for [ru, en] in items(ru_eng_final)
     execute 'noremap' ru en
-    execute 'vnoremap' ru en
-    execute 'onoremap' ru en
 endfor

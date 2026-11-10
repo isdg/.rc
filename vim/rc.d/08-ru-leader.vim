@@ -33,7 +33,6 @@ let ru_jumps = {
 for [ru, en] in items(ru_jumps)
     execute 'nnoremap ' . ru . ' ' . en
     execute 'vnoremap ' . ru . ' ' . en
-    execute 'vnoremap ' . ru . ' ' . en
 endfor
 
 let eng_to_ru_final_for_leader = extend(copy(eng_to_ru_for_leader), eng_to_ru_upper_for_leader)
