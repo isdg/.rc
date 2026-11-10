@@ -33,8 +33,11 @@ function M.find(word, root)
             vim.list_extend(spots, scan(b, word))
         end
     end
-    local res = vim.system({ "rg", "--vimgrep", "--null", "--word-regexp",
-        "--fixed-strings", "--", word, root }, { text = true }):wait()
+    -- --vimgrep repeats the line for each match on it; uncapped, a minified
+    -- file costs its size times its matches in memory.
+    local res = vim.system({ "rg", "--vimgrep", "--max-columns", "500",
+        "--null", "--word-regexp", "--fixed-strings", "--", word, root },
+        { text = true }):wait()
     if res.code > 1 then error("rg: " .. res.stderr, 0) end
     for line in res.stdout:gmatch("[^\n]+") do
         local nul = line:find("\0", 1, true)
