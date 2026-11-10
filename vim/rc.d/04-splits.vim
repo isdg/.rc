@@ -54,22 +54,21 @@ function! s:MoveSplit(dir) abort
   call winrestview(l:from_view)
 endfunction
 
-for s:dir in ['h', 'j', 'k', 'l']
-  execute printf('nnoremap <silent> <C-w><C-%s> '
-        \ . ':<C-u>call <SID>MoveSplit(%s)<CR>', s:dir, string(s:dir))
-endfor
+nnoremap <silent> <C-w><C-h> :<C-u>call <SID>MoveSplit('h')<CR>
+nnoremap <silent> <C-w><C-j> :<C-u>call <SID>MoveSplit('j')<CR>
+nnoremap <silent> <C-w><C-k> :<C-u>call <SID>MoveSplit('k')<CR>
+nnoremap <silent> <C-w><C-l> :<C-u>call <SID>MoveSplit('l')<CR>
 
 " HJKL name where the border travels, as tmux's resize-pane does; a count is
 " that many cells.
-let s:resize = {
-      \ 'H': 'vertical resize -', 'L': 'vertical resize +',
-      \ 'J': 'resize +', 'K': 'resize -'}
-for [s:key, s:cmd] in items(s:resize)
-  execute printf('nnoremap <silent> <C-w>%s '
-        \ . ':<C-u>execute %s . (v:count ? v:count : 5)<CR>',
-        \ s:key, string(s:cmd))
-endfor
-unlet s:dir s:resize s:key s:cmd
+nnoremap <silent> <C-w>H
+      \ :<C-u>execute 'vertical resize -' . (v:count ? v:count : 5)<CR>
+nnoremap <silent> <C-w>L
+      \ :<C-u>execute 'vertical resize +' . (v:count ? v:count : 5)<CR>
+nnoremap <silent> <C-w>J
+      \ :<C-u>execute 'resize +' . (v:count ? v:count : 5)<CR>
+nnoremap <silent> <C-w>K
+      \ :<C-u>execute 'resize -' . (v:count ? v:count : 5)<CR>
 
 nnoremap <C-w>sv :vsplit<CR>
 nnoremap <C-w>sh :split<CR>
