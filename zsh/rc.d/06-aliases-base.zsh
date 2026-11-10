@@ -11,4 +11,6 @@ alias history='fc -l 1'
 
 # keep the whole history — the init block above defaults SAVEHIST to 10k,
 # which trims the file (recovered Jun 2026 after a wipe; see .zsh_history.bak-*)
-SAVEHIST=50000
+SAVEHIST=200000
+# hist_expire_dups_first only has duplicates to drop while HISTSIZE is larger
+HISTSIZE=220000
