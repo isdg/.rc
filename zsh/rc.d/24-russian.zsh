@@ -20,6 +20,8 @@ fi
 # ASCII the layout moves ($ types %, / types . on PC) has no twin: those
 # characters are vi commands already.
 function _ru_mirror() {
+   # extended_glob (01-options.zsh) would read the ^ below as negation.
+   emulate -L zsh
    local line key out c
    local -a words
    local listing=$(bindkey -LM vicmd; bindkey -LM viopp; bindkey -LM visual)
