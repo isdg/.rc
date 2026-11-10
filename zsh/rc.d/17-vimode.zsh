@@ -41,18 +41,23 @@ bindkey -M viins '^[.' insert-last-word
 zmodload zsh/datetime
 typeset -gF _vi_j_at
 typeset -gi _vi_j_cursor=-1
+typeset -g _vi_j_key
+# Keyed on $KEYS so 24-russian.zsh can bind оО to the same pair. $KEYS is
+# inserted by hand: self-insert keeps only the last byte of a key like о.
 function vi-insert-j() {
-   zle self-insert
-   _vi_j_at=$EPOCHREALTIME _vi_j_cursor=$CURSOR
+   [[ $ZLE_STATE == *overwrite* ]] && RBUFFER=${RBUFFER:1}
+   LBUFFER+=$KEYS
+   _vi_j_at=$EPOCHREALTIME _vi_j_cursor=$CURSOR _vi_j_key=$KEYS
 }
 function vi-escape-jJ() {
    if (( CURSOR == _vi_j_cursor && EPOCHREALTIME - _vi_j_at < 1 )) \
-      && [[ $LBUFFER == *j ]]; then
-      LBUFFER=${LBUFFER%j}
+      && [[ $KEYS == ${(U)_vi_j_key} && $LBUFFER == *$_vi_j_key ]]; then
+      LBUFFER=${LBUFFER%$_vi_j_key}
       _vi_j_cursor=-1
       zle vi-cmd-mode
    else
-      zle self-insert
+      [[ $ZLE_STATE == *overwrite* ]] && RBUFFER=${RBUFFER:1}
+      LBUFFER+=$KEYS
    fi
 }
 zle -N vi-insert-j
@@ -147,7 +152,8 @@ VI_MODE=ins
 
 function zle-keymap-select {
    case $KEYMAP in
-      vicmd)      VI_MODE=cmd; print -n '\e[2 q' ;;
+      vicmd)      VI_MODE=cmd; print -n '\e[2 q'
+                  (( $+functions[_ru_mirror] )) && _ru_mirror ;;
       main|viins) VI_MODE=ins; print -n '\e[6 q' ;;
    esac
    zle reset-prompt

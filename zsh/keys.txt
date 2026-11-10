@@ -127,3 +127,16 @@ the pick in nvim instead of inserting it.
     Up / Down    history search by what is already typed
     Shift-Tab    step back through zsh's own completion menu, which Tab
                  opens only where fzf-tab is not installed
+
+
+-------------------------------------------------------------------------------
+6. Russian layout
+-----------------
+
+Normal and visual mode work without switching layout (rc.d/24-russian.zsh):
+the first Esc gives every binding a twin on the same physical keys, so вц is
+dw, вшц is diw, Space нн is Space yy. In insert mode оО leaves it, like jJ.
+
+ASCII that the layout moves has no twin, since it is a vi command already:
+on Apple's Russian layout Shift-4 types % (not $) and Shift-6 types , (not
+^). Switch to the Latin layout for those.

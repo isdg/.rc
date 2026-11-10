@@ -33,8 +33,11 @@ function M.find(word, root)
             vim.list_extend(spots, scan(b, word))
         end
     end
-    local res = vim.system({ "rg", "--vimgrep", "--null", "--word-regexp",
-        "--fixed-strings", "--", word, root }, { text = true }):wait()
+    -- --vimgrep repeats the line for each match on it; uncapped, a minified
+    -- file costs its size times its matches in memory.
+    local res = vim.system({ "rg", "--vimgrep", "--max-columns", "500",
+        "--null", "--word-regexp", "--fixed-strings", "--", word, root },
+        { text = true }):wait()
     if res.code > 1 then error("rg: " .. res.stderr, 0) end
     for line in res.stdout:gmatch("[^\n]+") do
         local nul = line:find("\0", 1, true)
@@ -102,6 +105,12 @@ end
 
 -- Lists every match in the quickfix window and asks before touching any.
 function M.project()
+    -- A quickfix or terminal buffer has no repo, only the directory nvim
+    -- happened to start in.
+    if vim.bo.buftype ~= "" then
+        vim.notify("Not in a file", vim.log.levels.INFO)
+        return
+    end
     local old = cword()
     if not old then return end
     local root = vim.fs.root(0, ".git") or vim.uv.cwd()

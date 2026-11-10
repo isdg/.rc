@@ -24,6 +24,7 @@ fragment zsh/rc.d/15-aliases.zsh
 fragment zsh/rc.d/17-vimode.zsh
 fragment zsh/rc.d/19-keys.zsh
 fragment zsh/rc.d/23-osc133.zsh
+fragment zsh/rc.d/24-russian.zsh
 
 source "$RC_BOOT/zsh/shell.sh"
 step "set_default_shell_$RC_OS" "ensure_default_shell_$RC_OS"

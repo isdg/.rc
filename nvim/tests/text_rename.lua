@@ -52,12 +52,22 @@ local ok, err = pcall(function()
     write("odd:name.txt", "foo")
     write("ignored.txt", "foo")
     write(".gitignore", "ignored.txt")
+    write("long.txt", ("foo "):rep(200))
     vim.api.nvim_buf_set_lines(one, 0, 0, true, { "foo unsaved" })
     vim.api.nvim_win_set_cursor(0, { 1, 0 })
     answer, confirmed = "baz", false
     tr.project()
     local two = vim.fn.bufnr(root .. "/sub/two.lua")
+    local long = vim.fn.bufnr(root .. "/long.txt")
+    local widest = 0
+    for _, item in ipairs(vim.fn.getqflist()) do
+        widest = math.max(widest, #item.text)
+    end
     check("project: asks before applying", confirmed, confirmed)
+    check("project: a long line is listed without its text",
+        widest < 100, widest)
+    check("project: a long line is renamed all the same", long > 0
+        and lines(long)[1] == ("baz "):rep(200), long > 0 and lines(long))
     check("project: loaded buffer is read as it stands", vim.deep_equal(
         lines(one), { "baz unsaved", "baz foobar foo_x é baz",
             "x.baz(baz)" }), lines(one))
@@ -72,9 +82,25 @@ local ok, err = pcall(function()
         vim.fn.readfile(root .. "/sub/two.lua")[1]:find("foo") ~= nil,
         vim.fn.readfile(root .. "/sub/two.lua"))
 
+    notes = {}
+    vim.fn.setqflist({})
+    tr.project()
+    check("project: refuses in the quickfix window", notes[1] ==
+        "Not in a file" and #vim.fn.getqflist() == 0, notes)
+
+    vim.cmd.wincmd("p")
     vim.fn.confirm = function() return 2 end
     answer = "qux"
     tr.project()
+    local listed = vim.fn.getqflist()
+    -- Buffer names are resolved; on darwin the temp directory is a symlink.
+    local real, outside = vim.uv.fs_realpath(root), {}
+    for _, item in ipairs(listed) do
+        local name = vim.api.nvim_buf_get_name(item.bufnr)
+        if not vim.fs.relpath(real, name) then outside[#outside + 1] = name end
+    end
+    check("project: declining lists the repo only",
+        #listed > 0 and #outside == 0, { #listed, outside })
     check("project: declining leaves buffers alone",
         lines(one)[1] == "baz unsaved", lines(one))
 end)
