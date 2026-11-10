@@ -17,13 +17,13 @@ fi
 # Only the `#` is green there; the name itself takes the default foreground.
 user_info=''
 if [[ -n "$SSH_TTY" || -n "$SSH_CONNECTION" ]]; then
-    user_info="$(printf '\033[32m')#$(printf '\033[0m')${USER} "
+    user_info=$'\033[32m#\033[0m'"${USER} "
 elif [[ -n "$ISG_DEFAULT_USER" && "$USER" != "$ISG_DEFAULT_USER" ]]; then
     user_info="@${USER} "
 fi
 
 # dir — mirrors __isg::current_dir: bold blue %~, and past $ISG_MAX_DIR_LEN
-# bytes of $PWD the `%-1~ ... %2~` form instead. Both %-1~ and %2~ count
+# characters of $PWD the `%-1~ ... %2~` form instead. Both %-1~ and %2~ count
 # components of the ~-substituted path, so truncate that rather than $cwd:
 # under $HOME the leading component is `~`, not `/Users`.
 tilde='~'
@@ -50,11 +50,11 @@ if git --no-optional-locks rev-parse --git-dir >/dev/null 2>&1; then
     # because DISABLE_UNTRACKED_FILES_DIRTY is not set in .zshrc.
     if [[ -z $(git --no-optional-locks status --porcelain \
         --ignore-submodules=dirty 2>/dev/null) ]]; then
-        marker="$(printf '\033[32m')=$(printf '\033[0m')"
+        marker=$'\033[32m=\033[0m'
     else
-        marker="$(printf '\033[31m')*$(printf '\033[0m')"
+        marker=$'\033[31m*\033[0m'
     fi
-    git_status="$(printf '\033[32m')${ref}$(printf '\033[0m') ${marker}"
+    git_status=$'\033[32m'"${ref}"$'\033[0m'" ${marker}"
 fi
 
 # caret — mirrors __isg::current_caret: red # for root, else » colored for
@@ -62,12 +62,12 @@ fi
 # reads at shell start.
 theme_mode=$(cat "${XDG_CONFIG_HOME:-$HOME/.config}/isg/theme" 2>/dev/null || echo light)
 if [[ "$USER" == root ]] || [[ "$(id -u "$USER" 2>/dev/null)" == 0 ]]; then
-    caret="$(printf '\033[31m')#$(printf '\033[0m')"
+    caret=$'\033[31m#\033[0m'
 elif [[ "$theme_mode" == dark ]]; then
-    caret="$(printf '\033[37m')»$(printf '\033[0m')"
+    caret=$'\033[37m»\033[0m'
 else
-    caret="$(printf '\033[30m')»$(printf '\033[0m')"
+    caret=$'\033[30m»\033[0m'
 fi
 
-printf '%s%s%s%s%s %s\n%s ' \
-    "$venv" "$user_info" "$(printf '\033[1;34m')" "$dir" "$(printf '\033[0m')" "$git_status" "$caret"
+printf '%s%s\033[1;34m%s\033[0m %s\n%s ' \
+    "$venv" "$user_info" "$dir" "$git_status" "$caret"
