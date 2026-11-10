@@ -150,3 +150,63 @@ function! FzfLinesPreview() abort
 
     call fzf#vim#lines('', { 'options': l:opts })
 endfunction
+
+" ------------------------------------------------------------
+"  Commit previews at any width  (<leader>gm / gf / gl)
+" ------------------------------------------------------------
+" fzf.vim previews :Commits and :BCommits only when &columns > 120, as if the
+" pane sat to the right; ours is below. Restate its preview unconditionally.
+" fzf.vim's s:defs skips commands that exist, so these win either load order.
+function! FzfCommitsPreview(root, file, range, log_opts) abort
+    let l:git = 'git -C ' . fzf#shellescape(a:root) . ' '
+    if len(a:range)
+        " fzf quotes {1}, closing and reopening awk's quotes around the hash.
+        let l:log = printf('log -L %d,%d:%s',
+                    \ a:range[0], a:range[1], fzf#shellescape(a:file))
+        let l:cmd = l:git . join([l:log, a:log_opts]) . ' --color=always '
+                    \ . "| awk '/commit {1}/ {flag=1;print;next} "
+                    \ . "/^[^ ]*commit/{flag=0} flag' "
+    else
+        let l:order = tempname()
+        call writefile([a:file[len(a:root) + 1:]], l:order)
+        let l:cmd = 'echo {} | grep -o "[a-f0-9]\{7,\}" | head -1 | xargs '
+                    \ . l:git . 'show -O' . fzf#shellescape(l:order)
+                    \ . ' --format=format: --color=always '
+    endif
+    let l:delta = '| delta --width $FZF_PREVIEW_COLUMNS'
+    return l:cmd . (executable('delta') ? l:delta : '')
+endfunction
+
+function! s:GitRoot() abort
+    if exists('*FugitiveWorkTree') && !empty(FugitiveWorkTree())
+        return FugitiveWorkTree()
+    endif
+    let l:dir = fzf#shellescape(expand('%:p:h'))
+    let l:out = systemlist('git -C ' . l:dir . ' rev-parse --show-toplevel')
+    return v:shell_error ? '' : get(l:out, 0, '')
+endfunction
+
+" fzf.vim's own range test (s:given_range): a visual range, or any but %.
+function! s:Commits(buffer_local, log_opts, bang) range abort
+    let l:range = a:firstline == line("'<") && a:lastline == line("'>")
+                \ || a:firstline != 1 || a:lastline != line('$')
+                \ ? [a:firstline, a:lastline] : []
+    let l:spec = fzf#vim#with_preview({ 'placeholder': '' })
+    let l:root = s:GitRoot()
+    if !empty(l:root) && !has('win32')
+        let l:preview = FzfCommitsPreview(
+                    \ l:root, expand('%:p'), l:range, a:log_opts)
+        let l:spec.options = get(l:spec, 'options', [])
+                    \ + ['--preview', l:preview]
+    endif
+    let l:fn = a:buffer_local ? 'fzf#vim#buffer_commits' : 'fzf#vim#commits'
+    execute a:firstline . ',' . a:lastline . 'call '
+                \ . l:fn . '(a:log_opts, l:spec, a:bang)'
+endfunction
+
+command! -bar -bang -nargs=* -range=% -complete=file Commits
+            \ let b:fzf_winview = winsaveview()
+            \ | <line1>,<line2>call <SID>Commits(0, <q-args>, <bang>0)
+command! -bar -bang -nargs=* -range=% BCommits
+            \ let b:fzf_winview = winsaveview()
+            \ | <line1>,<line2>call <SID>Commits(1, <q-args>, <bang>0)
