@@ -258,8 +258,8 @@ vim.api.nvim_create_autocmd("FileType", {
 })
 
 -- Swap jump list navigation (Ctrl+I = back, Ctrl+O = forward)
-map("n", "<C-i>", "<C-o>", { noremap = true, desc = "Jump back" })
-map("n", "<C-o>", "<C-i>", { noremap = true, desc = "Jump forward" })
+map("n", "<C-i>", "<C-o>", { desc = "Jump back" })
+map("n", "<C-o>", "<C-i>", { desc = "Jump forward" })
 
 -- Emacs char motion, as in every readline prompt. <C-g>U keeps the undo step
 -- and dot-repeat whole.
