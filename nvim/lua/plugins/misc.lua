@@ -13,9 +13,12 @@ return {
 
     -- hr: reading-list sidebar over the `hr` CLI. Portable Vimscript plugin
     -- (works in vim too); replaces the old lua/hr/init.lua module. Loaded on
-    -- the :Hr* commands, fired by <leader><leader>h (rc.d/10-keys-plugins.lua).
+    -- the :Hr* commands, fired by <leader><leader>h (rc.d/10-keys-plugins.lua),
+    -- and on opening any markdown file, so its autocmd logs vault articles
+    -- opened from hrl or the shell for `hr recent`.
     {
         "isdg/hr.vim",
+        event = "BufReadPost *.md",
         cmd = { "Hr", "HrToggle", "HrOpen", "HrClose", "HrStart", "HrRefresh", "HrSync", "HrLocate" },
     },
 }

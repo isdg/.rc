@@ -2,7 +2,7 @@
 #   ff  — :Files  file picker
 #   fA  — :Rg     rg once, fuzzy-filter results
 #   fa  — :RG     live ripgrep (re-runs on each keystroke)
-#   hrb — hr reading list: fuzzy-pick an unread article, open it in nvim
+#   hrl — hr reading list: fuzzy-pick an article (or a recent one), open it
 #   hrv — hr reading list: open the nvim sidebar, scoped by `hr list` flags
 # plus the ZLE pickers behind the vicmd <Space> leader (see the end of the file).
 
@@ -60,26 +60,54 @@ fa() {
    [[ -n $file ]] && "${EDITOR:-nvim}" "+${line}" "$file"
 }
 
-hrb() {
-   # Fuzzy-pick an article from the hr reading list (`hr list --tsv` columns:
-   # path<TAB>feed<TAB>date<TAB>read<TAB>fav<TAB>title; read and unread both)
-   # and open it in nvim, where the hr.vim plugin is loaded (sidebar: `nr`).
-   command -v hr >/dev/null 2>&1 || { print -u2 "hr not found"; return 1 }
+hrl() {
+   # Fuzzy-pick an article from the hr reading list and open it in nvim,
+   # where the hr.vim plugin is loaded (sidebar: `nr`):
+   #   hrl [query]                      every article, read and unread
+   #   hrl recent [query]               what you opened, latest first
+   #   hrl [recent] --group humans      `hr list` flags scope either list
+   #   hrl --feed matklad -- query      `--` starts the query after flags
+   # Without `--`, the words are all flags if the first is one, else all
+   # query: a flag's value can't be told from a query word.
+   command -v hr >/dev/null 2>&1 || { print -u2 "hrl: hr not found"; return 1 }
+   local -a sub=(list) flags query
+   if [[ $1 == recent ]]; then
+      sub=(recent)
+      shift
+   fi
+   local sep=${@[(i)--]}
+   if (( sep <= $# )); then
+      flags=("${@[1,sep-1]}")
+      query=("${@[sep+1,-1]}")
+   elif [[ $1 == -* ]]; then
+      flags=("$@")
+   else
+      query=("$@")
+   fi
+   local rows
+   rows=$(hr "${sub[@]}" --tsv "${flags[@]}") || return
+   [[ -n $rows ]] || { print -u2 "hrl: nothing to list"; return 1 }
    local preview
    if command -v bat >/dev/null 2>&1; then
       preview='bat --color=always --style=plain --language=markdown {1}'
    else
       preview='cat {1}'
    fi
-   # Reformat to `path<TAB>date · feed · title`: field 1 stays the path (for
-   # preview/open via {1}), field 2 is the display column with real spaces —
-   # fzf --with-nth joining would otherwise concatenate the columns.
+   # `hr list --tsv` columns: path, feed, date, read, fav, title, group, and
+   # for `hr recent` the open time. Reformat to `path<TAB>date · feed ·
+   # title`: field 1 stays the path (for preview/open via {1}), field 2 is
+   # the display column with real spaces — fzf --with-nth joining would
+   # otherwise concatenate the columns. Recent rows show when you opened
+   # them rather than when they were published.
    local out file
-   out=$(hr list --tsv 2>/dev/null \
-      | awk -F'\t' -v OFS='\t' '{ print $1, $3 "  ·  " $2 "  ·  " $6 }' \
+   out=$(print -r -- "$rows" \
+      | awk -F'\t' -v OFS='\t' '{
+            d = $8 != "" ? substr($8, 1, 10) " " substr($8, 12, 5) : $3
+            print $1, d "  ·  " $2 "  ·  " $6
+         }' \
       | fzf --ansi --delimiter='\t' --with-nth='2..' \
-            --query "${1:-}" \
-            --prompt 'hr> ' --layout=reverse \
+            --query "${query[*]}" \
+            --prompt "hr ${sub[1]}> " --layout=reverse \
             --preview "$preview" \
             --preview-window 'down:70%') || return
    file=${out%%$'\t'*}
@@ -93,19 +121,24 @@ hrv() {
    #                                  humans/archive)
    #   hrv --feed matklad,danluu      one or more authors
    #   hrv --group sites --unread     flags compose
+   #   hrv recent [flags]             what you opened, latest first
    # hr owns the flag vocabulary — hr.vim forwards them to `hr list` — so
    # anything `hr list` accepts works here with no change to this function.
    # Values must not contain spaces: they cross into nvim as :HrStart args,
    # which split on whitespace. For those, set g:hr_filter in nvim instead.
    #
-   # Unlike hrb (fuzzy-pick one article), this opens the panel so you can
+   # Unlike hrl (fuzzy-pick one article), this opens the panel so you can
    # browse and act on the list with its buffer keys.
    command -v hr >/dev/null 2>&1 || { print -u2 "hrv: hr not found"; return 1 }
    # Validate against the CLI first (~0.1s on a 10k-article vault): a typo'd
    # flag becomes an error here rather than a silently empty sidebar inside
    # nvim, where it reads as a broken vault.
    if (( $# )); then
-      hr list --json "$@" >/dev/null || return 1
+      if [[ $1 == recent ]]; then
+         hr recent --json "${@:2}" >/dev/null || return 1
+      else
+         hr list --json "$@" >/dev/null || return 1
+      fi
    fi
    "${EDITOR:-nvim}" -c "HrStart $*"
 }
