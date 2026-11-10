@@ -8,16 +8,13 @@
 # check it. Deliberately does not regenerate: writing into the repo during a
 # bootstrap run would dirty the tree without being asked.
 _check_theme_generated() {
-    local gen="${DOTFILES_DIR:-$HOME/.rc}/theme/generate.sh"
-
-    [ -f "$gen" ] || return 0          # older checkout, nothing to check
-
-    if bash "$gen" --check >/dev/null 2>&1; then
+    local gen="$DOTFILES_DIR/theme/generate.sh" out
+    if out="$(bash "$gen" --check 2>&1)"; then
         echo "[OK] Theme files match theme/palette.sh"
         return 0
     fi
     echo "[FAIL] Theme files are stale — a generated file was edited by hand:"
-    bash "$gen" --check 2>&1 | sed 's/^/       /'
+    printf '%s\n' "$out" | sed 's/^/       /'
     echo "       Fix: bash $gen   (then commit the result)"
     return 1
 }
