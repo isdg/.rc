@@ -152,7 +152,8 @@ VI_MODE=ins
 
 function zle-keymap-select {
    case $KEYMAP in
-      vicmd)      VI_MODE=cmd; print -n '\e[2 q' ;;
+      vicmd)      VI_MODE=cmd; print -n '\e[2 q'
+                  (( $+functions[_ru_mirror] )) && _ru_mirror ;;
       main|viins) VI_MODE=ins; print -n '\e[6 q' ;;
    esac
    zle reset-prompt
