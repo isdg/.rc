@@ -34,8 +34,8 @@ the parts by dependency:
 - **Merge from the head of the stack.** The user merges the first PR (the one
   targeting `main`) first, then the next — never the last PR first, which
   would fold the stack into its parent branch instead of `main`. After each
-  merge, rebase the next PR onto `main` (`git rebase --onto main <merged>`)
-  and retarget it (`gh pr edit --base main`).
+  merge, retarget the next PR (`gh pr edit --base main`), merge `main`
+  into it and push normally. Never rebase or force-push a pushed branch.
 
 If a feature (or any change) can't fit in one reasonably-sized PR, **propose a
 split up front** — break it into a sequence of PRs and include **tests at each
