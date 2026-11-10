@@ -49,22 +49,21 @@ __isg::top_line () {
 }
 
 __isg::current_caret () {
-  # This function sets caret color and sign
-  # based on theme and privileges.
+  # user:  » in normal, › in insert    root:  # in normal, @ in insert
+  # VI_MODE is kept by 17-vimode; without it the caret stays on normal.
+  local color sign
   if [[ "$USER" == 'root' ]] || [[ "$(id -u "$USER")" == 0 ]]; then
-    CARET_COLOR='red'
-    CARET_SIGN='#'
+    color='red'
+    if [[ $VI_MODE == ins ]]; then sign='@'; else sign='#'; fi
   else
-    CARET_SIGN='»'
-
     if [[ "$ISG_THEME_MODE" == 'dark' ]]; then
-      CARET_COLOR='white'
+      color='white'
     else
-      CARET_COLOR='black'
+      color='black'
     fi
+    if [[ $VI_MODE == ins ]]; then sign='›'; else sign='»'; fi
   fi
-
-  echo "%{$fg[$CARET_COLOR]%}$CARET_SIGN%{$reset_color%}"
+  echo "%{$fg[$color]%}$sign%{$reset_color%}"
 }
 
 __isg::current_dir () {
