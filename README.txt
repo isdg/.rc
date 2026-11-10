@@ -96,8 +96,8 @@ LAYOUT
     fonts/          JetBrains Mono + Computer Modern
     darwin/         Darwin system defaults + Brewfile
     prompt/         shell prompt definitions
-    hr/             .hrrc, seeded once to ~/.hrrc: hr's reading vault
-                    and default settings
+    hr/             config.toml, seeded once to ~/.hr/config.toml: hr's
+                    reading vault and default settings
     colima/         template new Colima profiles are created from (4 CPU,
                     8 GiB); seeded once to ~/.colima/_templates/
     lspmux/         lspmux config: idle rust-analyzers live 8 hours, so

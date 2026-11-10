@@ -20,8 +20,6 @@ fi
 # ASCII the layout moves ($ types %, / types . on PC) has no twin: those
 # characters are vi commands already.
 function _ru_mirror() {
-   # extended_glob (01-options.zsh) would read the ^ below as negation.
-   emulate -L zsh
    local line key out c
    local -a words
    local listing=$(bindkey -LM vicmd; bindkey -LM viopp; bindkey -LM visual)
@@ -33,7 +31,7 @@ function _ru_mirror() {
       out=
       for c in ${(s::)key}; do out+=${_ru_keys[$c]:-$c}; done
       [[ $out == $key ]] && continue
-      bindkey ${words[2,-3]} ${${out//\\/\\\\}//^/\\^} ${(Q)words[-1]}
+      bindkey ${words[2,-3]} ${${out//\\/\\\\}//\^/\\^} ${(Q)words[-1]}
    done
    unfunction _ru_mirror
    unset _ru_keys

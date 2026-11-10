@@ -1,5 +1,5 @@
-# Seeded to ~/.hrrc by .rcboot once; hr init / hr use change only the
-# vault line there, so the settings and comments below survive.
+# Seeded to ~/.hr/config.toml by .rcboot once; hr init / hr use change
+# only the vault line there, so the settings and comments below survive.
 vault = "~/feed"
 
 # Defaults for every vault; a key in a vault's hr.toml overrides one.
