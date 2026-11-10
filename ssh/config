@@ -15,11 +15,6 @@ Host github.com
     HostName github.com
     User git
     IdentityFile ~/.ssh/delos-new
-    IdentitiesOnly yes
-
-Host github.com
-    HostName github.com
-    User git
     IdentityFile ~/.ssh/github
     IdentitiesOnly yes
 
