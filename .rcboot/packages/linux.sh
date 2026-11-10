@@ -31,9 +31,11 @@ ensure_packages_linux() {
         fi
     done
     for cmd in "${optional[@]}"; do
-        command -v "$cmd" > /dev/null 2>&1 \
-            && echo "[OK] $cmd" \
-            || echo "[SKIP] $cmd not found (optional)"
+        if command -v "$cmd" > /dev/null 2>&1; then
+            echo "[OK] $cmd"
+        else
+            echo "[SKIP] $cmd not found (optional)"
+        fi
     done
     return $failed
 }
@@ -73,7 +75,7 @@ _dist_pkgs() {
     if _level 1; then pkgs+=(zsh git curl wget tmux vim); fi
     if _level 2; then pkgs+=(fzf ripgrep tig gh zoxide); fi
     if _level 3; then pkgs+=(neovim nodejs npm w3m glow); fi
-    for p in ${pkgs[@]+"${pkgs[@]}"}; do
+    for p in "${pkgs[@]}"; do
         case "$pm:$p" in
             yum:ripgrep|yum:zoxide|yum:glow) ;;
             pacman:gh) echo github-cli ;;
@@ -194,22 +196,22 @@ install_packages_linux() {
             pacman) sudo pacman -S --noconfirm sd || true ;;
             zypper) sudo zypper install -y sd || true ;;
         esac
-        command -v sd > /dev/null 2>&1 \
-            || { command -v cargo > /dev/null 2>&1 && cargo install sd; } \
-            || echo "[WARN] sd install failed (install via 'cargo install sd' or see https://github.com/chmln/sd)"
+        if ! command -v sd > /dev/null 2>&1; then
+            if ! command -v cargo > /dev/null 2>&1 || ! cargo install sd; then
+                echo "[WARN] sd install failed (install via 'cargo install" \
+                    "sd' or see https://github.com/chmln/sd)"
+            fi
+        fi
     fi
 
     # qemu names differ per distro and one unknown name aborts the whole
     # transaction, so it stays off the base lines (apt handles it above).
-    local qemu_ok=0
     case "$pkg_manager" in
-        dnf)    sudo dnf install -y qemu qemu-img && qemu_ok=1 ;;
-        yum)    sudo yum install -y qemu-kvm qemu-img && qemu_ok=1 ;;
-        pacman) sudo pacman -S --noconfirm qemu-full && qemu_ok=1 ;;
-        zypper) sudo zypper install -y qemu qemu-tools && qemu_ok=1 ;;
-        *)      qemu_ok=1 ;;
-    esac
-    [ "$qemu_ok" = 1 ] || echo "[WARN] qemu install failed"
+        dnf)    sudo dnf install -y qemu qemu-img ;;
+        yum)    sudo yum install -y qemu-kvm qemu-img ;;
+        pacman) sudo pacman -S --noconfirm qemu-full ;;
+        zypper) sudo zypper install -y qemu qemu-tools ;;
+    esac || echo "[WARN] qemu install failed"
 
     echo "[OK] Packages installed"
 }
