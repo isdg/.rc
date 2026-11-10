@@ -85,7 +85,11 @@ bindkey -M visual ' y' vi-yank-clipboard
 function vi-put-clipboard() {
    local saved="$CUTBUFFER"
    CUTBUFFER="$(pbpaste 2>/dev/null || xclip -selection clipboard -o 2>/dev/null)"
-   [[ $WIDGET == *-before ]] && zle vi-put-before || zle vi-put-after
+   if [[ $WIDGET == *-before ]]; then
+      zle vi-put-before
+   else
+      zle vi-put-after
+   fi
    CUTBUFFER="$saved"
 }
 zle -N vi-put-clipboard
