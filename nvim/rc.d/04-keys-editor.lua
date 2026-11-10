@@ -323,6 +323,7 @@ end
 -- Kills always delete forward with <Del>: <BS> would eat a whole indent
 -- level under 'softtabstop', so a backward kill walks to its start first.
 local function kill_to(pos)
+    if not pos then return end
     local here = vim.api.nvim_win_get_cursor(0)
     local fwd = pos[1] > here[1] or (pos[1] == here[1] and pos[2] > here[2])
     local from, to = fwd and here or pos, fwd and pos or here
@@ -332,18 +333,17 @@ local function kill_to(pos)
     vim.fn.setreg('"', text, "c")
     feed((fwd and "" or walk(from)) .. ("<Del>"):rep(vim.fn.strchars(text)))
 end
-local function with(find, act)
-    return function()
-        local pos = find()
-        if pos then act(pos) end
-    end
+local function move_to(pos)
+    if pos then feed(walk(pos)) end
 end
-map("i", "<M-f>", with(word_end, function(p) feed(walk(p)) end),
+map("i", "<M-f>", function() move_to(word_end()) end,
     { desc = "Forward a word" })
-map("i", "<M-b>", with(word_start, function(p) feed(walk(p)) end),
+map("i", "<M-b>", function() move_to(word_start()) end,
     { desc = "Back a word" })
-map("i", "<M-d>", with(word_end, kill_to), { desc = "Kill a word forward" })
-map("i", "<M-BS>", with(word_start, kill_to), { desc = "Kill a word back" })
+map("i", "<M-d>", function() kill_to(word_end()) end,
+    { desc = "Kill a word forward" })
+map("i", "<M-BS>", function() kill_to(word_start()) end,
+    { desc = "Kill a word back" })
 
 -- The rest of readline's line editing, on the command line, with the same
 -- words and kills as insert mode. Costs <C-a>'s insert-all-matches, <C-k>'s
