@@ -90,6 +90,12 @@ an update brings a glyph the swap doesn't know:
 
     > nvim --clean --headless -l nvim/tests/lean_ascii.lua
 
+:Commits and :BCommits (<leader>gm/gf/gl) preview the diff at any width;
+fzf.vim alone hides it at 120 columns or fewer (vim/fzf-layout.vim). Its
+test needs git:
+
+    > nvim --clean --headless -l nvim/tests/commits_preview.lua
+
 -------------------------------------------------------------------------------
 TREESITTER PARSERS
 -------------------------------------------------------------------------------
