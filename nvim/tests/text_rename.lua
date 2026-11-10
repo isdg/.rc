@@ -82,9 +82,25 @@ local ok, err = pcall(function()
         vim.fn.readfile(root .. "/sub/two.lua")[1]:find("foo") ~= nil,
         vim.fn.readfile(root .. "/sub/two.lua"))
 
+    notes = {}
+    vim.fn.setqflist({})
+    tr.project()
+    check("project: refuses in the quickfix window", notes[1] ==
+        "Not in a file" and #vim.fn.getqflist() == 0, notes)
+
+    vim.cmd.wincmd("p")
     vim.fn.confirm = function() return 2 end
     answer = "qux"
     tr.project()
+    local listed = vim.fn.getqflist()
+    -- Buffer names are resolved; on darwin the temp directory is a symlink.
+    local real, outside = vim.uv.fs_realpath(root), {}
+    for _, item in ipairs(listed) do
+        local name = vim.api.nvim_buf_get_name(item.bufnr)
+        if not vim.fs.relpath(real, name) then outside[#outside + 1] = name end
+    end
+    check("project: declining lists the repo only",
+        #listed > 0 and #outside == 0, { #listed, outside })
     check("project: declining leaves buffers alone",
         lines(one)[1] == "baz unsaved", lines(one))
 end)

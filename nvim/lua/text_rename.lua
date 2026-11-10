@@ -105,6 +105,12 @@ end
 
 -- Lists every match in the quickfix window and asks before touching any.
 function M.project()
+    -- A quickfix or terminal buffer has no repo, only the directory nvim
+    -- happened to start in.
+    if vim.bo.buftype ~= "" then
+        vim.notify("Not in a file", vim.log.levels.INFO)
+        return
+    end
     local old = cword()
     if not old then return end
     local root = vim.fs.root(0, ".git") or vim.uv.cwd()
