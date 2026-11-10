@@ -9,6 +9,11 @@
       "name": "isg-skills",
       "source": "./claude/skills-plugin",
       "description": "Personal agent skills."
+    },
+    {
+      "name": "cosmos-skills",
+      "source": "./claude/skills-plugin-cosmos",
+      "description": "Agent skills for working on cosmos-saas."
     }
   ]
 }

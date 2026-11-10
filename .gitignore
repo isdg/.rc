@@ -37,7 +37,3 @@ zsh/aliases.ignored.zsh
 # detail, kept out of the public repo; general rules in claude/rules/ stay
 # tracked.
 claude/rules/cosmos.md
-claude/skills/cosmos-db/
-claude/skills/cosmos-ci-red/
-claude/skills/cosmos-logs/
-claude/skills/advancing-a-pr-stack/

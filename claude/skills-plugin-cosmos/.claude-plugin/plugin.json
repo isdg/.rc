@@ -1,0 +1,14 @@
+{
+  "name": "cosmos-skills",
+  "version": "0.1.0",
+  "description": "Agent skills for working on cosmos-saas.",
+  "author": {
+    "name": "Isai Gordeev"
+  },
+  "skills": [
+    "./skills/cosmos-db",
+    "./skills/cosmos-logs",
+    "./skills/cosmos-ci-red",
+    "./skills/advancing-a-pr-stack"
+  ]
+}

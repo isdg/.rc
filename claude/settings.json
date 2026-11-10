@@ -89,6 +89,7 @@
     "gopls-lsp@claude-plugins-official": true,
     "mattpocock-skills@mattpocock": false,
     "isg-skills@isg": true,
+    "cosmos-skills@isg": true,
     "clangd-lsp@claude-plugins-official": true,
     "orchbus-probe@orchbus": true
   },
