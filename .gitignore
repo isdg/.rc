@@ -38,3 +38,6 @@ zsh/aliases.ignored.zsh
 # tracked.
 claude/rules/cosmos.md
 claude/skills/cosmos-db/
+claude/skills/cosmos-ci-red/
+claude/skills/cosmos-logs/
+claude/skills/advancing-a-pr-stack/
