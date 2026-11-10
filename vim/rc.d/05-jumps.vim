@@ -64,6 +64,7 @@ endfunction
 " Kills always delete forward with <Del>: <BS> would eat a whole indent
 " level under 'softtabstop', so a backward kill walks to its start first.
 function! s:KillTo(pos) abort
+    if empty(a:pos) | return | endif
     let here = [line('.'), col('.') - 1]
     let fwd = a:pos[0] > here[0]
                 \ || (a:pos[0] == here[0] && a:pos[1] > here[1])
@@ -77,18 +78,13 @@ function! s:KillTo(pos) abort
     let walk = fwd ? '' : s:Walk(from)
     call feedkeys(walk . repeat("\<Del>", strchars(text)), 'ni')
 endfunction
-function! s:Move(find) abort
-    let pos = call(a:find, [])
-    if !empty(pos) | call feedkeys(s:Walk(pos), 'ni') | endif
+function! s:MoveTo(pos) abort
+    if !empty(a:pos) | call feedkeys(s:Walk(a:pos), 'ni') | endif
 endfunction
-function! s:Kill(find) abort
-    let pos = call(a:find, [])
-    if !empty(pos) | call s:KillTo(pos) | endif
-endfunction
-inoremap <M-f> <Cmd>call <SID>Move(function('<SID>WordEnd'))<CR>
-inoremap <M-b> <Cmd>call <SID>Move(function('<SID>WordStart'))<CR>
-inoremap <M-d> <Cmd>call <SID>Kill(function('<SID>WordEnd'))<CR>
-inoremap <M-BS> <Cmd>call <SID>Kill(function('<SID>WordStart'))<CR>
+inoremap <M-f> <Cmd>call <SID>MoveTo(<SID>WordEnd())<CR>
+inoremap <M-b> <Cmd>call <SID>MoveTo(<SID>WordStart())<CR>
+inoremap <M-d> <Cmd>call <SID>KillTo(<SID>WordEnd())<CR>
+inoremap <M-BS> <Cmd>call <SID>KillTo(<SID>WordStart())<CR>
 
 " Reselect last visual selection
 nnoremap <leader>v gv
