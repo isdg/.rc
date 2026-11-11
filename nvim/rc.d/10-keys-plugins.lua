@@ -9,6 +9,9 @@
 -- prefixes on four keys between them. The letters survive unshifted, so the
 -- sequences stay pt / pT; hr's toggle and locate moved to hh / hl when r and
 -- f became its recent and favorites views.
+--
+-- A tool shows only in its own context (`cond`): lean in lean buffers, hr in
+-- its panel and vault, palace in the vault; debug everywhere.
 local map = require("keymaps.leader").map
 local layer = require("keymaps.layer")
 
@@ -114,11 +117,39 @@ local DEBUG = {
     q = { desc = "quit", run = dap("terminate") },
 }
 
+-- The vault `hr vault` names, asked once and from $HOME: it prefers a vault
+-- holding its cwd, and nvim's cwd may be one of the scratch vaults.
+local hr_root
+local function in_hr_vault()
+    if hr_root == nil then
+        local ok, out = pcall(function()
+            return vim.system({ "hr", "vault" },
+                { text = true, cwd = vim.env.HOME }):wait()
+        end)
+        hr_root = ok and out.code == 0
+            and vim.uv.fs_realpath(vim.trim(out.stdout)) or false
+    end
+    local name = vim.api.nvim_buf_get_name(0)
+    return hr_root and name ~= ""
+        and vim.fs.relpath(hr_root, vim.uv.fs_realpath(name) or name) ~= nil
+end
+
 local PLUGINS = {
     d = { desc = "debug", name = "DEBUG", keys = DEBUG },
-    h = { desc = "hr reading list", name = "HR", keys = HR },
-    l = { desc = "lean", name = "LEAN", keys = LEAN },
-    p = { desc = "palace/plc", name = "PALACE", keys = PALACE },
+    h = {
+        desc = "hr reading list", name = "HR", keys = HR,
+        cond = function() return vim.bo.filetype == "hr" or in_hr_vault() end,
+    },
+    l = {
+        desc = "lean", name = "LEAN", keys = LEAN,
+        cond = function()
+            return vim.list_contains({ "lean", "leaninfo" }, vim.bo.filetype)
+        end,
+    },
+    p = {
+        desc = "palace/plc", name = "PALACE", keys = PALACE,
+        cond = function() return require("palace").owner(0) ~= nil end,
+    },
 }
 
 map("n", "<leader><leader>", function() layer.open("PLUGINS", PLUGINS) end,
