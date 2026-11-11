@@ -10,6 +10,7 @@ local function real(path)
     return vim.uv.fs_realpath(path) or vim.fs.joinpath(
         vim.uv.fs_realpath(dir) or dir, vim.fs.basename(path))
 end
+M.real = real
 
 local vault
 

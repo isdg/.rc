@@ -49,6 +49,15 @@ PIECES
 
     > nvim --clean --headless -l nvim/tests/palace_link.lua
 
+   g opens `plc graph` in its own tab, the vault drawn like git log
+   --graph, on the note you were in (nvim/lua/palace_graph.lua). j / k
+   step between notes, p / c go to the parent / newest child (P / C pick
+   one in fzf), <C-i> retraces those jumps, u hides notes without links,
+   <CR> opens the note in the tab you came from, ? lists the keys. Its
+   test needs plc and fzf-lua:
+
+    > nvim --clean --headless -l nvim/tests/palace_graph.lua
+
 -------------------------------------------------------------------------------
 WHY IT'S SPREAD OUT
 -------------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 -- ============================================================
---  PLUGINS LAYER: palace/plc stamps and links, hr reading list, lean, dap
+--  PLUGINS LAYER: palace/plc stamps, links, graph; hr, lean, dap
 -- ============================================================
 -- <leader><leader> opens a layer whose bare letters are tools, each handing off
 -- to a sub-layer of that tool's verbs — the shape of tmux's `plugins` table
@@ -49,6 +49,8 @@ local PALACE = {
         desc = "link before",
         run = function() require("palace").link(false) end,
     },
+    -- The vault as `git log --graph`, in its own tab (lua/palace_graph.lua).
+    g = { desc = "graph", run = function() require("palace_graph").open() end },
 }
 
 -- lean.nvim (lua/plugins/lsp.lua). Its commands exist once a .lean buffer
