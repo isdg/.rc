@@ -9,6 +9,40 @@
 #     › ssh-agent started · pid 724
 #     › Identity added: /Users/isg/.ssh/delos-new (...)
 #
+# Modes
+#   BANNER_MODE holds words that combine; unset, it is nologs. A set value
+#   replaces that default, so full, which hides nothing, draws all of the
+#   banner above. Set it in ~/.zshrc.local; `rcbanner mini` previews one.
+#
+#   full       mascot, info lines and logs: the banner above
+#   nologs     drops the logs (the default)
+#   nomascot   the info lines alone, as a list
+#   mini       two lines: the mascot's head and its δ, the identity; then
+#              the .rc version, startup time and session kind
+#   tiny       one line: the mascot's head, .rc version and startup time
+#   off        nothing at all
+#
+#   tiny beats mini and mini beats nomascot; nologs combines with any of
+#   them. The log funcs run in every mode, off too: their side effects
+#   (ssh-agent) still matter.
+#
+#   BANNER_MODE='nomascot nologs'
+#
+#     › isg@zsh
+#     › .rc 0.11.0 · 77 ms · local
+#     › Wed 11 Jun 2026 · 20:42
+#
+#   BANNER_MODE='mini nologs'
+#
+#     ▼ q₀  δ(q₀,0)=⟨B,1,R⟩  isg@zsh
+#                            .rc 0.11.0 · 77 ms · local
+#
+#   BANNER_MODE='tiny nologs'
+#
+#     ▼ q₀  .rc 0.11.0 · 77 ms
+#
+#   Without nologs, each keeps its logs below, as the banner above does.
+#
 # Interface
 #   banner_info "text"        add a status line, shown right of the mascot
 #                             (prompt escapes allowed: %B %F{..} %~ %D{..} ...)
@@ -21,17 +55,7 @@
 #                             full), e.g. to see this box's user@host in tiny
 #
 # Config
-#   BANNER_MODE=modes          nologs (default) · full · nomascot · mini
-#                              · tiny · off; words combine: 'mini nologs'.
-#                              A set value replaces the default; full shows
-#                              all.
-#                              mini: the mascot's head and its δ, the
-#                              identity, then the session kind and startup
-#                              time; it beats nomascot.
-#                              tiny: one line, the mascot's head, the .rc
-#                              version and startup time; it beats mini.
-#                              The log funcs run in every mode, off too:
-#                              their side effects (ssh-agent) still matter.
+#   BANNER_MODE=modes          what to draw (default nologs): see Modes
 #   BANNER_ACCENT=color        mascot color (default: 244, a mid grey that
 #                              holds up on both the dark and light background).
 #                              Any %F{..} value: a base name, or 0-255. Note
