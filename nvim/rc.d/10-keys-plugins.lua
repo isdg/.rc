@@ -18,9 +18,9 @@ end
 
 -- hr.vim (lua/plugins/misc.lua). Locate reveals the current article's row,
 -- opening/refreshing the panel and showing read articles under unread-only.
--- r and f flip the panel's recent and favorites views from anywhere, landing
--- on the article being read. Bookmark saves the reading place via
--- `hr bookmark`; resume returns to it.
+-- r and f switch the panel to its recent or favorites view from anywhere,
+-- landing on the article being read (again: back to the list). Bookmark
+-- saves the reading place via `hr bookmark`; resume returns to it.
 local HR = {
     h = { desc = "toggle", run = "HrToggle" },
     l = { desc = "locate", run = "HrLocate" },
