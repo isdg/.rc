@@ -49,13 +49,15 @@ check "mini alone keeps the logs" "$(render mini)"$'\n' "$want"
 lines="$(zsh -f -c '
     source "$1/zsh/banner.zsh"
     info_shell
+    info_date
     print -rl -- "${_banner_info_lines[@]}"
 ' _ "$repo")"
 host="$(zsh -f -c 'print -r -- ${HOST%%.*}')"
 version="$(zsh -f -c 'print -r -- $ZSH_VERSION')"
-want="%B%n%b@$host"$'\n'"%D{%a %d %b %Y · %H:%M}"$'\n'
-want+="local · zsh $version"
-check "local: user@host, then the kind on the shell line" "$lines" "$want"
+want="%B%n%b@$host"$'\n'"local · zsh $version"$'\n'
+want+="%D{%a %d %b %Y · %H:%M}"
+check "local: user@host, the kind on the shell line, the date" \
+    "$lines" "$want"
 
 kind="$(SUDO_USER=root zsh -f -c '
     source "$1/zsh/banner.zsh"

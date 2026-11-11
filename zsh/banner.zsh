@@ -1,8 +1,8 @@
 # startup banner: mascot · status lines · quiet logs
 #
 #          ▼ q₀        isg@zsh
-#   ┄┬─┬─┬─┬─┬─┬┄      Wed 11 Jun 2026 · 20:42
-#   ┄┤0│1│1│0│1├┄      local · zsh 5.9 · 77 ms
+#   ┄┬─┬─┬─┬─┬─┬┄      local · zsh 5.9 · 77 ms
+#   ┄┤0│1│1│0│1├┄      Wed 11 Jun 2026 · 20:42
 #   ┄┴─┴─┴─┴─┴─┴┄
 #   δ(q₀,0)=⟨B,1,R⟩
 #
@@ -257,10 +257,12 @@ banner_render() {
 # banner_session_info and banner_net_info are the exceptions: they print instead
 # of registering, because they feed the info lines beside the mascot rather
 # than the logs. info_shell feeds them too, but registers: the timing must be
-# read at render time, after ~/.zshrc.local.
+# read at render time, after ~/.zshrc.local. info_date follows it, so the date
+# sits below the shell line.
 
 BANNER_LOG_FUNCS=(
     info_shell
+    info_date
     log_tmux
     log_ssh
 )
@@ -278,6 +280,8 @@ info_shell() {
     fi
     banner_info "${_banner_session:+$_banner_session · }$seg"
 }
+
+info_date() { banner_info "%D{%a %d %b %Y · %H:%M}" }
 
 # The ssh origin recovered from utmp, computed at most once.
 #
@@ -571,4 +575,3 @@ typeset -g _banner_session=$(banner_session_info) _banner_ms=
 _banner_net=$(banner_net_info)
 [[ -n $_banner_net ]] && banner_info "$_banner_net"
 unset _banner_net
-banner_info "%D{%a %d %b %Y · %H:%M}"
