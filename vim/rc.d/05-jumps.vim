@@ -95,6 +95,8 @@ if has('clipboard')
   " Visual pastes with "+P so the unnamed register is left alone.
   nnoremap <leader>p "+p
   vnoremap <leader>p "+P
+  nnoremap <leader>P "+P
+  vnoremap <leader>P "+P
 
   " Buffer name, absolute path, or cwd-relative path onto the clipboard.
   function! s:YankPath(modifier) abort

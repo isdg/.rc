@@ -390,6 +390,8 @@ lmap("v", "y", '"+y', { desc = "Yank to clipboard" })
 -- 00-options.lua).
 lmap("n", "p", '"+p', { desc = "Paste from clipboard" })
 lmap("v", "p", '"+P', { desc = "Paste from clipboard" })
+lmap("n", "P", '"+P', { desc = "Paste from clipboard before" })
+lmap("v", "P", '"+P', { desc = "Paste from clipboard" })
 
 -- <leader>y{f,p,P}: put this buffer's name, absolute path or cwd-relative path
 -- on the clipboard. Same "+ as the yank above, so it reaches pbcopy locally and

@@ -71,6 +71,11 @@ plugins under this checkout's config:
 EDITING HELPERS
 -------------------------------------------------------------------------------
 
+<leader>p and <leader>P paste the clipboard after and before the cursor;
+over a selection both replace it and keep the unnamed register. Their test:
+
+    > nvim --clean --headless -l nvim/tests/clipboard_keys.lua
+
 <leader>rn falls back to a text rename where no server can rename, and
 <leader>rN renames by text across the repo (lua/text_rename.lua). Its test
 needs only rg:
