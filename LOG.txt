@@ -10,6 +10,12 @@ heading (version · date · name), a sentence on why it is a milestone, and a
 few lines on what changed. Patches get a line only when one deserves it.
 
 
+0.11.2 · 2026-11-11 · rcbanner [modes] redraws the banner in any mode, full
+                      by default
+0.11.1 · 2026-11-11 · tiny banner mode: the mascot's head, the .rc version
+                      and startup time on one line
+
+
 -------------------------------------------------------------------------------
 0.11.0 · 2026-11-11 · versioning
 -------------------------------------------------------------------------------
