@@ -1,20 +1,26 @@
 #!/usr/bin/env bash
-# Component: plc — palace notes manager binary (shared)
+# Component: plc — palace notes manager binaries (shared)
 #
-# Clones the plc repo if needed and installs the binary via cargo into
-# ~/.cargo/bin. The zsh palace wrappers (zsh/palace.zsh) call this binary.
+# Clones the plc repo if needed and installs its binaries via cargo into
+# ~/.cargo/bin: plc, which the zsh palace wrappers (zsh/palace.zsh) call,
+# and plc-lsp, which nvim starts on vault notes (nvim/lua/plugins/lsp.lua).
 
 PLC_REPO="https://github.com/isdg/plc.git"
 PLC_SRC="$HOME/plc"
+PLC_BINS=(plc plc-lsp)
 
 ensure_plc() {
     echo "[STEP] Verifying plc..."
-    if command -v plc >/dev/null 2>&1; then
-        echo "[OK] plc installed ($(command -v plc))"
-        return 0
-    fi
-    echo "[FAIL] plc not found on PATH (expected ~/.cargo/bin/plc)"
-    return 1
+    local bin status=0
+    for bin in "${PLC_BINS[@]}"; do
+        if command -v "$bin" >/dev/null 2>&1; then
+            echo "[OK] $bin installed ($(command -v "$bin"))"
+        else
+            echo "[FAIL] $bin not found on PATH (expected ~/.cargo/bin/$bin)"
+            status=1
+        fi
+    done
+    return "$status"
 }
 
 install_plc() {
@@ -38,11 +44,14 @@ install_plc() {
 
     _export_buildable_sdk
 
-    echo "[INFO] cargo install --path $PLC_SRC/plc..."
-    if cargo install --path "$PLC_SRC/plc"; then
-        echo "[OK] plc installed to ~/.cargo/bin/plc"
-    else
-        echo "[WARN] cargo install failed — see output above."
-    fi
+    local bin
+    for bin in "${PLC_BINS[@]}"; do
+        echo "[INFO] cargo install --path $PLC_SRC/$bin..."
+        if cargo install --path "$PLC_SRC/$bin"; then
+            echo "[OK] $bin installed to ~/.cargo/bin/$bin"
+        else
+            echo "[WARN] cargo install $bin failed — see output above."
+        fi
+    done
     return 0
 }
