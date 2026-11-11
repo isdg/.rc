@@ -76,14 +76,6 @@ over a selection both replace it and keep the unnamed register. Their test:
 
     > nvim --clean --headless -l nvim/tests/clipboard_keys.lua
 
-<leader><leader> opens the plugins layer (rc.d/10-keys-plugins.lua), each
-tool shown only in its context: lean in lean buffers and the infoview, hr in
-its panel and vault, palace in the vault, debug everywhere. A hidden tool's
-key is unbound too (lua/keymaps/layer.lua, `cond`). Their tests:
-
-    > nvim --clean --headless -l nvim/tests/layer.lua
-    > nvim --clean --headless -l nvim/tests/plugins_layer.lua
-
 <leader>rn falls back to a text rename where no server can rename, and
 <leader>rN renames by text across the repo (lua/text_rename.lua). Its test
 needs only rg:
