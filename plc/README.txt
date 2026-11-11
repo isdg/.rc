@@ -15,9 +15,9 @@ rediscovered from scratch later (see misc/modularize.txt).
 PIECES
 -------------------------------------------------------------------------------
 
-1. The plc binary, installed by .rcboot/plc/plc.sh (clones
-   github.com/isdg/plc, cargo installs it). Creates/resolves note files
-   and prints their path; it never opens an editor itself.
+1. The plc and plc-lsp binaries, installed by .rcboot/plc/plc.sh (clones
+   github.com/isdg/plc, cargo installs both). plc creates/resolves note
+   files and prints their path; it never opens an editor itself.
 
 2. zsh/palace.zsh: thin wrappers around plc that open the path it prints
    in $EDITOR, cd'd into $PALACE_DIR. Sourced by zsh/rc.d/15-aliases.zsh,
@@ -36,14 +36,14 @@ PIECES
                                 (plc stat)
     dl, wk                      short aliases for daily, weekly
 
-3. vim/palace-link.vim: <leader>nl in normal mode fzf-picks any file under
-   $PALACE_DIR, inserts a [[wiki-link]] at the cursor, and appends an
-   automatic backlink to the target file. Sourced from both vim/.vimrc and
-   nvim/init.lua (path-resolved so it works regardless of where the
-   dotfiles repo is checked out).
+3. plc-lsp in nvim (nvim/lua/plugins/lsp.lua): attached to markdown
+   buffers under the vault only. gd follows the [[link]] under the cursor
+   (to a note, a #heading, or a ledger name's line in .plc/config), gr
+   lists a link's uses or the note's backlinks, and typing [[ completes
+   note and ledger names.
 
-4. nvim datestamps (nvim/lua/keymaps/notes.lua): <leader>nt / <leader>nT
-   insert an ISO datestamp (local tz / UTC) at the cursor.
+4. nvim stamps (nvim/rc.d/10-keys-plugins.lua): <leader><leader>p, then
+   t / T, insert an "isg" timestamp / a bare one at the cursor.
 
 -------------------------------------------------------------------------------
 WHY IT'S SPREAD OUT
