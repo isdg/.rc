@@ -17,9 +17,12 @@ end
 
 -- hr.vim (lua/plugins/misc.lua). Locate reveals the current article's row,
 -- opening/refreshing the panel and showing read articles under unread-only.
+-- Bookmark saves the reading place via `hr bookmark`; resume returns to it.
 local HR = {
     r = { desc = "toggle", run = "HrToggle" },
     f = { desc = "locate", run = "HrLocate" },
+    b = { desc = "bookmark", run = "HrBookmark" },
+    B = { desc = "resume", run = "HrResume" },
 }
 
 local PALACE = {
