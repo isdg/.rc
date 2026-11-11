@@ -11,7 +11,7 @@
   "git-messenger.vim": { "branch": "master", "commit": "fd124457378a295a5d1036af4954b35d6b807385" },
   "gitsigns.nvim": { "branch": "main", "commit": "851a051e2bd2caba97e23314c68d69f1b1cf5d19" },
   "harpoon": { "branch": "harpoon2", "commit": "87b1a3506211538f460786c23f98ec63ad9af4e5" },
-  "hr.vim": { "branch": "main", "commit": "067076d0ec0d1db8f4d980767dc7f3a084578126" },
+  "hr.vim": { "branch": "main", "commit": "776fe57b65214a759fa39eb4cb0160f1484c33e6" },
   "lazy.nvim": { "branch": "main", "commit": "306a05526ada86a7b30af95c5cc81ffba93fef97" },
   "lean.nvim": { "branch": "main", "commit": "42186878a385ab021296e8f8024521d11a661754" },
   "mason-lspconfig.nvim": { "branch": "main", "commit": "e17625cdc8c2650787467398e02c5d63a2cde966" },
