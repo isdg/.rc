@@ -16,8 +16,8 @@ render() {
         BANNER_LOG_FUNCS=( fake_shell fake_log )
         fake_shell() { banner_info "zsh 9.9 · 42 ms" }
         fake_log() { banner_log "a log line" }
-        _banner_mascot=( "       ▼ qB" "tape" )
-        _banner_info_lines=( "%B%n%b · box · local" "Mon 01 Jan" )
+        _banner_mascot=( "       ▼ qB" "tape" "δ(qB,0)=⟨A,1,L⟩" )
+        _banner_info_lines=( "%B%n%b@box · local" "Mon 01 Jan" )
         cd ~ && banner_render
     ' _ "$repo" | sed $'s/\e\\[[0-9;]*m//g'
 }
@@ -33,9 +33,9 @@ check() {
 }
 
 user="$(id -un)"
-want=$'\n'"  ▼ qB  $user · box · local"$'\n'
-want+=$'        zsh 9.9 · 42 ms\n'
-check "mini nologs: head, identity and shell" \
+want=$'\n'"  ▼ qB  δ(qB,0)=⟨A,1,L⟩  $user@box · local"$'\n'
+want+=$'                         zsh 9.9 · 42 ms\n'
+check "mini nologs: head, δ, identity and shell" \
     "$(render 'mini nologs')"$'\n' "$want"
 
 check "mini beats nomascot" \
@@ -43,5 +43,11 @@ check "mini beats nomascot" \
 
 want+=$'\n    › a log line\n'
 check "mini alone keeps the logs" "$(render mini)"$'\n' "$want"
+
+identity="$(zsh -f -c '
+    source "$1/zsh/banner.zsh"
+    print -r -- "${_banner_info_lines[1]%%@*}@"
+' _ "$repo")"
+check "identity joins user and host with @" "$identity" '%B%n%b@'
 
 exit "$fail"

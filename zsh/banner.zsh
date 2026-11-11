@@ -1,6 +1,6 @@
 # startup banner: mascot · status lines · quiet logs
 #
-#          ▼ q₀        isg · zsh
+#          ▼ q₀        isg@zsh
 #   ┄┬─┬─┬─┬─┬─┬┄      Wed 11 Jun 2026 · 20:42
 #   ┄┤0│1│1│0│1├┄      zsh 5.9 · 77 ms
 #   ┄┴─┴─┴─┴─┴─┴┄
@@ -22,8 +22,9 @@
 #   BANNER_MODE=modes          nologs (default) · full · nomascot · mini
 #                              · off; words combine: 'mini nologs'. A set
 #                              value replaces the default; full shows all.
-#                              mini: the mascot's head and the identity,
-#                              then the shell line; it beats nomascot.
+#                              mini: the mascot's head and its δ, the
+#                              identity, then the shell line; it beats
+#                              nomascot.
 #                              The log funcs run in every mode, off too:
 #                              their side effects (ssh-agent) still matter.
 #   BANNER_ACCENT=color        mascot color (default: 244, a mid grey that
@@ -209,7 +210,7 @@ banner_render() {
         if (( ${mode[(Ie)mini]} )); then
             # the info lines open with the identity and close with
             # info_shell's, so the date and addresses between them go
-            head=${(j: :)${=_banner_mascot[1]}}
+            head="${(j: :)${=_banner_mascot[1]}}  ${_banner_mascot[-1]}"
             print -P -- \
                 "  %F{${BANNER_ACCENT:-244}}${head}%f  ${_banner_info_lines[1]}"
             print -P -- \
@@ -560,7 +561,7 @@ log_ssh() {
 # %n = the real user, not a hardcoded name: a root shell sourcing this config
 # (sudo -E, su -m) says "root", so the banner can't claim to be isg while the
 # shell can write anywhere.
-banner_info "%B%n%b · $(banner_host_info)"
+banner_info "%B%n%b@$(banner_host_info)"
 # addresses go on their own line under the identity, and only when there are
 # any — a local login has no peer to name, so the banner stays three lines
 _banner_net=$(banner_net_info)
