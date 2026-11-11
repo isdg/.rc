@@ -31,13 +31,44 @@
 SSH_KEYS=( ~/.ssh/delos-new )
 
 # ── environment ──
-# Tools installed somewhere only this box knows about.
-# export PATH="$HOME/opt/some-sdk/bin:$PATH"
+# Tools installed somewhere only this box knows about: psql & friends from
+# keg-only libpq (client tools only).
+export PATH="/opt/homebrew/opt/libpq/bin:$PATH"
+
+# xcrun picks the stale MacOSX27.0.sdk, whose arm64e.x1 tbds the CLT 26
+# linker rejects; MacOSX.sdk tracks the SDK matching the installed tools.
+export SDKROOT=/Library/Developer/CommandLineTools/SDKs/MacOSX.sdk
 
 # Per-repo escape hatches. Example: cosmos-saas's sync-env lefthook hook runs
 # `asdf plugin add supabase` on every merge and checkout, and its .tool-versions
-# pin can never match the Homebrew supabase on PATH.
-# export LEFTHOOK_EXCLUDE=sync-env
+# pin can never match the Homebrew supabase on PATH. Remove the line to restore
+# it; run `uv sync` by hand when uv.lock changes.
+export LEFTHOOK_EXCLUDE=sync-env
+
+# Services reached only over a VPN. Placeholders: real addresses stay in the
+# live file, never in this tracked one.
+# export LOKI_ADDR=http://loki.internal.example:3100
+# export VAULT_ADDR=https://vault.internal.example:8200
+
+# ── completions ──
+# Docker Desktop appends this on install. Guarded here: without the directory
+# _comps[docker] stays unset and the second compinit runs on every shell.
+if [[ -d ~/.docker/completions ]]; then
+    fpath=(~/.docker/completions $fpath)
+    autoload -Uz compinit
+    (( ${+_comps[docker]} )) || compinit
+fi
+
+# Scaleway CLI completion, cached until scw changes. Its script reruns a full
+# compinit on every shell; that line is dropped, 03-completion already ran it.
+_zsh_cached scw "$commands[scw]" -- \
+    sh -c 'scw autocomplete script shell=zsh | grep -v compinit' \
+    && source $REPLY
+
+# ── banner ──
+# Two lines: the mascot's head, its δ and user@host, then the session kind
+# and startup time. The modes are listed at the top of zsh/banner.zsh.
+BANNER_MODE='mini nologs'
 
 # Secrets: prefer a lookup over a literal, so the value is not sitting in a
 # plaintext dotfile that a stray `cat ~/.zshrc.local` or screen share exposes.

@@ -96,8 +96,8 @@ LAYOUT
     fonts/          JetBrains Mono + Computer Modern
     darwin/         Darwin system defaults + Brewfile; launchd/ holds
                     hr and ~/.rcstate sync jobs run at login and hourly,
-                    loaded by hand with launchd/agents.sh (logs in
-                    ~/Library/Logs/rc)
+                    loaded at level 3, driven by hand with
+                    launchd/agents.sh (logs in ~/Library/Logs/rc)
     prompt/         shell prompt definitions
     hr/             hrrc, linked to ~/.hr/.hrrc: hr's default vault and
                     settings

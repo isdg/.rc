@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# Loads, runs and inspects the launchd jobs beside this script. Nothing
-# loads them for you: a job runs only after `agents.sh load NAME`.
+# Loads, runs and inspects the launchd jobs beside this script. boot.sh
+# loads them all at level 3 (.rcboot/launchd); this is the hand control.
 set -euo pipefail
 
 dir="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"

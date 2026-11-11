@@ -48,6 +48,15 @@ local function fit(chunks)
     return out
 end
 
+--- The keys of a layer whose `cond` holds here, or that have none.
+function M.visible(keys)
+    local out = {}
+    for ch, entry in pairs(keys) do
+        if not entry.cond or entry.cond() then out[ch] = entry end
+    end
+    return out
+end
+
 --- Open a layer and run keys until one of them ends it.
 --- keys: { [char] = { desc = "shown in the hint", run = cmd|fn, stay = ... } }
 ---       or { desc = ..., name = "SUB", keys = {...} } to hand off to a sub-layer
@@ -57,7 +66,10 @@ end
 --- A sub-layer replaces its parent rather than nesting inside it, so leaving
 --- one leaves them all -- which is what `switch-client -T splits` does to the
 --- plugins table.
+--- `cond`, a function asked as the layer opens, hides and unbinds a key whose
+--- context this is not.
 function M.open(name, keys)
+    keys = M.visible(keys)
     local chunks = hint(name, keys)
     while true do
         vim.api.nvim_echo(fit(chunks), false, {})
