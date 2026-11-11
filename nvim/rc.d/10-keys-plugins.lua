@@ -21,7 +21,7 @@ end
 -- r and f switch the panel to its recent or favorites view from anywhere,
 -- landing on the article being read (again: back to the list). Bookmarks
 -- are reading places kept by `hr bookmark`: b opens their verbs, the list
--- being the panel's bookmarked view; B resumes.
+-- being the panel's bookmarked view; B opens the newest bookmark.
 local BOOKMARKS = {
     c = { desc = "create", run = "HrBookmark" },
     l = { desc = "list", run = "HrView --bookmarked" },
