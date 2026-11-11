@@ -1,6 +1,6 @@
 # startup banner: mascot · status lines · quiet logs
 #
-#          ▼ q₀        isg · zsh
+#          ▼ q₀        isg@zsh
 #   ┄┬─┬─┬─┬─┬─┬┄      Wed 11 Jun 2026 · 20:42
 #   ┄┤0│1│1│0│1├┄      zsh 5.9 · 77 ms
 #   ┄┴─┴─┴─┴─┴─┴┄
@@ -560,7 +560,7 @@ log_ssh() {
 # %n = the real user, not a hardcoded name: a root shell sourcing this config
 # (sudo -E, su -m) says "root", so the banner can't claim to be isg while the
 # shell can write anywhere.
-banner_info "%B%n%b · $(banner_host_info)"
+banner_info "%B%n%b@$(banner_host_info)"
 # addresses go on their own line under the identity, and only when there are
 # any — a local login has no peer to name, so the banner stays three lines
 _banner_net=$(banner_net_info)
