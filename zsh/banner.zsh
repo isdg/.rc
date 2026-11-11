@@ -1,8 +1,8 @@
 # startup banner: mascot · status lines · quiet logs
 #
 #          ▼ q₀        isg@zsh
-#   ┄┬─┬─┬─┬─┬─┬┄      Wed 11 Jun 2026 · 20:42
-#   ┄┤0│1│1│0│1├┄      zsh 5.9 · 77 ms
+#   ┄┬─┬─┬─┬─┬─┬┄      local · zsh 5.9 · 77 ms
+#   ┄┤0│1│1│0│1├┄      Wed 11 Jun 2026 · 20:42
 #   ┄┴─┴─┴─┴─┴─┴┄
 #   δ(q₀,0)=⟨B,1,R⟩
 #
@@ -23,8 +23,8 @@
 #                              · off; words combine: 'mini nologs'. A set
 #                              value replaces the default; full shows all.
 #                              mini: the mascot's head and its δ, the
-#                              identity, then the shell line; it beats
-#                              nomascot.
+#                              identity, then the session kind and startup
+#                              time; it beats nomascot.
 #                              The log funcs run in every mode, off too:
 #                              their side effects (ssh-agent) still matter.
 #   BANNER_ACCENT=color        mascot color (default: 244, a mid grey that
@@ -198,6 +198,7 @@ fi
 banner_render() {
     local -i i rows off=${BANNER_INFO_OFFSET:-1}
     local fn mascot info line head
+    local -a shell
     local -a mode=( ${=BANNER_MODE:-nologs} )
     {
         # consume the log registry — funcs run in the current shell, so
@@ -208,13 +209,13 @@ banner_render() {
         (( ${mode[(Ie)off]} )) && return 0
         print
         if (( ${mode[(Ie)mini]} )); then
-            # the info lines open with the identity and close with
-            # info_shell's, so the date and addresses between them go
+            # the identity, then info_shell's line without the version
             head="${(j: :)${=_banner_mascot[1]}}  ${_banner_mascot[-1]}"
             print -P -- \
                 "  %F{${BANNER_ACCENT:-244}}${head}%f  ${_banner_info_lines[1]}"
-            print -P -- \
-                "  ${(l:${#head}+2:)}${_banner_info_lines[-1]}"
+            shell=( ${_banner_session:+"$_banner_session"}
+                    ${_banner_ms:+"$_banner_ms ms"} )
+            print -P -- "  ${(l:${#head}+2:)}${(j: · :)shell}"
         elif (( ${mode[(Ie)nomascot]} )); then
             for info in "${_banner_info_lines[@]}"; do
                 print -P -- "    › ${info}"
@@ -253,27 +254,34 @@ banner_render() {
 # command's whole output into the logs when a line of its own won't do).
 # Add a func below and list it in the registry; remove a line to silence it.
 #
-# banner_host_info and banner_net_info are the exceptions: they print instead
+# banner_session_info and banner_net_info are the exceptions: they print instead
 # of registering, because they feed the info lines beside the mascot rather
 # than the logs. info_shell feeds them too, but registers: the timing must be
-# read at render time, after ~/.zshrc.local.
+# read at render time, after ~/.zshrc.local. info_date follows it, so the date
+# sits below the shell line.
 
 BANNER_LOG_FUNCS=(
     info_shell
+    info_date
     log_tmux
     log_ssh
 )
 
-# zsh version + startup time, e.g. "zsh 5.9 · 361 ms", as the last info line.
+# session kind + zsh version + startup time, e.g. "local · zsh 5.9 · 361 ms".
 # _BANNER_T0 is stamped on .zshrc line 1; the timing is dropped if it's unset.
+# _banner_ms keeps the timing for mini, which drops the version.
 info_shell() {
     local seg="zsh $ZSH_VERSION"
+    _banner_ms=
     if [[ -n $_BANNER_T0 ]]; then
         local -i ms=$(( (EPOCHREALTIME - _BANNER_T0) * 1000 ))
+        _banner_ms=$ms
         seg+=" · ${ms} ms"
     fi
-    banner_info "$seg"
+    banner_info "${_banner_session:+$_banner_session · }$seg"
 }
+
+info_date() { banner_info "%D{%a %d %b %Y · %H:%M}" }
 
 # The ssh origin recovered from utmp, computed at most once.
 #
@@ -315,25 +323,22 @@ _banner_peer_name() {
     [[ -n $REPLY ]]
 }
 
-# host + session kind, e.g. "isg-darwin · local" / "isg-darwin · ssh from
-# isg-darwin-sigma"
-# — who and what kind of session, so it belongs on the identity line next to
-# the user name rather than buried in the logs. Printed, not registered:
-# .zshrc assembles the info lines itself, before banner_render walks the log
-# registry.
+# session kind, e.g. "local" / "ssh from isg-darwin-sigma" — what kind of
+# session, so it opens the shell line rather than being buried in the logs.
+# Printed, not registered: it is read once at source time into
+# _banner_session, for info_shell and mini's second line.
 #
-# The leading name is always THIS machine ($HOST): on a box you sshed into it
-# names the box you landed on. The peer follows "ssh from" only when
-# _banner_peer_name knows its name. Deliberately address-free — the numbers
-# live on the line below, so this one answers "who and what" and never makes
-# you read an IP to find out you are simply at home.
+# The peer follows "ssh from" only when _banner_peer_name knows its name.
+# Deliberately address-free — the numbers live on their own line, so this
+# one answers "what kind" and never makes you read an IP to find out you are
+# simply at home.
 #
 # SUDO_USER names who made the jump and rides along on every branch. Under sudo
 # on a local box the origin probe finds no parenthesis, so the line says only
-# "isg-darwin · via isg" — no session kind, because utmp cannot prove one.
+# "via isg" — no session kind, because utmp cannot prove one.
 # Under sudo only Tailscale names the peer: sudo -E would carry a forged
 # ISG_SSH_FROM through.
-banner_host_info() {
+banner_session_info() {
     local where origin REPLY
     if [[ -n $SSH_CONNECTION || -n $SSH_TTY ]]; then
         where="ssh"
@@ -347,7 +352,8 @@ banner_host_info() {
     else
         where="local"
     fi
-    print -r -- "${HOST%%.*}${where:+ · $where}${SUDO_USER:+ · via $SUDO_USER}"
+    print -r -- \
+        "${where}${where:+${SUDO_USER:+ · }}${SUDO_USER:+via $SUDO_USER}"
 }
 
 # the two addresses, e.g. "100.81.165.60 · ssh from 100.70.55.75" — this end of
@@ -560,11 +566,12 @@ log_ssh() {
 # ── info lines, right of the mascot ──
 # %n = the real user, not a hardcoded name: a root shell sourcing this config
 # (sudo -E, su -m) says "root", so the banner can't claim to be isg while the
-# shell can write anywhere.
-banner_info "%B%n%b@$(banner_host_info)"
+# shell can write anywhere. The host is always THIS machine: on a box you
+# sshed into, the one you landed on.
+banner_info "%B%n%b@${HOST%%.*}"
+typeset -g _banner_session=$(banner_session_info) _banner_ms=
 # addresses go on their own line under the identity, and only when there are
 # any — a local login has no peer to name, so the banner stays three lines
 _banner_net=$(banner_net_info)
 [[ -n $_banner_net ]] && banner_info "$_banner_net"
 unset _banner_net
-banner_info "%D{%a %d %b %Y · %H:%M}"

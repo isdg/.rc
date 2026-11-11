@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Renders banner.zsh in mini mode under a fixed mascot and info lines, and
-# checks the two lines it draws.
+# checks the two lines it draws; then the real info lines of a local login.
 set -euo pipefail
 
 repo="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
@@ -9,15 +9,17 @@ trap 'rm -rf "$tmp"' EXIT
 
 LC_ALL="$(locale -a | grep -i -E '^(en_US|C)\.utf-?8$' | sed -n 1p)"
 export LC_ALL HOME="$tmp"
+unset SSH_CONNECTION SSH_TTY SUDO_USER _BANNER_T0
 
 render() {
     BANNER_MODE="$1" zsh -f -c '
         source "$1/zsh/banner.zsh"
         BANNER_LOG_FUNCS=( fake_shell fake_log )
-        fake_shell() { banner_info "zsh 9.9 · 42 ms" }
+        fake_shell() { _banner_ms=42; banner_info "local · zsh 9.9 · 42 ms" }
         fake_log() { banner_log "a log line" }
         _banner_mascot=( "       ▼ qB" "tape" "δ(qB,0)=⟨A,1,L⟩" )
-        _banner_info_lines=( "%B%n%b@box · local" "Mon 01 Jan" )
+        _banner_info_lines=( "%B%n%b@box" "Mon 01 Jan" )
+        _banner_session=local
         cd ~ && banner_render
     ' _ "$repo" | sed $'s/\e\\[[0-9;]*m//g'
 }
@@ -33,9 +35,9 @@ check() {
 }
 
 user="$(id -un)"
-want=$'\n'"  ▼ qB  δ(qB,0)=⟨A,1,L⟩  $user@box · local"$'\n'
-want+=$'                         zsh 9.9 · 42 ms\n'
-check "mini nologs: head, δ, identity and shell" \
+want=$'\n'"  ▼ qB  δ(qB,0)=⟨A,1,L⟩  $user@box"$'\n'
+want+=$'                         local · 42 ms\n'
+check "mini nologs: head, δ, identity, kind and time" \
     "$(render 'mini nologs')"$'\n' "$want"
 
 check "mini beats nomascot" \
@@ -44,10 +46,24 @@ check "mini beats nomascot" \
 want+=$'\n    › a log line\n'
 check "mini alone keeps the logs" "$(render mini)"$'\n' "$want"
 
-identity="$(zsh -f -c '
+lines="$(zsh -f -c '
     source "$1/zsh/banner.zsh"
-    print -r -- "${_banner_info_lines[1]%%@*}@"
+    info_shell
+    info_date
+    print -rl -- "${_banner_info_lines[@]}"
 ' _ "$repo")"
-check "identity joins user and host with @" "$identity" '%B%n%b@'
+host="$(zsh -f -c 'print -r -- ${HOST%%.*}')"
+version="$(zsh -f -c 'print -r -- $ZSH_VERSION')"
+want="%B%n%b@$host"$'\n'"local · zsh $version"$'\n'
+want+="%D{%a %d %b %Y · %H:%M}"
+check "local: user@host, the kind on the shell line, the date" \
+    "$lines" "$want"
+
+kind="$(SUDO_USER=root zsh -f -c '
+    source "$1/zsh/banner.zsh"
+    _banner_sudo_origin() { }
+    banner_session_info
+' _ "$repo")"
+check "sudo on a local box: via, no kind" "$kind" "via root"
 
 exit "$fail"
