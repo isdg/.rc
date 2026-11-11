@@ -88,8 +88,17 @@ return {
                 keymap = {
                     fzf = {},
                     -- The builtin previewer is an nvim window fzf can't see, so
-                    -- fzf.vim's ctrl-/ toggle has to be an nvim map here.
-                    builtin = { true, ["<C-/>"] = "toggle-preview", ["<C-_>"] = "toggle-preview" },
+                    -- fzf.vim's ctrl-/ toggle and the opts file's preview
+                    -- scroll keys have to be nvim maps here.
+                    builtin = {
+                        true,
+                        ["<C-/>"] = "toggle-preview",
+                        ["<C-_>"] = "toggle-preview",
+                        ["<M-J>"] = "preview-down",
+                        ["<M-K>"] = "preview-up",
+                        ["<M-D>"] = "preview-half-page-down",
+                        ["<M-U>"] = "preview-half-page-up",
+                    },
                 },
             })
             fzf_lua.register_ui_select()
