@@ -24,7 +24,7 @@ Tue 17 Mar 2026 at 13:17:56
 
 Sat 21 Mar 2026 at 18:32:17
 
-- o gdb in nvim/vim
+- x gdb in nvim/vim
 
 Sat 25 Apr 2026 at 00:18:59
 

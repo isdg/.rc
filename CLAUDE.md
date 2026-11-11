@@ -37,6 +37,22 @@ bootstrap; this file holds the rules for changing them.
 - Commit scope is the tool's directory: `feat(tmux)`, `fix(nvim)`,
   `feat(darwin)`.
 
+## Versioning
+
+- `VERSION` holds `x.y.z`; `LOG.txt` holds the release notes, newest first.
+- Every landing on `main` bumps z by one, in the landing's last commit.
+  Merging `main` into `setup/<machine>` bumps nothing.
+- If the rebase onto `origin/main` conflicts on `VERSION`, take
+  `origin/main`'s value plus one.
+- y is a milestone and x a major version (1.0 first); only the user calls
+  either. Then: bump it, zero what follows, write a `LOG.txt` entry, and
+  push an annotated tag `vx.y.0` with `main`.
+- 1.0 is due when the user can boot any machine by hand, steering it to its
+  use case, and get a working peer of the others in their network.
+- Propose a milestone or a major when a landing looks like one, with the
+  reason; never make one unasked.
+- A patch gets a `LOG.txt` line only when the user asks for it.
+
 ## Layout
 
 - One tool per top-level directory, installed by `.rcboot/<tool>/module.sh`

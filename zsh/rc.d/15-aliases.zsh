@@ -13,6 +13,7 @@ alias tt='bash "${ISGRC:-$HOME/.rc}/sh/toggle_theme.sh"'  # toggle light/dark
 alias ttd='tt --details'  # ...and list each app's switch
 alias ww='bash "${ISGRC:-$HOME/.rc}/sh/padding.sh" x'  # ghostty padding-x
 alias wh='bash "${ISGRC:-$HOME/.rc}/sh/padding.sh" y'  # ghostty padding-y
+alias rcversion='bash "${ISGRC:-$HOME/.rc}/sh/rcversion.sh"'
 
 # gjobs — cross-terminal "jobs". The `jobs` builtin only sees the current
 # shell's job table, so this shows every terminal-attached process grouped by

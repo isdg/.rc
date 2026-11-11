@@ -1,7 +1,7 @@
 # startup banner: mascot · status lines · quiet logs
 #
 #          ▼ q₀        isg@zsh
-#   ┄┬─┬─┬─┬─┬─┬┄      local · zsh 5.9 · 77 ms
+#   ┄┬─┬─┬─┬─┬─┬┄      .rc 0.11.0 · 77 ms · local
 #   ┄┤0│1│1│0│1├┄      Wed 11 Jun 2026 · 20:42
 #   ┄┴─┴─┴─┴─┴─┴┄
 #   δ(q₀,0)=⟨B,1,R⟩
@@ -209,12 +209,13 @@ banner_render() {
         (( ${mode[(Ie)off]} )) && return 0
         print
         if (( ${mode[(Ie)mini]} )); then
-            # the identity, then info_shell's line without the version
+            # the identity, then info_shell's line
             head="${(j: :)${=_banner_mascot[1]}}  ${_banner_mascot[-1]}"
             print -P -- \
                 "  %F{${BANNER_ACCENT:-244}}${head}%f  ${_banner_info_lines[1]}"
-            shell=( ${_banner_session:+"$_banner_session"}
-                    ${_banner_ms:+"$_banner_ms ms"} )
+            shell=( ${_banner_rc:+".rc $_banner_rc"}
+                    ${_banner_ms:+"$_banner_ms ms"}
+                    ${_banner_session:+"$_banner_session"} )
             print -P -- "  ${(l:${#head}+2:)}${(j: · :)shell}"
         elif (( ${mode[(Ie)nomascot]} )); then
             for info in "${_banner_info_lines[@]}"; do
@@ -267,18 +268,20 @@ BANNER_LOG_FUNCS=(
     log_ssh
 )
 
-# session kind + zsh version + startup time, e.g. "local · zsh 5.9 · 361 ms".
-# _BANNER_T0 is stamped on .zshrc line 1; the timing is dropped if it's unset.
-# _banner_ms keeps the timing for mini, which drops the version.
+# .rc version + startup time + session kind, e.g. ".rc 0.11.0 · 61 ms · local".
+# _BANNER_T0 is stamped on .zshrc line 1; the timing is dropped if it's unset,
+# the version if VERSION is unreadable. $(<file) reads it without a fork.
 info_shell() {
-    local seg="zsh $ZSH_VERSION"
-    _banner_ms=
+    local -a seg
+    _banner_rc= _banner_ms=
+    [[ -n $ISGRC && -r $ISGRC/VERSION ]] && _banner_rc=$(<$ISGRC/VERSION)
     if [[ -n $_BANNER_T0 ]]; then
         local -i ms=$(( (EPOCHREALTIME - _BANNER_T0) * 1000 ))
         _banner_ms=$ms
-        seg+=" · ${ms} ms"
     fi
-    banner_info "${_banner_session:+$_banner_session · }$seg"
+    seg=( ${_banner_rc:+".rc $_banner_rc"} ${_banner_ms:+"$_banner_ms ms"}
+          ${_banner_session:+"$_banner_session"} )
+    banner_info "${(j: · :)seg}"
 }
 
 info_date() { banner_info "%D{%a %d %b %Y · %H:%M}" }
@@ -324,7 +327,7 @@ _banner_peer_name() {
 }
 
 # session kind, e.g. "local" / "ssh from isg-darwin-sigma" — what kind of
-# session, so it opens the shell line rather than being buried in the logs.
+# session, so it ends the shell line rather than being buried in the logs.
 # Printed, not registered: it is read once at source time into
 # _banner_session, for info_shell and mini's second line.
 #
@@ -569,7 +572,7 @@ log_ssh() {
 # shell can write anywhere. The host is always THIS machine: on a box you
 # sshed into, the one you landed on.
 banner_info "%B%n%b@${HOST%%.*}"
-typeset -g _banner_session=$(banner_session_info) _banner_ms=
+typeset -g _banner_session=$(banner_session_info) _banner_ms= _banner_rc=
 # addresses go on their own line under the identity, and only when there are
 # any — a local login has no peer to name, so the banner stays three lines
 _banner_net=$(banner_net_info)
