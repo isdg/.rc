@@ -34,8 +34,8 @@ check() {
 
 user="$(id -un)"
 want=$'\n'"  ▼ qB  $user · box · local"$'\n'
-want+=$'        ~ · zsh 9.9 · 42 ms\n'
-check "mini nologs: head, identity, cwd and shell" \
+want+=$'        zsh 9.9 · 42 ms\n'
+check "mini nologs: head, identity and shell" \
     "$(render 'mini nologs')"$'\n' "$want"
 
 check "mini beats nomascot" \
