@@ -41,3 +41,5 @@
 3 lean
 3 argocd
 3 macos
+# Last, so every job's command is installed before RunAtLoad starts it.
+3 launchd
