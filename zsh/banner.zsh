@@ -23,7 +23,7 @@
 #                              · off; words combine: 'mini nologs'. A set
 #                              value replaces the default; full shows all.
 #                              mini: the mascot's head and the identity,
-#                              then cwd · the shell line; it beats nomascot.
+#                              then the shell line; it beats nomascot.
 #                              The log funcs run in every mode, off too:
 #                              their side effects (ssh-agent) still matter.
 #   BANNER_ACCENT=color        mascot color (default: 244, a mid grey that
@@ -213,7 +213,7 @@ banner_render() {
             print -P -- \
                 "  %F{${BANNER_ACCENT:-244}}${head}%f  ${_banner_info_lines[1]}"
             print -P -- \
-                "  ${(l:${#head}+2:)}%~ · ${_banner_info_lines[-1]}"
+                "  ${(l:${#head}+2:)}${_banner_info_lines[-1]}"
         elif (( ${mode[(Ie)nomascot]} )); then
             for info in "${_banner_info_lines[@]}"; do
                 print -P -- "    › ${info}"
