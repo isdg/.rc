@@ -19,9 +19,11 @@
 #   banner_render             consume the registry and draw — call once, last
 #
 # Config
-#   BANNER_MODE=modes          nologs (default) · full · nomascot · off;
-#                              words combine: 'nomascot nologs'. A set
+#   BANNER_MODE=modes          nologs (default) · full · nomascot · mini
+#                              · off; words combine: 'mini nologs'. A set
 #                              value replaces the default; full shows all.
+#                              mini: the mascot's head and the identity,
+#                              then cwd · the shell line; it beats nomascot.
 #                              The log funcs run in every mode, off too:
 #                              their side effects (ssh-agent) still matter.
 #   BANNER_ACCENT=color        mascot color (default: 244, a mid grey that
@@ -194,7 +196,7 @@ fi
 
 banner_render() {
     local -i i rows off=${BANNER_INFO_OFFSET:-1}
-    local fn mascot info line
+    local fn mascot info line head
     local -a mode=( ${=BANNER_MODE:-nologs} )
     {
         # consume the log registry — funcs run in the current shell, so
@@ -204,7 +206,15 @@ banner_render() {
         done
         (( ${mode[(Ie)off]} )) && return 0
         print
-        if (( ${mode[(Ie)nomascot]} )); then
+        if (( ${mode[(Ie)mini]} )); then
+            # the info lines open with the identity and close with
+            # info_shell's, so the date and addresses between them go
+            head=${(j: :)${=_banner_mascot[1]}}
+            print -P -- \
+                "  %F{${BANNER_ACCENT:-244}}${head}%f  ${_banner_info_lines[1]}"
+            print -P -- \
+                "  ${(l:${#head}+2:)}%~ · ${_banner_info_lines[-1]}"
+        elif (( ${mode[(Ie)nomascot]} )); then
             for info in "${_banner_info_lines[@]}"; do
                 print -P -- "    › ${info}"
             done
