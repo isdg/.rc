@@ -15,7 +15,10 @@ render() {
     BANNER_MODE="$1" zsh -f -c '
         source "$1/zsh/banner.zsh"
         BANNER_LOG_FUNCS=( fake_shell fake_log )
-        fake_shell() { _banner_ms=42; banner_info "local · zsh 9.9 · 42 ms" }
+        fake_shell() {
+            _banner_rc=9.9.9 _banner_ms=42
+            banner_info ".rc 9.9.9 · 42 ms · local"
+        }
         fake_log() { banner_log "a log line" }
         _banner_mascot=( "       ▼ qB" "tape" "δ(qB,0)=⟨A,1,L⟩" )
         _banner_info_lines=( "%B%n%b@box" "Mon 01 Jan" )
@@ -36,8 +39,8 @@ check() {
 
 user="$(id -un)"
 want=$'\n'"  ▼ qB  δ(qB,0)=⟨A,1,L⟩  $user@box"$'\n'
-want+=$'                         local · 42 ms\n'
-check "mini nologs: head, δ, identity, kind and time" \
+want+=$'                         .rc 9.9.9 · 42 ms · local\n'
+check "mini nologs: head, δ, identity, version, time and kind" \
     "$(render 'mini nologs')"$'\n' "$want"
 
 check "mini beats nomascot" \
@@ -46,18 +49,25 @@ check "mini beats nomascot" \
 want+=$'\n    › a log line\n'
 check "mini alone keeps the logs" "$(render mini)"$'\n' "$want"
 
-lines="$(zsh -f -c '
-    source "$1/zsh/banner.zsh"
-    info_shell
-    info_date
-    print -rl -- "${_banner_info_lines[@]}"
-' _ "$repo")"
+info() {
+    ISGRC="$1" zsh -f -c '
+        source "$1/zsh/banner.zsh"
+        info_shell
+        info_date
+        print -rl -- "${_banner_info_lines[@]}"
+    ' _ "$repo"
+}
 host="$(zsh -f -c 'print -r -- ${HOST%%.*}')"
-version="$(zsh -f -c 'print -r -- $ZSH_VERSION')"
-want="%B%n%b@$host"$'\n'"local · zsh $version"$'\n'
+mkdir "$tmp/rc"
+echo 9.9.9 > "$tmp/rc/VERSION"
+want="%B%n%b@$host"$'\n'".rc 9.9.9 · local"$'\n'
 want+="%D{%a %d %b %Y · %H:%M}"
-check "local: user@host, the kind on the shell line, the date" \
-    "$lines" "$want"
+check "local: user@host, version and kind on the shell line, the date" \
+    "$(info "$tmp/rc")" "$want"
+
+want="%B%n%b@$host"$'\n'"local"$'\n'"%D{%a %d %b %Y · %H:%M}"
+check "no VERSION: the shell line drops the version" \
+    "$(info "$tmp")" "$want"
 
 kind="$(SUDO_USER=root zsh -f -c '
     source "$1/zsh/banner.zsh"
