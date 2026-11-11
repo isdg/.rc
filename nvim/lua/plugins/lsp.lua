@@ -195,28 +195,10 @@ return {
             })
 
             -- plc-lsp (~/plc) serves [[wikilink]] gd, gr and completion, so it
-            -- attaches only to notes inside the vault `plc config` names. Both
-            -- sides are resolved, since the vault may be reached via a symlink.
-            local function real(path)
-                local dir = vim.fs.dirname(path)
-                return vim.uv.fs_realpath(path) or vim.fs.joinpath(
-                    vim.uv.fs_realpath(dir) or dir, vim.fs.basename(path))
-            end
-            local vault
+            -- attaches only to notes inside the vault (lua/palace.lua).
             local function palace_root(bufnr, on_dir)
-                if vault == nil then
-                    local ok, out = pcall(function()
-                        return vim.system({ "plc", "config" },
-                            { text = true }):wait()
-                    end)
-                    vault = ok and out.code == 0
-                        and real(vim.trim(out.stdout)) or false
-                end
-                local name = vim.api.nvim_buf_get_name(bufnr)
-                if vault and name ~= "" and vim.fs.relpath(vault, real(name))
-                then
-                    on_dir(vault)
-                end
+                local vault = require("palace").owner(bufnr)
+                if vault then on_dir(vault) end
             end
 
             vim.lsp.config("plc", {

@@ -1,5 +1,5 @@
 -- ============================================================
---  PLUGINS LAYER: palace/plc stamps, hr reading list, lean, dap
+--  PLUGINS LAYER: palace/plc stamps and links, hr reading list, lean, dap
 -- ============================================================
 -- <leader><leader> opens a layer whose bare letters are tools, each handing off
 -- to a sub-layer of that tool's verbs — the shape of tmux's `plugins` table
@@ -43,6 +43,12 @@ local PALACE = {
     -- The same clock without the isg prefix, verbatim from the old <leader>PT.
     -- Its desc there said UTC, which the format string never was.
     T = { desc = "stamp bare", run = stamp("%Y-%m-%d %H:%M:%S %z") },
+    -- [[links]] to notes picked in fzf (lua/palace.lua), put like p and P.
+    l = { desc = "link", run = function() require("palace").link(true) end },
+    L = {
+        desc = "link before",
+        run = function() require("palace").link(false) end,
+    },
 }
 
 -- lean.nvim (lua/plugins/lsp.lua). Its commands exist once a .lean buffer
