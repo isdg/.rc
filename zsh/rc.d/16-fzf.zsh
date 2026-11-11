@@ -122,6 +122,7 @@ hrv() {
    #   hrv --feed matklad,danluu      one or more authors
    #   hrv --group sites --unread     flags compose
    #   hrv recent [flags]             what you opened, latest first
+   #   hrv bookmarks [flags]          what you bookmarked, latest first
    # hr owns the flag vocabulary — hr.vim forwards them to `hr list` — so
    # anything `hr list` accepts works here with no change to this function.
    # Values must not contain spaces: they cross into nvim as :HrStart args,
@@ -134,8 +135,8 @@ hrv() {
    # flag becomes an error here rather than a silently empty sidebar inside
    # nvim, where it reads as a broken vault.
    if (( $# )); then
-      if [[ $1 == recent ]]; then
-         hr recent --json "${@:2}" >/dev/null || return 1
+      if [[ $1 == (recent|bookmarks) ]]; then
+         hr $1 --json "${@:2}" >/dev/null || return 1
       else
          hr list --json "$@" >/dev/null || return 1
       fi
