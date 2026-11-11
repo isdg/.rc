@@ -23,9 +23,9 @@ end
 -- are reading places kept by `hr bookmark`: b opens their verbs, the list
 -- being the panel's bookmarked view; B resumes.
 local BOOKMARKS = {
-    a = { desc = "add", run = "HrBookmark" },
+    c = { desc = "create", run = "HrBookmark" },
     l = { desc = "list", run = "HrView --bookmarked" },
-    d = { desc = "delete", run = "HrBookmark!" },
+    x = { desc = "delete", run = "HrBookmark!" },
 }
 
 local HR = {
