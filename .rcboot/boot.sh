@@ -39,6 +39,9 @@ if [ "$RC_MODE" = ensure ]; then
     echo "=========================================="
     echo "  Dotfiles Verify for $OS_NAME"
     echo "  Level: $RC_LEVEL"
+    # Reported, never counted: being behind origin/main is not a broken box.
+    echo "  Version: .rc $(bash "$DOTFILES_DIR/sh/rcversion.sh" \
+        "$DOTFILES_DIR" 2>/dev/null || echo "unknown, no VERSION")"
     echo "=========================================="
     echo ""
 
