@@ -99,8 +99,8 @@ LAYOUT
                     loaded by hand with launchd/agents.sh (logs in
                     ~/Library/Logs/rc)
     prompt/         shell prompt definitions
-    hr/             hrrc, linked to ~/.hrrc: hr's default settings (the
-                    vault is $HR_VAULT, from zsh/rc.d/12-env.zsh)
+    hr/             hrrc, linked to ~/.hr/.hrrc: hr's default vault and
+                    settings
     colima/         template new Colima profiles are created from (4 CPU,
                     8 GiB); seeded once to ~/.colima/_templates/
     lspmux/         lspmux config: idle rust-analyzers live 8 hours, so
