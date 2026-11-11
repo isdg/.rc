@@ -14,6 +14,8 @@
         <string>rcstate-sync</string>
         <string>.rcstate/sync.sh</string>
     </array>
+    <key>RunAtLoad</key>
+    <true/>
     <key>StartInterval</key>
     <integer>3600</integer>
     <key>ProcessType</key>
