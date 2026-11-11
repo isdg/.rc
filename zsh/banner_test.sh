@@ -49,6 +49,16 @@ check "mini beats nomascot" \
 want+=$'\n    › a log line\n'
 check "mini alone keeps the logs" "$(render mini)"$'\n' "$want"
 
+want=$'\n  ▼ qB  .rc 9.9.9 · 42 ms\n'
+check "tiny nologs: head, version and time" \
+    "$(render 'tiny nologs')"$'\n' "$want"
+
+check "tiny beats mini and nomascot" \
+    "$(render 'tiny mini nologs nomascot')"$'\n' "$want"
+
+want+=$'\n    › a log line\n'
+check "tiny alone keeps the logs" "$(render tiny)"$'\n' "$want"
+
 info() {
     ISGRC="$1" zsh -f -c '
         source "$1/zsh/banner.zsh"

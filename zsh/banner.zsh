@@ -20,11 +20,14 @@
 #
 # Config
 #   BANNER_MODE=modes          nologs (default) · full · nomascot · mini
-#                              · off; words combine: 'mini nologs'. A set
-#                              value replaces the default; full shows all.
+#                              · tiny · off; words combine: 'mini nologs'.
+#                              A set value replaces the default; full shows
+#                              all.
 #                              mini: the mascot's head and its δ, the
 #                              identity, then the session kind and startup
 #                              time; it beats nomascot.
+#                              tiny: one line, the mascot's head, the .rc
+#                              version and startup time; it beats mini.
 #                              The log funcs run in every mode, off too:
 #                              their side effects (ssh-agent) still matter.
 #   BANNER_ACCENT=color        mascot color (default: 244, a mid grey that
@@ -208,7 +211,13 @@ banner_render() {
         done
         (( ${mode[(Ie)off]} )) && return 0
         print
-        if (( ${mode[(Ie)mini]} )); then
+        if (( ${mode[(Ie)tiny]} )); then
+            head=${(j: :)${=_banner_mascot[1]}}
+            shell=( ${_banner_rc:+".rc $_banner_rc"}
+                    ${_banner_ms:+"$_banner_ms ms"} )
+            print -P -- \
+                "  %F{${BANNER_ACCENT:-244}}${head}%f  ${(j: · :)shell}"
+        elif (( ${mode[(Ie)mini]} )); then
             # the identity, then info_shell's line
             head="${(j: :)${=_banner_mascot[1]}}  ${_banner_mascot[-1]}"
             print -P -- \
