@@ -7,7 +7,8 @@
 --
 -- This replaces <leader>P* and <leader>H*, which spent two shifted top-level
 -- prefixes on four keys between them. The letters survive unshifted, so the
--- sequences stay hr / hf / pt / pT and only the way in changes.
+-- sequences stay pt / pT; hr's toggle and locate moved to hh / hl when r and
+-- f became its recent and favorites views.
 local map = require("keymaps.leader").map
 local layer = require("keymaps.layer")
 
@@ -17,10 +18,14 @@ end
 
 -- hr.vim (lua/plugins/misc.lua). Locate reveals the current article's row,
 -- opening/refreshing the panel and showing read articles under unread-only.
--- Bookmark saves the reading place via `hr bookmark`; resume returns to it.
+-- r and f flip the panel's recent and favorites views from anywhere, landing
+-- on the article being read. Bookmark saves the reading place via
+-- `hr bookmark`; resume returns to it.
 local HR = {
-    r = { desc = "toggle", run = "HrToggle" },
-    f = { desc = "locate", run = "HrLocate" },
+    h = { desc = "toggle", run = "HrToggle" },
+    l = { desc = "locate", run = "HrLocate" },
+    r = { desc = "recent", run = "HrView recent" },
+    f = { desc = "favorites", run = "HrView --fav" },
     b = { desc = "bookmark", run = "HrBookmark" },
     B = { desc = "resume", run = "HrResume" },
 }

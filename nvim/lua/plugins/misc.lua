@@ -21,7 +21,7 @@ return {
         event = "BufReadPost *.md",
         cmd = {
             "Hr", "HrToggle", "HrOpen", "HrClose", "HrStart", "HrRefresh",
-            "HrSync", "HrLocate", "HrBookmark", "HrResume",
+            "HrSync", "HrLocate", "HrBookmark", "HrResume", "HrView",
         },
     },
 }
