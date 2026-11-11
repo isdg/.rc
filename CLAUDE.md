@@ -50,8 +50,9 @@ bootstrap; this file holds the rules for changing them.
 - 1.0 is due when the user can boot any machine by hand, steering it to its
   use case, and get a working peer of the others in their network.
 - Propose a milestone or a major when a landing looks like one, with the
-  reason; never make one unasked.
-- A patch gets a `LOG.txt` line only when the user asks for it.
+  reason, and draft its `LOG.txt` entry; never make one unasked.
+- When a patch changes something the user sees or does (a key, a command,
+  the banner), propose a one-line `LOG.txt` entry; write it only on a yes.
 
 ## Layout
 
