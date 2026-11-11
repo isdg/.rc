@@ -1,0 +1,156 @@
+
+LOG
+===
+
+Release notes, newest first. The version lives in VERSION as x.y.z: x is a
+major version (0 until 1.0 is called), y a milestone, z the landings on main
+since it. Each milestone and major has an annotated tag vx.y.0, so
+`git log v0.9.0..v0.10.0` lists what a milestone covers. An entry is a
+heading (version · date · name), a sentence on why it is a milestone, and a
+few lines on what changed. Patches get a line only when one deserves it.
+
+
+-------------------------------------------------------------------------------
+0.11.0 · 2026-11-11 · versioning
+-------------------------------------------------------------------------------
+
+The repo gets a version: VERSION, this log, the version on the banner's
+shell line (".rc 0.11.0 · 42 ms · local"), `rcversion`, and a Version line
+in `boot.sh --ensure`. The point is to see at a glance which .rc a machine
+runs: setup/home had sat 265 commits behind main without anything saying so.
+
+The backfill. Fifteen months of commits carried no version. Versions
+0.1 to 0.10 were assigned after the fact, on 2026-11-11: each era starts at
+the commit that introduced the structure it is named for, and its tag
+carries that commit's date. The boundaries are judgement calls, not records.
+Patches before 0.11 were never counted, so the backfill has only y.0
+versions.
+
+
+-------------------------------------------------------------------------------
+0.10.0 · 2026-10-25 · agents at work
+-------------------------------------------------------------------------------
+
+Coding agents become regular contributors, and the repo starts keeping the
+rules they work by.
+
+  - agents work in worktrees of their own and clean up after themselves
+  - skills teach them how work is planned, tested and delivered here
+  - hooks hold them to it, from planning to commit messages
+  - lockmirror, a screen saver that leaves the screen as it was
+  - a simple-first pass: plain ifs, no forks for constants at startup
+  - tmux window jumplist and floating pickers; mini banner mode
+  - hourly hr and rcstate sync agents under launchd
+
+
+-------------------------------------------------------------------------------
+0.9.0 · 2026-10-08 · modules and levels
+-------------------------------------------------------------------------------
+
+Today's architecture: one tool per directory, installed by its module.
+
+  - bootstrap moves to .rcboot/<tool>, run from a module registry
+  - --level=0..3 on Darwin and Linux, cutting packages by level
+  - .zshrc, .tmux.conf, .vimrc and init.lua split into rc.d fragments,
+    enabled per module
+  - hostnames isg-<os>-<postfix>; a Debian 13 VM under lima
+  - lldb, debuggers for Go, Python and Rust; rust-analyzer via lspmux
+  - emacs line editing in every prompt; BANNER_MODE
+
+
+-------------------------------------------------------------------------------
+0.8.0 · 2026-08-06 · it becomes .rc
+-------------------------------------------------------------------------------
+
+The repo takes its name and drops the last framework and the last IDE.
+
+  - renamed from .dotfiles to .rc; oh-my-zsh gone the day before
+  - one palette generates every theme (theme/generate.sh)
+  - VS Code, Hyper and Docker Desktop removed; colima instead
+  - tmux second layer, alerts, and omni's pane capture
+  - the banner names the user, host, ssh peer and tmux servers
+  - Hammerspoon window slots; startup caches for fzf, zoxide, plc
+  - modern neovim, bat and delta installed on Linux
+
+
+-------------------------------------------------------------------------------
+0.7.0 · 2026-07-05 · modular editors
+-------------------------------------------------------------------------------
+
+nvim splits into plugin and keymap modules, vim learns nvim's keys, and the
+first agent tooling lands.
+
+  - nvim plugins and keymaps in modules; breadcrumb; tmux pickers
+  - vim matched to nvim (pickers, comments, diagnostics); .vimrc.core
+  - Claude Code: a local skills marketplace, PR conventions, CLAUDE.md
+  - Hammerspoon scrolling and screenshots; k9s skins and log plugins
+  - tmux omni keys, resurrect state per socket; --minimal profile
+  - commit subjects switch to conventional type(scope): form
+
+
+-------------------------------------------------------------------------------
+0.6.0 · 2026-06-11 · the banner
+-------------------------------------------------------------------------------
+
+The shell gets a face, and the theme a single switch.
+
+  - the Turing-machine banner, with a log registry
+  - the isg zsh theme, forked from sobole
+  - light/dark toggle across ghostty, tmux, bat and the editors
+  - hr reading in vim and nvim; plc and its palace shortcuts
+  - Hammerspoon translations; orchbus, later moved to its own repo
+
+
+-------------------------------------------------------------------------------
+0.5.0 · 2026-04-27 · terminal first
+-------------------------------------------------------------------------------
+
+Ghostty and tmux replace the IDE as the place where work happens.
+
+  - Ghostty replaces Hyper; tmux with resurrect
+  - Darwin defaults and key remapping
+  - zsh aliases, fzf and vi mode; git pickers
+  - a Linux VM, Claude Code settings, and bootstrap ensure checks
+
+
+-------------------------------------------------------------------------------
+0.4.0 · 2026-03-08 · modular bootstrap
+-------------------------------------------------------------------------------
+
+The bootstrap splits into components, one per concern, for Darwin and Linux.
+
+  - bootstrap/components/*.sh with darwin.sh and linux.sh
+  - fzf.vim over telescope, which was too slow on a 60k-file project
+  - rg in vim and nvim; LSP falls back to treesitter
+
+
+-------------------------------------------------------------------------------
+0.3.0 · 2026-02-14 · neovim
+-------------------------------------------------------------------------------
+
+Neovim arrives beside vim.
+
+  - init.lua with lazy.nvim, the vs colours, git plugins, zen mode
+  - tig config; idempotent install scripts
+
+
+-------------------------------------------------------------------------------
+0.2.0 · 2025-09-25 · the IDE detour
+-------------------------------------------------------------------------------
+
+The first bootstrap script, and a long attempt at making VS Code feel like
+vim, which in the end was given up.
+
+  - boostrap.sh, then GUI variants for Linux and macOS
+  - VS Code keys, fuzzy search and zen layout; Hyper; a try at Zed
+  - palace notes through Obsidian and VS Code settings
+  - light/dark toggle for vim, zsh and Hyper; Russian keys in vim
+  - every editor AI feature switched off
+
+
+-------------------------------------------------------------------------------
+0.1.0 · 2025-08-16 · loose dotfiles
+-------------------------------------------------------------------------------
+
+A .vimrc, then a .zshrc with the sobole theme, a .gitconfig, a Brewfile and
+fonts, all at the repo root.
