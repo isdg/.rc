@@ -94,7 +94,9 @@ LAYOUT
     lldb/           .lldbinit
     readline/       .inputrc + .editrc: line keys for psql, lldb, sqlite3...
     fonts/          JetBrains Mono + Computer Modern
-    darwin/         Darwin system defaults + Brewfile
+    darwin/         Darwin system defaults + Brewfile; launchd/ holds
+                    hourly hr and ~/.rcstate sync jobs, loaded by hand
+                    with launchd/agents.sh (logs in ~/Library/Logs/rc)
     prompt/         shell prompt definitions
     hr/             config.toml, seeded once to ~/.hr/config.toml: hr's
                     reading vault and default settings
