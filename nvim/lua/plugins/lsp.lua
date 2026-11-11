@@ -194,11 +194,42 @@ return {
                 root_markers = { "build.zig", "build.zig.zon", ".git" },
             })
 
+            -- plc-lsp (~/plc) serves [[wikilink]] gd, gr and completion, so it
+            -- attaches only to notes inside the vault `plc config` names. Both
+            -- sides are resolved, since the vault may be reached via a symlink.
+            local function real(path)
+                local dir = vim.fs.dirname(path)
+                return vim.uv.fs_realpath(path) or vim.fs.joinpath(
+                    vim.uv.fs_realpath(dir) or dir, vim.fs.basename(path))
+            end
+            local vault
+            local function palace_root(bufnr, on_dir)
+                if vault == nil then
+                    local ok, out = pcall(function()
+                        return vim.system({ "plc", "config" },
+                            { text = true }):wait()
+                    end)
+                    vault = ok and out.code == 0
+                        and real(vim.trim(out.stdout)) or false
+                end
+                local name = vim.api.nvim_buf_get_name(bufnr)
+                if vault and name ~= "" and vim.fs.relpath(vault, real(name))
+                then
+                    on_dir(vault)
+                end
+            end
+
+            vim.lsp.config("plc", {
+                cmd = { "plc-lsp" },
+                filetypes = { "markdown" },
+                root_dir = palace_root,
+            })
+
             -- Only enable servers whose binary is actually present: one missing
             -- executable makes vim.lsp.enable() abort the whole pass, which
             -- silently prevents *every* server from attaching.
             for _, name in ipairs({ "clangd", "ty", "rust_analyzer", "gopls",
-                "ts_ls", "zls" }) do
+                "ts_ls", "zls", "plc" }) do
                 if vim.fn.executable(vim.lsp.config[name].cmd[1]) == 1 then
                     vim.lsp.enable(name)
                 end
