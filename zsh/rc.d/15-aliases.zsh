@@ -78,7 +78,7 @@ k9s() {
   fi
 }
 
-# Palace notes: thin `plc` wrappers; $PALACE_DIR comes from 12-env.zsh.
+# Palace notes: thin `plc` wrappers; the vault is in ~/.plc/.plcrc.
 source "${ISGRC:-$HOME/.rc}/zsh/palace.zsh"
 
 # Machine-local, gitignored aliases/functions (work-specific helpers, private

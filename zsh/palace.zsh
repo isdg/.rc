@@ -4,8 +4,8 @@
 # Sourced by ~/.rc/zsh/rc.d/15-aliases.zsh. The heavy lifting lives in the
 # `plc` binary (installed by .rcboot/plc/plc.sh): it creates/resolves
 # note files and prints their path. These wrappers just open that path in
-# $EDITOR, and add the fzf picker for murmur notes. PALACE_DIR is exported by
-# the caller.
+# $EDITOR, and add the fzf picker for murmur notes. The vault is whatever
+# `plc config` names: $PALACE_DIR, else the vault line of ~/.plc/.plcrc.
 #
 # Commands:
 #   daily [DD MM YY|YYYY]  open/create a daily note (today by default)
@@ -25,7 +25,9 @@ _plc_edit() {
    local f
    f=$("$@") || return
    [ -n "$f" ] || return
-   ( cd "$PALACE_DIR" && ${EDITOR:-nvim} "$f" )
+   local vault
+   vault=$(plc config) || return
+   ( cd "$vault" && ${EDITOR:-nvim} "$f" )
 }
 
 daily()  { _plc_edit plc daily "$@"; }
