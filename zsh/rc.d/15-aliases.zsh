@@ -78,20 +78,7 @@ k9s() {
   fi
 }
 
-# Palace notes — thin `plc` wrappers now ship with the dotfiles. The vault path
-# is persisted in ~/.plcrc; ask `plc config` for it instead of hardcoding here,
-# so there is exactly one source of truth.
-#
-# `env -u PALACE_DIR` matters: `plc config` echoes back $PALACE_DIR when it is
-# already set and only falls back to ~/.plcrc when it is not. Without it this
-# line re-affirms whatever it inherited instead of re-deriving, so one stale
-# value (a tmux global env snapshot, a long-lived parent process) launders
-# itself through every new shell indefinitely. The answer is cached (.zshrc's
-# _zsh_cached) until plc or ~/.plcrc changes.
-PALACE_DIR=
-_zsh_cached palace-dir "$commands[plc]" ~/.plcrc -- env -u PALACE_DIR plc config \
-    && PALACE_DIR="$(<$REPLY)"
-export PALACE_DIR
+# Palace notes: thin `plc` wrappers; $PALACE_DIR comes from 12-env.zsh.
 source "${ISGRC:-$HOME/.rc}/zsh/palace.zsh"
 
 # Machine-local, gitignored aliases/functions (work-specific helpers, private
