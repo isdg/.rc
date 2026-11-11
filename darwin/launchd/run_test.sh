@@ -65,6 +65,8 @@ for plist in "$here"/com.local.*.plist; do
         = 'exec "$HOME/.rc/darwin/launchd/run.sh" "$@"'
     check "...under its own name" test \
         "$(plutil -extract ProgramArguments.4 raw "$plist")" = "$name"
+    check "...runs at login" test \
+        "$(plutil -extract RunAtLoad raw "$plist")" = true
 done
 
 [ "$fails" -eq 0 ] && echo "all passed" || { echo "$fails failed"; exit 1; }
