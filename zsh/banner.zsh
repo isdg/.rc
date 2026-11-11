@@ -17,6 +17,8 @@
 #   banner_log  "text"        add a dim log line, shown below the banner
 #   banner_run  cmd ...       run a noisy command, demoting its output to logs
 #   banner_render             consume the registry and draw — call once, last
+#   rcbanner [modes]          redraw it now in BANNER_MODE's words (default
+#                             full), e.g. to see this box's user@host in tiny
 #
 # Config
 #   BANNER_MODE=modes          nologs (default) · full · nomascot · mini
@@ -46,6 +48,16 @@ typeset -ga _banner_log_lines=()
 
 banner_info() { _banner_info_lines+=("$*") }
 banner_log()  { _banner_log_lines+=("$*") }
+
+# A subshell, so the re-source and the log funcs' exports stay out of this
+# shell. No startup time: there was no startup to time.
+rcbanner() {
+    (
+        _BANNER_T0=
+        source ${ISGRC:-$HOME/.rc}/zsh/banner.zsh
+        BANNER_MODE=${*:-full} banner_render
+    )
+}
 
 banner_run() {
     local _out _line
