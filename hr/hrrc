@@ -1,5 +1,8 @@
-# Linked to ~/.hrrc; hr only reads it. The vault is $HR_VAULT, exported in
-# zsh/rc.d/12-env.zsh. A key in a vault's hr.toml overrides one here.
+# Linked to ~/.hr/.hrrc; hr only reads it. $HR_VAULT or the vault you are
+# in overrides the vault below; a key in a vault's hr.toml overrides the rest.
+
+# The vault hr uses outside any vault, launchd jobs included.
+vault = "~/feed"
 
 # Sort order for `hr list` / `hr feed`. "desc" = newest first.
 ordering = "desc"

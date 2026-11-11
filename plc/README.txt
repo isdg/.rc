@@ -2,9 +2,10 @@ PALACE
 ======
 
 A personal knowledge vault: a note-taking system spread across four places
-in this repo, tied together by one vault directory ($PALACE_DIR,
-~/palace) and one binary (plc). zsh/rc.d/12-env.zsh exports the path;
-plc reads only that variable.
+in this repo, tied together by one vault directory (~/palace) and one
+binary (plc). The vault is the vault line of plc/plcrc, linked to
+~/.plc/.plcrc; $PALACE_DIR overrides it for one process. plc only reads
+the file. ~/.plc/<vault>/ holds this machine's state for each vault.
 
 Documented here as a single named module so the pieces don't get
 rediscovered from scratch later (see misc/modularize.txt).
@@ -19,9 +20,9 @@ PIECES
    files and prints their path; it never opens an editor itself.
 
 2. zsh/palace.zsh: thin wrappers around plc that open the path it prints
-   in $EDITOR, cd'd into $PALACE_DIR. Sourced by zsh/rc.d/15-aliases.zsh.
-   Change the vault path in zsh/rc.d/12-env.zsh, or for one command with
-   PALACE_DIR=PATH.
+   in $EDITOR, cd'd into the vault `plc config` names. Sourced by
+   zsh/rc.d/15-aliases.zsh. Change the vault in plc/plcrc, or for one
+   command with PALACE_DIR=PATH.
 
     daily [DD MM YY|YYYY]       open/create a daily note (today by default)
     weekly                      open/create this ISO week's note

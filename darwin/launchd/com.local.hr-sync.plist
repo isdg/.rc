@@ -13,8 +13,6 @@
         <string>sh</string>
         <string>hr-sync</string>
         <string>hr</string>
-        <string>--vault</string>
-        <string>feed</string>
         <string>sync</string>
     </array>
     <key>RunAtLoad</key>

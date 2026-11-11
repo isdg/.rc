@@ -1,0 +1,5 @@
+# Linked to ~/.plc/.plcrc; plc only reads it. $PALACE_DIR overrides the
+# vault below for one process.
+
+# The palace plc, plc-lsp and the zsh wrappers use.
+vault = ~/palace
