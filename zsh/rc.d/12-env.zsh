@@ -1,6 +1,10 @@
 export EDITOR='nvim'
 export VISUAL='nvim'
 
+# Default data dirs, set here rather than in files their tools rewrite, so
+# no process can move them for another. launchd jobs pass their own.
+export HR_VAULT="$HOME/feed"
+
 # gpg-agent's pinentry needs a tty to prompt on. Without this, commit signing
 # (git_signing.sh leaves it on whenever the key is present) hangs silently
 # instead of asking for the passphrase.
