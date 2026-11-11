@@ -19,6 +19,9 @@ return {
     {
         "isdg/hr.vim",
         event = "BufReadPost *.md",
-        cmd = { "Hr", "HrToggle", "HrOpen", "HrClose", "HrStart", "HrRefresh", "HrSync", "HrLocate" },
+        cmd = {
+            "Hr", "HrToggle", "HrOpen", "HrClose", "HrStart", "HrRefresh",
+            "HrSync", "HrLocate", "HrBookmark", "HrResume", "HrView",
+        },
     },
 }
