@@ -1,0 +1,11 @@
+# Linked to ~/.hrrc; hr only reads it. The vault is $HR_VAULT, exported in
+# zsh/rc.d/12-env.zsh. A key in a vault's hr.toml overrides one here.
+
+# Sort order for `hr list` / `hr feed`. "desc" = newest first.
+ordering = "desc"
+
+# Mark items read when their file is opened (requires nvim autocmd).
+autoread = false
+
+# User-Agent for HTTP requests.
+user_agent = "hrb/0.1"
