@@ -79,6 +79,17 @@ want="%B%n%b@$host"$'\n'"local"$'\n'"%D{%a %d %b %Y · %H:%M}"
 check "no VERSION: the shell line drops the version" \
     "$(info "$tmp")" "$want"
 
+# line 4 is the date, left out so a minute turning over can't fail the test
+redraw="$(ISGRC="$tmp/rc" BANNER_MODE=tiny zsh -f -c '
+    mkdir -p $ISGRC/zsh && cp "$1/zsh/banner.zsh" $ISGRC/zsh/
+    source $ISGRC/zsh/banner.zsh
+    rcbanner nomascot nologs
+    print -r -- "mode $BANNER_MODE"
+' _ "$repo" | sed -e $'s/\e\\[[0-9;]*m//g' -e 4d)"
+want=$'\n'"    › $user@$host"$'\n'"    › .rc 9.9.9 · local"$'\n\n'"mode tiny"
+check "rcbanner: redraws in the modes given, leaves BANNER_MODE" \
+    "$redraw" "$want"
+
 kind="$(SUDO_USER=root zsh -f -c '
     source "$1/zsh/banner.zsh"
     _banner_sudo_origin() { }
