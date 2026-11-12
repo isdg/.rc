@@ -101,6 +101,12 @@ test needs git:
 
     > nvim --clean --headless -l nvim/tests/commits_preview.lua
 
+fzf-lua pickers (links, the graph, LSP lists) keep the opts file's keys:
+M-u/M-d/M-g/M-G/M-j on the list, M-J/M-K/M-U/M-D on the preview. Its test
+fails when an nvim map in lua/plugins/nav.lua shadows one:
+
+    > nvim --clean --headless -l nvim/tests/fzf_lua_keys.lua
+
 -------------------------------------------------------------------------------
 TREESITTER PARSERS
 -------------------------------------------------------------------------------

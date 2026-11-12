@@ -94,10 +94,12 @@ return {
                         true,
                         ["<C-/>"] = "toggle-preview",
                         ["<C-_>"] = "toggle-preview",
-                        ["<M-J>"] = "preview-down",
-                        ["<M-K>"] = "preview-up",
-                        ["<M-D>"] = "preview-half-page-down",
-                        ["<M-U>"] = "preview-half-page-up",
+                        -- fzf-lua lowercases these keys, so <M-D> would
+                        -- steal fzf's M-d; <M-S-d> survives and is <M-D>.
+                        ["<M-S-j>"] = "preview-down",
+                        ["<M-S-k>"] = "preview-up",
+                        ["<M-S-d>"] = "preview-half-page-down",
+                        ["<M-S-u>"] = "preview-half-page-up",
                     },
                 },
             })
