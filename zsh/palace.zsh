@@ -16,7 +16,8 @@
 #   isg [-l | NAME]        enumerated isg notes (isg0, isg1, … ; -l = fzf-pick)
 #   dn [-n | -l FILE | -L] manage do-notes (week-based, last-pointer)
 #   pst [stat args]        daily-note activity calendar + stats (plc stat)
-#   plc cd                 cd into the vault; other plc args pass through
+#   plc cd [DIR]           cd into the vault, or DIR inside it; other plc
+#                          args pass through
 #
 # Short aliases:  dl → daily, wk → weekly
 
@@ -27,13 +28,13 @@ plc() {
       command plc "$@"
       return
    fi
-   if (( $# > 1 )); then
-      print -u2 "usage: plc cd"
+   if (( $# > 2 )); then
+      print -u2 "usage: plc cd [DIR]"
       return 2
    fi
    local vault
    vault=$(command plc config) || return
-   cd -- "$vault"
+   cd -- "$vault${2:+/$2}"
 }
 
 # Open the note whose path plc prints, cd'd into the vault so the editor's
