@@ -19,7 +19,8 @@
 #   nomascot   the info lines alone, as a list
 #   mini       two lines: the mascot's head and its δ, the identity; then
 #              the .rc version, startup time and session kind
-#   tiny       one line: the mascot's head, .rc version and startup time
+#   tiny       one line: the mascot's head, .rc version, identity and
+#              startup time
 #   off        nothing at all
 #
 #   tiny beats mini and mini beats nomascot; nologs combines with any of
@@ -39,7 +40,7 @@
 #
 #   BANNER_MODE='tiny nologs'
 #
-#     ▼ q₀  .rc 0.11.0 · 77 ms
+#     ▼ q₀  .rc 0.11.0 · isg@zsh · 77 ms
 #
 #   Without nologs, each keeps its logs below, as the banner above does.
 #
@@ -52,7 +53,7 @@
 #   banner_run  cmd ...       run a noisy command, demoting its output to logs
 #   banner_render             consume the registry and draw — call once, last
 #   rcbanner [modes]          redraw it now in BANNER_MODE's words (default
-#                             full), e.g. to see this box's user@host in tiny
+#                             full), e.g. to see the date and logs in tiny
 #
 # Config
 #   BANNER_MODE=modes          what to draw (default nologs): see Modes
@@ -250,6 +251,7 @@ banner_render() {
         if (( ${mode[(Ie)tiny]} )); then
             head=${(j: :)${=_banner_mascot[1]}}
             shell=( ${_banner_rc:+".rc $_banner_rc"}
+                    ${_banner_info_lines[1]:+"$_banner_info_lines[1]"}
                     ${_banner_ms:+"$_banner_ms ms"} )
             print -P -- \
                 "  %F{${BANNER_ACCENT:-244}}${head}%f  ${(j: · :)shell}"

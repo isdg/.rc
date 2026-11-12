@@ -49,8 +49,8 @@ check "mini beats nomascot" \
 want+=$'\n    › a log line\n'
 check "mini alone keeps the logs" "$(render mini)"$'\n' "$want"
 
-want=$'\n  ▼ qB  .rc 9.9.9 · 42 ms\n'
-check "tiny nologs: head, version and time" \
+want=$'\n'"  ▼ qB  .rc 9.9.9 · $user@box · 42 ms"$'\n'
+check "tiny nologs: head, version, identity and time" \
     "$(render 'tiny nologs')"$'\n' "$want"
 
 check "tiny beats mini and nomascot" \
