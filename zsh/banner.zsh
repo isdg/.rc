@@ -20,7 +20,7 @@
 #   mini       two lines: the mascot's head and its δ, the identity; then
 #              the .rc version, startup time and session kind
 #   tiny       one line: the mascot's head, .rc version, identity and
-#              startup time
+#              startup time, from the top line with no blank above it
 #   off        nothing at all
 #
 #   tiny beats mini and mini beats nomascot; nologs combines with any of
@@ -247,7 +247,7 @@ banner_render() {
             (( $+functions[$fn] )) && $fn
         done
         (( ${mode[(Ie)off]} )) && return 0
-        print
+        (( ${mode[(Ie)tiny]} )) || print
         if (( ${mode[(Ie)tiny]} )); then
             head=${(j: :)${=_banner_mascot[1]}}
             shell=( ${_banner_rc:+".rc $_banner_rc"}

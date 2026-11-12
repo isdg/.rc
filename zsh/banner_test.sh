@@ -49,15 +49,18 @@ check "mini beats nomascot" \
 want+=$'\n    › a log line\n'
 check "mini alone keeps the logs" "$(render mini)"$'\n' "$want"
 
-want=$'\n'"  ▼ qB  .rc 9.9.9 · $user@box · 42 ms"$'\n'
-check "tiny nologs: head, version, identity and time" \
-    "$(render 'tiny nologs')"$'\n' "$want"
+# the trailing . keeps the blank line that $(...) would strip
+want="  ▼ qB  .rc 9.9.9 · $user@box · 42 ms"$'\n\n.'
+check "tiny nologs: head, version, identity, time; no blank above" \
+    "$(render 'tiny nologs'; echo .)" "$want"
 
 check "tiny beats mini and nomascot" \
-    "$(render 'tiny mini nologs nomascot')"$'\n' "$want"
+    "$(render 'tiny mini nologs nomascot'; echo .)" "$want"
 
-want+=$'\n    › a log line\n'
-check "tiny alone keeps the logs" "$(render tiny)"$'\n' "$want"
+want="  ▼ qB  .rc 9.9.9 · $user@box · 42 ms"
+want+=$'\n\n    › a log line\n\n.'
+check "tiny alone keeps the logs, no blank above" \
+    "$(render tiny; echo .)" "$want"
 
 info() {
     ISGRC="$1" zsh -f -c '
