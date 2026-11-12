@@ -3,3 +3,6 @@
 
 # The palace plc, plc-lsp and the zsh wrappers use.
 vault = ~/palace
+
+# Where `note` (plc add) puts notes: under the vault when relative.
+# notes = notes
