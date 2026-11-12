@@ -16,8 +16,25 @@
 #   isg [-l | NAME]        enumerated isg notes (isg0, isg1, … ; -l = fzf-pick)
 #   dn [-n | -l FILE | -L] manage do-notes (week-based, last-pointer)
 #   pst [stat args]        daily-note activity calendar + stats (plc stat)
+#   plc cd                 cd into the vault; other plc args pass through
 #
 # Short aliases:  dl → daily, wk → weekly
+
+# A process can't move its parent shell, so `plc cd` is answered here; every
+# other call reaches the binary unchanged.
+plc() {
+   if [[ "$1" != cd ]]; then
+      command plc "$@"
+      return
+   fi
+   if (( $# > 1 )); then
+      print -u2 "usage: plc cd"
+      return 2
+   fi
+   local vault
+   vault=$(command plc config) || return
+   cd -- "$vault"
+}
 
 # Open the note whose path plc prints, cd'd into the vault so the editor's
 # working dir is the palace. Usage: _plc_edit plc <subcommand> [args...]
