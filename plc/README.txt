@@ -33,6 +33,9 @@ PIECES
     dn [-n | -l FILE | -L]      manage do-notes (week-based, last-pointer)
     pst [args]                  daily-note activity calendar + stats
                                 (plc stat)
+    plc cd [DIR]                cd into the vault, or DIR inside it (a zsh
+                                function: every other plc call reaches
+                                the binary)
     dl, wk                      short aliases for daily, weekly
 
 3. plc-lsp in nvim (nvim/lua/plugins/lsp.lua): attached to markdown
