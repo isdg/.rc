@@ -12,6 +12,7 @@
 #   weekly                 open/create this ISO week's note
 #   shot                   timestamped daily snapshot note
 #   start                  open/create TOP.md, the vault landing page
+#   note NAME              open/create NAME in the notes dir (plc add)
 #   tg [-l | -n]           manage murmur notes (-l = fzf-pick)
 #   isg [-l | NAME]        enumerated isg notes (isg0, isg1, … ; -l = fzf-pick)
 #   dn [-n | -l FILE | -L] manage do-notes (week-based, last-pointer)
@@ -19,7 +20,7 @@
 #   plc cd [DIR]           cd into the vault, or DIR inside it; other plc
 #                          args pass through
 #
-# Short aliases:  dl → daily, wk → weekly
+# Short aliases:  dl → daily, wk → weekly, no → note
 
 # A process can't move its parent shell, so `plc cd` is answered here; every
 # other call reaches the binary unchanged.
@@ -51,6 +52,7 @@ _plc_edit() {
 daily()  { _plc_edit plc daily "$@"; }
 weekly() { _plc_edit plc weekly; }
 shot()   { _plc_edit plc shot "$@"; }
+note()   { _plc_edit plc add "$@"; }
 # `ptop`, not `top`, so the palace landing page doesn't shadow the system `top`.
 ptop()   { _plc_edit plc top; }
 
@@ -123,3 +125,4 @@ pst() {
 # Short aliases (functions so they resolve in non-interactive shells too)
 dl() { daily "$@"; }
 wk() { weekly "$@"; }
+no() { note "$@"; }
