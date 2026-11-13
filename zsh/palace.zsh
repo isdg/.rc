@@ -13,14 +13,15 @@
 #   shot                   timestamped daily snapshot note
 #   start                  open/create TOP.md, the vault landing page
 #   note NAME              open/create NAME in the notes dir (plc add)
-#   tg [-l | -n]           manage murmur notes (-l = fzf-pick)
+#   murmur [-l | -n]       manage murmur notes (-l = fzf-pick)
 #   isg [-l | NAME]        enumerated isg notes (isg0, isg1, … ; -l = fzf-pick)
 #   todo [-n|-l FILE|-L]   manage do-notes (week-based, last-pointer)
 #   pst [stat args]        daily-note activity calendar + stats (plc stat)
 #   plc cd [DIR]           cd into the vault, or DIR inside it; other plc
 #                          args pass through
 #
-# Short aliases:  dl → daily, wk → weekly, no → note, td → todo
+# Short aliases:  dl → daily, wk → weekly, no → note, td → todo,
+#                 mm → murmur
 
 # A process can't move its parent shell, so `plc cd` is answered here; every
 # other call reaches the binary unchanged.
@@ -66,10 +67,10 @@ todo() {
    esac
 }
 
-# tg [-l|-n]   manage murmur notes
+# murmur [-l|-n]   manage murmur notes
 #   -l : fzf-pick an existing note (by recency) and open it
 #   -n : create a new note (prompts for a name)
-tg() {
+murmur() {
    if [ "$1" = -l ]; then
       local pick
       # Preview the note below the list. `plc murmur -n {}` resolves an existing
@@ -127,3 +128,4 @@ dl() { daily "$@"; }
 wk() { weekly "$@"; }
 no() { note "$@"; }
 td() { todo "$@"; }
+mm() { murmur "$@"; }

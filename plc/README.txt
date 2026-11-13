@@ -29,7 +29,7 @@ PIECES
     shot                        timestamped daily snapshot note
     note NAME                   open/create NAME in the notes dir that
                                 plc config notes names (plc add)
-    tg [-l | -n]                manage murmur notes (-l = fzf-pick)
+    murmur [-l | -n]            manage murmur notes (-l = fzf-pick)
     isg [-l | NAME]             enumerated isg notes (isg0, isg1, ...;
                                 -l = fzf-pick)
     todo [-n | -l FILE | -L]    manage do-notes (week-based, last-pointer)
@@ -38,8 +38,8 @@ PIECES
     plc cd [DIR]                cd into the vault, or DIR inside it (a zsh
                                 function: every other plc call reaches
                                 the binary)
-    dl, wk, no, td              short aliases for daily, weekly, note,
-                                todo
+    dl, wk, no, td, mm          short aliases for daily, weekly, note,
+                                todo, murmur
 
 3. plc-lsp in nvim (nvim/lua/plugins/lsp.lua): attached to markdown
    buffers under the vault only. gd follows the [[link]] under the cursor
