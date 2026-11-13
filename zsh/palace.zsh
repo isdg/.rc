@@ -4,23 +4,57 @@
 # Sourced by ~/.rc/zsh/rc.d/15-aliases.zsh. The heavy lifting lives in the
 # `plc` binary (installed by .rcboot/plc/plc.sh): it creates/resolves
 # note files and prints their path. These wrappers just open that path in
-# $EDITOR, and add the fzf picker for murmur notes. The vault is whatever
-# `plc config` names: $PALACE_DIR, else the vault line of ~/.plc/.plcrc.
+# $EDITOR, and add fzf pickers for murmur and isg notes. The vault is
+# whatever `plc config` names: $PALACE_DIR, else the vault line of
+# ~/.plc/.plcrc.
 #
-# Commands:
-#   daily [DD MM YY|YYYY]  open/create a daily note (today by default)
-#   weekly                 open/create this ISO week's note
-#   shot                   timestamped daily snapshot note
-#   start                  open/create TOP.md, the vault landing page
-#   note NAME              open/create NAME in the notes dir (plc add)
-#   tg [-l | -n]           manage murmur notes (-l = fzf-pick)
-#   isg [-l | NAME]        enumerated isg notes (isg0, isg1, … ; -l = fzf-pick)
-#   dn [-n | -l FILE | -L] manage do-notes (week-based, last-pointer)
-#   pst [stat args]        daily-note activity calendar + stats (plc stat)
-#   plc cd [DIR]           cd into the vault, or DIR inside it; other plc
-#                          args pass through
+# Commands, short alias on the left. Each opens its note in $EDITOR,
+# creating it first if it does not exist yet:
+#   dl  daily [DD MM YY|YYYY]   daily note, today by default
 #
-# Short aliases:  dl → daily, wk → weekly, no → note
+#   wk  weekly                  this ISO week's note
+#
+#       shot [-i TEXT|-p DIR|-H]
+#                               timestamped snapshot, in the daily dir
+#                               unless -p; -i inline body, -H no header
+#
+#   no  note NAME               NAME in the notes dir (plc add)
+#
+#       ptop                    TOP.md, the vault landing page (plc top)
+#
+#   td  todo                    the last do-note
+#       todo -n                 new do-note for this ISO week
+#       todo -L | -l FILE       list do-notes | mark FILE last (no editor)
+#
+#   mm  murmur                  new murmur note, prompts for its name
+#       murmur -l               fzf-pick a murmur note
+#
+#       isg                     the last isg note (isg0, isg1, …)
+#       isg -c                  next isg note
+#       isg --continue [N]      continue N, or the latest: isg<N>a, …
+#       isg --list | NAME       fzf-pick an isg note | open NAME
+#
+#       pst [-m M] [-y Y] [-t year] [-p]
+#                               daily-note heatmap + stats (plc stat);
+#                               -t picks the scope, -p a line chart
+#
+# daily, shot, note, todo -n and isg pass plc's creation flags through:
+# -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]] link.
+#
+# plc itself prints paths and never opens an editor:
+#   plc cd [DIR]                cd into the vault, or DIR inside it
+#
+#   plc top                     print TOP.md's path, creating it
+#
+#   plc ledger | lr             double-entry ledger in +ledger notes
+#
+#   plc graph | orphans         the link graph | notes with no links
+#
+#   plc doctor [--fix]          check vault health, repair
+#
+#   plc config | init           vault path | scaffold the vault tree
+#
+#   plc help [COMMAND]          every command and its flags
 
 # A process can't move its parent shell, so `plc cd` is answered here; every
 # other call reaches the binary unchanged.
@@ -56,20 +90,20 @@ note()   { _plc_edit plc add "$@"; }
 # `ptop`, not `top`, so the palace landing page doesn't shadow the system `top`.
 ptop()   { _plc_edit plc top; }
 
-# dn [-n|-l FILE|-L]   manage do-notes
+# todo [-n|-l FILE|-L] manage do-notes
 #   -L / -l FILE : informational (list / re-point) — no editor
 #   -n / (none)  : create new / open last — opens in $EDITOR
-dn() {
+todo() {
    case "$1" in
       -L|--list|-l|--last) plc do "$@" ;;
       *)                   _plc_edit plc do "$@" ;;
    esac
 }
 
-# tg [-l|-n]   manage murmur notes
+# murmur [-l|-n]   manage murmur notes
 #   -l : fzf-pick an existing note (by recency) and open it
 #   -n : create a new note (prompts for a name)
-tg() {
+murmur() {
    if [ "$1" = -l ]; then
       local pick
       # Preview the note below the list. `plc murmur -n {}` resolves an existing
@@ -126,3 +160,5 @@ pst() {
 dl() { daily "$@"; }
 wk() { weekly "$@"; }
 no() { note "$@"; }
+td() { todo "$@"; }
+mm() { murmur "$@"; }

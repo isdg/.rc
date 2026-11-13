@@ -24,21 +24,48 @@ PIECES
    zsh/rc.d/15-aliases.zsh. Change the vault in plc/plcrc, or for one
    command with PALACE_DIR=PATH.
 
-    daily [DD MM YY|YYYY]       open/create a daily note (today by default)
-    weekly                      open/create this ISO week's note
-    shot                        timestamped daily snapshot note
-    note NAME                   open/create NAME in the notes dir that
-                                plc config notes names (plc add)
-    tg [-l | -n]                manage murmur notes (-l = fzf-pick)
-    isg [-l | NAME]             enumerated isg notes (isg0, isg1, ...;
-                                -l = fzf-pick)
-    dn [-n | -l FILE | -L]      manage do-notes (week-based, last-pointer)
-    pst [args]                  daily-note activity calendar + stats
-                                (plc stat)
-    plc cd [DIR]                cd into the vault, or DIR inside it (a zsh
-                                function: every other plc call reaches
-                                the binary)
-    dl, wk, no                  short aliases for daily, weekly, note
+   Short alias on the left; each command opens its note, creating it
+   first if it does not exist yet:
+
+    dl  daily [DD MM YY|YYYY]   daily note, today by default
+
+    wk  weekly                  this ISO week's note
+
+        shot [-i TEXT|-p DIR|-H]
+                                timestamped snapshot, in the daily dir
+                                unless -p; -i inline body, -H no header
+
+    no  note NAME               NAME in the notes dir that plc config
+                                notes names (plc add)
+
+        ptop                    TOP.md, the vault landing page (plc top)
+
+    td  todo                    the last do-note
+        todo -n                 new do-note for this ISO week
+        todo -L | -l FILE       list do-notes | mark FILE last (no
+                                editor)
+
+    mm  murmur                  new murmur note, prompts for its name
+        murmur -l               fzf-pick a murmur note
+
+        isg                     the last isg note (isg0, isg1, ...)
+        isg -c                  next isg note
+        isg --continue [N]      continue N, or the latest: isg<N>a, ...
+        isg --list | NAME       fzf-pick an isg note | open NAME
+
+        pst [-m M] [-y Y] [-t year] [-p]
+                                daily-note heatmap + stats (plc stat);
+                                -t picks the scope, -p a line chart
+
+   daily, shot, note, todo -n and isg pass plc's creation flags
+   through: -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]]
+   link.
+
+   plc cd [DIR] cds into the vault, or DIR inside it: a zsh function,
+   since a process can't move its shell. Every other plc call reaches
+   the binary, which prints paths and never opens an editor: plc top,
+   plc ledger (lr), plc graph, orphans, doctor [--fix], config, init;
+   plc help lists them all.
 
 3. plc-lsp in nvim (nvim/lua/plugins/lsp.lua): attached to markdown
    buffers under the vault only. gd follows the [[link]] under the cursor

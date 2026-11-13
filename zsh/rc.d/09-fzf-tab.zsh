@@ -16,6 +16,7 @@ for _ftb in "$_brew_prefix/opt/fzf-tab/share/fzf-tab/fzf-tab.zsh" \
     bindkey -M emacs '^I' fzf-tab-load
     bindkey -M viins '^I' fzf-tab-load
     zstyle ':completion:*' menu no
+    zstyle ':fzf-tab:*' prefix ''
     break
 done
 unset _brew_prefix _ftb

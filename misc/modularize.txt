@@ -13,8 +13,8 @@ Real tools hiding in here, not just config:
 1. PALACE NOTES SYSTEM  — a personal knowledge vault:
    - `plc` binary        installed by .rcboot/plc/plc.sh; creates /
                          resolves note files, prints their path
-   - zsh/palace.zsh      commands: daily/weekly/shot/tg/isg/dn/pst
-                         (+ aliases dl -> daily, wk -> weekly)
+   - zsh/palace.zsh      commands: daily/weekly/shot/note/ptop/todo/murmur/
+                         isg/pst (+ aliases dl, wk, no, td, mm)
    - nvim <leader>Pt/PT  ISO datestamp insertion
    The most significant thing in the repo; invisible unless you know the cmds.
 

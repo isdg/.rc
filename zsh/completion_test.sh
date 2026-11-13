@@ -56,6 +56,7 @@ bindkey -v
 {
     bindkey -M viins '^I'
     zstyle -s ':completion:*' menu REPLY && print -r -- "\$REPLY"
+    zstyle -s ':fzf-tab:complete' prefix REPLY && print -r -- "[\$REPLY]"
 } > "$tmp/setup"
 # Keys sent while a completion runs are typeahead, which fzf-tab reads into
 # fzf's query, so the driver waits for each mark before the next key.
@@ -149,6 +150,7 @@ line() { sed -n "$1p" <<< "$out"; }
 setup="$(cat "$tmp/setup")"
 check "Tab loads fzf-tab" '"^I" fzf-tab-load' "$(sed -n 1p <<< "$setup")"
 check "zsh's own menu is off" no "$(sed -n 2p <<< "$setup")"
+check "no group dot before entries" '[]' "$(sed -n 3p <<< "$setup")"
 check "fzf-tab lists through fzf's **" fzf-completion \
     "$(tail -n 1 "$tmp/tabs")"
 check "a name with a space is quoted" 'echo alpha\ one |tab' "$(line 1)"
