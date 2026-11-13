@@ -159,6 +159,6 @@ pst() {
 # Short aliases (functions so they resolve in non-interactive shells too)
 dl() { daily "$@"; }
 wk() { weekly "$@"; }
-no() { note "$@"; }
+nt() { note "$@"; }
 td() { todo "$@"; }
 mm() { murmur "$@"; }

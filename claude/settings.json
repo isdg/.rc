@@ -126,6 +126,8 @@
       "effortLevel": "high"
     }
   },
+  "idleCompaction": false,
+  "effortLevel": "auto",
   "autoUpdatesChannel": "stable",
   "tui": "fullscreen",
   "voice": {
