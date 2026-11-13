@@ -10,6 +10,9 @@ heading (version · date · name), a sentence on why it is a milestone, and a
 few lines on what changed. Patches get a line only when one deserves it.
 
 
+0.11.20 · 2026-11-13 · pst counts bytes written across the vault, by stamp
+0.11.19 · 2026-11-13 · palace weeks start on Saturday (week_start in .plcrc)
+0.11.18 · 2026-11-13 · palace layer links on a / A, not l / L
 0.11.7 · 2026-11-13 · fzf-lua pickers honour M-u/M-d/M-j and M-J/K/U/D
 0.11.2 · 2026-11-11 · rcbanner [modes] redraws the banner in any mode, full
                       by default
