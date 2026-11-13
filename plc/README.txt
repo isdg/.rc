@@ -28,23 +28,31 @@ PIECES
    first if it does not exist yet:
 
     dl  daily [DD MM YY|YYYY]   daily note, today by default
+
     wk  weekly                  this ISO week's note
+
         shot [-i TEXT|-p DIR|-H]
                                 timestamped snapshot, in the daily dir
                                 unless -p; -i inline body, -H no header
+
     no  note NAME               NAME in the notes dir that plc config
                                 notes names (plc add)
+
         ptop                    TOP.md, the vault landing page (plc top)
+
     td  todo                    the last do-note
         todo -n                 new do-note for this ISO week
         todo -L | -l FILE       list do-notes | mark FILE last (no
                                 editor)
+
     mm  murmur                  new murmur note, prompts for its name
         murmur -l               fzf-pick a murmur note
+
         isg                     the last isg note (isg0, isg1, ...)
         isg -c                  next isg note
         isg --continue [N]      continue N, or the latest: isg<N>a, ...
         isg --list | NAME       fzf-pick an isg note | open NAME
+
         pst [-m M] [-y Y] [-t year] [-p]
                                 daily-note heatmap + stats (plc stat);
                                 -t picks the scope, -p a line chart

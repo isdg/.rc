@@ -11,21 +11,29 @@
 # Commands, short alias on the left. Each opens its note in $EDITOR,
 # creating it first if it does not exist yet:
 #   dl  daily [DD MM YY|YYYY]   daily note, today by default
+#
 #   wk  weekly                  this ISO week's note
+#
 #       shot [-i TEXT|-p DIR|-H]
 #                               timestamped snapshot, in the daily dir
 #                               unless -p; -i inline body, -H no header
+#
 #   no  note NAME               NAME in the notes dir (plc add)
+#
 #       ptop                    TOP.md, the vault landing page (plc top)
+#
 #   td  todo                    the last do-note
 #       todo -n                 new do-note for this ISO week
 #       todo -L | -l FILE       list do-notes | mark FILE last (no editor)
+#
 #   mm  murmur                  new murmur note, prompts for its name
 #       murmur -l               fzf-pick a murmur note
+#
 #       isg                     the last isg note (isg0, isg1, …)
 #       isg -c                  next isg note
 #       isg --continue [N]      continue N, or the latest: isg<N>a, …
 #       isg --list | NAME       fzf-pick an isg note | open NAME
+#
 #       pst [-m M] [-y Y] [-t year] [-p]
 #                               daily-note heatmap + stats (plc stat);
 #                               -t picks the scope, -p a line chart
@@ -35,11 +43,17 @@
 #
 # plc itself prints paths and never opens an editor:
 #   plc cd [DIR]                cd into the vault, or DIR inside it
+#
 #   plc top                     print TOP.md's path, creating it
+#
 #   plc ledger | lr             double-entry ledger in +ledger notes
+#
 #   plc graph | orphans         the link graph | notes with no links
+#
 #   plc doctor [--fix]          check vault health, repair
+#
 #   plc config | init           vault path | scaffold the vault tree
+#
 #   plc help [COMMAND]          every command and its flags
 
 # A process can't move its parent shell, so `plc cd` is answered here; every
