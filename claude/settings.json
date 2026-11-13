@@ -121,6 +121,7 @@
   },
   "syntaxHighlightingDisabled": false,
   "alwaysThinkingEnabled": true,
+  "idleCompaction": false,
   "effortLevel": "auto",
   "autoUpdatesChannel": "stable",
   "tui": "fullscreen",
