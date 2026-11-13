@@ -44,8 +44,8 @@ local PALACE = {
     -- Its desc there said UTC, which the format string never was.
     T = { desc = "stamp bare", run = stamp("%Y-%m-%d %H:%M:%S %z") },
     -- [[links]] to notes picked in fzf (lua/palace.lua), put like p and P.
-    l = { desc = "link", run = function() require("palace").link(true) end },
-    L = {
+    a = { desc = "link", run = function() require("palace").link(true) end },
+    A = {
         desc = "link before",
         run = function() require("palace").link(false) end,
     },

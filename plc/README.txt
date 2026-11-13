@@ -75,7 +75,7 @@ PIECES
 
 4. nvim palace layer (nvim/rc.d/10-keys-plugins.lua): <leader><leader>p,
    then t / T insert an "isg" timestamp / a bare one at the cursor, and
-   l / L pick notes in fzf, newest first, and put [[links]] to them after
+   a / A pick notes in fzf, newest first, and put [[links]] to them after
    / before the cursor, as p and P paste (nvim/lua/palace.lua). Its test
    needs plc, rg and fzf-lua:
 
