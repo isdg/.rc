@@ -111,6 +111,16 @@ a migration or seed *file* is ordinary work. An approval covers one task and
 one database, and one for a local throwaway never extends to a shared or
 production one.
 
+## Personal notes
+
+My notes vault (`~/palace`, or wherever `plc config` or `$PALACE_DIR`
+points) is private: never read, list, search or write it by any route —
+Read, Grep, Glob, `cat`, `ls`, `rg` (exclude it from searches run in
+`$HOME`), or `plc` commands that print notes or their names (`graph`,
+`orphans`, `stat`, `ledger`, `doctor`, ...). Working on plc itself is fine:
+`plc --help`, `plc config`, and tests against a throwaway vault
+(`PALACE_DIR=<scratch dir>`). A note I paste into the chat is in scope.
+
 ## Commit conventions
 
 - **No attribution trailers.** Never add `Co-Authored-By:`, "Generated with"

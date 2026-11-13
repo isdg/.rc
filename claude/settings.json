@@ -4,7 +4,11 @@
     "pr": ""
   },
   "permissions": {
-    "defaultMode": "auto"
+    "defaultMode": "auto",
+    "deny": [
+      "Read(~/palace/**)",
+      "Edit(~/palace/**)"
+    ]
   },
   "model": "opus",
   "hooks": {
