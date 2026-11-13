@@ -12,7 +12,7 @@
 # creating it first if it does not exist yet:
 #   dl  daily [DD MM YY|YYYY]   daily note, today by default
 #
-#   wk  weekly                  this ISO week's note
+#   wk  weekly                  this week's note
 #
 #       shot [-i TEXT|-p DIR|-H]
 #                               timestamped snapshot, in the daily dir
@@ -23,7 +23,7 @@
 #       ptop                    TOP.md, the vault landing page (plc top)
 #
 #   td  todo                    the last do-note
-#       todo -n                 new do-note for this ISO week
+#       todo -n                 new do-note for this week
 #       todo -L | -l FILE       list do-notes | mark FILE last (no editor)
 #
 #   mm  murmur                  new murmur note, prompts for its name
