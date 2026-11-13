@@ -54,7 +54,7 @@ PIECES
         isg --list | NAME       fzf-pick an isg note | open NAME
 
         pst [-m M] [-y Y] [-t year] [-p]
-                                daily-note heatmap + stats (plc stat);
+                                bytes-written heatmap + stats (plc stat);
                                 -t picks the scope, -p a line chart
 
    daily, shot, note, todo -n and isg pass plc's creation flags

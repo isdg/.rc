@@ -35,7 +35,7 @@
 #       isg --list | NAME       fzf-pick an isg note | open NAME
 #
 #       pst [-m M] [-y Y] [-t year] [-p]
-#                               daily-note heatmap + stats (plc stat);
+#                               bytes-written heatmap + stats (plc stat);
 #                               -t picks the scope, -p a line chart
 #
 # daily, shot, note, todo -n and isg pass plc's creation flags through:
@@ -142,7 +142,7 @@ isg() {
    fi
 }
 
-# pst [stat args]   render daily-note activity as a calendar heatmap + stats.
+# pst [stat args]   render the bytes written as a calendar heatmap + stats.
 #   Thin wrapper over `plc stat` (read-only: prints, no editor). plc's global
 #   `-t` is --tag, so map a bare `-t` back to --type for muscle memory:
 #     pst              current month     pst -t year        year (git heatmap)
