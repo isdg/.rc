@@ -15,12 +15,12 @@
 #   note NAME              open/create NAME in the notes dir (plc add)
 #   tg [-l | -n]           manage murmur notes (-l = fzf-pick)
 #   isg [-l | NAME]        enumerated isg notes (isg0, isg1, … ; -l = fzf-pick)
-#   dn [-n | -l FILE | -L] manage do-notes (week-based, last-pointer)
+#   todo [-n|-l FILE|-L]   manage do-notes (week-based, last-pointer)
 #   pst [stat args]        daily-note activity calendar + stats (plc stat)
 #   plc cd [DIR]           cd into the vault, or DIR inside it; other plc
 #                          args pass through
 #
-# Short aliases:  dl → daily, wk → weekly, no → note
+# Short aliases:  dl → daily, wk → weekly, no → note, td → todo
 
 # A process can't move its parent shell, so `plc cd` is answered here; every
 # other call reaches the binary unchanged.
@@ -56,10 +56,10 @@ note()   { _plc_edit plc add "$@"; }
 # `ptop`, not `top`, so the palace landing page doesn't shadow the system `top`.
 ptop()   { _plc_edit plc top; }
 
-# dn [-n|-l FILE|-L]   manage do-notes
+# todo [-n|-l FILE|-L] manage do-notes
 #   -L / -l FILE : informational (list / re-point) — no editor
 #   -n / (none)  : create new / open last — opens in $EDITOR
-dn() {
+todo() {
    case "$1" in
       -L|--list|-l|--last) plc do "$@" ;;
       *)                   _plc_edit plc do "$@" ;;
@@ -126,3 +126,4 @@ pst() {
 dl() { daily "$@"; }
 wk() { weekly "$@"; }
 no() { note "$@"; }
+td() { todo "$@"; }
