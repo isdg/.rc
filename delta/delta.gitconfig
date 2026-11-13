@@ -39,6 +39,11 @@
 	file-style = blue
 	; drop the "Δ" modified-file symbol -- show just the path
 	file-modified-label = ""
+; delta highlights each hunk as if the file began there: a hunk that opens on
+; a docstring's closing """ greys out the rest. Wider context reaches the
+; opener more often; it cannot guarantee it.
+[diff]
+	context = 10
 ; Absolute because git resolves a relative include from ~/.gitconfig, not the
 ; repo it links to. Missing (clone outside ~/.rc, unseeded) keeps the fallback.
 [include]
