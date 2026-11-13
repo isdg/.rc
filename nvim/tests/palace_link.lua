@@ -1,4 +1,4 @@
--- lua/palace.lua: the vault lookup and <leader><leader>p l / L, with fzf-lua's
+-- lua/palace.lua: the vault lookup and <leader><leader>p a / A, with fzf-lua's
 -- picker stubbed. Needs plc, rg and the installed fzf-lua:
 --   nvim --clean --headless -l nvim/tests/palace_link.lua
 local nvim = vim.fs.dirname(vim.fs.dirname(vim.fs.abspath(arg[0])))
@@ -65,7 +65,7 @@ local ok, err = pcall(function()
     vim.api.nvim_set_current_line("ab")
     vim.api.nvim_win_set_cursor(0, { 1, 0 })
     palace.link(true)
-    check("l: the picker runs in the vault",
+    check("a: the picker runs in the vault",
         picked and picked.cwd == palace.root(), picked)
     local out = vim.system({ "sh", "-c", picked.cmd },
         { cwd = picked.cwd, text = true }):wait()
@@ -76,14 +76,14 @@ local ok, err = pcall(function()
         }), listed)
 
     picked.actions.enter({ listed[1] }, picked)
-    check("l: puts the link after the cursor", line() == "a[[дар]]b", line())
-    check("l: the cursor ends just past the link, as gp leaves it",
+    check("a: puts the link after the cursor", line() == "a[[дар]]b", line())
+    check("a: the cursor ends just past the link, as gp leaves it",
         vim.api.nvim_win_get_cursor(0)[2] == #"a[[дар]]")
 
     vim.api.nvim_win_set_cursor(0, { 1, 0 })
     palace.link(false)
     picked.actions.enter({ listed[2], listed[3] }, picked)
-    check("L: several picks go before the cursor, space-separated",
+    check("A: several picks go before the cursor, space-separated",
         line() == "[[two words]] [[old]]a[[дар]]b", line())
 
     local before = line()

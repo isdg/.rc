@@ -6,3 +6,7 @@ vault = ~/palace
 
 # Where `note` (plc add) puts notes: under the vault when relative.
 # notes = notes/triage
+
+# The day weekly and do-notes start a week on.
+# week_start = monday
+week_start = saturday

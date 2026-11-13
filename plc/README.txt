@@ -29,7 +29,7 @@ PIECES
 
     dl  daily [DD MM YY|YYYY]   daily note, today by default
 
-    wk  weekly                  this ISO week's note
+    wk  weekly                  this week's note
 
         shot [-i TEXT|-p DIR|-H]
                                 timestamped snapshot, in the daily dir
@@ -41,7 +41,7 @@ PIECES
         ptop                    TOP.md, the vault landing page (plc top)
 
     td  todo                    the last do-note
-        todo -n                 new do-note for this ISO week
+        todo -n                 new do-note for this week
         todo -L | -l FILE       list do-notes | mark FILE last (no
                                 editor)
 
@@ -54,7 +54,7 @@ PIECES
         isg --list | NAME       fzf-pick an isg note | open NAME
 
         pst [-m M] [-y Y] [-t year] [-p]
-                                daily-note heatmap + stats (plc stat);
+                                bytes-written heatmap + stats (plc stat);
                                 -t picks the scope, -p a line chart
 
    daily, shot, note, todo -n and isg pass plc's creation flags
@@ -75,7 +75,7 @@ PIECES
 
 4. nvim palace layer (nvim/rc.d/10-keys-plugins.lua): <leader><leader>p,
    then t / T insert an "isg" timestamp / a bare one at the cursor, and
-   l / L pick notes in fzf, newest first, and put [[links]] to them after
+   a / A pick notes in fzf, newest first, and put [[links]] to them after
    / before the cursor, as p and P paste (nvim/lua/palace.lua). Its test
    needs plc, rg and fzf-lua:
 
