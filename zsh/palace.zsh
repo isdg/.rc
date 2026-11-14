@@ -31,8 +31,8 @@
 #
 #   ii  isg                     the last isg note (isg0, isg1, …)
 #   ig                          same as ii
-#       isg -n                  next isg note
-#       isg -c [N]              continue N, or the latest: isg<N>a, …
+#       isg -n                  new isg note, the next number
+#       isg -f [N]              follow up N, or the latest: isg<N>a, …
 #       isg --list | NAME       fzf-pick an isg note | open NAME
 #
 #       pst [DD [MM [YY]]] [-f FORMAT]
@@ -124,10 +124,10 @@ murmur() {
    fi
 }
 
-# isg [-l|--last | -n|--next | -c|--continue [N] | --list | NAME]
+# isg [-l|--last | -n|--new | -f|--follow [N] | --list | NAME]
 #   (none) / -l / --last : open the last (most recent) note
-#   -n / --next          : create the next enumerated note and open it
-#   -c / --continue [N]  : continue note N (or the latest) → isg<N>a, isg<N>b, …
+#   -n / --new           : create the next enumerated note and open it
+#   -f / --follow [N]    : follow up note N (or the latest) → isg<N>a, isg<N>b, …
 #   --list               : fzf-pick an existing note (by recency) and open it
 #   NAME                 : open an existing note by basename
 isg() {
