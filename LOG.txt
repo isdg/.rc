@@ -10,6 +10,8 @@ heading (version · date · name), a sentence on why it is a milestone, and a
 few lines on what changed. Patches get a line only when one deserves it.
 
 
+0.11.27 · 2026-11-14 · pst alone lists today's notes; pst - is this month
+0.11.26 · 2026-11-14 · plc lr report, reg and bal filter with -g PATTERN
 0.11.25 · 2026-11-14 · pst and plc lr stat take DD MM YY, - for a whole
                       field, -f
 0.11.23 · 2026-11-14 · sn opens a palace shot
