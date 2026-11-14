@@ -31,7 +31,7 @@ PIECES
 
     wk  weekly                  this week's note
 
-    sn  shot [-i TEXT|-p DIR|-H]
+    st  shot [-i TEXT|-p DIR|-H]
                                 timestamped snapshot, in the daily dir
                                 unless -p; -i inline body, -H no header
 
@@ -48,15 +48,16 @@ PIECES
     mm  murmur                  new murmur note, prompts for its name
         murmur -l               fzf-pick a murmur note
 
-        isg                     the last isg note (isg0, isg1, ...)
+    ii  isg                     the last isg note (isg0, isg1, ...)
         isg -c                  next isg note
         isg --continue [N]      continue N, or the latest: isg<N>a, ...
         isg --list | NAME       fzf-pick an isg note | open NAME
 
-        pst [-m M] [-y Y] [-t year] [-p]
-                                bytes-written heatmap + stats (plc stat);
-                                -t picks the scope, -p a line chart
-        pst --day DD MM YY      the notes written that day, bytes each
+        pst [DD [MM [YY]]] [-f FORMAT]
+                                bytes written (plc stat): a day lists its
+                                notes, - for a whole field draws a month
+                                (- MM YY) or a year (- - YY); -f grid,
+                                rows, plot, list or tsv
 
    daily, shot, note, todo -n and isg pass plc's creation flags
    through: -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]]
