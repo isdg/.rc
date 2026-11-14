@@ -56,7 +56,7 @@ PIECES
         pst [-m M] [-y Y] [-t year] [-p]
                                 bytes-written heatmap + stats (plc stat);
                                 -t picks the scope, -p a line chart
-        pst --day YY MM DD      the notes written that day, bytes each
+        pst --day DD MM YY      the notes written that day, bytes each
 
    daily, shot, note, todo -n and isg pass plc's creation flags
    through: -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]]
