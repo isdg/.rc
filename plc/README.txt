@@ -31,11 +31,11 @@ PIECES
 
     wk  weekly                  this week's note
 
-        shot [-i TEXT|-p DIR|-H]
+    sn  shot [-i TEXT|-p DIR|-H]
                                 timestamped snapshot, in the daily dir
                                 unless -p; -i inline body, -H no header
 
-    no  note NAME               NAME in the notes dir that plc config
+    nt  note NAME               NAME in the notes dir that plc config
                                 notes names (plc add)
 
         ptop                    TOP.md, the vault landing page (plc top)

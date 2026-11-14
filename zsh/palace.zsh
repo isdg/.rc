@@ -14,11 +14,11 @@
 #
 #   wk  weekly                  this week's note
 #
-#       shot [-i TEXT|-p DIR|-H]
+#   sn  shot [-i TEXT|-p DIR|-H]
 #                               timestamped snapshot, in the daily dir
 #                               unless -p; -i inline body, -H no header
 #
-#   no  note NAME               NAME in the notes dir (plc add)
+#   nt  note NAME               NAME in the notes dir (plc add)
 #
 #       ptop                    TOP.md, the vault landing page (plc top)
 #
@@ -161,6 +161,7 @@ pst() {
 # Short aliases (functions so they resolve in non-interactive shells too)
 dl() { daily "$@"; }
 wk() { weekly "$@"; }
+sn() { shot "$@"; }
 nt() { note "$@"; }
 td() { todo "$@"; }
 mm() { murmur "$@"; }
