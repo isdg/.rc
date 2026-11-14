@@ -51,7 +51,7 @@ PIECES
     ii  isg                     the last isg note (isg0, isg1, ...)
     ig                          same as ii
         isg -n                  next isg note
-        isg --continue [N]      continue N, or the latest: isg<N>a, ...
+        isg -c [N]              continue N, or the latest: isg<N>a, ...
         isg --list | NAME       fzf-pick an isg note | open NAME
 
         pst [DD [MM [YY]]] [-f FORMAT]
