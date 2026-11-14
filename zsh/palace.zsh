@@ -22,9 +22,9 @@
 #
 #   pt  plctop                  TOP.md, the vault landing page (plc top)
 #
-#   td  todo [--last]           the last do-note
-#       todo -n                 new do-note for this week
-#       todo -l | -L NAME       list do-notes | mark NAME last (no editor)
+#   td  todo [--last]           the last todo note
+#       todo -n                 new todo note for this week
+#       todo -l | -L NAME       list todo notes | mark NAME last (no editor)
 #
 #   mm  murmur                  new murmur note, prompts for its name
 #       murmur -l               fzf-pick a murmur note
@@ -93,7 +93,7 @@ note()   { _plc_edit plc add "$@"; }
 # `plctop`, not `top`, so the landing page doesn't shadow the system `top`.
 plctop() { _plc_edit plc top; }
 
-# todo [-n|-l|-L NAME|--last] manage do-notes
+# todo [-n|-l|-L NAME|--last] manage todo notes
 #   -l / -L NAME          : informational (list / re-point) — no editor
 #   -n / --last / (none)  : create new / open last — opens in $EDITOR
 todo() {
