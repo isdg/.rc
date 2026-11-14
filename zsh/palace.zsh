@@ -34,10 +34,11 @@
 #       isg --continue [N]      continue N, or the latest: isg<N>a, …
 #       isg --list | NAME       fzf-pick an isg note | open NAME
 #
-#       pst [-m M] [-y Y] [-t year] [-p]
-#                               bytes-written heatmap + stats (plc stat);
-#                               -t picks the scope, -p a line chart
-#       pst --day DD MM YY      the notes written that day, bytes each
+#       pst [DD [MM [YY]]] [-f FORMAT]
+#                               bytes written (plc stat): a day lists its
+#                               notes, - for a whole field draws a month
+#                               (- MM YY) or a year (- - YY); -f grid,
+#                               rows, plot, list or tsv
 #
 # daily, shot, note, todo -n and isg pass plc's creation flags through:
 # -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]] link.
@@ -143,20 +144,11 @@ isg() {
    fi
 }
 
-# pst [stat args]   render the bytes written as a calendar heatmap + stats.
-#   Thin wrapper over `plc stat` (read-only: prints, no editor). plc's global
-#   `-t` is --tag, so map a bare `-t` back to --type for muscle memory:
-#     pst              current month     pst -t year        year (git heatmap)
-#     pst -m 12 -y 25  Dec 2025          pst -t year -p     year line chart
-#     pst --day 27 09 25                 the notes written on 2025-09-27
-pst() {
-   local args=() a
-   for a in "$@"; do
-      [[ "$a" == "-t" ]] && a=--type
-      args+=("$a")
-   done
-   plc stat "${args[@]}"
-}
+# pst [stat args]   the bytes written, `plc stat` (read-only: prints):
+#     pst              this month        pst - - 25         2025
+#     pst - 12 25      Dec 2025          pst - - -f plot    this year, plotted
+#     pst 27 09 25     the notes written on 2025-09-27
+pst() { plc stat "$@"; }
 
 # Short aliases (functions so they resolve in non-interactive shells too)
 dl() { daily "$@"; }
