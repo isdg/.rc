@@ -83,7 +83,8 @@ _plc_edit() {
    [ -n "$f" ] || return
    local vault
    vault=$(plc config) || return
-   ( cd "$vault" && ${EDITOR:-nvim} "$f" )
+   # + opens at the last line, where a note grows.
+   ( cd "$vault" && ${EDITOR:-nvim} + "$f" )
 }
 
 daily()  { _plc_edit plc daily "$@"; }

@@ -95,7 +95,7 @@ LAYOUT
     readline/       .inputrc + .editrc: line keys for psql, lldb, sqlite3...
     fonts/          JetBrains Mono + Computer Modern
     darwin/         Darwin system defaults + Brewfile; launchd/ holds
-                    hr and ~/.rcstate sync jobs run at login and hourly,
+                    hr and ~/.rcstate sync jobs run at login and every 12 h,
                     loaded at level 3, driven by hand with
                     launchd/agents.sh (logs in ~/Library/Logs/rc)
     prompt/         shell prompt definitions
