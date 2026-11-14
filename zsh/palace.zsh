@@ -146,9 +146,9 @@ isg() {
 }
 
 # pst [stat args]   the bytes written, `plc stat` (read-only: prints):
-#     pst              this month        pst - - 25         2025
-#     pst - 12 25      Dec 2025          pst - - -f plot    this year, plotted
-#     pst 27 09 25     the notes written on 2025-09-27
+#     pst              today's notes     pst -              this month
+#     pst 27 09 25     2025-09-27's      pst - 12 25        Dec 2025
+#     pst - - 25       2025              pst - - -f plot    this year, plotted
 pst() { plc stat "$@"; }
 
 # Short aliases (functions so they resolve in non-interactive shells too)
