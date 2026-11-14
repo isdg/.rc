@@ -20,7 +20,7 @@
 #
 #   nt  note NAME               NAME in the notes dir (plc add)
 #
-#       ptop                    TOP.md, the vault landing page (plc top)
+#   pt  plctop                  TOP.md, the vault landing page (plc top)
 #
 #   td  todo                    the last do-note
 #       todo -n                 new do-note for this week
@@ -30,6 +30,7 @@
 #       murmur -l               fzf-pick a murmur note
 #
 #   ii  isg                     the last isg note (isg0, isg1, …)
+#   ig                          same as ii
 #       isg -c                  next isg note
 #       isg --continue [N]      continue N, or the latest: isg<N>a, …
 #       isg --list | NAME       fzf-pick an isg note | open NAME
@@ -89,8 +90,8 @@ daily()  { _plc_edit plc daily "$@"; }
 weekly() { _plc_edit plc weekly; }
 shot()   { _plc_edit plc shot "$@"; }
 note()   { _plc_edit plc add "$@"; }
-# `ptop`, not `top`, so the palace landing page doesn't shadow the system `top`.
-ptop()   { _plc_edit plc top; }
+# `plctop`, not `top`, so the landing page doesn't shadow the system `top`.
+plctop() { _plc_edit plc top; }
 
 # todo [-n|-l FILE|-L] manage do-notes
 #   -L / -l FILE : informational (list / re-point) — no editor
@@ -151,10 +152,14 @@ isg() {
 pst() { plc stat "$@"; }
 
 # Short aliases (functions so they resolve in non-interactive shells too)
+# On Linux, st and ii shadow suckless's terminal and IRC client if installed;
+# `command st` and `command ii` still reach them.
 dl() { daily "$@"; }
 wk() { weekly "$@"; }
 st() { shot "$@"; }
 nt() { note "$@"; }
+pt() { plctop "$@"; }
 td() { todo "$@"; }
 mm() { murmur "$@"; }
 ii() { isg "$@"; }
+ig() { isg "$@"; }

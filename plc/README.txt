@@ -38,7 +38,7 @@ PIECES
     nt  note NAME               NAME in the notes dir that plc config
                                 notes names (plc add)
 
-        ptop                    TOP.md, the vault landing page (plc top)
+    pt  plctop                  TOP.md, the vault landing page (plc top)
 
     td  todo                    the last do-note
         todo -n                 new do-note for this week
@@ -49,6 +49,7 @@ PIECES
         murmur -l               fzf-pick a murmur note
 
     ii  isg                     the last isg note (isg0, isg1, ...)
+    ig                          same as ii
         isg -c                  next isg note
         isg --continue [N]      continue N, or the latest: isg<N>a, ...
         isg --list | NAME       fzf-pick an isg note | open NAME
