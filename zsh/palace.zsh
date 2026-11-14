@@ -37,7 +37,7 @@
 #       pst [-m M] [-y Y] [-t year] [-p]
 #                               bytes-written heatmap + stats (plc stat);
 #                               -t picks the scope, -p a line chart
-#       pst --day YY MM DD      the notes written that day, bytes each
+#       pst --day DD MM YY      the notes written that day, bytes each
 #
 # daily, shot, note, todo -n and isg pass plc's creation flags through:
 # -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]] link.
@@ -148,7 +148,7 @@ isg() {
 #   `-t` is --tag, so map a bare `-t` back to --type for muscle memory:
 #     pst              current month     pst -t year        year (git heatmap)
 #     pst -m 12 -y 25  Dec 2025          pst -t year -p     year line chart
-#     pst --day 25 09 27                 the notes written on 2025-09-27
+#     pst --day 27 09 25                 the notes written on 2025-09-27
 pst() {
    local args=() a
    for a in "$@"; do
