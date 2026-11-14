@@ -40,9 +40,9 @@ PIECES
 
     pt  plctop                  TOP.md, the vault landing page (plc top)
 
-    td  todo [--last]           the last do-note
-        todo -n                 new do-note for this week
-        todo -l | -L NAME       list do-notes | mark NAME last (no
+    td  todo [--last]           the last todo note
+        todo -n                 new todo note for this week
+        todo -l | -L NAME       list todo notes | mark NAME last (no
                                 editor)
 
     mm  murmur                  new murmur note, prompts for its name
