@@ -29,8 +29,7 @@
 #   mm  murmur                  new murmur note, prompts for its name
 #       murmur -l               fzf-pick a murmur note
 #
-#   ii  isg                     the last isg note (isg0, isg1, …)
-#   ig                          same as ii
+#   ig  isg                     the last isg note (isg0, isg1, …)
 #       isg -n                  new isg note, the next number
 #       isg -f [N]              follow up N, or the latest: isg<N>a, …
 #       isg --list | NAME       fzf-pick an isg note | open NAME
@@ -152,8 +151,8 @@ isg() {
 pst() { plc stat "$@"; }
 
 # Short aliases (functions so they resolve in non-interactive shells too)
-# On Linux, st and ii shadow suckless's terminal and IRC client if installed;
-# `command st` and `command ii` still reach them.
+# On Linux, st shadows suckless's terminal if installed; `command st` still
+# reaches it.
 dl() { daily "$@"; }
 wk() { weekly "$@"; }
 st() { shot "$@"; }
@@ -161,5 +160,4 @@ nt() { note "$@"; }
 pt() { plctop "$@"; }
 td() { todo "$@"; }
 mm() { murmur "$@"; }
-ii() { isg "$@"; }
 ig() { isg "$@"; }
