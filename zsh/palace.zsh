@@ -30,6 +30,7 @@
 #       murmur -l               fzf-pick a murmur note
 #
 #   ii  isg                     the last isg note (isg0, isg1, …)
+#   ig                          same as ii
 #       isg -c                  next isg note
 #       isg --continue [N]      continue N, or the latest: isg<N>a, …
 #       isg --list | NAME       fzf-pick an isg note | open NAME
@@ -159,3 +160,4 @@ pt() { plctop "$@"; }
 td() { todo "$@"; }
 mm() { murmur "$@"; }
 ii() { isg "$@"; }
+ig() { isg "$@"; }
