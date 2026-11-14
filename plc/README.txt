@@ -48,8 +48,7 @@ PIECES
     mm  murmur                  new murmur note, prompts for its name
         murmur -l               fzf-pick a murmur note
 
-    ii  isg                     the last isg note (isg0, isg1, ...)
-    ig                          same as ii
+    ig  isg                     the last isg note (isg0, isg1, ...)
         isg -n                  new isg note, the next number
         isg -f [N]              follow up N, or the latest: isg<N>a, ...
         isg --list | NAME       fzf-pick an isg note | open NAME
