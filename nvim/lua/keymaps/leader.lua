@@ -17,6 +17,7 @@ local eng_to_ru = {
     Q="Й", W="Ц", E="У", R="К", T="Е", Y="Н", U="Г", I="Ш", O="Щ", P="З",
     A="Ф", S="Ы", D="В", F="А", G="П", H="Р", J="О", K="Л", L="Д",
     Z="Я", X="Ч", C="С", V="М", B="И", N="Т", M="Ь",
+    ["'"]="э", ['"']="Э",
 }
 
 -- Translate a whole key sequence, so multi-key leader maps (<leader>dk) get a

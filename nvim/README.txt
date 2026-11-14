@@ -76,6 +76,15 @@ over a selection both replace it and keep the unnamed register. Their test:
 
     > nvim --clean --headless -l nvim/tests/clipboard_keys.lua
 
+<leader>" picks in fzf the named register to yank into, each shown with
+what it holds; the motion follows, or the selection is yanked. alt-enter
+appends instead. <leader>' picks a filled register to paste: after, or
+before with alt-enter; over a selection it keeps the unnamed register, or
+swaps the replaced text into it with alt-enter. Both take a count
+(lua/register_picker.lua). Their test:
+
+    > nvim --clean --headless -l nvim/tests/register_keys.lua
+
 <leader>rn falls back to a text rename where no server can rename, and
 <leader>rN renames by text across the repo (lua/text_rename.lua). Its test
 needs only rg:
