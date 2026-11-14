@@ -31,8 +31,8 @@
 #
 #   ig  isg                     the last isg note (isg0, isg1, …)
 #       isg -n                  new isg note, the next number
-#       isg -f [N]              follow up N, or the latest: isg<N>a, …
-#       isg --list | NAME       fzf-pick an isg note | open NAME
+#       isg -nf [N]             follow up N, or the last: isg<N>a, …
+#       isg -l | NAME           fzf-pick an isg note | open NAME
 #
 #       pst [DD [MM [YY]]] [-f FORMAT]
 #                               bytes written (plc stat): a day lists its
@@ -123,19 +123,20 @@ murmur() {
    fi
 }
 
-# isg [-l|--last | -n|--new | -f|--follow [N] | --list | NAME]
-#   (none) / -l / --last : open the last (most recent) note
+# isg [-l|--list | -n|--new [-f|--follow [N]] | NAME]
+#   (none)               : open the last note plc created or opened
 #   -n / --new           : create the next enumerated note and open it
-#   -f / --follow [N]    : follow up note N (or the latest) → isg<N>a, isg<N>b, …
-#   --list               : fzf-pick an existing note (by recency) and open it
+#   -nf / -n --follow [N]: follow up note N (or the last) → isg<N>a, isg<N>b, …
+#   -l / --list          : fzf-pick an existing note (by recency) and open it
 #   NAME                 : open an existing note by basename
 isg() {
-   if [ "$1" = --list ]; then
-      local pick
-      # Preview below the list; `plc isg {}` resolves an existing basename to its
-      # path (listed names already exist, so no note is created).
+   if [[ "$1" == -l || "$1" == --list ]]; then
+      local dir pick
+      # Preview by path: `plc isg {}` would mark every previewed note last.
+      dir="$(plc config)/notes/me/writing/isg" || return
       pick=$(plc isg --list | fzf --prompt='isg > ' --no-sort \
-         --preview 'f=$(plc isg {} 2>/dev/null); bat --color=always --style=plain "$f" 2>/dev/null || cat "$f" 2>/dev/null' \
+         --preview "bat --color=always --style=plain ${(q)dir}/{} 2>/dev/null \
+            || cat ${(q)dir}/{} 2>/dev/null" \
          --preview-window 'down:70%') || return
       [ -n "$pick" ] || return
       _plc_edit plc isg "$pick"
