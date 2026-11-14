@@ -40,18 +40,19 @@ PIECES
 
     pt  plctop                  TOP.md, the vault landing page (plc top)
 
-    td  todo                    the last do-note
+    td  todo [--last]           the last do-note
         todo -n                 new do-note for this week
-        todo -L | -l FILE       list do-notes | mark FILE last (no
+        todo -l | -L NAME       list do-notes | mark NAME last (no
                                 editor)
 
     mm  murmur                  new murmur note, prompts for its name
         murmur -l               fzf-pick a murmur note
 
-    ig  isg                     the last isg note (isg0, isg1, ...)
+    ig  isg [--last]            the last isg note (isg0, isg1, ...)
         isg -n                  new isg note, the next number
         isg -nf [N]             follow up N, or the last: isg<N>a, ...
         isg -l | NAME           fzf-pick an isg note | open NAME
+        isg -L NAME             mark NAME last (no editor)
 
         pst [DD [MM [YY]]] [-f FORMAT]
                                 bytes written (plc stat): a day lists its
