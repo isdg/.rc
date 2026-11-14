@@ -393,6 +393,13 @@ lmap("v", "p", '"+P', { desc = "Paste from clipboard" })
 lmap("n", "P", '"+P', { desc = "Paste from clipboard before" })
 lmap("v", "P", '"+P', { desc = "Paste from clipboard" })
 
+-- Registers through fzf, showing their contents: <leader>" picks the named
+-- register to yank into, <leader>' the register to paste (lua/register_picker).
+lmap({ "n", "v" }, '"', function() require("register_picker").yank() end,
+    { desc = "Yank into a register (fzf)" })
+lmap({ "n", "v" }, "'", function() require("register_picker").paste() end,
+    { desc = "Paste a register (fzf)" })
+
 -- <leader>y{f,p,P}: put this buffer's name, absolute path or cwd-relative path
 -- on the clipboard. Same "+ as the yank above, so it reaches pbcopy locally and
 -- the local terminal over SSH; :. falls back to the full path outside cwd.
