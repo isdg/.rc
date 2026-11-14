@@ -31,7 +31,7 @@ PIECES
 
     wk  weekly                  this week's note
 
-    sn  shot [-i TEXT|-p DIR|-H]
+    st  shot [-i TEXT|-p DIR|-H]
                                 timestamped snapshot, in the daily dir
                                 unless -p; -i inline body, -H no header
 

@@ -14,7 +14,7 @@
 #
 #   wk  weekly                  this week's note
 #
-#   sn  shot [-i TEXT|-p DIR|-H]
+#   st  shot [-i TEXT|-p DIR|-H]
 #                               timestamped snapshot, in the daily dir
 #                               unless -p; -i inline body, -H no header
 #
@@ -161,7 +161,7 @@ pst() {
 # Short aliases (functions so they resolve in non-interactive shells too)
 dl() { daily "$@"; }
 wk() { weekly "$@"; }
-sn() { shot "$@"; }
+st() { shot "$@"; }
 nt() { note "$@"; }
 td() { todo "$@"; }
 mm() { murmur "$@"; }
