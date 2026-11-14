@@ -98,8 +98,8 @@ plctop() { _plc_edit plc top; }
 #   -n / --last / (none)  : create new / open last — opens in $EDITOR
 todo() {
    case "$1" in
-      -l|--list|-L|--mark) plc do "$@" ;;
-      *)                   _plc_edit plc do "$@" ;;
+      -l|--list|-L|--mark) plc todo "$@" ;;
+      *)                   _plc_edit plc todo "$@" ;;
    esac
 }
 
