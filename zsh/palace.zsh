@@ -22,17 +22,18 @@
 #
 #   pt  plctop                  TOP.md, the vault landing page (plc top)
 #
-#   td  todo                    the last do-note
+#   td  todo [--last]           the last do-note
 #       todo -n                 new do-note for this week
-#       todo -L | -l FILE       list do-notes | mark FILE last (no editor)
+#       todo -l | -L NAME       list do-notes | mark NAME last (no editor)
 #
 #   mm  murmur                  new murmur note, prompts for its name
 #       murmur -l               fzf-pick a murmur note
 #
-#   ig  isg                     the last isg note (isg0, isg1, …)
+#   ig  isg [--last]            the last isg note (isg0, isg1, …)
 #       isg -n                  new isg note, the next number
 #       isg -nf [N]             follow up N, or the last: isg<N>a, …
 #       isg -l | NAME           fzf-pick an isg note | open NAME
+#       isg -L NAME             mark NAME last (no editor)
 #
 #       pst [DD [MM [YY]]] [-f FORMAT]
 #                               bytes written (plc stat): a day lists its
@@ -92,12 +93,12 @@ note()   { _plc_edit plc add "$@"; }
 # `plctop`, not `top`, so the landing page doesn't shadow the system `top`.
 plctop() { _plc_edit plc top; }
 
-# todo [-n|-l FILE|-L] manage do-notes
-#   -L / -l FILE : informational (list / re-point) — no editor
-#   -n / (none)  : create new / open last — opens in $EDITOR
+# todo [-n|-l|-L NAME|--last] manage do-notes
+#   -l / -L NAME          : informational (list / re-point) — no editor
+#   -n / --last / (none)  : create new / open last — opens in $EDITOR
 todo() {
    case "$1" in
-      -L|--list|-l|--last) plc do "$@" ;;
+      -l|--list|-L|--mark) plc do "$@" ;;
       *)                   _plc_edit plc do "$@" ;;
    esac
 }
@@ -140,6 +141,8 @@ isg() {
          --preview-window 'down:70%') || return
       [ -n "$pick" ] || return
       _plc_edit plc isg "$pick"
+   elif [[ "$1" == -L || "$1" == --mark ]]; then
+      plc isg "$@"
    else
       _plc_edit plc isg "$@"
    fi
