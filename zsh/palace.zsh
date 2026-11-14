@@ -20,7 +20,7 @@
 #
 #   nt  note NAME               NAME in the notes dir (plc add)
 #
-#       ptop                    TOP.md, the vault landing page (plc top)
+#   pt  plctop                  TOP.md, the vault landing page (plc top)
 #
 #   td  todo                    the last do-note
 #       todo -n                 new do-note for this week
@@ -89,8 +89,8 @@ daily()  { _plc_edit plc daily "$@"; }
 weekly() { _plc_edit plc weekly; }
 shot()   { _plc_edit plc shot "$@"; }
 note()   { _plc_edit plc add "$@"; }
-# `ptop`, not `top`, so the palace landing page doesn't shadow the system `top`.
-ptop()   { _plc_edit plc top; }
+# `plctop`, not `top`, so the landing page doesn't shadow the system `top`.
+plctop() { _plc_edit plc top; }
 
 # todo [-n|-l FILE|-L] manage do-notes
 #   -L / -l FILE : informational (list / re-point) — no editor
@@ -155,6 +155,7 @@ dl() { daily "$@"; }
 wk() { weekly "$@"; }
 st() { shot "$@"; }
 nt() { note "$@"; }
+pt() { plctop "$@"; }
 td() { todo "$@"; }
 mm() { murmur "$@"; }
 ii() { isg "$@"; }

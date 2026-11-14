@@ -38,7 +38,7 @@ PIECES
     nt  note NAME               NAME in the notes dir that plc config
                                 notes names (plc add)
 
-        ptop                    TOP.md, the vault landing page (plc top)
+    pt  plctop                  TOP.md, the vault landing page (plc top)
 
     td  todo                    the last do-note
         todo -n                 new do-note for this week
