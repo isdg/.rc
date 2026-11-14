@@ -152,6 +152,8 @@ isg() {
 pst() { plc stat "$@"; }
 
 # Short aliases (functions so they resolve in non-interactive shells too)
+# On Linux, st and ii shadow suckless's terminal and IRC client if installed;
+# `command st` and `command ii` still reach them.
 dl() { daily "$@"; }
 wk() { weekly "$@"; }
 st() { shot "$@"; }
