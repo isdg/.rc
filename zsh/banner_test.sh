@@ -20,11 +20,12 @@ render() {
             banner_info ".rc 9.9.9 · 42 ms · local"
         }
         fake_log() { banner_log "a log line" }
-        _banner_mascot=( "       ▼ qB" "tape" "δ(qB,0)=⟨A,1,L⟩" )
+        _banner_mascot=( "      ▼ qB" "tape" "δ(qB,0)=⟨A,1,L⟩" )
+        _banner_head=$2
         _banner_info_lines=( "%B%n%b@box" "Mon 01 Jan" )
         _banner_session=local
         cd ~ && banner_render
-    ' _ "$repo" | sed $'s/\e\\[[0-9;]*m//g'
+    ' _ "$repo" "${2-}" | sed $'s/\e\\[[0-9;]*m//g'
 }
 
 fail=0
@@ -61,6 +62,27 @@ want="  ▼ qB  .rc 9.9.9 · $user@box · 42 ms"
 want+=$'\n\n    › a log line\n\n.'
 check "tiny alone keeps the logs, no blank above" \
     "$(render tiny; echo .)" "$want"
+
+want="  ▼ (qB,0)  .rc 9.9.9 · $user@box · 42 ms"$'\n\n.'
+check "tiny: the head with its symbol, when the mascot names one" \
+    "$(render 'tiny nologs' '▼ (qB,0)'; echo .)" "$want"
+
+week="$(zsh -f -c '
+    source "$1/zsh/banner.zsh"
+    for d in {1..7}; do
+        __isg::beaver_mascot $d
+        print -r -- "$_banner_head|$_banner_mascot[1]|$_banner_mascot[3]"
+    done
+' _ "$repo")"
+want='▼ (qA,0)|      ▼ qA|┄┤0│0│0│0│0├┄
+▼ (qB,0)|      ▼ qB|┄┤0│1│0│0│0├┄
+▼ (qA,1)|      ▼ qA|┄┤0│0│1│1│0├┄
+▼ (qC,0)|      ▼ qC|┄┤0│0│0│1│1├┄
+▼ (qB,1)|      ▼ qB|┄┤0│1│1│1│1├┄
+▼ (qC,1)|      ▼ qC|┄┤1│1│1│1│1├┄
+▼ HALT|      ▼ HALT|┄┤1│1│1│1│0├┄'
+check "week: one δ row a day, the head over the middle cell" \
+    "$week" "$want"
 
 info() {
     ISGRC="$1" zsh -f -c '
