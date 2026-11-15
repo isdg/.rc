@@ -19,8 +19,9 @@
 #   nomascot   the info lines alone, as a list
 #   mini       two lines: the mascot's head and its δ, the identity; then
 #              the .rc version, startup time and session kind
-#   tiny       one line: the mascot's head, .rc version, identity and
-#              startup time, from the top line with no blank above it
+#   tiny       one line: the head with the symbol it reads, .rc version,
+#              identity and startup time, from the top line with no blank
+#              above it
 #   off        nothing at all
 #
 #   tiny beats mini and mini beats nomascot; nologs combines with any of
@@ -40,7 +41,7 @@
 #
 #   BANNER_MODE='tiny nologs'
 #
-#     ▼ q₀  .rc 0.11.0 · isg@zsh · 77 ms
+#     ▼ (q₀,0)  .rc 0.11.0 · isg@zsh · 77 ms
 #
 #   Without nologs, each keeps its logs below, as the banner above does.
 #
@@ -133,7 +134,7 @@ banner_run() {
 #
 # Why it ever stops: δ is partial — when no rule exists for the current
 # (state, symbol) pair, the machine halts. The busy beaver reaches the
-# explicit HALT ∈ F state after 14 steps, having written six 1s — the
+# explicit HALT ∈ F state after 13 steps, having written six 1s — the
 # most a 3-state machine can do and still terminate. A fitting mascot
 # for a shell: maximum output, guaranteed to terminate.
 typeset -ga _banner_mascot=(
@@ -143,7 +144,7 @@ typeset -ga _banner_mascot=(
     '┄┴─┴─┴─┴─┴─┴┄'
     'δ(q₀,0)=⟨B,1,R⟩'
 )
-typeset -g _banner_mascot_width=16
+typeset -g _banner_mascot_width=16 _banner_head=
 
 # Alternative: signed with the formal 7-tuple instead of a transition
 #   '       ▼ q₀'
@@ -164,35 +165,27 @@ typeset -g _banner_mascot_width=16
 #   '▌0▐1▐0█1█▌1▐0'
 #   '▀▀▀▀▀▀▀▀▀▀▀▀▀'
 
-# ── toy: the beaver lives through the week ──
-# Each day the machine is ⌊14·d/6⌋ steps into its run (d = 0 on Monday).
-# The static array above is Monday's step zero (q₀ = qA); this
-# overwrites it with today's frame: simulated tape window around the
-# head, current state, and the pending transition (HALT → H in the
-# triple). The week, frame by frame (window = head ± 2 cells):
+# ── toy: the beaver walks its δ table through the week ──
+# The run reads seven (state, symbol) pairs: the six rows of δ, then
+# HALT. Each weekday freezes the machine at the first step that reads
+# the next of them, so the head and its pending transition differ every
+# day. This overwrites the static array above with that frame: the tape
+# window head ± 2, the state, and the triple (HALT → H).
 #
-#   Mon   0  ┄┤0│0│0│0│0├┄  δ(qA,0)=⟨B,1,R⟩  reborn on a blank tape;
-#                                            plants the 1st of six 1s
-#   Tue   2  ┄┤0│0│1│1│0├┄  δ(qA,1)=⟨C,1,L⟩  wrote two 1s, bounced
-#                                            back; turns left
-#   Wed   4  ┄┤0│0│0│1│1├┄  δ(qB,0)=⟨A,1,L⟩  marching left, laying 1s
-#                                            at the frontier
-#   Thu   7  ┄┤1│1│1│1│1├┄  δ(qB,1)=⟨B,1,R⟩  left edge sealed; begins
-#                                            the long right sweep
-#   Fri   9  ┄┤1│1│1│0│0├┄  δ(qB,1)=⟨B,1,R⟩  B's self-loop rides over
-#                                            its own 1s, head → right
-#   Sat  11  ┄┤1│1│1│1│0├┄  δ(qA,1)=⟨C,1,L⟩  6th and last 1 written;
-#                                            turns back inward
-#   Sun  14  ┄┤1│1│1│1│0├┄  δ(HALT,·) = ∅ ∎  qC read a 1 → HALT ∈ F;
-#                                            six 1s, machine rests
+#   Mon   0  ┄┤0│0│0│0│0├┄  δ(qA,0)=⟨B,1,R⟩  reborn on a blank tape
+#   Tue   1  ┄┤0│1│0│0│0├┄  δ(qB,0)=⟨A,1,L⟩  first 1 planted
+#   Wed   2  ┄┤0│0│1│1│0├┄  δ(qA,1)=⟨C,1,L⟩  bounced back onto a 1
+#   Thu   3  ┄┤0│0│0│1│1├┄  δ(qC,0)=⟨B,1,L⟩  C's only visit to a blank
+#   Fri   6  ┄┤0│1│1│1│1├┄  δ(qB,1)=⟨B,1,R⟩  left edge sealed; B's
+#                                            self-loop sweeps right
+#   Sat  12  ┄┤1│1│1│1│1├┄  δ(qC,1)=⟨H,1,R⟩  six 1s down, one move left
+#   Sun  13  ┄┤1│1│1│1│0├┄  δ(HALT,·) = ∅ ∎  HALT ∈ F; the machine rests
 #
-# Stages of the underlying 13-transition run: plant two 1s and bounce
-# (1-2) → march left extending the block (3-5) → turn at the left edge
-# (6) → sweep right over the 1s via δ(B,1)=⟨B,1,R⟩ (7-10) → seal the
-# right edge with the 6th 1 (11) → walk in and hit δ(C,1)=⟨HALT,1,R⟩
-# (12-13). Monday it is reborn at step zero.
+# The state alone repeats across the week, so tiny shows _banner_head:
+# the head with the symbol it reads. Monday it is reborn at step zero.
 __isg::beaver_mascot() {
-    local -i steps=$1 head=0 i
+    local -a week=( 0 1 2 3 6 12 13 )
+    local -i steps=$week[$1] head=0 i
     local state=A sym label move
     local -a rule cells
     local -A tape
@@ -220,8 +213,10 @@ __isg::beaver_mascot() {
     else
         move="δ($label,·) = ∅ ∎"
     fi
+    _banner_head="▼ ($label,$sym)"
+    [[ $state == HALT ]] && _banner_head='▼ HALT'
     _banner_mascot=(
-        "       ▼ $label"
+        "      ▼ $label"
         '┄┬─┬─┬─┬─┬─┬┄'
         "┄┤$cells[1]│$cells[2]│$cells[3]│$cells[4]│$cells[5]├┄"
         '┄┴─┴─┴─┴─┴─┴┄'
@@ -231,7 +226,7 @@ __isg::beaver_mascot() {
 
 if zmodload zsh/datetime 2>/dev/null; then
     strftime -s _isg_dow '%u' $EPOCHSECONDS   # 1 = Monday .. 7 = Sunday
-    __isg::beaver_mascot $(( 14 * (_isg_dow - 1) / 6 ))
+    __isg::beaver_mascot $_isg_dow
     unset _isg_dow
 fi
 
@@ -249,7 +244,7 @@ banner_render() {
         (( ${mode[(Ie)off]} )) && return 0
         (( ${mode[(Ie)tiny]} )) || print
         if (( ${mode[(Ie)tiny]} )); then
-            head=${(j: :)${=_banner_mascot[1]}}
+            head=${_banner_head:-${(j: :)${=_banner_mascot[1]}}}
             shell=( ${_banner_rc:+".rc $_banner_rc"}
                     ${_banner_info_lines[1]:+"$_banner_info_lines[1]"}
                     ${_banner_ms:+"$_banner_ms ms"} )
