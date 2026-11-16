@@ -135,7 +135,7 @@ isg() {
    if [[ "$1" == -l || "$1" == --list ]]; then
       local dir pick
       # Preview by path: `plc isg {}` would mark every previewed note last.
-      dir="$(plc config)/notes/me/writing/isg" || return
+      dir=$(plc config isg) || return
       pick=$(plc isg --list | fzf --prompt='isg > ' --no-sort \
          --preview "bat --color=always --style=plain ${(q)dir}/{} 2>/dev/null \
             || cat ${(q)dir}/{} 2>/dev/null" \
