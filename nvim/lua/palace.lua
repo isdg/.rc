@@ -60,24 +60,18 @@ function M.open(args)
     vim.cmd("normal! G")
 end
 
--- Where plc keeps the notes `plc <sub> -l` lists, for the preview.
-local LISTED = {
-    todo = "notes/management/todo",
-    isg = "notes/me/writing/isg",
-    murmur = "notes/me/writing/murmur",
-}
-
--- Pick one of the notes `plc <sub> -l` lists, in its order, and open it.
+-- Pick one of the notes `plc <sub> -l` lists, in its order, previewed from
+-- the dir `plc config <sub>` names, and open it.
 local function pick(sub, open)
-    local list, root = plc({ sub, "-l" }), M.root()
-    if not list or not root then return end
+    local list, dir = plc({ sub, "-l" }), plc({ "config", sub })
+    if not list or not dir then return end
     local names = {}
     for line in vim.gsplit(list, "\n", { trimempty = true }) do
         names[#names + 1] = (line:gsub("^%s*%*?%s*", ""))
     end
     require("fzf-lua").fzf_exec(names, {
         prompt = sub .. " > ",
-        cwd = vim.fs.joinpath(root, LISTED[sub]),
+        cwd = vim.trim(dir),
         previewer = "builtin",
         fzf_opts = { ["--no-sort"] = true },
         actions = {

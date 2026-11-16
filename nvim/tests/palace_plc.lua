@@ -90,6 +90,8 @@ local ok, err = pcall(function()
         vim.fn.sort(vim.deepcopy(picked.names)),
         vim.fn.sort({ vim.fs.basename(old), vim.fs.basename(new) })),
         picked.names)
+    check("td -l: previewed from plc config todo",
+        same(picked.opts.cwd, vim.fs.dirname(old)), picked.opts.cwd)
     picked.opts.actions.enter({ vim.fs.basename(old) })
     check("td -l: opens the pick", same(name(), old), name())
     check("td -l: and marks it last", same(plc("todo"), old), plc("todo"))
