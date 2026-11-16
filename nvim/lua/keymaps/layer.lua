@@ -16,17 +16,28 @@ local to_latin = require("russian").to_latin
 
 local M = {}
 
--- One lookup covers a whole layer's worth of Russian twins, where lmap has to
--- make a second mapping for every key it binds (keymaps/leader.lua).
-local function resolve(keys, ch)
-    return keys[ch] or keys[to_latin[ch] or ""]
+local function reach(keys, typed)
+    local out = {}
+    for key, entry in pairs(keys) do
+        if vim.startswith(key, typed) then out[key] = entry end
+    end
+    return out
+end
+
+-- typed plus ch, or plus its Latin twin when ch alone reaches nothing: one
+-- lookup covers a whole layer's worth of Russian twins, where lmap has to make
+-- a second mapping for every key it binds (keymaps/leader.lua).
+local function extend(keys, typed, ch)
+    for _, seq in ipairs({ typed .. ch, typed .. (to_latin[ch] or "") }) do
+        if seq ~= typed and next(reach(keys, seq)) then return seq end
+    end
 end
 
 local function hint(name, keys)
     local order = vim.tbl_keys(keys)
     table.sort(order, function(a, b)
         if a:lower() ~= b:lower() then return a:lower() < b:lower() end
-        return a < b -- 'T' after 't', so a pair reads as one entry
+        return a > b -- 'T' after 't', so a pair reads as one entry
     end)
     local chunks = { { "-- " .. name .. " --  ", "ModeMsg" } }
     for _, key in ipairs(order) do
@@ -48,9 +59,25 @@ local function fit(chunks)
     return out
 end
 
+-- Read chars until they spell a key: its entry, or nil when they leave.
+local function read(name, keys)
+    local typed = ""
+    repeat
+        vim.api.nvim_echo(fit(hint(name, reach(keys, typed))), false, {})
+        local ok, ch = pcall(vim.fn.getcharstr)
+        -- Cleared before the action draws.
+        vim.api.nvim_echo({ { "" } }, false, {})
+        if not ok then return end -- <C-c>
+        typed = extend(keys, typed, ch)
+    until not typed or keys[typed]
+    return typed and keys[typed]
+end
+
 --- Open a layer and run keys until one of them ends it.
---- keys: { [char] = { desc = "shown in the hint", run = cmd|fn, stay = ... } }
+--- keys: { [chars] = { desc = "shown in the hint", run = cmd|fn, stay = ... } }
 ---       or { desc = ..., name = "SUB", keys = {...} } to hand off to a sub-layer
+--- A key of several chars is typed in turn, the hint narrowing as it goes; no
+--- key may be a prefix of another, since the shorter one would always win.
 --- Esc, <C-c> and any unbound key leave, matching how the tmux tables behave;
 --- `stay` is the per-key opt-in that makes a verb repeat: true, or a function
 --- asked before the verb runs, for a verb that only sometimes may keep keys.
@@ -58,13 +85,8 @@ end
 --- one leaves them all -- which is what `switch-client -T splits` does to the
 --- plugins table.
 function M.open(name, keys)
-    local chunks = hint(name, keys)
     while true do
-        vim.api.nvim_echo(fit(chunks), false, {})
-        local typed, ch = pcall(vim.fn.getcharstr)
-        vim.api.nvim_echo({ { "" } }, false, {}) -- clear before the action draws
-        if not typed then return end             -- <C-c>
-        local entry = resolve(keys, ch)
+        local entry = read(name, keys)
         if not entry then return end
         if entry.keys then return M.open(entry.name, entry.keys) end
         local stay = entry.stay

@@ -1,13 +1,13 @@
 -- ============================================================
---  PLUGINS LAYER: palace/plc stamps, links, graph; hr, lean, dap
+--  PLUGINS LAYER: palace/plc notes, stamps, links, graph; hr, lean, dap
 -- ============================================================
 -- <leader><leader> opens a layer whose bare letters are tools, each handing off
 -- to a sub-layer of that tool's verbs — the shape of tmux's `plugins` table
 -- (C-Enter C-Enter, then a letter, then the verb), down to the name.
 --
 -- This replaces <leader>P* and <leader>H*, which spent two shifted top-level
--- prefixes on four keys between them. The letters survive unshifted, so the
--- sequences stay pt / pT; hr's toggle and locate moved to hh / hl when r and
+-- prefixes on four keys between them. The stamps are pts / ptS, t being
+-- todo's prefix as in zsh; hr's toggle and locate moved to hh / hl when r and
 -- f became its recent and favorites views.
 local map = require("keymaps.leader").map
 local layer = require("keymaps.layer")
@@ -37,12 +37,39 @@ local HR = {
     B = { desc = "resume", run = "HrResume" },
 }
 
+-- :Plc ALIAS [ARGS] runs zsh/palace.zsh's aliases, flags and all: :Plc mm -l.
+vim.api.nvim_create_user_command("Plc",
+    function(o) require("palace").command(o.fargs) end, {
+        nargs = "+",
+        desc = "palace: a zsh/palace.zsh alias",
+        complete = function(lead, line)
+            if #vim.split(line, "%s+") > 2 then return {} end
+            return vim.tbl_filter(function(alias)
+                return vim.startswith(alias, lead)
+            end, require("palace").aliases)
+        end,
+    })
+
+local function plc(alias)
+    return function() require("palace").command({ alias }) end
+end
+
+-- The notes keys are :Plc's aliases with no arguments; ts and tS give way to
+-- td, being t and T before it.
 local PALACE = {
+    dl = { desc = "daily", run = plc("dl") },
+    wk = { desc = "weekly", run = plc("wk") },
+    st = { desc = "shot", run = plc("st") },
+    nt = { desc = "note", run = plc("nt") },
+    pt = { desc = "top", run = plc("pt") },
+    td = { desc = "todo", run = plc("td") },
+    mm = { desc = "murmur", run = plc("mm") },
+    ig = { desc = "isg", run = plc("ig") },
+    -- The same clock as tS without the isg prefix; its desc in the old
+    -- <leader>PT said UTC, which the format string never was.
+    ts = { desc = "stamp bare", run = stamp("%Y-%m-%d %H:%M:%S %z") },
     -- format: isg 2026-06-04 13:15:42 +0200  (local time + local UTC offset)
-    t = { desc = "stamp", run = stamp("isg %Y-%m-%d %H:%M:%S %z") },
-    -- The same clock without the isg prefix, verbatim from the old <leader>PT.
-    -- Its desc there said UTC, which the format string never was.
-    T = { desc = "stamp bare", run = stamp("%Y-%m-%d %H:%M:%S %z") },
+    tS = { desc = "stamp", run = stamp("isg %Y-%m-%d %H:%M:%S %z") },
     -- [[links]] to notes picked in fzf (lua/palace.lua), put like p and P.
     a = { desc = "link", run = function() require("palace").link(true) end },
     A = {
