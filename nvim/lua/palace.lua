@@ -40,26 +40,114 @@ function M.links(paths)
     end, paths)
 end
 
---- Open the note `plc args...` prints at its last line, where a note grows,
---- as the zsh wrappers (zsh/palace.zsh) do.
-function M.open(args)
+-- plc's stdout, or nil once its error is shown.
+local function plc(args)
     local out = vim.system(vim.list_extend({ "plc" }, args), { text = true })
         :wait()
     if out.code ~= 0 then
         vim.notify(vim.trim(out.stderr), vim.log.levels.WARN)
-        return
+        return nil
     end
-    vim.cmd.edit(vim.fn.fnameescape(vim.trim(out.stdout)))
+    return out.stdout
+end
+
+--- Open the note `plc args...` prints at its last line, where a note grows,
+--- as the zsh wrappers (zsh/palace.zsh) do.
+function M.open(args)
+    local path = plc(args)
+    if not path then return end
+    vim.cmd.edit(vim.fn.fnameescape(vim.trim(path)))
     vim.cmd("normal! G")
 end
 
---- M.open with a name asked for last; nothing for an empty one.
-function M.open_named(prompt, args)
-    vim.ui.input({ prompt = prompt }, function(name)
-        if name and name ~= "" then
-            M.open(vim.list_extend(vim.list_slice(args), { name }))
+-- Where plc keeps the notes `plc <sub> -l` lists, for the preview.
+local LISTED = {
+    todo = "notes/management/todo",
+    isg = "notes/me/writing/isg",
+    murmur = "notes/me/writing/murmur",
+}
+
+-- Pick one of the notes `plc <sub> -l` lists, in its order, and open it.
+local function pick(sub, open)
+    local list, root = plc({ sub, "-l" }), M.root()
+    if not list or not root then return end
+    local names = {}
+    for line in vim.gsplit(list, "\n", { trimempty = true }) do
+        names[#names + 1] = (line:gsub("^%s*%*?%s*", ""))
+    end
+    require("fzf-lua").fzf_exec(names, {
+        prompt = sub .. " > ",
+        cwd = vim.fs.joinpath(root, LISTED[sub]),
+        previewer = "builtin",
+        fzf_opts = { ["--no-sort"] = true },
+        actions = {
+            ["enter"] = function(selected)
+                if selected[1] then open(selected[1]) end
+            end,
+        },
+    })
+end
+
+local function run(sub)
+    return function(args) M.open(vim.list_extend({ sub }, args)) end
+end
+
+-- Opens `plc <sub...> NAME`, asking for NAME when no args are given.
+local function named(prompt, ...)
+    local sub = { ... }
+    return function(args)
+        if #args > 0 then return M.open(vim.list_extend({ sub[1] }, args)) end
+        vim.ui.input({ prompt = prompt }, function(name)
+            if name and name ~= "" then
+                M.open(vim.list_extend(vim.list_slice(sub), { name }))
+            end
+        end)
+    end
+end
+
+-- -l picks a note to open and -L marks one, as the zsh wrappers do.
+local function listed(sub, open, otherwise)
+    return function(args)
+        if args[1] == "-l" or args[1] == "--list" then
+            pick(sub, open)
+        elseif args[1] == "-L" or args[1] == "--mark" then
+            plc(vim.list_extend({ sub }, args))
+        else
+            otherwise(args)
         end
-    end)
+    end
+end
+
+-- plc todo opens no note by name, so a pick marks it last first.
+local function open_todo(name)
+    if plc({ "todo", "-L", name }) then M.open({ "todo" }) end
+end
+
+-- zsh/palace.zsh's aliases.
+local ALIASES = {
+    dl = run("daily"),
+    wk = run("weekly"),
+    st = run("shot"),
+    nt = named("note name: ", "add"),
+    pt = run("top"),
+    td = listed("todo", open_todo, run("todo")),
+    mm = listed("murmur", function(name) M.open({ "murmur", "-n", name }) end,
+        named("murmur name: ", "murmur", "-n")),
+    ig = listed("isg", function(name) M.open({ "isg", name }) end, run("isg")),
+}
+
+M.aliases = vim.tbl_keys(ALIASES)
+table.sort(M.aliases)
+
+--- :Plc ALIAS [ARGS]: the zsh alias ALIAS, with its args.
+function M.command(args)
+    local alias = ALIASES[args[1]]
+    if not alias then
+        vim.notify(("Plc: %s is none of %s"):format(tostring(args[1]),
+            table.concat(M.aliases, " ")), vim.log.levels.ERROR)
+        return
+    end
+    alias(vim.list_slice(args, 2))
 end
 
 --- Pick vault notes in fzf, newest first, and put links to them at the

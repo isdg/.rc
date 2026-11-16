@@ -37,27 +37,34 @@ local HR = {
     B = { desc = "resume", run = "HrResume" },
 }
 
-local function plc(...)
-    local args = { ... }
-    return function() require("palace").open(args) end
+-- :Plc ALIAS [ARGS] runs zsh/palace.zsh's aliases, flags and all: :Plc mm -l.
+vim.api.nvim_create_user_command("Plc",
+    function(o) require("palace").command(o.fargs) end, {
+        nargs = "+",
+        desc = "palace: a zsh/palace.zsh alias",
+        complete = function(lead, line)
+            if #vim.split(line, "%s+") > 2 then return {} end
+            return vim.tbl_filter(function(alias)
+                return vim.startswith(alias, lead)
+            end, require("palace").aliases)
+        end,
+    })
+
+local function plc(alias)
+    return function() require("palace").command({ alias }) end
 end
 
-local function plc_named(prompt, ...)
-    local args = { ... }
-    return function() require("palace").open_named(prompt, args) end
-end
-
--- The notes keys are zsh/palace.zsh's aliases with no arguments; ts and tS
--- give way to td, being t and T before it.
+-- The notes keys are :Plc's aliases with no arguments; ts and tS give way to
+-- td, being t and T before it.
 local PALACE = {
-    dl = { desc = "daily", run = plc("daily") },
-    wk = { desc = "weekly", run = plc("weekly") },
-    st = { desc = "shot", run = plc("shot") },
-    nt = { desc = "note", run = plc_named("note name: ", "add") },
-    pt = { desc = "top", run = plc("top") },
-    td = { desc = "todo", run = plc("todo") },
-    mm = { desc = "murmur", run = plc_named("murmur name: ", "murmur", "-n") },
-    ig = { desc = "isg", run = plc("isg") },
+    dl = { desc = "daily", run = plc("dl") },
+    wk = { desc = "weekly", run = plc("wk") },
+    st = { desc = "shot", run = plc("st") },
+    nt = { desc = "note", run = plc("nt") },
+    pt = { desc = "top", run = plc("pt") },
+    td = { desc = "todo", run = plc("td") },
+    mm = { desc = "murmur", run = plc("mm") },
+    ig = { desc = "isg", run = plc("ig") },
     -- The same clock as tS without the isg prefix; its desc in the old
     -- <leader>PT said UTC, which the format string never was.
     ts = { desc = "stamp bare", run = stamp("%Y-%m-%d %H:%M:%S %z") },

@@ -79,13 +79,15 @@ PIECES
 4. nvim palace layer (nvim/rc.d/10-keys-plugins.lua): <leader><leader>p,
    then the zsh aliases above, typed the same and run with no arguments:
    dl wk st nt pt td mm ig open their note at its last line (nt and mm
-   ask for the name). tS / ts insert an "isg" timestamp / a bare one at
+   ask for the name). With arguments they are :Plc ALIAS [ARGS], flags
+   as in zsh: :Plc dl 27 09 25, :Plc ig -n; -l picks in fzf-lua, td -l
+   too, and -L marks. tS / ts insert an "isg" timestamp / a bare one at
    the cursor, and a / A pick notes in fzf, newest first, and put
    [[links]] to them after / before the cursor, as p and P paste
    (nvim/lua/palace.lua). Its tests need plc, and rg and fzf-lua for
    the links:
 
-    > nvim --clean --headless -l nvim/tests/palace_open.lua
+    > nvim --clean --headless -l nvim/tests/palace_plc.lua
     > nvim --clean --headless -l nvim/tests/palace_link.lua
 
    g opens `plc graph` in its own tab, the vault drawn like git log
