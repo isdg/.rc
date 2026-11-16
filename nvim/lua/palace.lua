@@ -40,6 +40,28 @@ function M.links(paths)
     end, paths)
 end
 
+--- Open the note `plc args...` prints at its last line, where a note grows,
+--- as the zsh wrappers (zsh/palace.zsh) do.
+function M.open(args)
+    local out = vim.system(vim.list_extend({ "plc" }, args), { text = true })
+        :wait()
+    if out.code ~= 0 then
+        vim.notify(vim.trim(out.stderr), vim.log.levels.WARN)
+        return
+    end
+    vim.cmd.edit(vim.fn.fnameescape(vim.trim(out.stdout)))
+    vim.cmd("normal! G")
+end
+
+--- M.open with a name asked for last; nothing for an empty one.
+function M.open_named(prompt, args)
+    vim.ui.input({ prompt = prompt }, function(name)
+        if name and name ~= "" then
+            M.open(vim.list_extend(vim.list_slice(args), { name }))
+        end
+    end)
+end
+
 --- Pick vault notes in fzf, newest first, and put links to them at the
 --- cursor: after it like p, or before it like P.
 function M.link(after)
