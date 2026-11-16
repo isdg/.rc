@@ -26,7 +26,7 @@ local function hint(name, keys)
     local order = vim.tbl_keys(keys)
     table.sort(order, function(a, b)
         if a:lower() ~= b:lower() then return a:lower() < b:lower() end
-        return a < b -- 'T' after 't', so a pair reads as one entry
+        return a > b -- 'T' after 't', so a pair reads as one entry
     end)
     local chunks = { { "-- " .. name .. " --  ", "ModeMsg" } }
     for _, key in ipairs(order) do
