@@ -40,6 +40,10 @@ require("slots").bind({ "alt" }, { "alt", "shift" }, {
     ["6"] = "com.tinyspeck.slackmacgap",
 })
 
+-- Alt+Tab lists every window on this Space, most recent first: type to filter
+-- by title or app, Enter focuses, Alt+Tab again or Escape closes.
+require("picker").bind({ "alt" }, "tab")
+
 -- ⌥0 toggles the menu bar between pinned and auto-hidden. Synthetic ⌃F2 can't do
 -- it (Darwin ignores posted events for its shortcuts), so flip the setting.
 require("menubar").bind({ "alt" }, "0")
@@ -65,5 +69,6 @@ hs.pathwatcher
     :start()
 
 hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll"
-    .. " · ⌥1-8 slots · ⌥9 last · ⌥- max · ⌥0 menu bar · ⌃⌥ home row digits"
+    .. " · ⌥1-8 slots · ⌥9 last · ⌥- max · ⌥Tab windows · ⌥0 menu bar"
+    .. " · ⌃⌥ home row digits"
     .. " · ⌃⌘L lock · 📋 screenshots)")
