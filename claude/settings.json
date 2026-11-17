@@ -4,11 +4,11 @@
     "pr": ""
   },
   "permissions": {
-    "defaultMode": "auto",
     "deny": [
       "Read(~/palace/**)",
       "Edit(~/palace/**)"
-    ]
+    ],
+    "defaultMode": "auto"
   },
   "model": "opus",
   "hooks": {
@@ -126,7 +126,6 @@
       "effortLevel": "high"
     }
   },
-  "idleCompaction": false,
   "autoUpdatesChannel": "stable",
   "tui": "fullscreen",
   "voice": {
@@ -139,6 +138,7 @@
     "jJ": "<Esc>"
   },
   "verbose": true,
+  "idleCompaction": false,
   "switchModelsOnFlag": true,
   "skipAutoPermissionPrompt": true,
   "autoMode": {
