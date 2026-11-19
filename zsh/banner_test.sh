@@ -111,8 +111,9 @@ redraw="$(ISGRC="$tmp/rc" BANNER_MODE=tiny zsh -f -c '
     rcbanner nomascot nologs
     print -r -- "mode $BANNER_MODE"
 ' _ "$repo" | sed -e $'s/\e\\[[0-9;]*m//g' -e 4d)"
-want=$'\n'"    › $user@$host"$'\n'"    › .rc 9.9.9 · local"$'\n\n'"mode tiny"
-check "rcbanner: redraws in the modes given, leaves BANNER_MODE" \
+want=$'\n'"    › $user@$host"$'\n'"    › .rc 9.9.9 · xx ms · local"
+want+=$'\n\n'"mode tiny"
+check "rcbanner: redraws in the modes given, xx ms, leaves BANNER_MODE" \
     "$redraw" "$want"
 
 kind="$(SUDO_USER=root zsh -f -c '

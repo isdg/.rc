@@ -76,10 +76,10 @@ banner_info() { _banner_info_lines+=("$*") }
 banner_log()  { _banner_log_lines+=("$*") }
 
 # A subshell, so the re-source and the log funcs' exports stay out of this
-# shell. No startup time: there was no startup to time.
+# shell. There was no startup to time, so the time reads xx.
 rcbanner() {
     (
-        _BANNER_T0=
+        _BANNER_T0= _banner_redraw=1
         source ${ISGRC:-$HOME/.rc}/zsh/banner.zsh
         BANNER_MODE=${*:-full} banner_render
     )
@@ -311,8 +311,9 @@ BANNER_LOG_FUNCS=(
 )
 
 # .rc version + startup time + session kind, e.g. ".rc 0.11.0 · 61 ms · local".
-# _BANNER_T0 is stamped on .zshrc line 1; the timing is dropped if it's unset,
-# the version if VERSION is unreadable. $(<file) reads it without a fork.
+# _BANNER_T0 is stamped on .zshrc line 1; the timing is dropped if it's unset
+# (xx under rcbanner), the version if VERSION is unreadable. $(<file) reads it
+# without a fork.
 info_shell() {
     local -a seg
     _banner_rc= _banner_ms=
@@ -320,6 +321,8 @@ info_shell() {
     if [[ -n $_BANNER_T0 ]]; then
         local -i ms=$(( (EPOCHREALTIME - _BANNER_T0) * 1000 ))
         _banner_ms=$ms
+    elif (( _banner_redraw )); then
+        _banner_ms=xx
     fi
     seg=( ${_banner_rc:+".rc $_banner_rc"} ${_banner_ms:+"$_banner_ms ms"}
           ${_banner_session:+"$_banner_session"} )
