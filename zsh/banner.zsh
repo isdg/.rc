@@ -77,13 +77,15 @@ banner_info() { _banner_info_lines+=("$*") }
 banner_log()  { _banner_log_lines+=("$*") }
 
 # A subshell, so the re-source and the log funcs' exports stay out of this
-# shell. There was no startup to time, so the time reads xx.
+# shell. The time is this shell's own startup, kept from before the re-source.
+# unset, not emptied: .zshrc types _BANNER_T0 a float, which reads "" as 0.
 #
 # week leaves out the logs, which are not the day's, and dates each frame
 # from that day's noon, so a DST change in the week can't shift it a day.
 rcbanner() {
     (
-        _BANNER_T0= _banner_redraw=1
+        unset _BANNER_T0
+        _banner_startup_ms=$_banner_ms
         source ${ISGRC:-$HOME/.rc}/zsh/banner.zsh
         local mode=${(j: :)argv:#week}
         if (( ! $argv[(Ie)week] )); then
@@ -333,18 +335,16 @@ BANNER_LOG_FUNCS=(
 )
 
 # .rc version + startup time + session kind, e.g. ".rc 0.11.0 · 61 ms · local".
-# _BANNER_T0 is stamped on .zshrc line 1; the timing is dropped if it's unset
-# (xx under rcbanner), the version if VERSION is unreadable. $(<file) reads it
+# _BANNER_T0 is stamped on .zshrc line 1; unset, the timing is the one rcbanner
+# kept, or dropped; the version too if VERSION is unreadable. $(<file) reads it
 # without a fork.
 info_shell() {
     local -a seg
-    _banner_rc= _banner_ms=
+    _banner_rc= _banner_ms=$_banner_startup_ms
     [[ -n $ISGRC && -r $ISGRC/VERSION ]] && _banner_rc=$(<$ISGRC/VERSION)
     if [[ -n $_BANNER_T0 ]]; then
         local -i ms=$(( (EPOCHREALTIME - _BANNER_T0) * 1000 ))
         _banner_ms=$ms
-    elif (( _banner_redraw )); then
-        _banner_ms=xx
     fi
     seg=( ${_banner_rc:+".rc $_banner_rc"} ${_banner_ms:+"$_banner_ms ms"}
           ${_banner_session:+"$_banner_session"} )

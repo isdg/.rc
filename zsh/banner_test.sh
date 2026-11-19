@@ -108,27 +108,29 @@ check "no VERSION: the shell line drops the version" \
 redraw="$(ISGRC="$tmp/rc" BANNER_MODE=tiny zsh -f -c '
     mkdir -p $ISGRC/zsh && cp "$1/zsh/banner.zsh" $ISGRC/zsh/
     source $ISGRC/zsh/banner.zsh
+    zmodload zsh/datetime; typeset -gF _BANNER_T0=$EPOCHREALTIME
     rcbanner nomascot nologs
     print -r -- "mode $BANNER_MODE"
 ' _ "$repo" | sed -e $'s/\e\\[[0-9;]*m//g' -e 4d)"
-want=$'\n'"    › $user@$host"$'\n'"    › .rc 9.9.9 · xx ms · local"
-want+=$'\n\n'"mode tiny"
-check "rcbanner: redraws in the modes given, xx ms, leaves BANNER_MODE" \
+want=$'\n'"    › $user@$host"$'\n'"    › .rc 9.9.9 · local"$'\n\n'"mode tiny"
+check "rcbanner: redraws in the modes given, leaves BANNER_MODE" \
     "$redraw" "$want"
 
 redraw_week() {
     ISGRC="$tmp/rc" zsh -f -c '
         mkdir -p $ISGRC/zsh && cp "$1/zsh/banner.zsh" $ISGRC/zsh/
         source $ISGRC/zsh/banner.zsh
+        zmodload zsh/datetime; typeset -gF _BANNER_T0=$EPOCHREALTIME
+        _banner_ms=42
         rcbanner "${@:2}"
     ' _ "$repo" "$@" | sed $'s/\e\\[[0-9;]*m//g'
 }
 
 want=""
 for head in '(qA,0)' '(qB,0)' '(qA,1)' '(qC,0)' '(qB,1)' '(qC,1)' HALT; do
-    want+="  ▼ $head  .rc 9.9.9 · $user@$host · xx ms"$'\n\n'
+    want+="  ▼ $head  .rc 9.9.9 · $user@$host · 42 ms"$'\n\n'
 done
-check "rcbanner week: a frame a day, Monday to Sunday" \
+check "rcbanner week: a frame a day, Monday to Sunday, the startup time" \
     "$(redraw_week week tiny nologs; echo .)" "$want."
 
 # the date and weekday of each frame, from the line nomascot puts it on
