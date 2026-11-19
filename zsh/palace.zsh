@@ -35,6 +35,9 @@
 #       isg -l | NAME           fzf-pick an isg note | open NAME
 #       isg -L NAME             mark NAME last (no editor)
 #
+#   pd                          cd into the vault, stage it all, show the
+#                               diff against HEAD
+#
 #       pst [DD [MM [YY]]] [-f FORMAT]
 #                               bytes written (plc stat): a day lists its
 #                               notes, - for a whole field draws a month
@@ -154,6 +157,8 @@ isg() {
 #     pst 27 09 25     2025-09-27's      pst - 12 25        Dec 2025
 #     pst - - 25       2025              pst - - -f plot    this year, plotted
 pst() { plc stat "$@"; }
+
+pd() { plc cd && git add . && git diff HEAD; }
 
 # Short aliases (functions so they resolve in non-interactive shells too)
 # On Linux, st shadows suckless's terminal if installed; `command st` still
