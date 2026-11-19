@@ -54,7 +54,8 @@
 #   banner_run  cmd ...       run a noisy command, demoting its output to logs
 #   banner_render             consume the registry and draw — call once, last
 #   rcbanner [modes]          redraw it now in BANNER_MODE's words (default
-#                             full), e.g. to see the date and logs in tiny
+#                             full), e.g. to see the date and logs in tiny;
+#                             with week, once per day, Monday to Sunday
 #
 # Config
 #   BANNER_MODE=modes          what to draw (default nologs): see Modes
@@ -77,11 +78,32 @@ banner_log()  { _banner_log_lines+=("$*") }
 
 # A subshell, so the re-source and the log funcs' exports stay out of this
 # shell. There was no startup to time, so the time reads xx.
+#
+# week leaves out the logs, which are not the day's, and dates each frame
+# from that day's noon, so a DST change in the week can't shift it a day.
 rcbanner() {
     (
         _BANNER_T0= _banner_redraw=1
         source ${ISGRC:-$HOME/.rc}/zsh/banner.zsh
-        BANNER_MODE=${*:-full} banner_render
+        local mode=${(j: :)argv:#week}
+        if (( ! $argv[(Ie)week] )); then
+            BANNER_MODE=${mode:-full} banner_render
+        elif zmodload zsh/datetime 2>/dev/null; then
+            local -a info=( "${_banner_info_lines[@]}" )
+            local d dow hour now day
+            strftime -s dow '%u' $EPOCHSECONDS
+            strftime -s hour '%H' $EPOCHSECONDS
+            strftime -s now '%H:%M' $EPOCHSECONDS
+            info_date() { banner_info "$day · $now" }
+            BANNER_LOG_FUNCS=( info_shell info_date )
+            for d in {1..7}; do
+                __isg::beaver_mascot $d
+                strftime -s day '%a %d %b %Y' \
+                    $(( EPOCHSECONDS + (d - dow) * 86400 + (12 - hour) * 3600 ))
+                _banner_info_lines=( "${info[@]}" )
+                BANNER_MODE=${mode:-full} banner_render
+            done
+        fi
     )
 }
 

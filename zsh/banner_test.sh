@@ -116,6 +116,33 @@ want+=$'\n\n'"mode tiny"
 check "rcbanner: redraws in the modes given, xx ms, leaves BANNER_MODE" \
     "$redraw" "$want"
 
+redraw_week() {
+    ISGRC="$tmp/rc" zsh -f -c '
+        mkdir -p $ISGRC/zsh && cp "$1/zsh/banner.zsh" $ISGRC/zsh/
+        source $ISGRC/zsh/banner.zsh
+        rcbanner "${@:2}"
+    ' _ "$repo" "$@" | sed $'s/\e\\[[0-9;]*m//g'
+}
+
+want=""
+for head in '(qA,0)' '(qB,0)' '(qA,1)' '(qC,0)' '(qB,1)' '(qC,1)' HALT; do
+    want+="  ▼ $head  .rc 9.9.9 · $user@$host · xx ms"$'\n\n'
+done
+check "rcbanner week: a frame a day, Monday to Sunday" \
+    "$(redraw_week week tiny nologs; echo .)" "$want."
+
+# the date and weekday of each frame, from the line nomascot puts it on
+dates="$(redraw_week nomascot week | sed -n 's/^    › \(.*\) · ..:..$/\1/p')"
+want="$(zsh -f -c '
+    zmodload zsh/datetime
+    strftime -s dow %u $EPOCHSECONDS; strftime -s hour %H $EPOCHSECONDS
+    for d in {1..7}; do
+        strftime "%a %d %b %Y" \
+            $(( EPOCHSECONDS + (d - dow) * 86400 + (12 - hour) * 3600 ))
+    done
+')"
+check "rcbanner week: each frame dated its day of this week" "$dates" "$want"
+
 kind="$(SUDO_USER=root zsh -f -c '
     source "$1/zsh/banner.zsh"
     _banner_sudo_origin() { }
