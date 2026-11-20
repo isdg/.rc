@@ -28,8 +28,9 @@ PIECES
    first if it does not exist yet:
 
     dl  daily [DD MM YY|YYYY]   daily note, today by default
+        daily +N | -N           the note N days ahead | back
 
-    wk  weekly                  this week's note
+    wk  weekly [+N | -N]        this week's note, N weeks ahead | back
 
     st  shot [-i TEXT|-p DIR|-H]
                                 timestamped snapshot, in the daily dir
@@ -54,15 +55,15 @@ PIECES
         isg -l | NAME           fzf-pick an isg note | open NAME
         isg -L NAME             mark NAME last (no editor)
 
-        pst [DD [MM [YY]]] [-f FORMAT]
+        pst [DD [MM [YY]] | +N | -N] [-f FORMAT]
                                 bytes written (plc stat): a day lists its
                                 notes, - for a whole field draws a month
                                 (- MM YY) or a year (- - YY); -f grid,
                                 rows, plot, list or tsv
 
-   daily, shot, note, todo -n and isg pass plc's creation flags
-   through: -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]]
-   link.
+   daily, weekly, shot, note, todo -n and isg pass plc's creation
+   flags through: -x TEXT appends a filename postfix, -t TAG seeds a
+   [[TAG]] link.
 
    plc cd [DIR] cds into the vault, or DIR inside it: a zsh function,
    since a process can't move its shell. Every other plc call reaches

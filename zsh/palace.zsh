@@ -11,8 +11,9 @@
 # Commands, short alias on the left. Each opens its note in $EDITOR,
 # creating it first if it does not exist yet:
 #   dl  daily [DD MM YY|YYYY]   daily note, today by default
+#       daily +N | -N           the note N days ahead | back
 #
-#   wk  weekly                  this week's note
+#   wk  weekly [+N | -N]        this week's note, N weeks ahead | back
 #
 #   st  shot [-i TEXT|-p DIR|-H]
 #                               timestamped snapshot, in the daily dir
@@ -38,14 +39,15 @@
 #   pd                          cd into the vault, stage it all, show the
 #                               diff against HEAD
 #
-#       pst [DD [MM [YY]]] [-f FORMAT]
+#       pst [DD [MM [YY]] | +N | -N] [-f FORMAT]
 #                               bytes written (plc stat): a day lists its
 #                               notes, - for a whole field draws a month
 #                               (- MM YY) or a year (- - YY); -f grid,
 #                               rows, plot, list or tsv
 #
-# daily, shot, note, todo -n and isg pass plc's creation flags through:
-# -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]] link.
+# daily, weekly, shot, note, todo -n and isg pass plc's creation flags
+# through: -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]]
+# link.
 #
 # plc itself prints paths and never opens an editor:
 #   plc cd [DIR]                cd into the vault, or DIR inside it
@@ -91,7 +93,7 @@ _plc_edit() {
 }
 
 daily()  { _plc_edit plc daily "$@"; }
-weekly() { _plc_edit plc weekly; }
+weekly() { _plc_edit plc weekly "$@"; }
 shot()   { _plc_edit plc shot "$@"; }
 note()   { _plc_edit plc add "$@"; }
 # `plctop`, not `top`, so the landing page doesn't shadow the system `top`.
@@ -156,6 +158,7 @@ isg() {
 #     pst              today's notes     pst -              this month
 #     pst 27 09 25     2025-09-27's      pst - 12 25        Dec 2025
 #     pst - - 25       2025              pst - - -f plot    this year, plotted
+#     pst -1           yesterday's
 pst() { plc stat "$@"; }
 
 pd() { plc cd && git add . && git diff HEAD; }
