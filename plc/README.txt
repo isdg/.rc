@@ -60,9 +60,9 @@ PIECES
                                 (- MM YY) or a year (- - YY); -f grid,
                                 rows, plot, list or tsv
 
-   daily, shot, note, todo -n and isg pass plc's creation flags
-   through: -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]]
-   link.
+   daily, weekly, shot, note, todo -n and isg pass plc's creation
+   flags through: -x TEXT appends a filename postfix, -t TAG seeds a
+   [[TAG]] link.
 
    plc cd [DIR] cds into the vault, or DIR inside it: a zsh function,
    since a process can't move its shell. Every other plc call reaches

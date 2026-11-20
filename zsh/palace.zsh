@@ -44,8 +44,9 @@
 #                               (- MM YY) or a year (- - YY); -f grid,
 #                               rows, plot, list or tsv
 #
-# daily, shot, note, todo -n and isg pass plc's creation flags through:
-# -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]] link.
+# daily, weekly, shot, note, todo -n and isg pass plc's creation flags
+# through: -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]]
+# link.
 #
 # plc itself prints paths and never opens an editor:
 #   plc cd [DIR]                cd into the vault, or DIR inside it
@@ -91,7 +92,7 @@ _plc_edit() {
 }
 
 daily()  { _plc_edit plc daily "$@"; }
-weekly() { _plc_edit plc weekly; }
+weekly() { _plc_edit plc weekly "$@"; }
 shot()   { _plc_edit plc shot "$@"; }
 note()   { _plc_edit plc add "$@"; }
 # `plctop`, not `top`, so the landing page doesn't shadow the system `top`.
