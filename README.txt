@@ -1,10 +1,10 @@
 
-DOTFILES
-========
+RUN-COMMANDS
+============
 
 A minimal, keyboard-driven only dev environment for Darwin and Linux.
-Built for older hardware and large codebases (~1M lines) where heavy
-IDEs feel sluggish.
+Built for hardware systems programming and large codebases where heavy
+IDEs feel sluggish, overloaded.
 
 Includes configs for:
   - zsh (plain zsh, no framework + isg theme (forked from sobole) + fzf,
@@ -34,6 +34,8 @@ of working? Also, here we use only the keyboard, because I feel the mouse is
 only for learning how to use a computer first and for poor user-centric OS
 context switch designs.
 
+Let us find our own way to compress the information we flow which is not guided 
+by any other instruments.
 
 -------------------------------------------------------------------------------
 QUICK START
