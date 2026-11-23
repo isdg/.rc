@@ -45,6 +45,8 @@
 #                               notes, - for a whole field draws a month
 #                               (- MM YY) or a year (- - YY); -f grid,
 #                               rows, plot, list or tsv
+#       pst FROM .. TO          a range: each end a date or an amount
+#                               back (3m, 2w, 30d), either left off
 #
 # daily, weekly, shot, note, todo -n and isg pass plc's creation flags
 # through: -x TEXT appends a filename postfix, -t TAG seeds a [[TAG]]
@@ -158,6 +160,8 @@ isg() {
 #     pst 27 09 25     2025-09-27's      pst - 12 25        Dec 2025
 #     pst - - 25       2025              pst - - -f plot    this year, plotted
 #     pst -1           yesterday's
+#     pst 3m ..        last 3 months     pst - 09 .. - 11   Sep to Nov
+#     pst 2w ..        last 2 weeks      pst .. - 03        Jan to Mar
 pst() { plc stat "$@"; }
 
 pd() { plc cd && git add . && git diff HEAD; }

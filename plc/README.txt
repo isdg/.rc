@@ -61,6 +61,8 @@ PIECES
                                 notes, - for a whole field draws a month
                                 (- MM YY) or a year (- - YY); -f grid,
                                 rows, plot, list or tsv
+        pst FROM .. TO          a range: each end a date or an amount
+                                back (3m, 2w, 30d), either left off
 
    daily, weekly, shot, note, todo -n and isg pass plc's creation
    flags through: -x TEXT appends a filename postfix, -t TAG seeds a
