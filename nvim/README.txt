@@ -62,8 +62,9 @@ To test gd/gr/gi/gy, the picker and this setup headless on a pinned tokio
     > nvim/tests/lsp/run.sh             # and the full suite, ~10 minutes
 
 In insert mode <C-n>/<C-p> walk the completion menu while one is up, and
-otherwise move a line down/up, as in emacs. Its test runs the installed
-plugins under this checkout's config:
+otherwise move a line down/up, as in emacs. Under the Russian layout Ctrl+т
+and the other Ctrl twins do the same, in insert and cmdline mode. Its test
+runs the installed plugins under this checkout's config:
 
     > nvim --clean --headless -l nvim/tests/completion_keys.lua
 

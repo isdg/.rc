@@ -1,5 +1,5 @@
--- Insert-mode <C-n>/<C-p>: the menu's entries while one is up, else emacs
--- line moves. Drives an embedded nvim on this checkout's config and installed
+-- Insert-mode <C-n>/<C-p> and their Russian-layout twins: the menu's entries
+-- while one is up, else emacs line moves. Drives an embedded nvim on this checkout's config and installed
 -- plugins:  nvim --clean --headless -l nvim/tests/completion_keys.lua
 local nvim = vim.fs.dirname(vim.fs.dirname(vim.fs.abspath(arg[0])))
 
@@ -94,6 +94,10 @@ local ok, err = pcall(function()
         { line = 2, menu = "manual", sel = 1 })
     check("<C-n> selects the next entry", "<C-n>", { line = 2, sel = 2 })
     check("<C-p> selects the previous entry", "<C-p>", { line = 2, sel = 1 })
+    check("<C-т> selects as <C-n> does", "<C-т>", { line = 2, sel = 2 })
+    check("<C-з> selects as <C-p> does", "<C-з>", { line = 2, sel = 1 })
+    check("<C-о> selects as <C-j> does", "<C-о>", { line = 2, sel = 2 })
+    check("<C-л> selects as <C-k> does", "<C-л>", { line = 2, sel = 1 })
     check("<C-e> closes the menu", "<C-e>", { line = 2, menu = false })
     check("<C-n> moves down again", "<C-n>", { line = 3, menu = false })
 end)
