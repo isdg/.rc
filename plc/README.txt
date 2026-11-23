@@ -46,7 +46,8 @@ PIECES
         todo -l | -L NAME       list todo notes | mark NAME last (no
                                 editor)
 
-    mm  murmur                  new murmur note, prompts for its name
+    mm  murmur NAME             NAME as a murmur note, or the note of
+                                that name anywhere in the vault
         murmur -l               fzf-pick a murmur note
 
     ig  isg [--last]            the last isg note (isg0, isg1, ...)

@@ -27,7 +27,8 @@
 #       todo -n                 new todo note for this week
 #       todo -l | -L NAME       list todo notes | mark NAME last (no editor)
 #
-#   mm  murmur                  new murmur note, prompts for its name
+#   mm  murmur NAME             NAME as a murmur note, or the note of
+#                               that name anywhere in the vault
 #       murmur -l               fzf-pick a murmur note
 #
 #   ig  isg [--last]            the last isg note (isg0, isg1, …)
@@ -109,9 +110,9 @@ todo() {
    esac
 }
 
-# murmur [-l|-n]   manage murmur notes
-#   -l : fzf-pick an existing note (by recency) and open it
-#   -n : create a new note (prompts for a name)
+# murmur -l | NAME   manage murmur notes
+#   -l   : fzf-pick an existing note (by recency) and open it
+#   NAME : open NAME, as plc murmur resolves it; no NAME is plc's error
 murmur() {
    if [ "$1" = -l ]; then
       local pick
@@ -124,9 +125,7 @@ murmur() {
       [ -n "$pick" ] || return
       _plc_edit plc murmur -n "$pick"
    else
-      local name
-      read "name?murmur note name: "
-      _plc_edit plc murmur -n "$name"
+      _plc_edit plc murmur "$@"
    fi
 }
 
