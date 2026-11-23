@@ -86,19 +86,6 @@ local function run(sub)
     return function(args) M.open(vim.list_extend({ sub }, args)) end
 end
 
--- Opens `plc <sub...> NAME`, asking for NAME when no args are given.
-local function named(prompt, ...)
-    local sub = { ... }
-    return function(args)
-        if #args > 0 then return M.open(vim.list_extend({ sub[1] }, args)) end
-        vim.ui.input({ prompt = prompt }, function(name)
-            if name and name ~= "" then
-                M.open(vim.list_extend(vim.list_slice(sub), { name }))
-            end
-        end)
-    end
-end
-
 -- -l picks a note to open and -L marks one, as the zsh wrappers do.
 local function listed(sub, open, otherwise)
     return function(args)
@@ -122,7 +109,7 @@ local ALIASES = {
     dl = run("daily"),
     wk = run("weekly"),
     st = run("shot"),
-    nt = named("note name: ", "add"),
+    nt = run("add"),
     pt = run("top"),
     td = listed("todo", open_todo, run("todo")),
     mm = listed("murmur", function(name) M.open({ "murmur", "-n", name }) end,
