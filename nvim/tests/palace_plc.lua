@@ -64,17 +64,14 @@ local ok, err = pcall(function()
         asked == 1 and base() == "two words.md", name())
     Plc({ "nt", "given" })
     check("nt NAME: asks nothing", asked == 1 and base() == "given.md", name())
-    for _, given in ipairs({ "", false }) do
-        vim.cmd.enew()
-        answer = given or nil
-        Plc({ "mm" })
-        local what = given and "an empty" or "no"
-        check(("mm: %s name opens nothing"):format(what), name() == "", name())
-    end
-
-    answer = "first"
+    vim.cmd.enew()
     Plc({ "mm" })
-    check("mm: a new murmur note", base() == "first.md", name())
+    check("mm: no name is plc's error, asks nothing, opens nothing",
+        asked == 1 and name() == ""
+            and (notes[#notes] or ""):find("a note name is required"), notes)
+
+    Plc({ "mm", "first" })
+    check("mm NAME: a new murmur note", base() == "first.md", name())
     Plc({ "mm", "-l" })
     check("mm -l: lists murmur notes, previewed from their dir",
         vim.tbl_contains(picked.names, "first.md") and same(picked.opts.cwd,

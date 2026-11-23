@@ -126,7 +126,7 @@ local ALIASES = {
     pt = run("top"),
     td = listed("todo", open_todo, run("todo")),
     mm = listed("murmur", function(name) M.open({ "murmur", "-n", name }) end,
-        named("murmur name: ", "murmur", "-n")),
+        run("murmur")),
     ig = listed("isg", function(name) M.open({ "isg", name }) end, run("isg")),
 }
 
