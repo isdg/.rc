@@ -7,10 +7,14 @@
 language = english
 
 # `words` draws from the list; `text` types whole passages of real prose.
-mode = words
+mode = text
+
+# Prose lowercase, bare of punctuation and numbers; `--plain=false` for
+# the author's own.
+plain = true
 
 # Extras mixed into random words -- punctuation, numbers, capitals, symbols
-# (p, n, c, s). Text mode ignores them: the author's punctuation is there.
+# (p, n, c, s). Text mode ignores them.
 with =
 
 # Twenty-five words; swap for `time = 60` for a timed test, never both.

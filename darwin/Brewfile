@@ -110,6 +110,7 @@ if level >= 3
   cask "sentry-cli"  # Sentry from the shell; ships only as a cask
   tap "datadog-labs/pack"
   brew "datadog-labs/pack/pup"  # Datadog from the shell; still Preview
+  brew "livekit-cli"  # `lk`: rooms, SIP, agents on LiveKit Cloud
   brew "mysql"
   brew "postgresql@17"   # psql + a local server. Every postgresql formula is
                          # versioned and therefore keg-only, so unlike mysql it
