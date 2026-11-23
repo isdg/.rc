@@ -11,12 +11,9 @@ local function check(name, ok, detail)
         ok and "" or ("  -- " .. vim.inspect(detail))))
 end
 
-local notes, answer, asked, picked = {}, nil, 0, nil
+local notes, asked, picked = {}, 0, nil
 vim.notify = function(msg) notes[#notes + 1] = msg end
-vim.ui.input = function(_, done)
-    asked = asked + 1
-    done(answer)
-end
+vim.ui.input = function() asked = asked + 1 end
 package.loaded["fzf-lua"] = {
     fzf_exec = function(names, opts)
         picked = { names = names, opts = opts }
@@ -58,17 +55,16 @@ local ok, err = pcall(function()
         (notes[#notes] or ""):find("xx is none of dl ig mm nt pt st td wk"),
         notes)
 
-    answer = "two words"
-    Plc({ "nt" })
-    check("nt: asks for the name, then opens it",
-        asked == 1 and base() == "two words.md", name())
+    local refusals = { nt = "<NAME>", mm = "a note name is required" }
+    for alias, says in pairs(refusals) do
+        vim.cmd.enew()
+        Plc({ alias })
+        check(alias .. ": no name is plc's error, asks nothing, opens nothing",
+            asked == 0 and name() == ""
+                and (notes[#notes] or ""):find(says, 1, true), notes)
+    end
     Plc({ "nt", "given" })
-    check("nt NAME: asks nothing", asked == 1 and base() == "given.md", name())
-    vim.cmd.enew()
-    Plc({ "mm" })
-    check("mm: no name is plc's error, asks nothing, opens nothing",
-        asked == 1 and name() == ""
-            and (notes[#notes] or ""):find("a note name is required"), notes)
+    check("nt NAME: opens it", base() == "given.md", name())
 
     Plc({ "mm", "first" })
     check("mm NAME: a new murmur note", base() == "first.md", name())
