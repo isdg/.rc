@@ -87,9 +87,10 @@ PIECES
    as in zsh: :Plc dl 27 09 25, :Plc ig -n; -l picks in fzf-lua, td -l
    too, and -L marks. tS / ts insert an "isg" timestamp / a bare one at
    the cursor, and a / A pick notes in fzf, newest first, and put
-   [[links]] to them after / before the cursor, as p and P paste
-   (nvim/lua/palace.lua). Its tests need plc, and rg and fzf-lua for
-   the links:
+   [[links]] to them after / before the cursor, as p and P paste;
+   Ctrl+A there links the typed name instead, its note found or made in
+   the triage as nt does (nvim/lua/palace.lua). Its tests need plc, and
+   rg and fzf-lua for the links:
 
     > nvim --clean --headless -l nvim/tests/palace_plc.lua
     > nvim --clean --headless -l nvim/tests/palace_link.lua

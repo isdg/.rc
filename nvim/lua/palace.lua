@@ -132,7 +132,8 @@ function M.command(args)
 end
 
 --- Pick vault notes in fzf, newest first, and put links to them at the
---- cursor: after it like p, or before it like P.
+--- cursor: after it like p, or before it like P. Ctrl+A links the query
+--- instead, through `plc add`: its note, made in the triage if new.
 function M.link(after)
     local root = M.root()
     if not root then
@@ -141,6 +142,13 @@ function M.link(after)
     end
     local fzf = require("fzf-lua")
     local win = vim.api.nvim_get_current_win()
+    local function put(paths)
+        if #paths == 0 or not vim.api.nvim_win_is_valid(win) then return end
+        vim.api.nvim_win_call(win, function()
+            vim.api.nvim_put({ table.concat(M.links(paths), " ") },
+                "c", after, true)
+        end)
+    end
     fzf.files({
         cwd = root,
         prompt = after and "link > " or "link before > ",
@@ -149,16 +157,13 @@ function M.link(after)
         git_icons = false,
         actions = {
             ["enter"] = function(selected, opts)
-                local paths = vim.tbl_map(function(entry)
+                put(vim.tbl_map(function(entry)
                     return fzf.path.entry_to_file(entry, opts).path
-                end, selected)
-                if #paths == 0 or not vim.api.nvim_win_is_valid(win) then
-                    return
-                end
-                vim.api.nvim_win_call(win, function()
-                    vim.api.nvim_put({ table.concat(M.links(paths), " ") },
-                        "c", after, true)
-                end)
+                end, selected))
+            end,
+            ["ctrl-a"] = function(_, opts)
+                local path = plc({ "add", opts.last_query or "" })
+                if path then put({ vim.trim(path) }) end
             end,
         },
     })
