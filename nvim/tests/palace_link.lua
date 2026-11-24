@@ -1,5 +1,6 @@
--- lua/palace.lua: the vault lookup and <leader><leader>p a / A, with fzf-lua's
--- picker stubbed. Needs plc, rg and the installed fzf-lua:
+-- lua/palace.lua: the vault lookup and <leader><leader>p a / A, Ctrl+A
+-- included, with fzf-lua's picker stubbed. Needs plc, rg and the installed
+-- fzf-lua:
 --   nvim --clean --headless -l nvim/tests/palace_link.lua
 local nvim = vim.fs.dirname(vim.fs.dirname(vim.fs.abspath(arg[0])))
 vim.opt.rtp:prepend(nvim)
@@ -100,6 +101,31 @@ local ok, err = pcall(function()
     vim.api.nvim_set_current_win(win)
     check("the link lands in the window the picker was opened from",
         line() == "[[old]]" .. before, line())
+
+    vim.api.nvim_set_current_line("ab")
+    vim.api.nvim_win_set_cursor(0, { 1, 0 })
+    palace.link(true)
+    picked.actions["ctrl-a"]({}, { last_query = "new one" })
+    local made = vault .. "/notes/triage/new one.md"
+    check("ctrl-a: a new name is made in the triage",
+        vim.uv.fs_stat(made) ~= nil, made)
+    check("ctrl-a: and linked after the cursor",
+        line() == "a[[new one]]b", line())
+
+    vim.api.nvim_win_set_cursor(0, { 1, 0 })
+    palace.link(false)
+    picked.actions["ctrl-a"]({}, { last_query = "дар" })
+    check("ctrl-a: an existing name is linked, not made again",
+        line() == "[[дар]]a[[new one]]b"
+            and vim.uv.fs_stat(vault .. "/notes/triage/дар.md") == nil,
+        line())
+
+    before = line()
+    notes = {}
+    palace.link(true)
+    picked.actions["ctrl-a"]({}, { last_query = "" })
+    check("ctrl-a: no query puts nothing, plc says why",
+        line() == before and #notes == 1, { line(), notes })
 end)
 if not ok then
     failed = failed + 1

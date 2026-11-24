@@ -10,6 +10,8 @@ heading (version · date · name), a sentence on why it is a milestone, and a
 few lines on what changed. Patches get a line only when one deserves it.
 
 
+0.11.57 · 2026-11-23 · nvim completion menu walks with Ctrl+n/p/j/k on
+                      the Russian layout too
 0.11.54 · 2026-11-23 · mm takes the note name, like nt, in zsh and
                       nvim; nt and mm open a note of that name anywhere
                       in the vault instead of a copy
