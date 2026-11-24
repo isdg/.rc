@@ -149,12 +149,20 @@ function M.link(after)
                 "c", after, true)
         end)
     end
+    local name = after and "link" or "link before"
     fzf.files({
         cwd = root,
-        prompt = after and "link > " or "link before > ",
+        prompt = name .. " > ",
         cmd = "rg --files --sortr modified -g '*.md'",
         file_icons = false,
         git_icons = false,
+        -- Key help on the list's top border, as omni's tmux pickers wear it.
+        fzf_opts = {
+            ["--list-border"] = "top",
+            ["--list-label-pos"] = "2",
+            ["--list-label"] = (" %s · enter link · ctrl-a by name, new in"
+                .. " triage "):format(name),
+        },
         actions = {
             ["enter"] = function(selected, opts)
                 put(vim.tbl_map(function(entry)
@@ -166,7 +174,7 @@ function M.link(after)
                     local path = plc({ "add", opts.last_query or "" })
                     if path then put({ vim.trim(path) }) end
                 end,
-                header = "link the typed name, new in triage",
+                header = false,
             },
         },
     })
