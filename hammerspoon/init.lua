@@ -48,9 +48,6 @@ require("picker").bind({ "alt" }, "tab")
 -- it (Darwin ignores posted events for its shortcuts), so flip the setting.
 require("menubar").bind({ "alt" }, "0")
 
--- Ctrl+Option + a s d f g h j k l ; types 1 2 3 4 5 6 7 8 9 0, in any app.
-require("numrow").bind({ "ctrl", "alt" })
-
 -- Ctrl+Cmd+L locks behind a screen saver that shows the screen as it was
 -- left, so locked and unlocked look the same until a key is pressed. The
 -- exposure cancels the saver's dimming, tuned by eye on an LG HDR 4K.
@@ -70,5 +67,4 @@ hs.pathwatcher
 
 hs.alert.show("Hammerspoon: config loaded (⌘⌃T translate · ⌃⇧J scroll"
     .. " · ⌥1-8 slots · ⌥9 last · ⌥- max · ⌥Tab windows · ⌥0 menu bar"
-    .. " · ⌃⌥ home row digits"
     .. " · ⌃⌘L lock · 📋 screenshots)")
