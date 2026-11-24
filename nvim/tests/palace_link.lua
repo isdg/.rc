@@ -105,7 +105,9 @@ local ok, err = pcall(function()
     vim.api.nvim_set_current_line("ab")
     vim.api.nvim_win_set_cursor(0, { 1, 0 })
     palace.link(true)
-    picked.actions["ctrl-a"]({}, { last_query = "new one" })
+    check("ctrl-a: hinted in the picker's header",
+        type(picked.actions["ctrl-a"].header) == "string")
+    picked.actions["ctrl-a"].fn({}, { last_query = "new one" })
     local made = vault .. "/notes/triage/new one.md"
     check("ctrl-a: a new name is made in the triage",
         vim.uv.fs_stat(made) ~= nil, made)
@@ -114,7 +116,7 @@ local ok, err = pcall(function()
 
     vim.api.nvim_win_set_cursor(0, { 1, 0 })
     palace.link(false)
-    picked.actions["ctrl-a"]({}, { last_query = "дар" })
+    picked.actions["ctrl-a"].fn({}, { last_query = "дар" })
     check("ctrl-a: an existing name is linked, not made again",
         line() == "[[дар]]a[[new one]]b"
             and vim.uv.fs_stat(vault .. "/notes/triage/дар.md") == nil,
@@ -123,7 +125,7 @@ local ok, err = pcall(function()
     before = line()
     notes = {}
     palace.link(true)
-    picked.actions["ctrl-a"]({}, { last_query = "" })
+    picked.actions["ctrl-a"].fn({}, { last_query = "" })
     check("ctrl-a: no query puts nothing, plc says why",
         line() == before and #notes == 1, { line(), notes })
 end)

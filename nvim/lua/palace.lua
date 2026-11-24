@@ -161,10 +161,13 @@ function M.link(after)
                     return fzf.path.entry_to_file(entry, opts).path
                 end, selected))
             end,
-            ["ctrl-a"] = function(_, opts)
-                local path = plc({ "add", opts.last_query or "" })
-                if path then put({ vim.trim(path) }) end
-            end,
+            ["ctrl-a"] = {
+                fn = function(_, opts)
+                    local path = plc({ "add", opts.last_query or "" })
+                    if path then put({ vim.trim(path) }) end
+                end,
+                header = "link the typed name, new in triage",
+            },
         },
     })
 end
