@@ -105,8 +105,10 @@ local ok, err = pcall(function()
     vim.api.nvim_set_current_line("ab")
     vim.api.nvim_win_set_cursor(0, { 1, 0 })
     palace.link(true)
-    check("ctrl-a: hinted in the picker's header",
-        type(picked.actions["ctrl-a"].header) == "string")
+    check("ctrl-a: hinted on the list's border, not in fzf-lua's header",
+        picked.fzf_opts["--list-label"]:find("ctrl-a", 1, true)
+            and picked.actions["ctrl-a"].header == false,
+        picked.fzf_opts)
     picked.actions["ctrl-a"].fn({}, { last_query = "new one" })
     local made = vault .. "/notes/triage/new one.md"
     check("ctrl-a: a new name is made in the triage",
